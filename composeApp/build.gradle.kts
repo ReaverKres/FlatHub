@@ -62,11 +62,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.jetbrains.kmpapp"
+    namespace = "io.flatzen"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.jetbrains.kmpapp"
+        applicationId = "io.flatzen"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
