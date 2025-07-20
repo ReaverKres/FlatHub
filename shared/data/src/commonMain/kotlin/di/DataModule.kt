@@ -1,8 +1,9 @@
 package di
 
+import api.KufarApi
+import api.createKufarApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
-import kz.skiftrade.authdata.api.KufarApi
 import mappers.KufarFlatMapper
 import mappers.ResponseToEntitiesFlatMapper
 import org.koin.dsl.module

@@ -9,9 +9,9 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kz.skiftrade.mvi.MviAction
-import kz.skiftrade.mvi.MviEffect
-import kz.skiftrade.mvi.MviEvent
+import io.flatzen.mvi.MviAction
+import io.flatzen.mvi.MviEffect
+import io.flatzen.mvi.MviEvent
 import repository.KufarRepository
 import server_request.KufarSearchParams
 
@@ -27,7 +27,7 @@ data class FlatListScreenState(
 
 @Immutable
 data class UiFlat(
-    val imageUrl: String,
+    val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,
     val numberOfRooms: Int,
@@ -91,7 +91,7 @@ class FlatSearchViewModel(
     private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
         return appFlatList.map {
             UiFlat(
-                imageUrl = "",
+                imageUrls = it.imageUrls ?: listOf(),
                 priceByn = "${it.priceByn} BYN",
                 priceUsd = "${it.priceUsd} USD",
                 numberOfRooms = it.rooms,

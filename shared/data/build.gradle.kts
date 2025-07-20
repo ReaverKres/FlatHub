@@ -27,6 +27,24 @@ kotlin {
     }
 
     sourceSets {
+        // ДОБАВЬТЕ ЭТО - указание пути к сгенерированным файлам
+        commonMain {
+            dependencies {
+                api(project(":shared:domain"))
+
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.logging)
+                implementation(libs.ktorfit.lib)
+                implementation(libs.ktor.client.encoding)
+
+                implementation(libs.koin.core)
+            }
+            // Добавляем путь к сгенерированным KSP файлам
+            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+        }
+
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
@@ -34,27 +52,22 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
-
-        commonMain.dependencies {
-            api(project(":shared:domain"))
-
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.logging)
-            implementation(libs.ktorfit.lib)
-
-            implementation(libs.koin.core)
-        }
     }
 }
 
 dependencies {
+    add("kspCommonMainMetadata", libs.ktorfit.ksp)
     add("kspAndroid", libs.ktorfit.ksp)
     add("kspIosX64", libs.ktorfit.ksp)
     add("kspIosArm64", libs.ktorfit.ksp)
     add("kspIosSimulatorArm64", libs.ktorfit.ksp)
-    add("kspCommonMainMetadata", libs.ktorfit.ksp)
+}
+
+// ДОБАВЬТЕ ЭТО - настройка зависимостей задач
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon>().configureEach {
+    if (name != "compileKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
 }
 
 android {

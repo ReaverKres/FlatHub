@@ -6,6 +6,7 @@ import kotlin.time.Instant
 data class AppFlat @OptIn(ExperimentalTime::class) constructor(
     val publishedAt: Instant?,
     val timeAgo: String?,
+    val imageUrls: List<String>?,
     val priceUsd: Int,
     val priceByn: Int,
     val rooms: Int,

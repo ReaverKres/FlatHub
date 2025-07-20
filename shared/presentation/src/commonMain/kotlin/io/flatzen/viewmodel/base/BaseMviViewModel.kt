@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import io.flatzen.mvi.MviState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kz.skiftrade.mvi.MviAction
-import kz.skiftrade.mvi.MviEffect
-import kz.skiftrade.mvi.MviEvent
-import org.koin.core.logger.Logger
+import io.flatzen.mvi.MviAction
+import io.flatzen.mvi.MviEffect
+import io.flatzen.mvi.MviEvent
 
 abstract class BaseMviViewModel<A : MviAction, S : MviState,EV: MviEvent, EF : MviEffect>(
     private val dispatchers: CoroutineDispatcher = Dispatchers.Main.immediate

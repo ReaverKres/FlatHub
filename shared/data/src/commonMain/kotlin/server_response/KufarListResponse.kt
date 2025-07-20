@@ -3,169 +3,168 @@ package server_response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class KufarListResponse(
     @SerialName("ads")
-    val ads: List<Ad>,
+    val ads: List<Ad?>?,
     @SerialName("pagination")
-    val pagination: Pagination,
+    val pagination: Pagination?,
     @SerialName("total")
-    val total: Int
+    val total: Int?
 ) {
     @Serializable
     data class Ad(
         @SerialName("account_id")
-        val accountId: String,
+        val accountId: String?,
         @SerialName("account_parameters")
-        val accountParameters: List<AccountParameter>,
+        val accountParameters: List<AdParameter?>?,
         @SerialName("ad_id")
-        val adId: Int,
+        val adId: Int?,
         @SerialName("ad_link")
-        val adLink: String,
+        val adLink: String?,
         @SerialName("ad_parameters")
-        val adParameters: List<AdParameter>,
-        @SerialName("body")
-        val body: String,
+        val adParameters: List<AdParameter?>?,
         @SerialName("body_short")
-        val bodyShort: String,
+        val bodyShort: String?,
         @SerialName("category")
-        val category: String,
+        val category: String?,
         @SerialName("company_ad")
-        val companyAd: Boolean,
+        val companyAd: Boolean?,
         @SerialName("currency")
-        val currency: String,
+        val currency: String?,
         @SerialName("images")
-        val images: List<Image>,
+        val images: List<Image?>?,
         @SerialName("is_mine")
-        val isMine: Boolean,
+        val isMine: Boolean?,
         @SerialName("list_id")
-        val listId: Int,
+        val listId: Int?,
         @SerialName("list_time")
-        val listTime: String,
+        val listTime: String?,
         @SerialName("message_id")
-        val messageId: String,
+        val messageId: String?,
         @SerialName("paid_services")
-        val paidServices: PaidServices,
+        val paidServices: PaidServices?,
         @SerialName("phone_hidden")
-        val phoneHidden: Boolean,
+        val phoneHidden: Boolean?,
         @SerialName("price_byn")
-        val priceByn: String,
+        val priceByn: String?,
         @SerialName("price_usd")
-        val priceUsd: String,
+        val priceUsd: String?,
         @SerialName("remuneration_type")
-        val remunerationType: String,
+        val remunerationType: String?,
         @SerialName("show_parameters")
-        val showParameters: ShowParameters,
+        val showParameters: ShowParameters?,
         @SerialName("subject")
-        val subject: String,
+        val subject: String?,
         @SerialName("type")
-        val type: String
+        val type: String?
     ) {
         @Serializable
         data class AccountParameter(
             @SerialName("g")
-            val g: List<G>,
+            val g: List<G?>?,
             @SerialName("p")
-            val p: String,
+            val p: String?,
             @SerialName("pl")
-            val pl: String,
+            val pl: String?,
             @SerialName("pu")
-            val pu: String,
+            val pu: String?,
             @SerialName("v")
-            val v: String,
+            val v: JsonElement? = null,
             @SerialName("vl")
-            val vl: String
+            val vl: JsonElement? = null
         ) {
             @Serializable
             data class G(
                 @SerialName("gi")
-                val gi: Int,
+                val gi: Int?,
                 @SerialName("gl")
-                val gl: String,
+                val gl: String?,
                 @SerialName("go")
-                val go: Int,
+                val go: Int?,
                 @SerialName("po")
-                val po: Int
+                val po: Int?
             )
         }
 
         @Serializable
         data class AdParameter(
             @SerialName("g")
-            val g: List<G>,
+            val g: List<G?>?,
             @SerialName("p")
-            val p: String,
+            val p: String?,
             @SerialName("pl")
-            val pl: String,
+            val pl: String?,
             @SerialName("pu")
-            val pu: String,
+            val pu: String?,
             @SerialName("v")
-            val v: Double,
+            val v: JsonElement? = null, //
             @SerialName("vl")
-            val vl: String
+            val vl: JsonElement? = null //
         ) {
             @Serializable
             data class G(
                 @SerialName("gi")
-                val gi: Int,
+                val gi: Int?,
                 @SerialName("gl")
-                val gl: String,
+                val gl: String?,
                 @SerialName("go")
-                val go: Int,
+                val go: Int?,
                 @SerialName("po")
-                val po: Int
+                val po: Int?
             )
         }
 
         @Serializable
         data class Image(
             @SerialName("id")
-            val id: String,
+            val id: String?,
             @SerialName("media_storage")
-            val mediaStorage: String,
+            val mediaStorage: String?,
             @SerialName("path")
-            val path: String,
+            val path: String?,
             @SerialName("yams_storage")
-            val yamsStorage: Boolean
+            val yamsStorage: Boolean?
         )
 
         @Serializable
         data class PaidServices(
             @SerialName("halva")
-            val halva: Boolean,
+            val halva: Boolean?,
             @SerialName("highlight")
-            val highlight: Boolean,
+            val highlight: Boolean?,
             @SerialName("polepos")
-            val polepos: Boolean,
+            val polepos: Boolean?
         )
 
         @Serializable
         data class ShowParameters(
             @SerialName("show_call")
-            val showCall: Boolean,
+            val showCall: Boolean?,
             @SerialName("show_chat")
-            val showChat: Boolean,
+            val showChat: Boolean?,
             @SerialName("show_import_link")
-            val showImportLink: Boolean,
+            val showImportLink: Boolean?,
             @SerialName("show_web_shop_link")
-            val showWebShopLink: Boolean
+            val showWebShopLink: Boolean?
         )
     }
 
     @Serializable
     data class Pagination(
         @SerialName("pages")
-        val pages: List<Page>
+        val pages: List<Page?>?
     ) {
         @Serializable
         data class Page(
             @SerialName("label")
-            val label: String,
+            val label: String?,
             @SerialName("num")
-            val num: Int,
+            val num: Int?,
             @SerialName("token")
-            val token: String
+            val token: String?
         )
     }
 }

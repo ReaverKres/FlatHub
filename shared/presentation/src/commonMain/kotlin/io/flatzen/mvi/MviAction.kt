@@ -1,3 +1,3 @@
-package kz.skiftrade.mvi
+package io.flatzen.mvi
 
 interface MviAction

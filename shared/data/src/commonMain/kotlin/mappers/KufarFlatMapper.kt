@@ -2,92 +2,120 @@ package mappers
 
 import entities.AdditionalParams
 import entities.AppFlat
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.intOrNull
 import server_response.KufarListResponse
 import kotlin.time.ExperimentalTime
-
 
 @OptIn(ExperimentalTime::class)
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 
     override fun map(data: KufarListResponse.Ad): AppFlat {
-//        val publishedAt = Instant.parse(response.listTime).toKotlinInstant()
-//
-//        val relativeTime = calculateRelativeTime(publishedAt)
+        val priceUsd = data.priceUsd?.toIntOrNull() ?: 0
+        val priceByn = data.priceByn?.toIntOrNull() ?: 0
 
-        val priceUsd = data.priceUsd.toIntOrNull() ?: 0
-        val priceByn = data.priceByn.toIntOrNull() ?: 0
+        val adParams = data.adParameters?.filterNotNull() ?: emptyList()
 
-        val rooms = data.adParameters
+        val rooms = adParams
             .firstOrNull { it.p == "rooms" }
             ?.v
-            ?.toInt() ?: 0
+            ?.safeInt() ?: 0
 
-        val district = data.adParameters
-            .firstOrNull { it.p == "district" }
+        val district = adParams
+            .firstOrNull { it.p == "re_district" }
             ?.vl
-            .orEmpty()
+            ?.safeString() ?: ""
 
-        val address = data.adParameters
-            .firstOrNull { it.p == "address" }
+        val address = data.accountParameters
+            ?.filterNotNull()
+            ?.firstOrNull { it.p == "address" }
             ?.vl
-            .orEmpty()
+            ?.safeString() ?: ""
 
-        val coordinates = data.adParameters
+        val coordinates = adParams
             .firstOrNull { it.p == "coordinates" }
-            ?.vl
-            ?.split(",")
-            ?.let { (lat, lon) -> lat.trim().toDouble() to lon.trim().toDouble() }
+            ?.v
+            ?.safeDoubleList()
+            ?.takeIf { it.size >= 2 }
+            ?.let { it[1] to it[0] } // lat, lon
 
-        val metroStation = data.adParameters
+        val metroStation = adParams
             .firstOrNull { it.p == "metro" }
             ?.vl
+            ?.safeStringList()
+            ?.firstOrNull()
 
-        val yearBuilt = data.adParameters
+        val yearBuilt = adParams
             .firstOrNull { it.p == "year_built" }
             ?.v
-            ?.toInt()
+            ?.safeInt()
+
+        val kitchenIds = adParams
+            .firstOrNull { it.p == "flat_kitchen" }
+            ?.v
+            ?.safeIntList()
+            ?: emptyList()
+
+        val improvementsIds = adParams
+            .firstOrNull { it.p == "flat_improvement" }
+            ?.v
+            ?.safeIntList()
+            ?: emptyList()
 
         val additionalParams = AdditionalParams(
-            forWhom = data.adParameters
+            forWhom = adParams
                 .firstOrNull { it.p == "for_whom" }
                 ?.vl
-                ?.split(",")
-                ?.map { it.trim() }
-                ?.filter { it.isNotBlank() },
-            hasWashingMachine = data.adParameters.any { it.p == "washing_machine" && it.vl == "1" },
-            hasStove = data.adParameters.any { it.p == "stove" && it.vl == "1" },
-            hasMicrowave = data.adParameters.any { it.p == "microwave" && it.vl == "1" },
-            hasWifi = data.adParameters.any { it.p == "wifi" && it.vl == "1" },
-            hasFurniture = data.adParameters.any { it.p == "furniture" && it.vl == "1" },
-            hasConditioner = data.adParameters.any { it.p == "conditioner" && it.vl == "1" }
+                ?.safeStringList(),
+
+            hasWashingMachine = improvementsIds.contains(3) || kitchenIds.contains(3),
+            hasStove = kitchenIds.contains(7),
+            hasMicrowave = kitchenIds.contains(2),
+            hasWifi = improvementsIds.contains(1),
+            hasFurniture = improvementsIds.contains(6),
+            hasConditioner = false // пока нет в API
         )
+        val images = data.images?.map { "https://rms.kufar.by/v1/gallery/${it?.path }" }
 
         return AppFlat(
             publishedAt = null,
             timeAgo = null,
             priceUsd = priceUsd,
             priceByn = priceByn,
+            imageUrls = images,
             rooms = rooms,
             district = district,
             address = address,
             coordinates = coordinates,
             metroStation = metroStation,
-            description = data.body,
+            description = data.bodyShort ?: "",
             yearBuilt = yearBuilt,
             additionalParams = additionalParams
         )
     }
 
-//    private fun calculateRelativeTime(instant: kotlin.time.Instant): RelativeTime {
-//        val now = Clock.System.now()
-//        val days = now.daysUntil(instant, TimeZone.currentSystemDefault())
-//
-//        return when {
-//            days == 0 -> RelativeTime.TODAY
-//            days == -1 -> RelativeTime.YESTERDAY
-//            days > -7 -> RelativeTime.DAYS_AGO
-//            days > -30 -> RelativeTime.WEEKS_AGO
-//            else -> RelativeTime.MONTHS_AGO
-//        }
-//    }
+    // === Безопасные расширения ===
+
+    private fun JsonElement?.safeString(): String? =
+        (this as? JsonPrimitive)?.contentOrNull
+
+    private fun JsonElement?.safeInt(): Int? =
+        (this as? JsonPrimitive)?.intOrNull
+
+    private fun JsonElement?.safeDoubleList(): List<Double>? =
+        (this as? JsonArray)?.mapNotNull { it.safeDouble() }
+
+    private fun JsonElement?.safeStringList(): List<String>? =
+        (this as? JsonArray)?.mapNotNull { it.safeString() }
+            ?: this.safeString()?.let { listOf(it) }
+
+    private fun JsonElement?.safeDouble(): Double? =
+        (this as? JsonPrimitive)?.doubleOrNull
+
+    private fun JsonElement?.safeIntList(): List<Int> =
+        (this as? JsonArray)?.mapNotNull { it.safeInt() } ?: emptyList()
 }
