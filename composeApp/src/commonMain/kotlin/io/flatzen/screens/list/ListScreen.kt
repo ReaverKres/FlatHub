@@ -48,7 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ListScreen(
-    navigateToDetails: (objectId: Int) -> Unit,
+    navigateToDetails: (objectId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()
@@ -63,14 +63,14 @@ fun ListScreen(
         state.flatList.isEmpty() -> EmptyScreenContent(modifier)
         else -> FlatGrid(
             flats = state.flatList,
-            onFlatClick = { navigateToDetails(it.hashCode()) }, // TODO заменить на реальный id
+            onFlatClick = { navigateToDetails(it.adId) }, // TODO заменить на реальный id
             modifier = modifier
         )
     }
 }
 
 @Composable
-private fun LoadingContent(modifier: Modifier = Modifier) {
+fun LoadingContent(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -183,7 +183,7 @@ private fun FlatEmptyImage() {
 }
 
 @Composable
-private fun ImagePager(imageUrls: List<String>) {
+fun ImagePager(imageUrls: List<String>) {
     val pagerState = rememberPagerState { imageUrls.size }
 
     Box(

@@ -1,5 +1,6 @@
 package io.flatzen.kmpapp
 
+import DetailScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -11,7 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-
 import io.flatzen.kmpapp.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val objectId: Int)
+data class DetailDestination(val objectId: Long)
 
 @Composable
 fun App() {
@@ -35,12 +35,12 @@ fun App() {
                     })
                 }
                 composable<DetailDestination> { backStackEntry ->
-//                    DetailScreen(
-//                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
-//                        navigateBack = {
-//                            navController.popBackStack()
-//                        }
-//                    )
+                    DetailScreen(
+                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
+                        navigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
                 }
             }
         }

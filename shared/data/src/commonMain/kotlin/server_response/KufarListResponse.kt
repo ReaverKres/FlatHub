@@ -21,7 +21,7 @@ data class KufarListResponse(
         @SerialName("account_parameters")
         val accountParameters: List<AdParameter?>?,
         @SerialName("ad_id")
-        val adId: Int?,
+        val adId: Long?,
         @SerialName("ad_link")
         val adLink: String?,
         @SerialName("ad_parameters")

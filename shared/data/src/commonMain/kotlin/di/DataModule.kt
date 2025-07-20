@@ -1,9 +1,9 @@
 package di
 
+import AppFlat
 import api.KufarApi
 import api.createKufarApi
 import de.jensklingenberg.ktorfit.Ktorfit
-import entities.AppFlat
 import mappers.KufarFlatMapper
 import mappers.ResponseToEntitiesFlatMapper
 import org.koin.dsl.module

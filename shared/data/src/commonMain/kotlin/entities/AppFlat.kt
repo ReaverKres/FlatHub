@@ -1,22 +1,39 @@
-package entities
-
+import entities.BalconyType
+import entities.BathroomType
+import entities.BuildingImprovement
+import entities.PrepaymentType
+import entities.RepairType
+import entities.WindowDirection
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class AppFlat @OptIn(ExperimentalTime::class) constructor(
+    val adId: Long,
     val publishedAt: Instant?,
     val timeAgo: String?,
     val imageUrls: List<String>?,
     val priceUsd: Int,
     val priceByn: Int,
     val rooms: Int,
-    val district: String,
-    val address: String,
+    val district: String?,
+    val address: String?,
     val coordinates: Pair<Double, Double>?,
     val metroStation: String?,
     val description: String?,
     val yearBuilt: Int?,
-    val additionalParams: AdditionalParams
+    val additionalParams: AdditionalParams,
+    // Новые поля
+    val totalArea: Double?,
+    val floor: Int?,
+    val totalFloors: Int?,
+    val sleepingPlaces: Int?,
+    val isStudio: Boolean,
+    val bathroomType: BathroomType?,
+    val balconyType: BalconyType?,
+    val repairType: RepairType?,
+    val windowDirections: List<WindowDirection>?,
+    val buildingImprovements: List<BuildingImprovement>?,
+    val prepaymentType: PrepaymentType?
 )
 
 data class AdditionalParams(

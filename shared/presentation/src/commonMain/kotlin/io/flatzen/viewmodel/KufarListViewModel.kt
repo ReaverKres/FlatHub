@@ -1,17 +1,17 @@
 package io.flatzen.viewmodel
 
+import AppFlat
 import androidx.compose.runtime.Immutable
-import entities.AppFlat
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
+import io.flatzen.mvi.MviAction
+import io.flatzen.mvi.MviEffect
+import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import io.flatzen.mvi.MviAction
-import io.flatzen.mvi.MviEffect
-import io.flatzen.mvi.MviEvent
 import repository.KufarRepository
 import server_request.KufarSearchParams
 
@@ -27,6 +27,7 @@ data class FlatListScreenState(
 
 @Immutable
 data class UiFlat(
+    val adId: Long,
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,
@@ -91,11 +92,12 @@ class FlatSearchViewModel(
     private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
         return appFlatList.map {
             UiFlat(
+                adId = it.adId,
                 imageUrls = it.imageUrls ?: listOf(),
                 priceByn = "${it.priceByn} BYN",
                 priceUsd = "${it.priceUsd} USD",
                 numberOfRooms = it.rooms,
-                address = it.address,
+                address = it.address.orEmpty(),
                 metroStation = it.metroStation.orEmpty()
             )
         }

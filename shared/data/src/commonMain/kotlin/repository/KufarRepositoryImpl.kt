@@ -1,12 +1,14 @@
 package repository
 
 
-import entities.AppFlat
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import AppFlat
 import api.KufarApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import mappers.ResponseToEntitiesFlatMapper
 import server_request.KufarSearchParams
 import server_response.KufarListResponse
@@ -37,6 +39,14 @@ class KufarRepositoryImpl(
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
         _flatsCache.emit(kufarFlatList ?: listOf())
         emit(kufarFlatList ?: listOf())
+    }
+
+    override fun getFlatById(flatId: Long): Flow<AppFlat> {
+        return _flatsCache
+            .map { flats ->
+                flats.find { it.adId == flatId }
+                    ?: throw NoSuchElementException("Flat with id $flatId not found")
+            }
     }
 
     private fun generateSearchId(): String {
