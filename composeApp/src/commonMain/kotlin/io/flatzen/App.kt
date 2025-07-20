@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import io.flatzen.kmpapp.screens.detail.DetailScreen
+
 import io.flatzen.kmpapp.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
@@ -35,12 +35,12 @@ fun App() {
                     })
                 }
                 composable<DetailDestination> { backStackEntry ->
-                    DetailScreen(
-                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
-                        navigateBack = {
-                            navController.popBackStack()
-                        }
-                    )
+//                    DetailScreen(
+//                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
+//                        navigateBack = {
+//                            navController.popBackStack()
+//                        }
+//                    )
                 }
             }
         }

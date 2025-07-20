@@ -1,11 +1,10 @@
 package io.flatzen
 
 import android.app.Application
-import io.flatzen.di.initKoin
 
-class MuseumApp : Application() {
+class FlatZenApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin()
+        CommonApplication.initialize()
     }
 }
