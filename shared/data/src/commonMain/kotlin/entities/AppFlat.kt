@@ -4,11 +4,13 @@ import entities.BuildingImprovement
 import entities.PrepaymentType
 import entities.RepairType
 import entities.WindowDirection
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class AppFlat @OptIn(ExperimentalTime::class) constructor(
-    val flatPlatform: String,
+    val flatPlatform: FlatPlatform,
+    val flatDetailUrl: String,
     val adId: Long,
     val publishedAt: Instant?,
     val timeAgo: String?,

@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.FlatSearchViewModel
@@ -47,7 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ListScreen(
-    navigateToDetails: (flatPlatform: String, objectId: Long) -> Unit,
+    navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()

@@ -27,10 +27,10 @@ kotlin {
     }
 
     sourceSets {
-        // ДОБАВЬТЕ ЭТО - указание пути к сгенерированным файлам
+        // указание пути к сгенерированным файлам
         commonMain {
             dependencies {
-                api(project(":shared:domain"))
+                implementation(project(":shared:commoncomponents"))
 
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
@@ -38,6 +38,7 @@ kotlin {
                 implementation(libs.ktor.logging)
                 implementation(libs.ktorfit.lib)
                 implementation(libs.ktor.client.encoding)
+                implementation(libs.ksoup.html)
 
                 implementation(libs.koin.core)
             }

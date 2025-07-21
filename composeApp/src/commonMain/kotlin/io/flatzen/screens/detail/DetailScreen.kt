@@ -1,3 +1,4 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -22,22 +23,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.list.ImagePager
 import io.flatzen.screens.list.LoadingContent
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
+import io.flatzen.viewmodel.UiAdditionalParams
 import io.flatzen.viewmodel.UiDetailFlat
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    flatPlatform: String,
+    flatPlatform: FlatPlatform,
     objectId: Long,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -104,6 +110,8 @@ private fun FlatDetailContent(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+            SourceLinkSection(flat.platform, flat.flatUrl)
             // Цены
             PriceSection(
                 priceUsd = flat.priceUsd,
@@ -127,6 +135,11 @@ private fun FlatDetailContent(
 
             Divider()
 
+            flat.additionalParams?.let {
+                AdditionalParamsSection(it)
+                Divider()
+            }
+
             // О доме
             AboutBuildingSection(
                 totalFloors = flat.totalFloors,
@@ -144,6 +157,31 @@ private fun FlatDetailContent(
             DescriptionSection(description = flat.description)
         }
     }
+}
+
+@Composable
+private fun SourceLinkSection(
+    platform: FlatPlatform,
+    url: String,
+    modifier: Modifier = Modifier
+) {
+    // Получаем обработчик для открытия ссылок
+    val uriHandler = LocalUriHandler.current
+
+    Text(
+        text = "Посмотреть объявление на ${platform.value.capitalize()}",
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                // Открываем ссылку при нажатии
+                uriHandler.openUri(url)
+            }
+            .padding(vertical = 16.dp), // Добавим отступ для красоты
+        color = MaterialTheme.colorScheme.primary, // Выделяем цветом
+        fontWeight = FontWeight.Bold,
+        textDecoration = TextDecoration.Underline, // Подчеркиваем как ссылку
+//        textAlign = TextAlign.Center // Располагаем по центру
+    )
 }
 
 @Composable
@@ -181,7 +219,6 @@ private fun LocationSection(district: String) {
         if (district.isNotEmpty()) {
             InfoRow("Микрорайон", district)
         }
-        InfoRow("Тип сделки", "Аренда")
     }
 }
 
@@ -288,6 +325,31 @@ private fun AboutApartmentSection(flat: UiDetailFlat) {
         }
         flat.prepaymentType?.let {
             InfoRow("Предоплата", it)
+        }
+    }
+}
+
+@Composable
+private fun AdditionalParamsSection(params: UiAdditionalParams) {
+    val amenities = mutableListOf<String>()
+    if (params.hasFurniture) amenities.add("Мебель")
+    if (params.hasWashingMachine) amenities.add("Стиральная машина")
+    if (params.hasStove) amenities.add("Плита")
+    if (params.hasMicrowave) amenities.add("Микроволновая печь")
+    if (params.hasConditioner) amenities.add("Кондиционер")
+    if (params.hasWifi) amenities.add("Wi-Fi")
+
+    // Показываем карточку, только если есть что показать
+    if (amenities.isNotEmpty() || !params.forWhom.isNullOrEmpty()) {
+        SectionCard(title = "Удобства и параметры") {
+            if (amenities.isNotEmpty()) {
+                InfoRow("Удобства", amenities.joinToString(", "))
+            }
+            params.forWhom?.let {
+                if (it.isNotEmpty()) {
+                    InfoRow("Для кого", it.joinToString(", "))
+                }
+            }
         }
     }
 }

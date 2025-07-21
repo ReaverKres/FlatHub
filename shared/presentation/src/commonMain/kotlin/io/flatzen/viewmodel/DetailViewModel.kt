@@ -8,6 +8,7 @@ import entities.BuildingImprovement
 import entities.PrepaymentType
 import entities.RepairType
 import entities.WindowDirection
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -24,7 +25,10 @@ import repository.onliner.OnlinerRepository
 @Immutable
 data class UiDetailFlat(
     val adId: Long,
+    val platform: FlatPlatform,
+    val flatUrl: String,
     val title: String,
+    val additionalParams: UiAdditionalParams?,
     val description: String,
     val imageUrls: List<String>,
     val priceUsd: String,
@@ -43,11 +47,22 @@ data class UiDetailFlat(
     val windowDirection: List<String>,
     val buildingImprovement: List<String>,
     val prepaymentType: String?,
-    val yearBuilt: String? // Добавить в AppFlat модель
+    val yearBuilt: String?
+)
+
+@Immutable
+data class UiAdditionalParams(
+    val forWhom: List<String>?,
+    val hasWashingMachine: Boolean,
+    val hasStove: Boolean,
+    val hasMicrowave: Boolean,
+    val hasWifi: Boolean,
+    val hasFurniture: Boolean,
+    val hasConditioner: Boolean
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
-    data class LoadFlatDetails(val flatPlatform: String, val flatId: Long) : FlatDetailScreenAction
+    data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) : FlatDetailScreenAction
 }
 
 @Immutable
@@ -83,14 +98,17 @@ class FlatDetailViewModel(
         }
     }
 
-    private suspend fun loadFlatDetails(flatPlatform: String, flatId: Long): Flow<FlatDetailEvents> {
-        return if(flatPlatform == "kufar") {
-            kufarRepository.getFlatById(flatId).asLCE().map {
-                FlatDetailEvents.FlatLoaded(it)
+    private suspend fun loadFlatDetails(flatPlatform: FlatPlatform, flatId: Long): Flow<FlatDetailEvents> {
+        return when (flatPlatform) {
+            FlatPlatform.KUFAR -> {
+                kufarRepository.getFlatById(flatId).asLCE().map {
+                    FlatDetailEvents.FlatLoaded(it)
+                }
             }
-        } else {
-            onlinerRepository.getFlatById(flatId).asLCE().map {
-                FlatDetailEvents.FlatLoaded(it)
+            else -> {
+                onlinerRepository.getFlatById(flatId).asLCE().map {
+                    FlatDetailEvents.FlatLoaded(it)
+                }
             }
         }
     }
@@ -127,6 +145,19 @@ class FlatDetailViewModel(
         return UiDetailFlat(
             title = "",
             adId = appFlat.adId,
+            platform = appFlat.flatPlatform,
+            flatUrl = appFlat.flatDetailUrl,
+            additionalParams = appFlat.additionalParams?.let {
+                UiAdditionalParams(
+                    forWhom = it.forWhom,
+                    hasWashingMachine = it.hasWashingMachine,
+                    hasStove = it.hasStove,
+                    hasMicrowave = it.hasMicrowave,
+                    hasWifi = it.hasWifi,
+                    hasFurniture = it.hasFurniture,
+                    hasConditioner = it.hasConditioner
+                )
+            },
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty(),
             priceUsd = "${appFlat.priceUsd} USD",
@@ -147,7 +178,7 @@ class FlatDetailViewModel(
             buildingImprovement = appFlat.buildingImprovements?.map { getBuildingImprovementText(it) }
                 .orEmpty(),
             prepaymentType = appFlat.prepaymentType?.let { getPrepaymentTypeText(it) },
-            yearBuilt = "2007" // TODO: добавить в AppFlat модель
+            yearBuilt = appFlat.yearBuilt.toString()
         )
     }
 

@@ -2,6 +2,7 @@ package io.flatzen.viewmodel
 
 import AppFlat
 import androidx.compose.runtime.Immutable
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -33,7 +34,7 @@ data class FlatListScreenState(
 @Immutable
 data class UiFlat(
     val adId: Long,
-    val flatPlatform: String,
+    val flatPlatform: FlatPlatform,
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,

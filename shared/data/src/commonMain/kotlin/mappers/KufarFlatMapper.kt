@@ -3,6 +3,7 @@ package mappers
 import AdditionalParams
 import AppFlat
 import entities.*
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
@@ -91,7 +92,8 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         val images = data.images?.map { "https://rms.kufar.by/v1/gallery/${it?.path}" }
 
         return AppFlat(
-            flatPlatform = "kufar",
+            flatPlatform = FlatPlatform.KUFAR,
+            flatDetailUrl = data.adLink.orEmpty(),
             adId = data.adId ?: -1,
             publishedAt = null,
             timeAgo = null,

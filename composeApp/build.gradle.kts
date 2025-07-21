@@ -34,7 +34,8 @@ kotlin {
 
         commonMain.dependencies {
             implementation(project(":shared:presentation"))
-            implementation(project(":shared:data"))
+            implementation(project(":shared:commoncomponents"))
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

@@ -1,7 +1,9 @@
-package mappers
+package mappers.onliner
 
 import AdditionalParams
 import AppFlat
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import mappers.ResponseToEntitiesFlatMapper
 import server_response.OnlinerListResponse
 import kotlin.time.ExperimentalTime
 
@@ -43,7 +45,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
         )
 
         return AppFlat(
-            flatPlatform = "onliner",
+            flatPlatform = FlatPlatform.ONLINER,
+            flatDetailUrl = data.url.orEmpty(),
             adId = data.id?.toLong() ?: -1L,
             publishedAt = null,
             timeAgo = "",

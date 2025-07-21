@@ -6,11 +6,11 @@ import api.OnlinerApi
 import api.createKufarApi
 import api.createOnlinerApi
 import de.jensklingenberg.ktorfit.Ktorfit
+import mappers.AdditionalParamMapper
 import mappers.KufarFlatMapper
-import mappers.OnlinerFlatMapper
+import mappers.onliner.OnlinerFlatMapper
 import mappers.ResponseToEntitiesFlatMapper
-import org.koin.core.qualifier.Qualifier
-import org.koin.core.qualifier.named
+import mappers.onliner.OnlinerDetailHtmlMapper
 import org.koin.dsl.module
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl
@@ -34,8 +34,12 @@ val dataModule = module {
     single<ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat>>(
         qualifier = DataQualifiers.ONLINER_FLAT_MAPPER
     ) { OnlinerFlatMapper() }
+    single<AdditionalParamMapper<String, AppFlat>> { OnlinerDetailHtmlMapper() }
+
     single<OnlinerRepository> { OnlinerRepositoryImpl(
         api = get(),
-        onlinerResponseMapper = get(qualifier = DataQualifiers.ONLINER_FLAT_MAPPER)
+        ktorClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+        onlinerResponseMapper = get(qualifier = DataQualifiers.ONLINER_FLAT_MAPPER),
+        onlinerDetailHtmlMapper = get()
     ) }
 }

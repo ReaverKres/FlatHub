@@ -73,6 +73,21 @@ val networkModule = module {
             }
         }
     }
+    single<HttpClient>(qualifier = DataQualifiers.HTML_KTOR_CLIENT) {
+        HttpClient {
+            install(HttpTimeout) {
+                requestTimeoutMillis = HTTP_TIMEOUT
+            }
+            install(Logging) {
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println("HTML Client: $message")
+                    }
+                }
+                level = LogLevel.HEADERS
+            }
+        }
+    }
 
     single<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT) {
         val client: HttpClient = get()

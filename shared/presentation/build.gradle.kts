@@ -26,7 +26,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":shared:domain"))
+            implementation(project(":shared:commoncomponents"))
             implementation(project(":shared:data"))
 
             implementation(libs.koin.core)

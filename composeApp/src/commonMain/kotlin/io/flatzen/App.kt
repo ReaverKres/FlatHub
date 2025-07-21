@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
@@ -19,7 +20,7 @@ import kotlinx.serialization.Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val flatPlatform: String, val objectId: Long)
+data class DetailDestination(val flatPlatform: FlatPlatform, val objectId: Long)
 
 @Composable
 fun App() {
