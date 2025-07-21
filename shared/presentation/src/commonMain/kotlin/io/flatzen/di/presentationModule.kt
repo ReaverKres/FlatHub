@@ -1,4 +1,4 @@
-package io.flatzen.data.di
+package io.flatzen.di
 
 import di.dataModule
 import di.networkModule
@@ -9,8 +9,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val flatSearchPresentationModule = module {
-    viewModel { FlatSearchViewModel(get()) }
-    viewModel { FlatDetailViewModel(get()) }
+    viewModel { FlatSearchViewModel(get(), get()) }
+    viewModel { FlatDetailViewModel(get(), get()) }
 }
 
 fun initKoin() {

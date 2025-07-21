@@ -8,6 +8,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 data class AppFlat @OptIn(ExperimentalTime::class) constructor(
+    val flatPlatform: String,
     val adId: Long,
     val publishedAt: Instant?,
     val timeAgo: String?,

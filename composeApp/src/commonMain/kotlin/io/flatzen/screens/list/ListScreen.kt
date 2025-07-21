@@ -1,4 +1,4 @@
-package io.flatzen.kmpapp.screens.list
+package io.flatzen.screens.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,14 +47,14 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ListScreen(
-    navigateToDetails: (objectId: Long) -> Unit,
+    navigateToDetails: (flatPlatform: String, objectId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(FlatListScreenAction.SearchKufarFlats())
+        viewModel.onIntent(FlatListScreenAction.InitialSearchFlats())
     }
 
     when {
@@ -63,7 +62,7 @@ fun ListScreen(
         state.flatList.isEmpty() -> EmptyScreenContent(modifier)
         else -> FlatGrid(
             flats = state.flatList,
-            onFlatClick = { navigateToDetails(it.adId) }, // TODO заменить на реальный id
+            onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
             modifier = modifier
         )
     }

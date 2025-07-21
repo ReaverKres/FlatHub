@@ -19,6 +19,7 @@ import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import repository.kufar.KufarRepository
+import repository.onliner.OnlinerRepository
 
 @Immutable
 data class UiDetailFlat(
@@ -46,7 +47,7 @@ data class UiDetailFlat(
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
-    data class LoadFlatDetails(val flatId: Long) : FlatDetailScreenAction
+    data class LoadFlatDetails(val flatPlatform: String, val flatId: Long) : FlatDetailScreenAction
 }
 
 @Immutable
@@ -61,7 +62,8 @@ sealed interface FlatDetailEvents : MviEvent {
 }
 
 class FlatDetailViewModel(
-    private val kufarRepository: KufarRepository
+    private val kufarRepository: KufarRepository,
+    private val onlinerRepository: OnlinerRepository
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
@@ -76,14 +78,20 @@ class FlatDetailViewModel(
     ): Flow<FlatDetailEvents> {
         return when (action) {
             is FlatDetailScreenAction.LoadFlatDetails -> {
-                loadFlatDetails(action.flatId)
+                loadFlatDetails(action.flatPlatform, action.flatId)
             }
         }
     }
 
-    private suspend fun loadFlatDetails(flatId: Long): Flow<FlatDetailEvents> {
-        return kufarRepository.getFlatById(flatId).asLCE().map {
-            FlatDetailEvents.FlatLoaded(it)
+    private suspend fun loadFlatDetails(flatPlatform: String, flatId: Long): Flow<FlatDetailEvents> {
+        return if(flatPlatform == "kufar") {
+            kufarRepository.getFlatById(flatId).asLCE().map {
+                FlatDetailEvents.FlatLoaded(it)
+            }
+        } else {
+            onlinerRepository.getFlatById(flatId).asLCE().map {
+                FlatDetailEvents.FlatLoaded(it)
+            }
         }
     }
 
@@ -134,8 +142,10 @@ class FlatDetailViewModel(
             bathroomType = appFlat.bathroomType?.let { getBathroomTypeText(it) },
             balconyType = appFlat.balconyType?.let { getBalconyTypeText(it) },
             repairType = appFlat.repairType?.let { getRepairTypeText(it) },
-            windowDirection = appFlat.windowDirections?.map { getWindowDirectionText(it) }.orEmpty(),
-            buildingImprovement = appFlat.buildingImprovements?.map { getBuildingImprovementText(it) }.orEmpty(),
+            windowDirection = appFlat.windowDirections?.map { getWindowDirectionText(it) }
+                .orEmpty(),
+            buildingImprovement = appFlat.buildingImprovements?.map { getBuildingImprovementText(it) }
+                .orEmpty(),
             prepaymentType = appFlat.prepaymentType?.let { getPrepaymentTypeText(it) },
             yearBuilt = "2007" // TODO: добавить в AppFlat модель
         )
@@ -163,17 +173,20 @@ class FlatDetailViewModel(
         WindowDirection.STREET -> "На улицу"
         WindowDirection.SOUTH -> "Юг"
         WindowDirection.WEST -> "Запад"
-        else -> {""}
+        else -> {
+            ""
+        }
     }
 
-    private fun getBuildingImprovementText(improvement: BuildingImprovement): String = when (improvement) {
-        BuildingImprovement.ELEVATOR -> "Лифт"
-        BuildingImprovement.RAMP -> "Пандус"
-        BuildingImprovement.GARBAGE_CHUTE -> "Мусоропровод"
-        BuildingImprovement.PARKING -> "Парковка"
-        BuildingImprovement.INTERCOM -> "Домофон"
-        BuildingImprovement.VIDEO_SURVEILLANCE -> "Видеонаблюдение"
-    }
+    private fun getBuildingImprovementText(improvement: BuildingImprovement): String =
+        when (improvement) {
+            BuildingImprovement.ELEVATOR -> "Лифт"
+            BuildingImprovement.RAMP -> "Пандус"
+            BuildingImprovement.GARBAGE_CHUTE -> "Мусоропровод"
+            BuildingImprovement.PARKING -> "Парковка"
+            BuildingImprovement.INTERCOM -> "Домофон"
+            BuildingImprovement.VIDEO_SURVEILLANCE -> "Видеонаблюдение"
+        }
 
     private fun getPrepaymentTypeText(type: PrepaymentType): String = when (type) {
         PrepaymentType.MONTH -> "Месяц"

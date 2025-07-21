@@ -15,11 +15,13 @@ import io.ktor.http.HttpHeaders.ContentEncoding
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.qualifier.named
 
 import org.koin.dsl.module
 
 private const val HTTP_TIMEOUT: Long = 20_000
 private const val KUFAR_BASE_URL: String = "https://api.kufar.by/"
+private const val ONLINER_BASE_URL: String = "https://r.onliner.by/"
 
 val networkModule = module {
 
@@ -52,32 +54,41 @@ val networkModule = module {
             }
 
             install(DefaultRequest) {
-                // Критически важные заголовки для API Kufar
-                header("Referer", "https://re.kufar.by/")
-                header("Origin", "https://re.kufar.by")
-                header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
-
-                // Дополнительные заголовки для более естественного вида
-                header("Accept", "*/*")
-                header("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
-                header("Sec-Fetch-Dest", "empty")
-                header("Sec-Fetch-Mode", "cors")
-                header("Sec-Fetch-Site", "same-site")
-
-                // Возможно понадобятся эти заголовки
-                header("x-segmentation", "routing=web_re;platform=web;application=ad_view")
+//                // Критически важные заголовки для API Kufar
+//                header("Referer", "https://re.kufar.by/")
+//                header("Origin", "https://re.kufar.by")
+//                header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
+//
+//                // Дополнительные заголовки для более естественного вида
+//                header("Accept", "*/*")
+//                header("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+//                header("Sec-Fetch-Dest", "empty")
+//                header("Sec-Fetch-Mode", "cors")
+//                header("Sec-Fetch-Site", "same-site")
+//
+//                // Возможно понадобятся эти заголовки
+//                header("x-segmentation", "routing=web_re;platform=web;application=ad_view")
 
                 contentType(ContentType.Application.Json)
             }
         }
     }
 
-    single<Ktorfit> {
+    single<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT) {
         val client: HttpClient = get()
 
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(KUFAR_BASE_URL)
+            .build()
+    }
+
+    single<Ktorfit>(qualifier = DataQualifiers.ONLINER_KTORFIT) {
+        val client: HttpClient = get()
+
+        Ktorfit.Builder()
+            .httpClient(client)
+            .baseUrl(ONLINER_BASE_URL)
             .build()
     }
 }

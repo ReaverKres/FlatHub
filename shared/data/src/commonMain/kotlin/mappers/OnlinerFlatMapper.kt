@@ -8,6 +8,10 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat> {
 
+    init {
+        println("OnlinerFlatMapper initialized")
+    }
+
     override fun map(data: OnlinerListResponse.Apartment): AppFlat {
         val priceUsd = data.price?.converted?.uSD?.amount?.toDoubleOrNull()?.toInt() ?: 0
         val priceByn = data.price?.converted?.bYN?.amount?.toDoubleOrNull()?.toInt() ?: 0
@@ -39,6 +43,7 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
         )
 
         return AppFlat(
+            flatPlatform = "onliner",
             adId = data.id?.toLong() ?: -1L,
             publishedAt = null,
             timeAgo = "",

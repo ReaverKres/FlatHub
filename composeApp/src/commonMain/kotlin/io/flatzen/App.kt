@@ -12,14 +12,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import io.flatzen.kmpapp.screens.list.ListScreen
+import io.flatzen.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val objectId: Long)
+data class DetailDestination(val flatPlatform: String, val objectId: Long)
 
 @Composable
 fun App() {
@@ -30,13 +30,15 @@ fun App() {
             val navController: NavHostController = rememberNavController()
             NavHost(navController = navController, startDestination = ListDestination) {
                 composable<ListDestination> {
-                    ListScreen(navigateToDetails = { objectId ->
-                        navController.navigate(DetailDestination(objectId))
+                    ListScreen(navigateToDetails = { flatPlatform, objectId ->
+                        navController.navigate(DetailDestination(flatPlatform, objectId))
                     })
                 }
                 composable<DetailDestination> { backStackEntry ->
+                    val destination = backStackEntry.toRoute<DetailDestination>()
                     DetailScreen(
-                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
+                        flatPlatform = destination.flatPlatform,
+                        objectId = destination.objectId,
                         navigateBack = {
                             navController.popBackStack()
                         }

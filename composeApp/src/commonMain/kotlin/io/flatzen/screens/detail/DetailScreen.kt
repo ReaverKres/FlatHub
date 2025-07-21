@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.kmpapp.screens.EmptyScreenContent
-import io.flatzen.kmpapp.screens.list.ImagePager
-import io.flatzen.kmpapp.screens.list.LoadingContent
+import io.flatzen.screens.list.ImagePager
+import io.flatzen.screens.list.LoadingContent
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.UiDetailFlat
@@ -37,6 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
+    flatPlatform: String,
     objectId: Long,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -45,7 +46,7 @@ fun DetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(objectId) {
-        viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(objectId.toLong()))
+        viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(flatPlatform, objectId))
     }
 
     Column(

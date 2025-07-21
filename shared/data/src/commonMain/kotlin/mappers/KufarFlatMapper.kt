@@ -16,6 +16,10 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 
+    init {
+        println("KufarFlatMapper initialized")
+    }
+
     override fun map(data: KufarListResponse.Ad): AppFlat {
         val priceUsd = data.priceUsd?.toIntOrNull() ?: 0
         val priceByn = data.priceByn?.toIntOrNull() ?: 0
@@ -87,6 +91,7 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         val images = data.images?.map { "https://rms.kufar.by/v1/gallery/${it?.path}" }
 
         return AppFlat(
+            flatPlatform = "kufar",
             adId = data.adId ?: -1,
             publishedAt = null,
             timeAgo = null,
