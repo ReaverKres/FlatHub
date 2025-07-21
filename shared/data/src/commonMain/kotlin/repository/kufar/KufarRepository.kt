@@ -1,4 +1,4 @@
-package repository
+package repository.kufar
 
 import AppFlat
 import kotlinx.coroutines.flow.Flow

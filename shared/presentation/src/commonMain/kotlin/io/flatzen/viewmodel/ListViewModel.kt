@@ -12,7 +12,7 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import repository.KufarRepository
+import repository.kufar.KufarRepository
 import server_request.KufarSearchParams
 
 sealed interface FlatListScreenAction : MviAction {

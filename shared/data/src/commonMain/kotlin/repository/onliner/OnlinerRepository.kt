@@ -1,0 +1,20 @@
+package repository.onliner
+
+import AppFlat
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import server_request.KufarSearchParams
+import server_request.OnlinerSearchParams
+
+interface OnlinerRepository {
+
+    val cashedFlatsFlow: SharedFlow<List<AppFlat>>
+
+    fun searchFlats(
+        kufarSearchParams: OnlinerSearchParams
+    ): Flow<List<AppFlat>>
+
+    fun getFlatById(
+        flatId: Long
+    ): Flow<AppFlat>
+}

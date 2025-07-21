@@ -21,7 +21,7 @@ data class AppFlat @OptIn(ExperimentalTime::class) constructor(
     val metroStation: String?,
     val description: String?,
     val yearBuilt: Int?,
-    val additionalParams: AdditionalParams,
+    val additionalParams: AdditionalParams?,
     // Новые поля
     val totalArea: Double?,
     val floor: Int?,

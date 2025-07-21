@@ -1,4 +1,4 @@
-package repository
+package repository.kufar
 
 
 import AppFlat
@@ -6,7 +6,6 @@ import api.KufarApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import mappers.ResponseToEntitiesFlatMapper
@@ -34,6 +33,7 @@ class KufarRepositoryImpl(
             language = searchParams.language.name.lowercase(),
             pageSize = searchParams.pageSize,
             dealType = searchParams.dealType.name.lowercase(),
+            sort = searchParams.sort.paramName,
             searchId = generateSearchId()
         ).ads
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }

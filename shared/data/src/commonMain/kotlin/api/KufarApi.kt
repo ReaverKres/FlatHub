@@ -16,6 +16,7 @@ interface KufarApi {
         @Query("lang") language: String,
         @Query("size") pageSize: Int = 30,
         @Query("typ") dealType: String,
+        @Query("sort") sort: String,
         @Header("X-SearchID") searchId: String
     ): KufarListResponse
 }

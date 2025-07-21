@@ -10,8 +10,13 @@ data class KufarSearchParams(
     @SerialName("gtsy") val geoTag: String = "country-belarus~province-minsk~locality-minsk",
     @SerialName("lang") val language: Language = Language.RU,
     @SerialName("size") val pageSize: Int = 30,
-    @SerialName("typ")  val dealType: DealType = DealType.LET
+    @SerialName("typ")  val dealType: DealType = DealType.LET,
+    @SerialName("sort")  val sort: Sort = Sort.NEW_FIRST
 )
+
+enum class Sort(val paramName: String) {
+    NEW_FIRST("lst.d")
+}
 
 @Serializable
 enum class Currency {
