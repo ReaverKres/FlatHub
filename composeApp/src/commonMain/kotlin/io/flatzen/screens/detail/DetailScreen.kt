@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +35,6 @@ import io.flatzen.screens.list.ImagePager
 import io.flatzen.screens.list.LoadingContent
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
-import io.flatzen.viewmodel.UiAdditionalParams
 import io.flatzen.viewmodel.UiDetailFlat
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,7 +56,6 @@ fun DetailScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // TopAppBar
         TopAppBar(
             title = { Text("Детали квартиры") },
             navigationIcon = {
@@ -74,13 +70,13 @@ fun DetailScreen(
                 LoadingContent(modifier = Modifier.fillMaxSize())
             }
             state.error != null -> {
-//                ErrorContent(
-//                    error = state.error,
-//                    onRetry = {
-//                        viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(objectId.toString()))
-//                    },
-//                    modifier = Modifier.fillMaxSize()
-//                )
+                // ErrorContent(
+                //     error = state.error,
+                //     onRetry = {
+                //         viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(flatPlatform, objectId))
+                //     },
+                //     modifier = Modifier.fillMaxSize()
+                // )
             }
             state.flat != null -> {
                 FlatDetailContent(
@@ -111,22 +107,32 @@ private fun FlatDetailContent(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Информация о публикации
+            PublicationInfo(
+                timeAgo = flat.timeAgo,
+                isOwner = flat.isOwner
+            )
 
             SourceLinkSection(flat.platform, flat.flatUrl)
+
             // Цены
             PriceSection(
                 priceUsd = flat.priceUsd,
                 priceByn = flat.priceByn
             )
 
-            // Адрес
-            AddressSection(address = flat.address)
+            // Адрес и метро
+            AddressSection(
+                address = flat.address,
+                metroStation = flat.metroStation
+            )
 
             // Краткая информация
             QuickInfoSection(
                 rooms = flat.numberOfRooms,
-                year = flat.yearBuilt.orEmpty(),
-                area = flat.totalArea
+                year = flat.yearBuilt,
+                area = flat.totalArea,
+                condition = flat.condition
             )
 
             HorizontalDivider()
@@ -136,21 +142,34 @@ private fun FlatDetailContent(
 
             HorizontalDivider()
 
-            flat.additionalParams?.let {
-                AdditionalParamsSection(it)
+            // Удобства и оборудование
+            if (flat.amenities.isNotEmpty() || flat.kitchenEquipment.isNotEmpty()) {
+                AmenitiesSection(
+                    amenities = flat.amenities,
+                    kitchenEquipment = flat.kitchenEquipment
+                )
+                HorizontalDivider()
+            }
+
+            // Условия проживания
+            if (!flat.forWhom.isNullOrEmpty() || flat.prepaymentType != null) {
+                ConditionsSection(
+                    forWhom = flat.forWhom,
+                    prepaymentType = flat.prepaymentType
+                )
                 HorizontalDivider()
             }
 
             // О доме
-            AboutBuildingSection(
-                totalFloors = flat.totalFloors,
-                year = flat.yearBuilt
-            )
+            AboutBuildingSection(flat = flat)
 
             HorizontalDivider()
 
             // Местоположение
-            LocationSection(district = flat.district)
+            LocationSection(
+                district = flat.district,
+                metroStation = flat.metroStation
+            )
 
             HorizontalDivider()
 
@@ -161,12 +180,39 @@ private fun FlatDetailContent(
 }
 
 @Composable
+private fun PublicationInfo(
+    timeAgo: String?,
+    isOwner: Boolean?
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        timeAgo?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
+        isOwner?.let {
+            Text(
+                text = if (it) "Собственник" else "Агент",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
+    }
+}
+
+@Composable
 private fun SourceLinkSection(
     platform: FlatPlatform,
     url: String,
     modifier: Modifier = Modifier
 ) {
-    // Получаем обработчик для открытия ссылок
     val uriHandler = LocalUriHandler.current
 
     Text(
@@ -174,14 +220,12 @@ private fun SourceLinkSection(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                // Открываем ссылку при нажатии
                 uriHandler.openUri(url)
             }
-            .padding(vertical = 16.dp), // Добавим отступ для красоты
-        color = MaterialTheme.colorScheme.primary, // Выделяем цветом
+            .padding(vertical = 8.dp),
+        color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Bold,
-        textDecoration = TextDecoration.Underline, // Подчеркиваем как ссылку
-//        textAlign = TextAlign.Center // Располагаем по центру
+        textDecoration = TextDecoration.Underline
     )
 }
 
@@ -189,7 +233,7 @@ private fun SourceLinkSection(
 private fun PriceSection(priceUsd: String, priceByn: String) {
     Column {
         Text(
-            text = "$$priceUsd",
+            text = priceUsd,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -205,20 +249,35 @@ private fun PriceSection(priceUsd: String, priceByn: String) {
 }
 
 @Composable
-private fun AddressSection(address: String) {
-    Text(
-        text = address,
-        style = MaterialTheme.typography.bodyLarge.copy(
-            fontWeight = FontWeight.Medium
+private fun AddressSection(address: String, metroStation: String?) {
+    Column {
+        Text(
+            text = address,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = FontWeight.Medium
+            )
         )
-    )
+        metroStation?.let {
+            Text(
+                text = "🚇 $it",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
+    }
 }
 
 @Composable
-private fun LocationSection(district: String) {
-    SectionCard(title = "Местоположение") {
-        if (district.isNotEmpty()) {
-            InfoRow("Микрорайон", district)
+private fun LocationSection(district: String?, metroStation: String?) {
+    if (district != null || metroStation != null) {
+        SectionCard(title = "Местоположение") {
+            district?.let {
+                InfoRow("Район", it)
+            }
+            metroStation?.let {
+                InfoRow("Метро", it)
+            }
         }
     }
 }
@@ -270,7 +329,9 @@ private fun InfoRow(label: String, value: String) {
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
             modifier = Modifier.weight(1f)
         )
         Text(
@@ -284,13 +345,26 @@ private fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-private fun AboutBuildingSection(totalFloors: String?, year: String?) {
-    SectionCard(title = "О доме") {
-        totalFloors?.let {
-            InfoRow("Этажность дома", it)
-        }
-        year?.let {
-            InfoRow("Год постройки", it)
+private fun AboutBuildingSection(flat: UiDetailFlat) {
+    val hasData = flat.totalFloors != null ||
+            flat.yearBuilt != null ||
+            flat.buildingImprovements.isNotEmpty() ||
+            flat.parkingInfo != null
+
+    if (hasData) {
+        SectionCard(title = "О доме") {
+            flat.totalFloors?.let {
+                InfoRow("Этажность дома", it)
+            }
+            flat.yearBuilt?.let {
+                InfoRow("Год постройки", it)
+            }
+            flat.parkingInfo?.let {
+                InfoRow("Парковка", it)
+            }
+            if (flat.buildingImprovements.isNotEmpty()) {
+                InfoRow("Инфраструктура", flat.buildingImprovements.joinToString(", "))
+            }
         }
     }
 }
@@ -298,9 +372,15 @@ private fun AboutBuildingSection(totalFloors: String?, year: String?) {
 @Composable
 private fun AboutApartmentSection(flat: UiDetailFlat) {
     SectionCard(title = "О квартире") {
-        InfoRow("Количество комнат", "${flat.numberOfRooms}")
+        InfoRow("Количество комнат", flat.numberOfRooms)
         flat.totalArea?.let {
             InfoRow("Общая площадь", it)
+        }
+        flat.livingArea?.let {
+            InfoRow("Жилая площадь", it)
+        }
+        flat.kitchenArea?.let {
+            InfoRow("Площадь кухни", it)
         }
         flat.floor?.let {
             InfoRow("Этаж", it)
@@ -308,14 +388,11 @@ private fun AboutApartmentSection(flat: UiDetailFlat) {
         flat.bathroomType?.let {
             InfoRow("Санузел", it)
         }
-        flat.balconyType?.let {
-            InfoRow("Балкон", it)
+        flat.balcony?.let {
+            InfoRow("Балкон/лоджия", it)
         }
         flat.repairType?.let {
             InfoRow("Ремонт", it)
-        }
-        if (flat.buildingImprovement.isNotEmpty()) {
-            InfoRow("Обустройство", flat.buildingImprovement.joinToString(", "))
         }
         if (flat.windowDirection.isNotEmpty()) {
             InfoRow("Окна выходят", flat.windowDirection.joinToString(", "))
@@ -323,47 +400,55 @@ private fun AboutApartmentSection(flat: UiDetailFlat) {
         flat.sleepingPlaces?.let {
             InfoRow("Спальных мест", it)
         }
-        if (flat.isStudio) {
-            InfoRow("Тип", "Студия")
+    }
+}
+
+@Composable
+private fun AmenitiesSection(
+    amenities: List<String>,
+    kitchenEquipment: List<String>
+) {
+    SectionCard(title = "Удобства и оборудование") {
+        if (amenities.isNotEmpty()) {
+            InfoRow("В квартире", amenities.joinToString(", "))
         }
-        flat.prepaymentType?.let {
+        if (kitchenEquipment.isNotEmpty()) {
+            InfoRow("На кухне", kitchenEquipment.joinToString(", "))
+        }
+    }
+}
+
+@Composable
+private fun ConditionsSection(
+    forWhom: List<String>?,
+    prepaymentType: String?
+) {
+    SectionCard(title = "Условия проживания") {
+        forWhom?.let {
+            if (it.isNotEmpty()) {
+                InfoRow("Для кого", it.joinToString(", "))
+            }
+        }
+        prepaymentType?.let {
             InfoRow("Предоплата", it)
         }
     }
 }
 
 @Composable
-private fun AdditionalParamsSection(params: UiAdditionalParams) {
-    val amenities = mutableListOf<String>()
-    if (params.hasFurniture) amenities.add("Мебель")
-    if (params.hasWashingMachine) amenities.add("Стиральная машина")
-    if (params.hasStove) amenities.add("Плита")
-    if (params.hasMicrowave) amenities.add("Микроволновая печь")
-    if (params.hasConditioner) amenities.add("Кондиционер")
-    if (params.hasWifi) amenities.add("Wi-Fi")
-
-    // Показываем карточку, только если есть что показать
-    if (amenities.isNotEmpty() || !params.forWhom.isNullOrEmpty()) {
-        SectionCard(title = "Удобства и параметры") {
-            if (amenities.isNotEmpty()) {
-                InfoRow("Удобства", amenities.joinToString(", "))
-            }
-            params.forWhom?.let {
-                if (it.isNotEmpty()) {
-                    InfoRow("Для кого", it.joinToString(", "))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun QuickInfoSection(rooms: Int, year: String, area: String?) {
+private fun QuickInfoSection(
+    rooms: String,
+    year: String?,
+    area: String?,
+    condition: String?
+) {
     Text(
         text = buildString {
-            append("$rooms комн")
-            append(" • $year год постройки")
-            area?.let { append(" • ${it}м²") }
+            append(rooms)
+            if (rooms != "Студия") append(" комн")
+            year?.let { append(" • $it год") }
+            area?.let { append(" • $it") }
+            condition?.let { append(" • $it") }
         },
         style = MaterialTheme.typography.bodyMedium.copy(
             color = MaterialTheme.colorScheme.onSurfaceVariant

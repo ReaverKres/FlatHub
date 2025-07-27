@@ -2,12 +2,6 @@ package io.flatzen.viewmodel
 
 import AppFlat
 import androidx.compose.runtime.Immutable
-import entities.BalconyType
-import entities.BathroomType
-import entities.BuildingImprovement
-import entities.PrepaymentType
-import entities.RepairType
-import entities.WindowDirection
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -21,44 +15,43 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
+import kotlin.time.ExperimentalTime
 
 @Immutable
 data class UiDetailFlat(
     val adId: Long,
     val platform: FlatPlatform,
     val flatUrl: String,
-    val title: String,
-    val additionalParams: UiAdditionalParams?,
     val description: String,
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,
     val address: String,
-    val district: String,
-    val numberOfRooms: Int,
+    val district: String?,
+    val metroStation: String?,
+    val numberOfRooms: String,
     val totalArea: String?,
+    val livingArea: String?,
+    val kitchenArea: String?,
     val floor: String?,
     val totalFloors: String?,
     val sleepingPlaces: String?,
     val isStudio: Boolean,
     val bathroomType: String?,
-    val balconyType: String?,
+    val balcony: String?,
     val repairType: String?,
+    val condition: String?,
     val windowDirection: List<String>,
-    val buildingImprovement: List<String>,
+    val buildingImprovements: List<String>,
+    val amenities: List<String>,
+    val kitchenEquipment: List<String>,
     val prepaymentType: String?,
-    val yearBuilt: String?
-)
-
-@Immutable
-data class UiAdditionalParams(
+    val yearBuilt: String?,
     val forWhom: List<String>?,
-    val hasWashingMachine: Boolean,
-    val hasStove: Boolean,
-    val hasMicrowave: Boolean,
-    val hasWifi: Boolean,
-    val hasFurniture: Boolean,
-    val hasConditioner: Boolean
+    val parkingInfo: String?,
+    val isOwner: Boolean?,
+    val publishedAt: String?,
+    val timeAgo: String?
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
@@ -141,87 +134,60 @@ class FlatDetailViewModel(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun appFlatToUiFlat(appFlat: AppFlat): UiDetailFlat {
         return UiDetailFlat(
-            title = "",
             adId = appFlat.adId,
             platform = appFlat.flatPlatform,
             flatUrl = appFlat.flatDetailUrl,
-            additionalParams = appFlat.additionalParams?.let {
-                UiAdditionalParams(
-                    forWhom = it.forWhom,
-                    hasWashingMachine = it.hasWashingMachine,
-                    hasStove = it.hasStove,
-                    hasMicrowave = it.hasMicrowave,
-                    hasWifi = it.hasWifi,
-                    hasFurniture = it.hasFurniture,
-                    hasConditioner = it.hasConditioner
-                )
-            },
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty(),
-            priceUsd = "${appFlat.priceUsd} USD",
-            priceByn = "${appFlat.priceByn} BYN",
+            priceUsd = formatPrice(appFlat.priceUsd, "USD"),
+            priceByn = formatPrice(appFlat.priceByn, "BYN"),
             address = appFlat.address.orEmpty(),
-            district = appFlat.district.orEmpty(),
-            numberOfRooms = appFlat.rooms,
-            totalArea = appFlat.totalArea?.let { "${it.toInt()}м²" },
+            district = appFlat.district,
+            metroStation = appFlat.metroStation,
+            numberOfRooms = appFlat.rooms?.let {
+                if (appFlat.isStudio == true) "Студия" else "$it"
+            } ?: "Не указано",
+            totalArea = appFlat.totalArea?.let { formatArea(it) },
+            livingArea = appFlat.livingArea?.let { formatArea(it) },
+            kitchenArea = appFlat.kitchenArea?.let { formatArea(it) },
             floor = appFlat.floor?.toString(),
             totalFloors = appFlat.totalFloors?.toString(),
             sleepingPlaces = appFlat.sleepingPlaces?.toString(),
-            isStudio = appFlat.isStudio,
-            bathroomType = appFlat.bathroomType?.let { getBathroomTypeText(it) },
-            balconyType = appFlat.balconyType?.let { getBalconyTypeText(it) },
-            repairType = appFlat.repairType?.let { getRepairTypeText(it) },
-            windowDirection = appFlat.windowDirections?.map { getWindowDirectionText(it) }
-                .orEmpty(),
-            buildingImprovement = appFlat.buildingImprovements?.map { getBuildingImprovementText(it) }
-                .orEmpty(),
-            prepaymentType = appFlat.prepaymentType?.let { getPrepaymentTypeText(it) },
-            yearBuilt = appFlat.yearBuilt.toString()
+            isStudio = appFlat.isStudio ?: false,
+            bathroomType = appFlat.bathroomType,
+            balcony = appFlat.balcony,
+            repairType = appFlat.repairType,
+            condition = appFlat.condition,
+            windowDirection = appFlat.windowDirections.orEmpty(),
+            buildingImprovements = appFlat.buildingImprovements.orEmpty(),
+            amenities = appFlat.amenities.orEmpty(),
+            kitchenEquipment = appFlat.kitchenEquipment.orEmpty(),
+            prepaymentType = appFlat.prepaymentType,
+            yearBuilt = appFlat.yearBuilt?.toString(),
+            forWhom = appFlat.forWhom,
+            parkingInfo = appFlat.parkingInfo,
+            isOwner = appFlat.owner,
+            publishedAt = appFlat.publishedAt?.let { formatDate(it) },
+            timeAgo = appFlat.timeAgo
         )
     }
 
-    // Вспомогательные функции для преобразования enum в текст
-    private fun getBathroomTypeText(type: BathroomType): String = when (type) {
-        BathroomType.SEPARATE -> "Раздельный"
-        BathroomType.COMBINED -> "Совмещенный"
+    private fun formatPrice(price: Double?, currency: String): String {
+        return price?.let {
+            "${it.toInt()} $currency"
+        } ?: "Цена не указана"
     }
 
-    private fun getBalconyTypeText(type: BalconyType): String = when (type) {
-        BalconyType.LOGGIA -> "Лоджия"
-        else -> ""
+    private fun formatArea(area: Double): String {
+        return "${area.toInt()} м²"
     }
 
-    private fun getRepairTypeText(type: RepairType): String = when (type) {
-        RepairType.COSMETIC -> "Косметический"
-        RepairType.EURO -> "Евро"
-    }
-
-    private fun getWindowDirectionText(direction: WindowDirection): String = when (direction) {
-        WindowDirection.RIVER -> "На речку"
-        WindowDirection.PARK -> "В парк"
-        WindowDirection.STREET -> "На улицу"
-        WindowDirection.SOUTH -> "Юг"
-        WindowDirection.WEST -> "Запад"
-        else -> {
-            ""
-        }
-    }
-
-    private fun getBuildingImprovementText(improvement: BuildingImprovement): String =
-        when (improvement) {
-            BuildingImprovement.ELEVATOR -> "Лифт"
-            BuildingImprovement.RAMP -> "Пандус"
-            BuildingImprovement.GARBAGE_CHUTE -> "Мусоропровод"
-            BuildingImprovement.PARKING -> "Парковка"
-            BuildingImprovement.INTERCOM -> "Домофон"
-            BuildingImprovement.VIDEO_SURVEILLANCE -> "Видеонаблюдение"
-        }
-
-    private fun getPrepaymentTypeText(type: PrepaymentType): String = when (type) {
-        PrepaymentType.MONTH -> "Месяц"
-        PrepaymentType.TWO_MONTHS -> "2 месяца"
-        PrepaymentType.DEPOSIT -> "Залог"
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    private fun formatDate(instant: kotlin.time.Instant): String {
+        // Простое форматирование даты
+        return instant.toString()
     }
 }

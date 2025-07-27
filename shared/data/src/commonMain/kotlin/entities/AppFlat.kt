@@ -1,9 +1,4 @@
-import entities.BalconyType
-import entities.BathroomType
-import entities.BuildingImprovement
-import entities.PrepaymentType
-import entities.RepairType
-import entities.WindowDirection
+// AppFlat.kt
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -15,36 +10,48 @@ data class AppFlat @OptIn(ExperimentalTime::class) constructor(
     val publishedAt: Instant?,
     val timeAgo: String?,
     val imageUrls: List<String>?,
-    val priceUsd: Double,
-    val priceByn: Double,
-    val rooms: Int,
+    val priceUsd: Double?,
+    val priceByn: Double?,
+    val rooms: Int?,
     val district: String?,
     val address: String?,
     val coordinates: Pair<Double, Double>?,
     val metroStation: String?,
     val description: String?,
     val yearBuilt: Int?,
-    val additionalParams: AdditionalParams?,
-    // Новые поля
+
+    // Основные параметры квартиры
     val totalArea: Double?,
+    val livingArea: Double?,
+    val kitchenArea: Double?,
     val floor: Int?,
     val totalFloors: Int?,
     val sleepingPlaces: Int?,
-    val isStudio: Boolean,
-    val bathroomType: BathroomType?,
-    val balconyType: BalconyType?,
-    val repairType: RepairType?,
-    val windowDirections: List<WindowDirection>?,
-    val buildingImprovements: List<BuildingImprovement>?,
-    val prepaymentType: PrepaymentType?
-)
+    val isStudio: Boolean?,
 
-data class AdditionalParams(
-    val forWhom: List<String>?,
-    val hasWashingMachine: Boolean,
-    val hasStove: Boolean,
-    val hasMicrowave: Boolean,
-    val hasWifi: Boolean,
-    val hasFurniture: Boolean,
-    val hasConditioner: Boolean
+    // Параметры ванной и балкона
+    val bathroomType: String?, // "Раздельный", "Совмещенный" и т.д.
+    val balcony: String?, // "Есть", "Нет", "Лоджия", "2 балкона" и т.д.
+
+    // Ремонт и состояние
+    val repairType: String?, // "Косметический", "Евро", "Дизайнерский" и т.д.
+    val condition: String?, // "Вторичное", "Новостройка" и т.д.
+
+    // Направления окон
+    val windowDirections: List<String>?, // ["Во двор", "На улицу", "Юг"] и т.д.
+
+    // Улучшения дома
+    val buildingImprovements: List<String>?, // ["Лифт", "Домофон", "Видеонаблюдение"] и т.д.
+
+    // Предоплата
+    val prepaymentType: String?, // "Месяц", "2 месяца", "Залог" и т.д.
+
+    // Удобства и оборудование (заменяем AdditionalParams)
+    val amenities: List<String>?, // ["Мебель", "Стиральная машина", "Wi-Fi"] и т.д.
+    val kitchenEquipment: List<String>?, // ["Плита", "Холодильник", "Микроволновка"] и т.д.
+
+    // Дополнительные параметры
+    val forWhom: List<String>?, // ["Семейным", "Студентам"] и т.д.
+    val parkingInfo: String?, // Информация о парковке
+    val owner: Boolean? // Собственник или агент
 )

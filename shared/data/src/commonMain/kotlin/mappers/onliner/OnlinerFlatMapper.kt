@@ -1,6 +1,5 @@
 package mappers.onliner
 
-import AdditionalParams
 import AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.ResponseToEntitiesFlatMapper
@@ -24,21 +23,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             }
         }
 
-//        val publishedAt = data.createdAt?.let { parseIsoDateTime(it) }
-
 
         val images = data.photo?.let { listOf(it) }
-
-        // Все дополнительные параметры отсутствуют в Onliner API
-        val additionalParams = AdditionalParams(
-            forWhom = null,
-            hasWashingMachine = false,
-            hasStove = false,
-            hasMicrowave = false,
-            hasWifi = false,
-            hasFurniture = false,
-            hasConditioner = false
-        )
 
         return AppFlat(
             flatPlatform = FlatPlatform.ONLINER,
@@ -56,7 +42,6 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             metroStation = null, // Отсутствует в Onliner
             description = null, // Отсутствует в Onliner
             yearBuilt = null, // Отсутствует в Onliner
-            additionalParams = null,
             // Новые поля - отсутствуют в Onliner
             totalArea = null,
             floor = null,
@@ -64,11 +49,19 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             sleepingPlaces = null,
             isStudio = false, // Можно определить по rent_type, но лучше false по умолчанию
             bathroomType = null,
-            balconyType = null,
             repairType = null,
             windowDirections = null,
             buildingImprovements = null,
-            prepaymentType = null
+            prepaymentType = null,
+            livingArea = null,
+            kitchenArea = null,
+            balcony = null,
+            condition = null,
+            amenities = null,
+            kitchenEquipment = null,
+            forWhom = null,
+            parkingInfo = null,
+            owner = null
         )
     }
 

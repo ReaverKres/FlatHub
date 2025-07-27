@@ -8,9 +8,9 @@ import api.createOnlinerApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import mappers.AdditionalParamMapper
 import mappers.KufarFlatMapper
-import mappers.onliner.OnlinerFlatMapper
 import mappers.ResponseToEntitiesFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
+import mappers.onliner.OnlinerFlatMapper
 import org.koin.dsl.module
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl

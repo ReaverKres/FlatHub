@@ -38,7 +38,7 @@ data class UiFlat(
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,
-    val numberOfRooms: Int,
+    val numberOfRooms: Int?,
     val metroStation: String,
     val address: String
 )

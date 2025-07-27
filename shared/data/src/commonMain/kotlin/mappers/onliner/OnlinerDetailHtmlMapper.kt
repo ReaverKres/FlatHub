@@ -1,10 +1,9 @@
 package mappers.onliner
 
-import AdditionalParams
 import AppFlat
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
-import com.fleeksoft.ksoup.nodes.Element
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.AdditionalParamMapper
 import kotlin.time.ExperimentalTime
 
@@ -13,83 +12,148 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
     @OptIn(ExperimentalTime::class)
     override fun map(baseFlat: AppFlat, html: String): AppFlat {
         if (html.isBlank()) return baseFlat
-
         val doc = Ksoup.parse(html)
 
-        // --- Новые, более надежные селекторы ---
-        val description = doc.selectFirst(".apartment-info__sub-line_extended-bottom")?.text()
-        val amenities = doc.select(".apartment-options__item").map { it.text() } // Берем все, а не только _yes
+        // Парсим цены
+        val priceUsd = doc.select(".apartment-bar__price-value_complementary")
+            .firstOrNull()?.text()
+            ?.replace("$", "")
+            ?.replace(" ", "")
+            ?.toDoubleOrNull()
 
-        // Извлекаем параметры из таблицы
-        val parameters = doc.select(".apartment-parameters__item")
-        val yearBuilt = extractParameterValue(parameters, "Год постройки")?.toIntOrNull()
-        val (floor, totalFloors) = extractFloors(parameters)
-        val totalArea = extractParameterValue(parameters, "Общая")?.replace(",", ".")?.toDoubleOrNull()
+        val priceByn = doc.select(".apartment-bar__price-value_primary")
+            .firstOrNull()?.text()
+            ?.replace("р.", "")
+            ?.replace(" ", "")
+            ?.replace(",", ".")
+            ?.toDoubleOrNull()
 
-        // Новый метод для извлечения фото
-        val imageUrls = extractImageUrlsFromStyles(doc)
+        // Парсим количество комнат
+        val roomsText = doc.select(".apartment-bar__value")
+            .firstOrNull { it.text().contains("комнатная") }?.text()
+        val rooms = extractRoomsFromText(roomsText)
 
-        val additionalParams = AdditionalParams(
-            forWhom = null,
-            hasWashingMachine = amenities.any { it.contains("Стиральная машина", ignoreCase = true) },
-            hasStove = amenities.any { it.contains("Плита", ignoreCase = true) },
-            hasMicrowave = amenities.any { it.contains("Микроволновая печь", ignoreCase = true) }, // Добавил микроволновку
-            hasWifi = amenities.any { it.contains("Интернет", ignoreCase = true) },
-            hasFurniture = amenities.any { it.contains("Мебель", ignoreCase = true) },
-            hasConditioner = amenities.any { it.contains("Кондиционер", ignoreCase = true) }
-        )
+        // Парсим адрес и описание
+        val address = doc.select(".apartment-info__sub-line_large").firstOrNull()?.text()
+        val description = doc.select(".apartment-info__sub-line_extended-bottom")
+            .firstOrNull()?.text()
 
-        return baseFlat.copy(
-            description = description ?: baseFlat.description,
-            imageUrls = if (imageUrls.isNotEmpty()) imageUrls else baseFlat.imageUrls,
-            yearBuilt = yearBuilt, // Просто присваиваем, может быть null
-            floor = floor,
-            totalFloors = totalFloors,
-            totalArea = totalArea,
-            additionalParams = additionalParams
-        )
-    }
+        // Парсим координаты из JavaScript
+        val coordinates = extractCoordinatesFromScript(doc)
 
-    // === Обновленные и новые вспомогательные функции ===
+        // ИСПРАВЛЕННЫЙ парсинг удобств
+        val allAmenities = doc.select(".apartment-options__item").map { element ->
+            val text = element.text()
+            val isAbsent = element.hasClass("apartment-options__item_lack")
+            text to !isAbsent
+        }
 
-    /**
-     * Универсальная функция для извлечения значения параметра из списка.
-     * Ищет элемент, у которого label соответствует искомому тексту, и возвращает значение.
-     */
-    private fun extractParameterValue(elements: List<Element>, labelText: String): String? {
-        return elements
-            .firstOrNull { it.select(".apartment-parameters__label").text().equals(labelText, ignoreCase = true) }
-            ?.select(".apartment-parameters__value")?.text()
-    }
+        // Разделяем на присутствующие удобства и кухонное оборудование
+        val presentAmenities = allAmenities.filter { it.second }.map { it.first }
+        val (kitchenEquipment, generalAmenities) = presentAmenities.partition {
+            it in listOf("Плита", "Холодильник", "Микроволновка", "Посудомоечная машина",
+                "Кухонная мебель", "Духовка")
+        }
 
-    /**
-     * Извлекает этаж и этажность из списка параметров.
-     */
-    private fun extractFloors(elements: List<Element>): Pair<Int?, Int?> {
-        val floorString = extractParameterValue(elements, "Этаж") ?: return null to null
-        val parts = floorString.split("/").map { it.trim().toIntOrNull() }
-        return (parts.getOrNull(0)) to (parts.getOrNull(1))
-    }
+        // Парсим дополнительные параметры из таблицы
+        val tableParams = parseParametersTable(doc)
 
-    /**
-     * Извлекает год постройки из списка удобств (менее надежный метод, как запасной).
-     */
-    private fun extractYear(amenities: List<String>): Int? {
-        return amenities.firstOrNull { it.contains("года", ignoreCase = true) }
-            ?.filter { it.isDigit() }
-            ?.toIntOrNull()
-    }
+        // Парсим владельца
+        val owner = doc.select(".apartment-bar__value")
+            .any { it.text() == "Собственник" }
 
-    /**
-     * НОВЫЙ МЕТОД: Извлекает URL изображений из style-атрибутов превью.
-     * Это более надежно, чем поиск JS-переменной.
-     */
-    private fun extractImageUrlsFromStyles(doc: Document): List<String> {
-        val urlRegex = """url\((.*?)\)""".toRegex()
-        return doc.select(".apartment-cover__thumbnail")
+        // Парсим изображения
+        val images = doc.select(".apartment-gallery__slide")
             .mapNotNull { element ->
-                val style = element.attr("style")
-                urlRegex.find(style)?.groups?.get(1)?.value
+                element.attr("style")
+                    .substringAfter("url(")
+                    .substringBefore(")")
+                    .takeIf { it.isNotBlank() }
             }
+
+        return AppFlat(
+            flatPlatform = FlatPlatform.ONLINER,
+            flatDetailUrl = baseFlat.flatDetailUrl,
+            adId = baseFlat.adId,
+            publishedAt = null,
+            timeAgo = doc.select("#apartment-updated-at").text(),
+            imageUrls = images,
+            priceUsd = priceUsd,
+            priceByn = priceByn,
+            rooms = rooms,
+            district = tableParams["Район"],
+            address = address,
+            coordinates = coordinates,
+            metroStation = tableParams["Метро"],
+            description = description,
+            yearBuilt = tableParams["Год постройки"]?.toIntOrNull(),
+            totalArea = tableParams["Общая площадь"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
+            livingArea = tableParams["Жилая площадь"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
+            kitchenArea = tableParams["Площадь кухни"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
+            floor = tableParams["Этаж"]?.substringBefore("/")?.toIntOrNull(),
+            totalFloors = tableParams["Этаж"]?.substringAfter("/")?.toIntOrNull(),
+            sleepingPlaces = tableParams["Спальных мест"]?.toIntOrNull(),
+            isStudio = roomsText?.contains("студия", ignoreCase = true),
+            bathroomType = tableParams["Санузел"],
+            balcony = if (presentAmenities.any { it.contains("балкон", ignoreCase = true) ||
+                        it.contains("лоджия", ignoreCase = true) })
+                presentAmenities.firstOrNull { it.contains("балкон", ignoreCase = true) ||
+                        it.contains("лоджия", ignoreCase = true) }
+            else "Нет",
+            repairType = tableParams["Ремонт"],
+            condition = tableParams["Тип дома"],
+            windowDirections = null, // Onliner не предоставляет эту информацию в HTML
+            buildingImprovements = parseTableListParam(tableParams["Дом"]),
+            prepaymentType = tableParams["Предоплата"],
+            amenities = generalAmenities,
+            kitchenEquipment = kitchenEquipment,
+            forWhom = parseTableListParam(tableParams["Кому сдается"]),
+            parkingInfo = tableParams["Парковка"],
+            owner = owner
+        )
+    }
+
+    private fun extractRoomsFromText(text: String?): Int? {
+        return when {
+            text == null -> null
+            text.contains("студия", ignoreCase = true) -> 0
+            else -> Regex("(\\d+)-комнатная").find(text)?.groupValues?.get(1)?.toIntOrNull()
+        }
+    }
+
+    private fun extractCoordinatesFromScript(doc: Document): Pair<Double, Double>? {
+        val scripts = doc.select("script").map { it.html() }
+        for (script in scripts) {
+            val latMatch = Regex("latitude\\s*=\\s*([\\d.]+)").find(script)
+            val lonMatch = Regex("longitude\\s*=\\s*([\\d.]+)").find(script)
+
+            if (latMatch != null && lonMatch != null) {
+                val lat = latMatch.groupValues[1].toDoubleOrNull()
+                val lon = lonMatch.groupValues[1].toDoubleOrNull()
+                if (lat != null && lon != null) {
+                    return lat to lon
+                }
+            }
+        }
+        return null
+    }
+
+    private fun parseParametersTable(doc: Document): Map<String, String> {
+        val params = mutableMapOf<String, String>()
+
+        // Ищем таблицу с параметрами квартиры
+        doc.select(".apartment-info__item").forEach { item ->
+            val label = item.select(".apartment-info__item-label").text()
+            val value = item.select(".apartment-info__item-value").text()
+            if (label.isNotBlank() && value.isNotBlank()) {
+                params[label] = value
+            }
+        }
+
+        return params
+    }
+
+    private fun parseTableListParam(value: String?): List<String>? {
+        return value?.split(",")?.map { it.trim() }?.filter { it.isNotBlank() }
     }
 }
