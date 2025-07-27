@@ -14,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -128,30 +129,30 @@ private fun FlatDetailContent(
                 area = flat.totalArea
             )
 
-            Divider()
+            HorizontalDivider()
 
             // О квартире
             AboutApartmentSection(flat = flat)
 
-            Divider()
+            HorizontalDivider()
 
             flat.additionalParams?.let {
                 AdditionalParamsSection(it)
-                Divider()
+                HorizontalDivider()
             }
 
             // О доме
             AboutBuildingSection(
                 totalFloors = flat.totalFloors,
-                year = flat.yearBuilt.orEmpty()
+                year = flat.yearBuilt
             )
 
-            Divider()
+            HorizontalDivider()
 
             // Местоположение
             LocationSection(district = flat.district)
 
-            Divider()
+            HorizontalDivider()
 
             // Описание
             DescriptionSection(description = flat.description)
@@ -283,12 +284,14 @@ private fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-private fun AboutBuildingSection(totalFloors: String?, year: String) {
+private fun AboutBuildingSection(totalFloors: String?, year: String?) {
     SectionCard(title = "О доме") {
         totalFloors?.let {
-            InfoRow("Этажность дома", "$it")
+            InfoRow("Этажность дома", it)
         }
-        InfoRow("Год постройки", "$year")
+        year?.let {
+            InfoRow("Год постройки", it)
+        }
     }
 }
 

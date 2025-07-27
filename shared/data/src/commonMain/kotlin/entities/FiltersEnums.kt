@@ -42,21 +42,21 @@ enum class WindowDirection(val value: String) {
     WEST("8")
 }
 
-//Обустройство дома
-enum class BuildingImprovement(val value: String) {
-    //Лифт
-    ELEVATOR("1"),
-    //Пандус
-    RAMP("2"),
-    //Мусоропровод
-    GARBAGE_CHUTE("3"),
-    //Стояночное место
-    PARKING("6"),
-    //Домофон
-    INTERCOM("7"),
-    //Видеонаблюдение
-    VIDEO_SURVEILLANCE("8")
-}
+////Обустройство дома
+//enum class BuildingImprovement(val value: String) {
+//    //Лифт
+//    ELEVATOR("1"),
+//    //Пандус
+//    RAMP("2"),
+//    //Мусоропровод
+//    GARBAGE_CHUTE("3"),
+//    //Стояночное место
+//    PARKING("6"),
+//    //Домофон
+//    INTERCOM("7"),
+//    //Видеонаблюдение
+//    VIDEO_SURVEILLANCE("8")
+//}
 
 //Предоплата
 enum class PrepaymentType(val value: String) {
@@ -66,4 +66,8 @@ enum class PrepaymentType(val value: String) {
     TWO_MONTHS("10"),
     //Залог
     DEPOSIT("25")
+}
+//Обустройство дома
+data class BuildingImprovement(val value: String) {
+
 }

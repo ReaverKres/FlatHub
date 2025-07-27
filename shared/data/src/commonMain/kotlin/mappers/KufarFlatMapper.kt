@@ -17,13 +17,11 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 
-    init {
-        println("KufarFlatMapper initialized")
-    }
-
     override fun map(data: KufarListResponse.Ad): AppFlat {
-        val priceUsd = data.priceUsd?.toIntOrNull() ?: 0
-        val priceByn = data.priceByn?.toIntOrNull() ?: 0
+        val kufarPriceUsd = data.priceUsd ?: ""
+        val kufarPriceByn = data.priceByn ?: ""
+        val priceUsd = convertKufarPriceToDouble(kufarPriceUsd)
+        val priceByn = convertKufarPriceToDouble(kufarPriceByn)
 
         val adParams = data.adParameters?.filterNotNull() ?: emptyList()
 
@@ -121,6 +119,14 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             buildingImprovements = buildingImprovements,
             prepaymentType = prepaymentType
         )
+    }
+
+    private fun convertKufarPriceToDouble(kufarPriceUsd: String): Double {
+        val priceIntegerStr = kufarPriceUsd.substring(0, kufarPriceUsd.length - 2)
+        val priceFractionalStr =
+            kufarPriceUsd.substring(kufarPriceUsd.length - 2, kufarPriceUsd.length)
+        val price = "$priceIntegerStr.$priceFractionalStr".toDoubleOrNull()
+        return price ?: Double.NaN
     }
 
     // === Вспомогательные функции ===

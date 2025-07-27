@@ -10,13 +10,9 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat> {
 
-    init {
-        println("OnlinerFlatMapper initialized")
-    }
-
     override fun map(data: OnlinerListResponse.Apartment): AppFlat {
-        val priceUsd = data.price?.converted?.uSD?.amount?.toDoubleOrNull()?.toInt() ?: 0
-        val priceByn = data.price?.converted?.bYN?.amount?.toDoubleOrNull()?.toInt() ?: 0
+        val priceUsd = data.price?.converted?.uSD?.amount?.toDoubleOrNull()
+        val priceByn = data.price?.converted?.bYN?.amount?.toDoubleOrNull()
 
         val rooms = parseRoomsFromRentType(data.rentType)
 
@@ -50,8 +46,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             adId = data.id?.toLong() ?: -1L,
             publishedAt = null,
             timeAgo = "",
-            priceUsd = priceUsd,
-            priceByn = priceByn,
+            priceUsd = priceUsd ?: Double.NaN,
+            priceByn = priceByn ?: Double.NaN,
             imageUrls = images,
             rooms = rooms,
             district = null, // Отсутствует в Onliner
