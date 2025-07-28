@@ -32,14 +32,12 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
-import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.FlatSearchViewModel
 import io.flatzen.viewmodel.UiFlat
 import io.flatzen.widgets.AppAsyncImage
@@ -65,12 +62,6 @@ fun ListScreen(
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        if (state.flatList.isEmpty()) {
-            viewModel.onIntent(FlatListScreenAction.InitialSearchFlats())
-        }
-    }
 
     Scaffold(
         modifier = modifier,

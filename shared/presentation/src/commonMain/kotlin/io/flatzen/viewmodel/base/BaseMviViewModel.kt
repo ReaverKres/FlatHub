@@ -12,7 +12,7 @@ abstract class BaseMviViewModel<A : MviAction, S : MviState,EV: MviEvent, EF : M
     private val dispatchers: CoroutineDispatcher = Dispatchers.Main.immediate
 ) : ViewModel() {
 
-    private val viewModelScope = CoroutineScope(SupervisorJob() + dispatchers)
+    val viewModelScope = CoroutineScope(SupervisorJob() + dispatchers)
 
     private val _state = MutableStateFlow(initialState())
     val state: StateFlow<S> = _state.asStateFlow()

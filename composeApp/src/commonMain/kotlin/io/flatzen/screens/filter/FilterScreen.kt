@@ -23,8 +23,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun FilterScreen(
     navigateBack: () -> Unit,
-    viewModel: FilterViewModel = koinViewModel()
 ) {
+    val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
 

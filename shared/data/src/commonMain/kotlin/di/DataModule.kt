@@ -12,6 +12,8 @@ import mappers.ResponseToEntitiesFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
 import org.koin.dsl.module
+import repository.fillter.FilterRepository
+import repository.fillter.FilterRepositoryImpl
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl
 import repository.onliner.OnlinerRepository
@@ -25,9 +27,11 @@ val dataModule = module {
     single<ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>>(
         qualifier = DataQualifiers.KUFAR_FLAT_MAPPER
     ) { KufarFlatMapper() }
+    single<FilterRepository> { FilterRepositoryImpl() }
     single<KufarRepository> { KufarRepositoryImpl(
         api = get(),
-        kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER)
+        kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
+        filterRepository = get()
     ) }
 
     single<OnlinerApi> { get<Ktorfit>(qualifier = DataQualifiers.ONLINER_KTORFIT).createOnlinerApi() }
@@ -40,6 +44,7 @@ val dataModule = module {
         api = get(),
         ktorClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
         onlinerResponseMapper = get(qualifier = DataQualifiers.ONLINER_FLAT_MAPPER),
-        onlinerDetailHtmlMapper = get()
+        onlinerDetailHtmlMapper = get(),
+        filterRepository = get()
     ) }
 }

@@ -1,6 +1,7 @@
 package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
+import entities.CommonFilterRequestModel
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
@@ -8,7 +9,11 @@ import io.flatzen.mvi.MviState
 import io.flatzen.states.FilterState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import repository.fillter.FilterRepository
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
@@ -27,11 +32,21 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FiltersUpdated(val newFilterState: FilterState) : FilterScreenEvent
 }
 
-class FilterViewModel : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
+class FilterViewModel(
+    private val filterRepository: FilterRepository,
+) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
     override fun initialState(): FilterScreenState = FilterScreenState(
         filters = FilterState(),
     )
+
+    init {
+        filterRepository.cashedFilterFlow.onEach { newFilters ->
+            val filterState = mapFilterModelToFilterState(newFilters)
+            onIntent(FilterScreenAction.UpdateFilter(filterState))
+        }
+            .launchIn(viewModelScope)
+    }
 
     override suspend fun handleIntent(
         action: FilterScreenAction,
@@ -41,6 +56,7 @@ class FilterViewModel : BaseMviViewModel<FilterScreenAction, FilterScreenState, 
             is FilterScreenAction.UpdateFilter -> {
                 flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState))
             }
+
             is FilterScreenAction.ClearFilters -> {
                 flowOf(FilterScreenEvent.FiltersUpdated(FilterState()))
             }
@@ -53,8 +69,31 @@ class FilterViewModel : BaseMviViewModel<FilterScreenAction, FilterScreenState, 
     ): FilterScreenState {
         return when (event) {
             is FilterScreenEvent.FiltersUpdated -> {
-                currentState.copy(filters = event.newFilterState)
+                currentState.copy(filters = event.newFilterState).also {
+                    val filterModel = mapFilterStateToFilterModel(it.filters)
+                    if (filterModel != filterRepository.cashedFilterFlow.replayCache.firstOrNull()){
+                        filterRepository.updateFilter(
+                            mapFilterStateToFilterModel(it.filters)
+                        )
+                    }
+                }
             }
         }
+    }
+
+    private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
+        return FilterState(
+            priceFrom = model.priceFrom,
+            priceTo = model.priceTo,
+            currency = model.currency
+        )
+    }
+
+    private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
+        return CommonFilterRequestModel(
+            priceFrom = filters.priceFrom,
+            priceTo = filters.priceTo,
+            currency = filters.currency
+        )
     }
 }

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import mappers.AdditionalParamMapper
 import mappers.ResponseToEntitiesFlatMapper
+import repository.fillter.FilterRepository
 import server_request.OnlinerSearchParams
 import server_response.OnlinerListResponse
 
@@ -25,7 +26,8 @@ class OnlinerRepositoryImpl(
     private val api: OnlinerApi,
     private val ktorClient: HttpClient,
     private val onlinerResponseMapper: ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat>,
-    private val onlinerDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>
+    private val onlinerDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>,
+    private val filterRepository: FilterRepository
 ) : OnlinerRepository {
 
     private val _flatsCache = MutableSharedFlow<List<AppFlat>>(
@@ -37,14 +39,12 @@ class OnlinerRepositoryImpl(
     override fun searchFlats(
         searchParams: OnlinerSearchParams
     ): Flow<List<AppFlat>> = flow {
-        val kufarFlatList = api.searchFlats(
-            page = searchParams.page,
-            order = searchParams.order.value,
-            boundsLbLat = searchParams.bounds.leftBottomLat,
-            boundsLbLng = searchParams.bounds.leftBottomLong,
-            boundsRtLat = searchParams.bounds.rightTopLat,
-            boundsRtLng = searchParams.bounds.rightTopLong,
-        ).apartments
+        val filter = filterRepository.cashedFilterFlow.first()
+        val params = OnlinerApi.createParams(
+            minPrice = filter.priceFrom?.toInt(),
+            maxPrice = filter.priceTo?.toInt()
+        )
+        val kufarFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
         _flatsCache.emit(kufarFlatList ?: listOf())
         emit(kufarFlatList ?: listOf())

@@ -6,15 +6,18 @@ import api.KufarApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import mappers.ResponseToEntitiesFlatMapper
+import repository.fillter.FilterRepository
 import server_request.KufarSearchParams
 import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
     private val api: KufarApi,
-    private val kufarResponseMapper: ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>
+    private val kufarResponseMapper: ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>,
+    private val filterRepository: FilterRepository
 ) : KufarRepository {
 
     private val _flatsCache = MutableSharedFlow<List<AppFlat>>(
@@ -23,18 +26,15 @@ class KufarRepositoryImpl(
     )
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
 
-    override fun searchFlats(
-        searchParams: KufarSearchParams
-    ): Flow<List<AppFlat>> = flow {
+    override fun searchFlats(): Flow<List<AppFlat>> = flow {
+        val filter = filterRepository.cashedFilterFlow.first()
+        val params = KufarApi.createQueryParams(
+            minPrice = filter.priceFrom,
+            maxPrice = filter.priceTo
+        )
         val kufarFlatList = api.searchFlats(
-            categoryId = searchParams.categoryId,
-            currency = searchParams.currency.name.lowercase(),
-            geoTag = searchParams.geoTag,
-            language = searchParams.language.name.lowercase(),
-            pageSize = searchParams.pageSize,
-            dealType = searchParams.dealType.name.lowercase(),
-            sort = searchParams.sort.paramName,
-            searchId = generateSearchId()
+            searchId = generateSearchId(),
+            queryParams = params
         ).ads
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
         _flatsCache.emit(kufarFlatList ?: listOf())

@@ -9,9 +9,7 @@ interface KufarRepository {
 
     val cashedFlatsFlow: SharedFlow<List<AppFlat>>
 
-    fun searchFlats(
-        kufarSearchParams: KufarSearchParams
-    ): Flow<List<AppFlat>>
+    fun searchFlats(): Flow<List<AppFlat>>
 
     fun getFlatById(
         flatId: Long

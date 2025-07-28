@@ -2,6 +2,7 @@ package io.flatzen.viewmodel
 
 import AppFlat
 import androidx.compose.runtime.Immutable
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -12,17 +13,21 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.launch
+import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
-import server_request.KufarSearchParams
 import server_request.OnlinerSearchParams
 
 sealed interface FlatListScreenAction : MviAction {
     class SearchKufarFlats() : FlatListScreenAction
     class SearchOnlinerFlats() : FlatListScreenAction
-    class InitialSearchFlats() : FlatListScreenAction
+    class SearchFlats() : FlatListScreenAction
 }
 
 @Immutable
@@ -51,7 +56,8 @@ sealed interface FlatListEvents : MviEvent {
 
 class FlatSearchViewModel(
     private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository
+    private val onlinerRepository: OnlinerRepository,
+    private val filterRepository: FilterRepository
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     override fun initialState(): FlatListScreenState = FlatListScreenState(
@@ -59,12 +65,26 @@ class FlatSearchViewModel(
         flatList = emptyList()
     )
 
+    init {
+        viewModelScope.launch {
+            filterRepository.updateFilter(CommonFilterRequestModel())
+        }
+
+        filterRepository.cashedFilterFlow
+            .distinctUntilChanged()
+            .onEach { newFilters ->
+                onIntent(FlatListScreenAction.SearchFlats())
+            }
+            .launchIn(viewModelScope)
+
+    }
+
     override suspend fun handleIntent(
         action: FlatListScreenAction,
         currentState: FlatListScreenState
     ): Flow<FlatListEvents> {
         return when (action) {
-            is FlatListScreenAction.InitialSearchFlats -> {
+            is FlatListScreenAction.SearchFlats -> {
                 loadAllFlats()
             }
             is FlatListScreenAction.SearchKufarFlats -> {
@@ -77,7 +97,7 @@ class FlatSearchViewModel(
     }
 
     private suspend fun loadAllFlats(): Flow<FlatListEvents> {
-        return kufarRepository.searchFlats(KufarSearchParams()).zip(
+        return kufarRepository.searchFlats().zip(
             onlinerRepository.searchFlats(OnlinerSearchParams())
         ) { kufarFlats, onlinerFlats ->
             kufarFlats + onlinerFlats
@@ -87,7 +107,7 @@ class FlatSearchViewModel(
     }
 
     private suspend fun loadKufarFlats(): Flow<FlatListEvents> {
-        return kufarRepository.searchFlats(KufarSearchParams()).asLCE().map {
+        return kufarRepository.searchFlats().asLCE().map {
             FlatListEvents.KufarFlatsLoaded(it)
         }
     }

@@ -10,9 +10,13 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val flatSearchPresentationModule = module {
-    viewModel { FlatSearchViewModel(get(), get()) }
-    viewModel { FlatDetailViewModel(get(), get()) }
-    viewModel { FilterViewModel() }
+    viewModel { FlatSearchViewModel(
+        kufarRepository = get(),
+        onlinerRepository = get(),
+        filterRepository = get()
+    ) }
+    viewModel { FlatDetailViewModel(kufarRepository = get(), onlinerRepository = get()) }
+    viewModel { FilterViewModel(filterRepository = get()) }
 }
 
 fun initKoin() {
