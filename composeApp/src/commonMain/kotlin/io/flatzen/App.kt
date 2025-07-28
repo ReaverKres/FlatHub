@@ -4,6 +4,7 @@ import DetailScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.List
@@ -72,7 +73,7 @@ fun App() {
         )
 
         Scaffold(
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            contentWindowInsets = WindowInsets.statusBars,
             bottomBar = {
                 if (showBottomBar) {
                     NavigationBar {

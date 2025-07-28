@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.states.Amenity
+import io.flatzen.states.MetroLineState
 import io.flatzen.states.RepairType
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
@@ -29,6 +30,7 @@ fun FilterScreen(
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0,0,0),
         topBar = {
             TopAppBar(
                 title = { Text("Фильтры") },
@@ -83,6 +85,21 @@ fun FilterScreen(
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
+            }
+
+            FilterSectionTitle("Метро")
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                MetroLineState.values().forEach { metroLine ->
+                    FilterChip(
+                        selected = currentFilters.metroLineState.contains(metroLine),
+                        onClick = {
+                            val newTypes = currentFilters.metroLineState.toMutableList()
+                            if (newTypes.contains(metroLine)) newTypes.remove(metroLine) else newTypes.add(metroLine)
+                            currentFilters = currentFilters.copy(metroLineState = newTypes)
+                        },
+                        label = { Text(metroLine.displayName) }
+                    )
+                }
             }
 
             // Ремонт

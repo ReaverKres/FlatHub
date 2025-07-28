@@ -2,14 +2,15 @@ package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
+import entities.MetroLine
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.states.FilterState
+import io.flatzen.states.MetroLineState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -85,7 +86,10 @@ class FilterViewModel(
         return FilterState(
             priceFrom = model.priceFrom,
             priceTo = model.priceTo,
-            currency = model.currency
+            currency = model.currency,
+            metroLineState = model.metroLine.mapNotNull { line ->
+                MetroLineState.entries.find { it.name == line.name }
+            }
         )
     }
 
@@ -93,7 +97,10 @@ class FilterViewModel(
         return CommonFilterRequestModel(
             priceFrom = filters.priceFrom,
             priceTo = filters.priceTo,
-            currency = filters.currency
+            currency = filters.currency,
+            metroLine = filters.metroLineState.mapNotNull { line ->
+                MetroLine.entries.find { it.name == line.name }
+            }
         )
     }
 }

@@ -1,10 +1,8 @@
 package io.flatzen.states
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.compose.runtime.Immutable
 import server_request.Currency
 
-@Serializable
 enum class RepairType(val displayName: String) {
     COSMETIC("Косметический"),
     EURO("Евроремонт"),
@@ -12,7 +10,6 @@ enum class RepairType(val displayName: String) {
     NO_REPAIR("Без ремонта")
 }
 
-@Serializable
 enum class Amenity(val displayName: String) {
     FURNITURE("Мебель"),
     NO_FURNITURE("Без мебели"),
@@ -26,12 +23,19 @@ enum class Amenity(val displayName: String) {
     KITCHEN_FURNITURE("Кухонная мебель")
 }
 
-@Serializable
+enum class MetroLineState(val displayName: String) {
+    GREEN("Зеленолужская линия"),
+    BLUE("Московская линия"),
+    RED("Автозаводская линия"),
+}
+
+@Immutable
 data class FilterState(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
     val rooms: Set<Int> = emptySet(),
+    val metroLineState: List<MetroLineState> = emptyList(),
     val fromOwnerOnly: Boolean = false,
     val kidsAllowed: Boolean = false,
     val petsAllowed: Boolean = false,

@@ -42,7 +42,8 @@ class OnlinerRepositoryImpl(
         val filter = filterRepository.cashedFilterFlow.first()
         val params = OnlinerApi.createParams(
             minPrice = filter.priceFrom?.toInt(),
-            maxPrice = filter.priceTo?.toInt()
+            maxPrice = filter.priceTo?.toInt(),
+            metroLines = filter.metroLine.map { it.name.lowercase() }
         )
         val kufarFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }

@@ -27,7 +27,8 @@ interface OnlinerApi {
             boundsLbLng: Double? = null,
             boundsRtLat: Double? = null,
             boundsRtLng: Double? = null,
-            rooms: List<Int>? = null
+            rooms: List<Int>? = null,
+            metroLines: List<String>? = null
         ): Map<String, Any> {
             return mutableMapOf<String, Any>().apply {
                 put("page", page)
@@ -45,6 +46,16 @@ interface OnlinerApi {
                 rooms?.let {
                     it.forEach { room ->
                         put("number_of_rooms[]", room)
+                    }
+                }
+                metroLines?.let {
+                    it.forEach { line ->
+                        put("metro[]", when (line.lowercase()) {
+                            "red" -> "red_line"
+                            "blue" -> "blue_line"
+                            "green" -> "green_line"
+                            else -> ""
+                        })
                     }
                 }
             }

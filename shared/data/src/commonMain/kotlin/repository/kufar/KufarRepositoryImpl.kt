@@ -3,6 +3,7 @@ package repository.kufar
 
 import AppFlat
 import api.KufarApi
+import entities.KufarMetroStations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -30,7 +31,8 @@ class KufarRepositoryImpl(
         val filter = filterRepository.cashedFilterFlow.first()
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
-            maxPrice = filter.priceTo
+            maxPrice = filter.priceTo,
+            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),

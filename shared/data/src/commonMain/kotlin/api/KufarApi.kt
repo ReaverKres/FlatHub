@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
+import entities.MetroLine
 import server_response.KufarListResponse
 
 
@@ -26,7 +27,8 @@ interface KufarApi {
             sort: String = "lst.d",
             minPrice: Double? = null,
             maxPrice: Double? = null,
-            rooms: Int? = null
+            rooms: Int? = null,
+            metroIds: List<Int>? = null
         ): MutableMap<String, String> {
             val params = mutableMapOf<String, String>().apply {
                 put("cat", categoryId.toString())
@@ -38,6 +40,9 @@ interface KufarApi {
                 put("sort", sort)
                 if (rooms != null) {
                     put("rms", "v.or:$rooms")
+                }
+                if (!metroIds.isNullOrEmpty()) {
+                    put("mee", "v.or:${metroIds.joinToString(",")}")
                 }
             }
 
