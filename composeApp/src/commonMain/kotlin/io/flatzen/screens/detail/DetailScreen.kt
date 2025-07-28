@@ -100,7 +100,9 @@ private fun FlatDetailContent(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         // Изображения
-        ImagePager(imageUrls = flat.imageUrls)
+        if (flat.imageUrls.isNotEmpty()) {
+            ImagePager(imageUrls = flat.imageUrls)
+        }
 
         // Основная информация
         Column(
@@ -108,10 +110,12 @@ private fun FlatDetailContent(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Информация о публикации
-            PublicationInfo(
-                timeAgo = flat.timeAgo,
-                isOwner = flat.isOwner
-            )
+//            if (flat.date != null || flat.isOwner != null) {
+//                PublicationInfo(
+//                    timeAgo = flat.date,
+//                    isOwner = flat.isOwner
+//                )
+//            }
 
             SourceLinkSection(flat.platform, flat.flatUrl)
 
@@ -135,48 +139,72 @@ private fun FlatDetailContent(
                 condition = flat.condition
             )
 
-            HorizontalDivider()
-
             // О квартире
-            AboutApartmentSection(flat = flat)
-
-            HorizontalDivider()
+            if (hasApartmentData(flat)) {
+                HorizontalDivider()
+                AboutApartmentSection(flat = flat)
+            }
 
             // Удобства и оборудование
             if (flat.amenities.isNotEmpty() || flat.kitchenEquipment.isNotEmpty()) {
+                HorizontalDivider()
                 AmenitiesSection(
                     amenities = flat.amenities,
                     kitchenEquipment = flat.kitchenEquipment
                 )
-                HorizontalDivider()
             }
 
             // Условия проживания
-            if (!flat.forWhom.isNullOrEmpty() || flat.prepaymentType != null) {
+            if (!flat.forWhom.isNullOrEmpty() || !flat.prepaymentType.isNullOrBlank()) {
+                HorizontalDivider()
                 ConditionsSection(
                     forWhom = flat.forWhom,
                     prepaymentType = flat.prepaymentType
                 )
-                HorizontalDivider()
             }
 
             // О доме
-            AboutBuildingSection(flat = flat)
-
-            HorizontalDivider()
+            if (hasBuildingData(flat)) {
+                HorizontalDivider()
+                AboutBuildingSection(flat = flat)
+            }
 
             // Местоположение
-            LocationSection(
-                district = flat.district,
-                metroStation = flat.metroStation
-            )
-
-            HorizontalDivider()
+            if (!flat.district.isNullOrBlank() || !flat.metroStation.isNullOrBlank()) {
+                HorizontalDivider()
+                LocationSection(
+                    district = flat.district,
+                    metroStation = flat.metroStation
+                )
+            }
 
             // Описание
-            DescriptionSection(description = flat.description)
+            if (flat.description.isNotBlank()) {
+                HorizontalDivider()
+                DescriptionSection(description = flat.description)
+            }
         }
     }
+}
+
+// Вспомогательные функции для проверки наличия данных
+private fun hasApartmentData(flat: UiDetailFlat): Boolean {
+    return flat.totalArea != null ||
+            flat.livingArea != null ||
+            flat.kitchenArea != null ||
+            flat.floor != null ||
+            !flat.bathroomType.isNullOrBlank() ||
+            !flat.balcony.isNullOrBlank() ||
+            !flat.repairType.isNullOrBlank() ||
+            flat.windowDirection.isNotEmpty() ||
+            flat.sleepingPlaces != null
+}
+
+private fun hasBuildingData(flat: UiDetailFlat): Boolean {
+    return flat.totalFloors != null ||
+            flat.yearBuilt != null ||
+            flat.buildingImprovements.isNotEmpty() ||
+            !flat.parkingInfo.isNullOrBlank()
 }
 
 @Composable
@@ -251,13 +279,15 @@ private fun PriceSection(priceUsd: String, priceByn: String) {
 @Composable
 private fun AddressSection(address: String, metroStation: String?) {
     Column {
-        Text(
-            text = address,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontWeight = FontWeight.Medium
+        if (address.isNotBlank()) {
+            Text(
+                text = address,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium
+                )
             )
-        )
-        metroStation?.let {
+        }
+        metroStation?.takeIf { it.isNotBlank() }?.let {
             Text(
                 text = "🚇 $it",
                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -270,28 +300,24 @@ private fun AddressSection(address: String, metroStation: String?) {
 
 @Composable
 private fun LocationSection(district: String?, metroStation: String?) {
-    if (district != null || metroStation != null) {
-        SectionCard(title = "Местоположение") {
-            district?.let {
-                InfoRow("Район", it)
-            }
-            metroStation?.let {
-                InfoRow("Метро", it)
-            }
+    SectionCard(title = "Местоположение") {
+        district?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Район", it)
+        }
+        metroStation?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Метро", it)
         }
     }
 }
 
 @Composable
 private fun DescriptionSection(description: String) {
-    if (description.isNotEmpty()) {
-        SectionCard(title = "Описание") {
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = 20.sp
-            )
-        }
+    SectionCard(title = "Описание") {
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
+            lineHeight = 20.sp
+        )
     }
 }
 
@@ -346,25 +372,18 @@ private fun InfoRow(label: String, value: String) {
 
 @Composable
 private fun AboutBuildingSection(flat: UiDetailFlat) {
-    val hasData = flat.totalFloors != null ||
-            flat.yearBuilt != null ||
-            flat.buildingImprovements.isNotEmpty() ||
-            flat.parkingInfo != null
-
-    if (hasData) {
-        SectionCard(title = "О доме") {
-            flat.totalFloors?.let {
-                InfoRow("Этажность дома", it)
-            }
-            flat.yearBuilt?.let {
-                InfoRow("Год постройки", it)
-            }
-            flat.parkingInfo?.let {
-                InfoRow("Парковка", it)
-            }
-            if (flat.buildingImprovements.isNotEmpty()) {
-                InfoRow("Инфраструктура", flat.buildingImprovements.joinToString(", "))
-            }
+    SectionCard(title = "О доме") {
+        flat.totalFloors?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Этажность дома", it)
+        }
+        flat.yearBuilt?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Год постройки", it)
+        }
+        flat.parkingInfo?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Парковка", it)
+        }
+        if (flat.buildingImprovements.isNotEmpty()) {
+            InfoRow("Инфраструктура", flat.buildingImprovements.joinToString(", "))
         }
     }
 }
@@ -372,32 +391,34 @@ private fun AboutBuildingSection(flat: UiDetailFlat) {
 @Composable
 private fun AboutApartmentSection(flat: UiDetailFlat) {
     SectionCard(title = "О квартире") {
-        InfoRow("Количество комнат", flat.numberOfRooms)
-        flat.totalArea?.let {
+        if (flat.numberOfRooms.isNotBlank()) {
+            InfoRow("Количество комнат", flat.numberOfRooms)
+        }
+        flat.totalArea?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Общая площадь", it)
         }
-        flat.livingArea?.let {
+        flat.livingArea?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Жилая площадь", it)
         }
-        flat.kitchenArea?.let {
+        flat.kitchenArea?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Площадь кухни", it)
         }
-        flat.floor?.let {
+        flat.floor?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Этаж", it)
         }
-        flat.bathroomType?.let {
+        flat.bathroomType?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Санузел", it)
         }
-        flat.balcony?.let {
+        flat.balcony?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Балкон/лоджия", it)
         }
-        flat.repairType?.let {
+        flat.repairType?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Ремонт", it)
         }
         if (flat.windowDirection.isNotEmpty()) {
             InfoRow("Окна выходят", flat.windowDirection.joinToString(", "))
         }
-        flat.sleepingPlaces?.let {
+        flat.sleepingPlaces?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Спальных мест", it)
         }
     }
@@ -424,12 +445,10 @@ private fun ConditionsSection(
     prepaymentType: String?
 ) {
     SectionCard(title = "Условия проживания") {
-        forWhom?.let {
-            if (it.isNotEmpty()) {
-                InfoRow("Для кого", it.joinToString(", "))
-            }
+        forWhom?.takeIf { it.isNotEmpty() }?.let {
+            InfoRow("Для кого", it.joinToString(", "))
         }
-        prepaymentType?.let {
+        prepaymentType?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Предоплата", it)
         }
     }
@@ -442,16 +461,31 @@ private fun QuickInfoSection(
     area: String?,
     condition: String?
 ) {
-    Text(
-        text = buildString {
+    val info = buildString {
+        if (rooms.isNotBlank()) {
             append(rooms)
             if (rooms != "Студия") append(" комн")
-            year?.let { append(" • $it год") }
-            area?.let { append(" • $it") }
-            condition?.let { append(" • $it") }
-        },
-        style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        }
+        year?.takeIf { it.isNotBlank() }?.let {
+            if (isNotEmpty()) append(" • ")
+            append("$it год")
+        }
+        area?.takeIf { it.isNotBlank() }?.let {
+            if (isNotEmpty()) append(" • ")
+            append(it)
+        }
+        condition?.takeIf { it.isNotBlank() }?.let {
+            if (isNotEmpty()) append(" • ")
+            append(it)
+        }
+    }
+
+    if (info.isNotBlank()) {
+        Text(
+            text = info,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         )
-    )
+    }
 }

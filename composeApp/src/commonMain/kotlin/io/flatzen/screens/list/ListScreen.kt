@@ -1,9 +1,16 @@
 package io.flatzen.screens.list
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,12 +28,15 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
+import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.FlatSearchViewModel
 import io.flatzen.viewmodel.UiFlat
@@ -49,33 +60,143 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ListScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
+    navigateToFilters: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(FlatListScreenAction.InitialSearchFlats())
+        if (state.flatList.isEmpty()) {
+            viewModel.onIntent(FlatListScreenAction.InitialSearchFlats())
+        }
     }
 
-    when {
-        state.isLoading -> LoadingContent(modifier)
-        state.flatList.isEmpty() -> EmptyScreenContent(modifier)
-        else -> FlatGrid(
-            flats = state.flatList,
-            onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
-            modifier = modifier
-        )
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingActionButton(onClick = navigateToFilters) {
+                Icon(Icons.Default.Build, contentDescription = "Фильтры")
+            }
+        }
+    ) { paddingValues ->
+        when {
+            state.isLoading -> LoadingContent()
+            state.flatList.isEmpty() -> EmptyScreenContent()
+            else -> FlatGrid(
+                flats = state.flatList,
+                onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+            )
+        }
     }
 }
 
 @Composable
 fun LoadingContent(modifier: Modifier = Modifier) {
-    Box(
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        CircularProgressIndicator()
+        items(10) { // Показываем 6 скелетонов
+            SkeletonFlatCard()
+        }
+    }
+}
+
+@Composable
+private fun SkeletonFlatCard(
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val shimmerProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            // Скелетон изображения
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Скелетон цены USD
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(20.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            // Скелетон цены BYN
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(16.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Скелетон количества комнат
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .height(18.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            // Скелетон метро
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(16.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            // Скелетон адреса (2 строки)
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp),
+                shimmerProgress = shimmerProgress
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(16.dp),
+                shimmerProgress = shimmerProgress
+            )
+        }
     }
 }
 
@@ -88,7 +209,7 @@ private fun FlatGrid(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(180.dp),
         modifier = modifier.fillMaxSize(),
-        contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+        contentPadding = PaddingValues(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -158,6 +279,7 @@ private fun FlatCard(
             Text(
                 text = flat.address,
                 style = MaterialTheme.typography.bodySmall,
+                minLines = 2,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

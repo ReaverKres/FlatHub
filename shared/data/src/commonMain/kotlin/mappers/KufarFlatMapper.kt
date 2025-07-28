@@ -75,7 +75,7 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         val district = adParams.findParamStringValue("re_district")?.safeString()
         val address = data.accountParameters
             ?.filterNotNull()
-            ?.findParamStringValue("address")?.safeString()
+            ?.findParamValue("address")?.safeString()
 
         val coordinates = adParams.findParamValue("coordinates")
             ?.safeDoubleList()
