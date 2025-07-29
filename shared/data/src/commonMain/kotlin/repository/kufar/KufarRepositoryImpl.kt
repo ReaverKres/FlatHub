@@ -10,9 +10,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import mappers.ResponseToEntitiesFlatMapper
+import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import server_request.KufarSearchParams
 import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
@@ -32,7 +31,7 @@ class KufarRepositoryImpl(
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
-            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
+            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }.distinct()
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),

@@ -1,4 +1,4 @@
-package mappers
+package mappers.base
 
 interface ResponseToEntitiesFlatMapper<ServerResponse, Entity> {
 

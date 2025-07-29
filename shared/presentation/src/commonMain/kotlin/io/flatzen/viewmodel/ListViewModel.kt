@@ -24,6 +24,7 @@ import kotlinx.datetime.TimeZone
 import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
+import repository.realt.RealtRepository
 import server_request.OnlinerSearchParams
 
 sealed interface FlatListScreenAction : MviAction {
@@ -60,6 +61,7 @@ sealed interface FlatListEvents : MviEvent {
 class FlatSearchViewModel(
     private val kufarRepository: KufarRepository,
     private val onlinerRepository: OnlinerRepository,
+    private val realtRepository: RealtRepository,
     private val filterRepository: FilterRepository
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
@@ -90,9 +92,11 @@ class FlatSearchViewModel(
             is FlatListScreenAction.SearchFlats -> {
                 loadAllFlats()
             }
+
             is FlatListScreenAction.SearchKufarFlats -> {
                 loadKufarFlats()
             }
+
             is FlatListScreenAction.SearchOnlinerFlats -> {
                 loadOnlinerFlats()
             }
@@ -100,13 +104,11 @@ class FlatSearchViewModel(
     }
 
     private suspend fun loadAllFlats(): Flow<FlatListEvents> {
-        return kufarRepository.searchFlats().zip(
-            onlinerRepository.searchFlats(OnlinerSearchParams())
-        ) { kufarFlats, onlinerFlats ->
-            kufarFlats + onlinerFlats
-        }.asLCE().map {
-            FlatListEvents.AllFlatsLoaded(it)
-        }
+        return kufarRepository.searchFlats()
+            .zip(onlinerRepository.searchFlats(OnlinerSearchParams())) { kufarList, onlinerList -> kufarList + onlinerList }
+            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+            .asLCE()
+            .map { FlatListEvents.AllFlatsLoaded(it) }
     }
 
     private suspend fun loadKufarFlats(): Flow<FlatListEvents> {
@@ -135,6 +137,7 @@ class FlatSearchViewModel(
                 },
                 onSuccess = { flatsLoaded(it, currentState) }
             )
+
             is FlatListEvents.OnlinerFlatsLoaded -> event.onlinerFlats.process(
                 onLoading = {
                     currentState.copy(isLoading = true)
@@ -144,6 +147,7 @@ class FlatSearchViewModel(
                 },
                 onSuccess = { flatsLoaded(it, currentState) }
             )
+
             is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
                     currentState.copy(isLoading = true)

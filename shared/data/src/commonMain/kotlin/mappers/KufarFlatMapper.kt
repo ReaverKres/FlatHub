@@ -5,13 +5,12 @@ import AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant
-import io.ktor.client.plugins.DataConversion
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.*
+import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.KufarListResponse
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 
     // Маппинг ID к названиям удобств/оборудования

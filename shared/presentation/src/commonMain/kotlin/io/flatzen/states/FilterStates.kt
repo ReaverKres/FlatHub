@@ -29,6 +29,15 @@ enum class MetroLineState(val displayName: String) {
     RED("Автозаводская линия"),
 }
 
+enum class Room(val displayName: String) {
+    ONE("1"),
+    TWO("2"),
+    THREE("3"),
+    FOUR("4"),
+    FIVE("5"),
+    SIX("6"),
+}
+
 @Immutable
 data class FilterState(
     val priceFrom: Double? = null,

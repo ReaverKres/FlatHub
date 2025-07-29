@@ -13,9 +13,14 @@ val flatSearchPresentationModule = module {
     viewModel { FlatSearchViewModel(
         kufarRepository = get(),
         onlinerRepository = get(),
+        realtRepository = get(),
         filterRepository = get()
     ) }
-    viewModel { FlatDetailViewModel(kufarRepository = get(), onlinerRepository = get()) }
+    viewModel { FlatDetailViewModel(
+        kufarRepository = get(),
+        onlinerRepository = get(),
+        realtRepository = get()
+    ) }
     viewModel { FilterViewModel(filterRepository = get()) }
 }
 

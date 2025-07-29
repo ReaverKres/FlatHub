@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import mappers.AdditionalParamMapper
-import mappers.ResponseToEntitiesFlatMapper
+import mappers.base.AdditionalParamMapper
+import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import server_request.OnlinerSearchParams
 import server_response.OnlinerListResponse

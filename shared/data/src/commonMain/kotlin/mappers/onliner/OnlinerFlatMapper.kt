@@ -5,7 +5,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant
 import kotlinx.datetime.TimeZone
-import mappers.ResponseToEntitiesFlatMapper
+import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.OnlinerListResponse
 import kotlin.time.ExperimentalTime
 

@@ -4,8 +4,7 @@ import AppFlat
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.date.DateConverter
-import mappers.AdditionalParamMapper
+import mappers.base.AdditionalParamMapper
 import kotlin.time.ExperimentalTime
 
 class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {

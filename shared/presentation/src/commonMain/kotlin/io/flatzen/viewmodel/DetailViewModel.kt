@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
+import repository.realt.RealtRepository
 import kotlin.time.ExperimentalTime
 
 @Immutable
@@ -70,7 +71,8 @@ sealed interface FlatDetailEvents : MviEvent {
 
 class FlatDetailViewModel(
     private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository
+    private val onlinerRepository: OnlinerRepository,
+    private val realtRepository: RealtRepository
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
@@ -97,8 +99,14 @@ class FlatDetailViewModel(
                     FlatDetailEvents.FlatLoaded(it)
                 }
             }
-            else -> {
+
+            FlatPlatform.ONLINER -> {
                 onlinerRepository.getFlatById(flatId).asLCE().map {
+                    FlatDetailEvents.FlatLoaded(it)
+                }
+            }
+            FlatPlatform.REALT -> {
+                realtRepository.getFlatById(flatId).asLCE().map {
                     FlatDetailEvents.FlatLoaded(it)
                 }
             }
