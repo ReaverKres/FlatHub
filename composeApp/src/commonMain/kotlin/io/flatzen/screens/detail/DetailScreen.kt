@@ -110,12 +110,12 @@ private fun FlatDetailContent(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Информация о публикации
-//            if (flat.date != null || flat.isOwner != null) {
-//                PublicationInfo(
-//                    timeAgo = flat.date,
-//                    isOwner = flat.isOwner
-//                )
-//            }
+            if (flat.publishedAt != null || flat.isOwner != null) {
+                PublicationInfo(
+                    timeAgo = flat.publishedAt,
+                    isOwner = flat.isOwner
+                )
+            }
 
             SourceLinkSection(flat.platform, flat.flatUrl)
 

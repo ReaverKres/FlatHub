@@ -4,6 +4,7 @@ import AppFlat
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter.formatInstant
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
@@ -44,6 +46,7 @@ data class UiFlat(
     val priceUsd: String,
     val priceByn: String,
     val numberOfRooms: Int?,
+    val publishedAt: String?,
     val metroStation: String,
     val address: String
 )
@@ -130,13 +133,7 @@ class FlatSearchViewModel(
                 onError = { message, _ ->
                     currentState
                 },
-                onSuccess = {
-                    val uiFlatList = appFlatListToUiFlatList(it)
-                    currentState.copy(
-                        isLoading = false,
-                        flatList = uiFlatList
-                    )
-                }
+                onSuccess = { flatsLoaded(it, currentState) }
             )
             is FlatListEvents.OnlinerFlatsLoaded -> event.onlinerFlats.process(
                 onLoading = {
@@ -145,13 +142,7 @@ class FlatSearchViewModel(
                 onError = { message, _ ->
                     currentState
                 },
-                onSuccess = {
-                    val uiFlatList = appFlatListToUiFlatList(it)
-                    currentState.copy(
-                        isLoading = false,
-                        flatList = uiFlatList
-                    )
-                }
+                onSuccess = { flatsLoaded(it, currentState) }
             )
             is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
@@ -160,15 +151,20 @@ class FlatSearchViewModel(
                 onError = { message, _ ->
                     currentState
                 },
-                onSuccess = {
-                    val uiFlatList = appFlatListToUiFlatList(it)
-                    currentState.copy(
-                        isLoading = false,
-                        flatList = uiFlatList
-                    )
-                }
+                onSuccess = { flatsLoaded(it, currentState) }
             )
         }
+    }
+
+    private fun flatsLoaded(
+        flats: List<AppFlat>,
+        currentState: FlatListScreenState
+    ): FlatListScreenState {
+        val uiFlatList = appFlatListToUiFlatList(flats.sortedByDescending { it.publishedAt })
+        return currentState.copy(
+            isLoading = false,
+            flatList = uiFlatList
+        )
     }
 
     private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
@@ -180,6 +176,7 @@ class FlatSearchViewModel(
                 priceByn = "${it.priceByn} BYN",
                 priceUsd = "${it.priceUsd} USD",
                 numberOfRooms = it.rooms,
+                publishedAt = it.publishedAtUi,
                 address = it.address.orEmpty(),
                 metroStation = it.metroStation.orEmpty()
             )

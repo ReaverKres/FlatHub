@@ -239,19 +239,33 @@ private fun FlatCard(
 
             Spacer(Modifier.height(8.dp))
 
-            Text(
-                text = flat.priceUsd,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = flat.priceUsd,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = "(${flat.priceByn})",
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
-            Text(
-                text = flat.priceByn,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+           flat.publishedAt?.let { date ->
+               Spacer(Modifier.height(4.dp))
+
+               Text(
+                   text = date,
+                   style = MaterialTheme.typography.bodyMedium
+               )
+           }
 
             Spacer(Modifier.height(4.dp))
 

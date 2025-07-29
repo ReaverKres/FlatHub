@@ -1,14 +1,15 @@
 // AppFlat.kt
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import kotlinx.datetime.Instant
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 data class AppFlat @OptIn(ExperimentalTime::class) constructor(
     val flatPlatform: FlatPlatform,
     val flatDetailUrl: String,
     val adId: Long,
     val publishedAt: Instant?,
-    val timeAgo: String?,
+    val publishedAtServer: String?,
+    val publishedAtUi: String?,
     val imageUrls: List<String>?,
     val priceUsd: Double?,
     val priceByn: Double?,

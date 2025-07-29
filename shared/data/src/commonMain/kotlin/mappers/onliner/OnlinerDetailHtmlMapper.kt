@@ -4,6 +4,7 @@ import AppFlat
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
 import mappers.AdditionalParamMapper
 import kotlin.time.ExperimentalTime
 
@@ -58,9 +59,9 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
         // Парсим дополнительные параметры из таблицы
         val tableParams = parseParametersTable(doc)
 
-        // Парсим владельца
-        val owner = doc.select(".apartment-bar__value")
-            .any { it.text() == "Собственник" }
+//        // Парсим владельца
+//        val owner = doc.select(".apartment-bar__value")
+//            .any { it.text() == "Собственник" }
 
         // Парсим изображения
         val images = doc.select(".apartment-gallery__slide")
@@ -75,8 +76,9 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             flatPlatform = FlatPlatform.ONLINER,
             flatDetailUrl = baseFlat.flatDetailUrl,
             adId = baseFlat.adId,
-            publishedAt = null,
-            timeAgo = doc.select("#apartment-updated-at").text(),
+            publishedAt = baseFlat.publishedAt,
+            publishedAtServer = baseFlat.publishedAtServer ,
+            publishedAtUi = baseFlat.publishedAtUi,
             imageUrls = images,
             priceUsd = priceUsd,
             priceByn = priceByn,
@@ -109,7 +111,7 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             kitchenEquipment = kitchenEquipment,
             forWhom = parseTableListParam(tableParams["Кому сдается"]),
             parkingInfo = tableParams["Парковка"],
-            owner = owner
+            owner = baseFlat.owner
         )
     }
 

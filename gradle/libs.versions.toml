@@ -19,6 +19,7 @@ core = "1.5.0"
 junit = "1.1.5"
 jetbrainsKotlinJvm = "2.2.0"
 ksp = "2.2.0-2.0.2"
+dateTimeVer = "0.6.0"
 
 
 [libraries]
@@ -47,6 +48,7 @@ lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name =
 material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVer"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

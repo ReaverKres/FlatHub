@@ -50,8 +50,7 @@ data class UiDetailFlat(
     val forWhom: List<String>?,
     val parkingInfo: String?,
     val isOwner: Boolean?,
-    val publishedAt: String?,
-    val timeAgo: String?
+    val publishedAt: String?
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
@@ -170,8 +169,7 @@ class FlatDetailViewModel(
             forWhom = appFlat.forWhom,
             parkingInfo = appFlat.parkingInfo,
             isOwner = appFlat.owner,
-            publishedAt = appFlat.publishedAt?.let { formatDate(it) },
-            timeAgo = appFlat.timeAgo
+            publishedAt = appFlat.publishedAtUi
         )
     }
 
@@ -183,11 +181,5 @@ class FlatDetailViewModel(
 
     private fun formatArea(area: Double): String {
         return "${area.toInt()} м²"
-    }
-
-    @OptIn(kotlin.time.ExperimentalTime::class)
-    private fun formatDate(instant: kotlin.time.Instant): String {
-        // Простое форматирование даты
-        return instant.toString()
     }
 }

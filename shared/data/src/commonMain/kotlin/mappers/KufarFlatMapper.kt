@@ -3,6 +3,10 @@ package mappers
 
 import AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import io.flatzen.commoncomponents.date.DateConverter.formatInstant
+import io.ktor.client.plugins.DataConversion
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.*
 import server_response.KufarListResponse
 import kotlin.time.ExperimentalTime
@@ -147,12 +151,16 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             image?.path?.let { "https://rms.kufar.by/v1/gallery/$it" }
         }
 
+        val flatDateInstant = DateConverter.stringToInstant(data.listTime.orEmpty())
+        val publishedAtUi = formatInstant(flatDateInstant, TimeZone.currentSystemDefault())
+
         return AppFlat(
             flatPlatform = FlatPlatform.KUFAR,
             flatDetailUrl = data.adLink.orEmpty(),
             adId = data.adId ?: -1,
-            publishedAt = null,
-            timeAgo = null,
+            publishedAt = flatDateInstant,
+            publishedAtServer = data.listTime,
+            publishedAtUi = publishedAtUi,
             priceUsd = priceUsd,
             priceByn = priceByn,
             imageUrls = images,

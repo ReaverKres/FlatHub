@@ -2,6 +2,9 @@ package mappers.onliner
 
 import AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import io.flatzen.commoncomponents.date.DateConverter.formatInstant
+import kotlinx.datetime.TimeZone
 import mappers.ResponseToEntitiesFlatMapper
 import server_response.OnlinerListResponse
 import kotlin.time.ExperimentalTime
@@ -25,13 +28,16 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
 
 
         val images = data.photo?.let { listOf(it) }
+        val flatDateInstant = DateConverter.stringToInstant(data.lastTimeUp.orEmpty())
+        val publishedAtUi = formatInstant(flatDateInstant, TimeZone.currentSystemDefault())
 
         return AppFlat(
             flatPlatform = FlatPlatform.ONLINER,
             flatDetailUrl = data.url.orEmpty(),
             adId = data.id?.toLong() ?: -1L,
-            publishedAt = null,
-            timeAgo = "",
+            publishedAt = flatDateInstant,
+            publishedAtServer = data.lastTimeUp,
+            publishedAtUi = publishedAtUi,
             priceUsd = priceUsd ?: Double.NaN,
             priceByn = priceByn ?: Double.NaN,
             imageUrls = images,
@@ -61,7 +67,7 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             kitchenEquipment = null,
             forWhom = null,
             parkingInfo = null,
-            owner = null
+            owner = data.contact?.owner
         )
     }
 

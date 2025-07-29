@@ -45,10 +45,10 @@ class OnlinerRepositoryImpl(
             maxPrice = filter.priceTo?.toInt(),
             metroLines = filter.metroLine.map { it.name.lowercase() }
         )
-        val kufarFlatList = api.searchFlats(params).apartments
+        val onlinerFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
-        _flatsCache.emit(kufarFlatList ?: listOf())
-        emit(kufarFlatList ?: listOf())
+        _flatsCache.emit(onlinerFlatList ?: listOf())
+        emit(onlinerFlatList ?: listOf())
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
@@ -64,8 +64,6 @@ class OnlinerRepositoryImpl(
 
     }.flowOn(Dispatchers.IO)
 
-
-    // Приватный метод для загрузки HTML внутри репозитория
     private suspend fun getApartmentHtml(url: String): String {
         return try {
             ktorClient.get(url).bodyAsText()
