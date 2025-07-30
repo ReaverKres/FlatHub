@@ -13,7 +13,10 @@ import api.Where
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -27,10 +30,7 @@ class RealtRepositoryImpl(
     private val filterRepository: FilterRepository
 ) : RealtRepository {
 
-    private val _flatsCache = MutableSharedFlow<List<AppFlat>>(
-        replay = 1,
-        extraBufferCapacity = 0
-    )
+    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
@@ -55,7 +55,9 @@ class RealtRepositoryImpl(
                             priceTo = filter.priceTo.toNullableString(), // Цена до (можно null если не нужно)
                             priceType = "840" // Валюта (840 = USD)
                         ),
-                        pagination = PaginationRequestRealt(page = 1, pageSize = 30),
+                        pagination = PaginationRequestRealt(
+                            page = filterRepository.currentAppPage, pageSize = 30
+                        ),
                         sort = listOf(
                             SortItem("paymentStatus", "DESC"),
                             SortItem("priority", "DESC"),
@@ -68,7 +70,7 @@ class RealtRepositoryImpl(
                 query = RealtGraphqlRequest.QUERY
             )
         ).data?.searchObjects?.body?.results?.filterNotNull()?.map { realtResponseMapper.map(it) }
-        _flatsCache.emit(realtFlatList ?: listOf())
+        _flatsCache.value += (realtFlatList ?: listOf())
         emit(realtFlatList ?: listOf())
     }
 
@@ -78,5 +80,9 @@ class RealtRepositoryImpl(
                 flats.find { it.adId == flatId }
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
             }
+    }
+
+    override fun clearCashedFlats() {
+        _flatsCache.value = emptyList()
     }
 }

@@ -22,8 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -38,21 +40,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.FlatSearchViewModel
 import io.flatzen.viewmodel.UiFlat
 import io.flatzen.widgets.AppAsyncImage
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.random.Random
 
 @Composable
 fun ListScreen(
@@ -72,11 +80,16 @@ fun ListScreen(
         }
     ) { paddingValues ->
         when {
-            state.isLoading -> LoadingContent()
+            state.isLoading && state.isLoadingMore.not() -> LoadingContent()
             state.flatList.isEmpty() -> EmptyScreenContent()
             else -> FlatGrid(
+                isLoadingMore = state.isLoadingMore,
+                noFlatsToLoadMore = state.noFlatsToLoadMore,
                 flats = state.flatList,
                 onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                onLoadMore = {
+                    viewModel.onIntent(FlatListScreenAction.SearchFlats(true))
+                }
             )
         }
     }
@@ -193,21 +206,58 @@ private fun SkeletonFlatCard(
 
 @Composable
 private fun FlatGrid(
+    modifier: Modifier = Modifier,
+    isLoadingMore: Boolean,
+    noFlatsToLoadMore: Boolean,
     flats: List<UiFlat>,
     onFlatClick: (UiFlat) -> Unit,
-    modifier: Modifier = Modifier
+    onLoadMore: (Int) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(180.dp),
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    val lazyGridState: LazyGridState = rememberLazyGridState()
+    LaunchedEffect(flats) {
+        snapshotFlow {
+            lazyGridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+            .distinctUntilChanged()
+            .collect { lastVisibleIndex ->
+                if(lastVisibleIndex == flats.lastIndex) {
+                    onLoadMore(lastVisibleIndex)
+                }
+            }
+    }
+    Column(
+        modifier = modifier.fillMaxSize()
     ) {
-        items(flats, key = { it.hashCode() }) { flat ->
-            FlatCard(
-                flat = flat,
-                onClick = { onFlatClick(flat) }
+        LazyVerticalGrid(
+            state = lazyGridState,
+            columns = GridCells.Adaptive(180.dp),
+            modifier = Modifier.weight(1f), // занимает всё доступное пространство
+            contentPadding = PaddingValues(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(flats, key = { it.adId }) { flat ->
+                FlatCard(
+                    flat = flat,
+                    onClick = { onFlatClick(flat) }
+                )
+            }
+
+            if (isLoadingMore) {
+                items(2, key = { "loading_$it" }) {
+                    SkeletonFlatCard()
+                }
+            }
+        }
+
+        if (noFlatsToLoadMore) {
+            Text(
+                text = "Квартиры с текущими фильтрами закончились",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Center
             )
         }
     }

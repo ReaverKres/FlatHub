@@ -14,4 +14,6 @@ interface KufarRepository {
     fun getFlatById(
         flatId: Long
     ): Flow<AppFlat>
+
+    fun clearCashedFlats()
 }

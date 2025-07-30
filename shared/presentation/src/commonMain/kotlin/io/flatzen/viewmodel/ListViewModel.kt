@@ -4,7 +4,6 @@ import AppFlat
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.date.DateConverter.formatInstant
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -15,27 +14,28 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
 import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
-import server_request.OnlinerSearchParams
 
 sealed interface FlatListScreenAction : MviAction {
     class SearchKufarFlats() : FlatListScreenAction
     class SearchOnlinerFlats() : FlatListScreenAction
-    class SearchFlats() : FlatListScreenAction
+    class SearchFlats(val isLoadMore: Boolean) : FlatListScreenAction
 }
 
 @Immutable
 data class FlatListScreenState(
     val isLoading: Boolean,
+    val isLoadingMore: Boolean,
+    val noFlatsToLoadMore: Boolean,
     val flatList: List<UiFlat>
 ) : MviState
 
@@ -61,7 +61,8 @@ data class UiPrice(
 sealed interface FlatListEvents : MviEvent {
     data class KufarFlatsLoaded(val kufarFlats: LCE<List<AppFlat>>) : FlatListEvents
     data class OnlinerFlatsLoaded(val onlinerFlats: LCE<List<AppFlat>>) : FlatListEvents
-    data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>) : FlatListEvents
+    data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>, val isLoadMore: Boolean) :
+        FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -71,9 +72,13 @@ class FlatSearchViewModel(
     private val filterRepository: FilterRepository
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
+    private var noFlatsToLoadMore: Boolean = false
+
     override fun initialState(): FlatListScreenState = FlatListScreenState(
         isLoading = true,
-        flatList = emptyList()
+        isLoadingMore = false,
+        flatList = emptyList(),
+        noFlatsToLoadMore = false
     )
 
     init {
@@ -84,7 +89,11 @@ class FlatSearchViewModel(
         filterRepository.cashedFilterFlow
             .distinctUntilChanged()
             .onEach { newFilters ->
-                onIntent(FlatListScreenAction.SearchFlats())
+                kufarRepository.clearCashedFlats()
+                realtRepository.clearCashedFlats()
+                onlinerRepository.clearCashedFlats()
+                noFlatsToLoadMore = false
+                onIntent(FlatListScreenAction.SearchFlats(false))
             }
             .launchIn(viewModelScope)
 
@@ -96,7 +105,15 @@ class FlatSearchViewModel(
     ): Flow<FlatListEvents> {
         return when (action) {
             is FlatListScreenAction.SearchFlats -> {
-                loadAllFlats()
+                if(noFlatsToLoadMore) {
+                    return flowOf()
+                }
+                if (action.isLoadMore) {
+                    filterRepository.currentAppPage++
+                } else {
+                    filterRepository.currentAppPage = 1
+                }
+                loadAllFlats(action.isLoadMore)
             }
 
             is FlatListScreenAction.SearchKufarFlats -> {
@@ -109,12 +126,12 @@ class FlatSearchViewModel(
         }
     }
 
-    private suspend fun loadAllFlats(): Flow<FlatListEvents> {
+    private suspend fun loadAllFlats(isLoadMore: Boolean): Flow<FlatListEvents> {
         return kufarRepository.searchFlats()
-            .zip(onlinerRepository.searchFlats(OnlinerSearchParams())) { kufarList, onlinerList -> kufarList + onlinerList }
+            .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
             .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
             .asLCE()
-            .map { FlatListEvents.AllFlatsLoaded(it) }
+            .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
     }
 
     private suspend fun loadKufarFlats(): Flow<FlatListEvents> {
@@ -124,7 +141,7 @@ class FlatSearchViewModel(
     }
 
     private suspend fun loadOnlinerFlats(): Flow<FlatListEvents> {
-        return onlinerRepository.searchFlats(OnlinerSearchParams()).asLCE().map {
+        return onlinerRepository.searchFlats().asLCE().map {
             FlatListEvents.OnlinerFlatsLoaded(it)
         }
     }
@@ -156,25 +173,46 @@ class FlatSearchViewModel(
 
             is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
-                    currentState.copy(isLoading = true)
+                    currentState.copy(isLoading = true, isLoadingMore = event.isLoadMore)
                 },
                 onError = { message, _ ->
                     currentState
                 },
-                onSuccess = { flatsLoaded(it, currentState) }
+                onSuccess = { flatsLoaded(it, currentState, event.isLoadMore) }
             )
         }
     }
 
     private fun flatsLoaded(
         flats: List<AppFlat>,
-        currentState: FlatListScreenState
+        currentState: FlatListScreenState,
+        isLoadMore: Boolean = false
     ): FlatListScreenState {
         val uiFlatList = appFlatListToUiFlatList(flats.sortedByDescending { it.publishedAt })
-        return currentState.copy(
-            isLoading = false,
-            flatList = uiFlatList
-        )
+
+        return if(currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()){
+            noFlatsToLoadMore = true
+            currentState.copy(
+                isLoading = false,
+                isLoadingMore = false,
+                flatList = currentState.flatList,
+                noFlatsToLoadMore = true
+            )
+        } else if (isLoadMore) {
+            currentState.copy(
+                noFlatsToLoadMore = false,
+                isLoading = false,
+                isLoadingMore = false,
+                flatList = currentState.flatList + uiFlatList
+            )
+        } else {
+            currentState.copy(
+                noFlatsToLoadMore = false,
+                isLoading = false,
+                isLoadingMore = false,
+                flatList = uiFlatList
+            )
+        }
     }
 
     private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {

@@ -22,6 +22,7 @@ interface KufarApi {
             currency: String = "USD",
             geoTag: String = "country-belarus~province-minsk~locality-minsk",
             language: String = "ru",
+            cursor: String? = null,
             pageSize: Int = 30,
             dealType: String = "let",
             sort: String = "lst.d",
@@ -36,6 +37,9 @@ interface KufarApi {
                 put("cur", currency)
                 put("gtsy", geoTag)
                 put("lang", language)
+                if (cursor.isNullOrBlank().not()) {
+                    put("cursor", cursor.orEmpty())
+                }
                 put("size", pageSize.toString())
                 put("typ", dealType)
                 put("sort", sort)

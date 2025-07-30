@@ -153,7 +153,7 @@ data class KufarListResponse(
     }
 
     @Serializable
-    data class Pagination(
+    data class  Pagination(
         @SerialName("pages")
         val pages: List<Page?>?
     ) {

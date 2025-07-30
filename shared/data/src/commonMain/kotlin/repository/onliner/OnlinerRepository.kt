@@ -10,11 +10,11 @@ interface OnlinerRepository {
 
     val cashedFlatsFlow: SharedFlow<List<AppFlat>>
 
-    fun searchFlats(
-        kufarSearchParams: OnlinerSearchParams
-    ): Flow<List<AppFlat>>
+    fun searchFlats(): Flow<List<AppFlat>>
 
     fun getFlatById(
         flatId: Long
     ): Flow<AppFlat>
+
+    fun clearCashedFlats()
 }

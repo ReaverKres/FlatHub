@@ -6,6 +6,7 @@ import api.KufarApi
 import entities.KufarMetroStations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -20,27 +21,34 @@ class KufarRepositoryImpl(
     private val filterRepository: FilterRepository
 ) : KufarRepository {
 
-    private val _flatsCache = MutableSharedFlow<List<AppFlat>>(
-        replay = 1,
-        extraBufferCapacity = 0
-    )
+    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
 
+    private var pageCursor: String? = null
+
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
+        if (pageCursor == null && filterRepository.currentAppPage > 1 ) emit(emptyList())
+        if(filterRepository.currentAppPage == 1) {
+            pageCursor = null
+        }
         val filter = filterRepository.cashedFilterFlow.first()
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
-            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }.distinct(),
+            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
+                .distinct(),
             onlyOwner = filter.fromOwnerOnly,
-            rooms = filter.numberOfRooms
+            rooms = filter.numberOfRooms,
+            cursor = pageCursor
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),
             queryParams = params
-        ).ads
+        ).also {
+            pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
+        }.ads
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
-        _flatsCache.emit(kufarFlatList ?: listOf())
+        _flatsCache.value += (kufarFlatList ?: listOf())
         emit(kufarFlatList ?: listOf())
     }
 
@@ -55,5 +63,9 @@ class KufarRepositoryImpl(
     private fun generateSearchId(): String {
         val chars = "0123456789abcdef"
         return (1..32).map { chars.random() }.joinToString("")
+    }
+
+    override fun clearCashedFlats() {
+        _flatsCache.value = emptyList()
     }
 }

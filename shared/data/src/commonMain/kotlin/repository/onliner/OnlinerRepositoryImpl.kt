@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -30,26 +31,22 @@ class OnlinerRepositoryImpl(
     private val filterRepository: FilterRepository
 ) : OnlinerRepository {
 
-    private val _flatsCache = MutableSharedFlow<List<AppFlat>>(
-        replay = 1,
-        extraBufferCapacity = 0
-    )
+    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
 
-    override fun searchFlats(
-        searchParams: OnlinerSearchParams
-    ): Flow<List<AppFlat>> = flow {
+    override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.cashedFilterFlow.first()
         val params = OnlinerApi.createParams(
             minPrice = filter.priceFrom?.toInt(),
             maxPrice = filter.priceTo?.toInt(),
             metroLines = filter.metroLine.map { it.name.lowercase() },
             rooms = filter.numberOfRooms,
-            onlyOwner = filter.fromOwnerOnly
+            onlyOwner = filter.fromOwnerOnly,
+            page = filterRepository.currentAppPage
         )
         val onlinerFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
-        _flatsCache.emit(onlinerFlatList ?: listOf())
+        _flatsCache.value += (onlinerFlatList ?: listOf())
         emit(onlinerFlatList ?: listOf())
     }
 
@@ -72,5 +69,9 @@ class OnlinerRepositoryImpl(
         } catch (e: Exception) {
             throw ParseException("Error fetching HTML for $url: ${e.message}")
         }
+    }
+
+    override fun clearCashedFlats() {
+        _flatsCache.value = emptyList()
     }
 }
