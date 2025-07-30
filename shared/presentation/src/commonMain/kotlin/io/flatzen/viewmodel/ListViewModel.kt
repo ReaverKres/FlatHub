@@ -44,12 +44,18 @@ data class UiFlat(
     val adId: Long,
     val flatPlatform: FlatPlatform,
     val imageUrls: List<String>,
-    val priceUsd: String,
-    val priceByn: String,
+    val priceUsd: UiPrice,
+    val priceByn: UiPrice,
     val numberOfRooms: Int?,
     val publishedAt: String?,
     val metroStation: String,
     val address: String
+)
+
+@Immutable
+data class UiPrice(
+    val price: Double?,
+    val currency: String
 )
 
 sealed interface FlatListEvents : MviEvent {
@@ -177,8 +183,14 @@ class FlatSearchViewModel(
                 adId = it.adId,
                 flatPlatform = it.flatPlatform,
                 imageUrls = it.imageUrls ?: listOf(),
-                priceByn = "${it.priceByn} BYN",
-                priceUsd = "${it.priceUsd} USD",
+                priceByn = UiPrice(
+                    price = it.priceByn,
+                    currency = "BYN"
+                ),
+                priceUsd = UiPrice(
+                    price = it.priceUsd,
+                    currency = "USD"
+                ),
                 numberOfRooms = it.rooms,
                 publishedAt = it.publishedAtUi,
                 address = it.address.orEmpty(),

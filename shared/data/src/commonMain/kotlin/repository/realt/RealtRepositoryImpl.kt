@@ -10,9 +10,11 @@ import api.SearchData
 import api.SortItem
 import api.Variables
 import api.Where
+import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import mappers.base.ResponseToEntitiesFlatMapper
@@ -32,16 +34,26 @@ class RealtRepositoryImpl(
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
+        val filter = filterRepository.cashedFilterFlow.first()
+        val onlyOwner = if(filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
+            true
+        } else null
         val realtFlatList = api.searchFlats(
             RealtGraphqlRequest(
                 operationName = "searchObjects",
                 variables = Variables(
                     data = SearchData(
+                        //TODO Добавить метро
                         where = Where(
                             addressV2 = listOf(AddressV2(
-                                "4cb07174-7b00-11eb-8943-0cc47adabd66"  //Минск
+                                "4cb07174-7b00-11eb-8943-0cc47adabd66" // Минск
                             )),
-                            category = 2
+                            category = 2,
+                            rooms = filter.numberOfRooms?.map { it.toString() },
+                            seller = onlyOwner.toString(), // Только собственники
+                            priceFrom = filter.priceFrom.toNullableString(), // Цена от (можно null если не нужно)
+                            priceTo = filter.priceTo.toNullableString(), // Цена до (можно null если не нужно)
+                            priceType = "840" // Валюта (840 = USD)
                         ),
                         pagination = PaginationRequestRealt(page = 1, pageSize = 30),
                         sort = listOf(

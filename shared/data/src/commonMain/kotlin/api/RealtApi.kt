@@ -92,7 +92,12 @@ data class SearchData(
 @kotlinx.serialization.Serializable
 data class Where(
     val addressV2: List<AddressV2>,
-    val category: Int
+    val category: Int,
+    val rooms: List<String>? = null,
+    val seller: String? = null, // "true" для собственников
+    val priceFrom: String? = null,
+    val priceTo: String? = null,
+    val priceType: String? = null // код валюты (например "840" для USD)
 )
 
 @kotlinx.serialization.Serializable

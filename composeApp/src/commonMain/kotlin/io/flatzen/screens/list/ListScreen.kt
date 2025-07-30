@@ -91,7 +91,7 @@ fun LoadingContent(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(10) { // Показываем 6 скелетонов
+        items(10) {
             SkeletonFlatCard()
         }
     }
@@ -222,7 +222,6 @@ private fun FlatCard(
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-//            .aspectRatio(0.75f)
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -244,18 +243,20 @@ private fun FlatCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = flat.priceUsd,
+                    text = "${flat.priceUsd.price} ${flat.priceUsd.currency}",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = "(${flat.priceByn})",
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                flat.priceByn.price?.let {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = "(${flat.priceByn.price} ${flat.priceByn.currency})",
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
            flat.publishedAt?.let { date ->
