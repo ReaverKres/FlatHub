@@ -15,8 +15,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.states.Amenity
 import io.flatzen.states.MetroLineState
 import io.flatzen.states.RepairType
+import io.flatzen.states.Room
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
+import io.flatzen.widgets.FilterSwitch
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -30,7 +32,7 @@ fun FilterScreen(
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0,0,0),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 title = { Text("Фильтры") },
@@ -69,67 +71,63 @@ fun FilterScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Цена
-            FilterSectionTitle("Цена")
+            FilterSectionTitle(title = "Цена")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = currentFilters.priceFrom?.toString() ?: "",
-                    onValueChange = { currentFilters = currentFilters.copy(priceFrom = it.toDoubleOrNull()) },
+                    onValueChange = {
+                        currentFilters = currentFilters.copy(priceFrom = it.toDoubleOrNull())
+                    },
                     label = { Text("От") },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 OutlinedTextField(
                     value = currentFilters.priceTo?.toString() ?: "",
-                    onValueChange = { currentFilters = currentFilters.copy(priceTo = it.toDoubleOrNull()) },
+                    onValueChange = {
+                        currentFilters = currentFilters.copy(priceTo = it.toDoubleOrNull())
+                    },
                     label = { Text("До") },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
 
-            FilterSectionTitle("Метро")
+            FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
+                currentFilters = currentFilters.copy(fromOwnerOnly = it)
+            }
+
+            FilterSectionTitle(title = "Комнат в квартире")
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Room.values().forEach {
+                    val room = it.displayName.toInt()
+                    FilterChip(
+                        selected = currentFilters.rooms.contains(room),
+                        onClick = {
+                            val newTypes = currentFilters.rooms.toMutableSet()
+                            if (newTypes.contains(room)) newTypes.remove(room) else newTypes.add(
+                                room
+                            )
+                            currentFilters = currentFilters.copy(rooms = newTypes)
+                        },
+                        label = { Text(it.displayName) }
+                    )
+                }
+            }
+
+            FilterSectionTitle(title = "Метро")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 MetroLineState.values().forEach { metroLine ->
                     FilterChip(
                         selected = currentFilters.metroLineState.contains(metroLine),
                         onClick = {
                             val newTypes = currentFilters.metroLineState.toMutableList()
-                            if (newTypes.contains(metroLine)) newTypes.remove(metroLine) else newTypes.add(metroLine)
+                            if (newTypes.contains(metroLine)) newTypes.remove(metroLine) else newTypes.add(
+                                metroLine
+                            )
                             currentFilters = currentFilters.copy(metroLineState = newTypes)
                         },
                         label = { Text(metroLine.displayName) }
-                    )
-                }
-            }
-
-            // Ремонт
-            FilterSectionTitle("Ремонт")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RepairType.values().forEach { repairType ->
-                    FilterChip(
-                        selected = currentFilters.repairTypes.contains(repairType),
-                        onClick = {
-                            val newTypes = currentFilters.repairTypes.toMutableSet()
-                            if (newTypes.contains(repairType)) newTypes.remove(repairType) else newTypes.add(repairType)
-                            currentFilters = currentFilters.copy(repairTypes = newTypes)
-                        },
-                        label = { Text(repairType.displayName) }
-                    )
-                }
-            }
-
-            // Удобства
-            FilterSectionTitle("Удобства")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Amenity.values().forEach { amenity ->
-                    FilterChip(
-                        selected = currentFilters.amenities.contains(amenity),
-                        onClick = {
-                            val newAmenities = currentFilters.amenities.toMutableSet()
-                            if (newAmenities.contains(amenity)) newAmenities.remove(amenity) else newAmenities.add(amenity)
-                            currentFilters = currentFilters.copy(amenities = newAmenities)
-                        },
-                        label = { Text(amenity.displayName) }
                     )
                 }
             }
@@ -140,10 +138,13 @@ fun FilterScreen(
 }
 
 @Composable
-private fun FilterSectionTitle(title: String) {
+private fun FilterSectionTitle(
+    modifier: Modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+    title: String
+) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        modifier = modifier
     )
 }

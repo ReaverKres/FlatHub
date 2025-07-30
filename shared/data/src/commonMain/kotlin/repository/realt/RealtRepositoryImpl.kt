@@ -39,7 +39,7 @@ class RealtRepositoryImpl(
                     data = SearchData(
                         where = Where(
                             addressV2 = listOf(AddressV2(
-                                "4cb07174-7b00-11eb-8943-0cc47adabd66"
+                                "4cb07174-7b00-11eb-8943-0cc47adabd66"  //Минск
                             )),
                             category = 2
                         ),

@@ -2,9 +2,7 @@ package api
 
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
-import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import server_response.KufarListResponse
 import server_response.OnlinerListResponse
 
 
@@ -27,13 +25,17 @@ interface OnlinerApi {
             boundsLbLng: Double? = null,
             boundsRtLat: Double? = null,
             boundsRtLng: Double? = null,
-            rooms: List<Int>? = null,
-            metroLines: List<String>? = null
+            rooms: Set<Int>? = null,
+            metroLines: List<String>? = null,
+            onlyOwner: Boolean? = null
         ): Map<String, Any> {
             return mutableMapOf<String, Any>().apply {
                 put("page", page)
                 put("order", order)
                 put("currency", currency)
+                if(onlyOwner != null && onlyOwner == true) {
+                    put("only_owner", onlyOwner)
+                }
 
                 minPrice?.let { put("price[min]", it) }
                 maxPrice?.let { put("price[max]", it) }
@@ -45,17 +47,19 @@ interface OnlinerApi {
 
                 rooms?.let {
                     it.forEach { room ->
-                        put("number_of_rooms[]", room)
+                        put("rent_type[]", "${room}_rooms")
                     }
                 }
                 metroLines?.let {
                     it.forEach { line ->
-                        put("metro[]", when (line.lowercase()) {
-                            "red" -> "red_line"
-                            "blue" -> "blue_line"
-                            "green" -> "green_line"
-                            else -> ""
-                        })
+                        put(
+                            "metro[]", when (line.lowercase()) {
+                                "red" -> "red_line"
+                                "blue" -> "blue_line"
+                                "green" -> "green_line"
+                                else -> ""
+                            }
+                        )
                     }
                 }
             }

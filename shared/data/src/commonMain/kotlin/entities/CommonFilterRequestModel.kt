@@ -6,7 +6,9 @@ data class CommonFilterRequestModel(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
-    val metroLine: List<MetroLine> = emptyList()
+    val numberOfRooms: Set<Int>? = null,
+    val metroLine: List<MetroLine> = emptyList(),
+    val fromOwnerOnly: Boolean? = null
 )
 enum class MetroLine {
     GREEN, BLUE, RED,
@@ -17,7 +19,6 @@ internal class KufarMetroStation(
     val metroId: Int
 )
 
-//TODO Обновить id
 object KufarMetroStations {
     // Красная ветка (Московская линия)
     //2,3,36,4,     5,6,7,8,        32,9,10,11,     12,13,14,15,

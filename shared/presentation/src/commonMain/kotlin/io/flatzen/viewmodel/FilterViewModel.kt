@@ -45,8 +45,7 @@ class FilterViewModel(
         filterRepository.cashedFilterFlow.onEach { newFilters ->
             val filterState = mapFilterModelToFilterState(newFilters)
             onIntent(FilterScreenAction.UpdateFilter(filterState))
-        }
-            .launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
     }
 
     override suspend fun handleIntent(
@@ -87,6 +86,8 @@ class FilterViewModel(
             priceFrom = model.priceFrom,
             priceTo = model.priceTo,
             currency = model.currency,
+            fromOwnerOnly = model.fromOwnerOnly ?: false,
+            rooms = model.numberOfRooms ?: emptySet(),
             metroLineState = model.metroLine.mapNotNull { line ->
                 MetroLineState.entries.find { it.name == line.name }
             }
@@ -98,6 +99,8 @@ class FilterViewModel(
             priceFrom = filters.priceFrom,
             priceTo = filters.priceTo,
             currency = filters.currency,
+            numberOfRooms = filters.rooms,
+            fromOwnerOnly = filters.fromOwnerOnly,
             metroLine = filters.metroLineState.mapNotNull { line ->
                 MetroLine.entries.find { it.name == line.name }
             }

@@ -27,8 +27,9 @@ interface KufarApi {
             sort: String = "lst.d",
             minPrice: Double? = null,
             maxPrice: Double? = null,
-            rooms: Int? = null,
-            metroIds: List<Int>? = null
+            rooms: Set<Int>? = null,
+            metroIds: List<Int>? = null,
+            onlyOwner: Boolean? = null
         ): MutableMap<String, String> {
             val params = mutableMapOf<String, String>().apply {
                 put("cat", categoryId.toString())
@@ -38,8 +39,11 @@ interface KufarApi {
                 put("size", pageSize.toString())
                 put("typ", dealType)
                 put("sort", sort)
-                if (rooms != null) {
-                    put("rms", "v.or:$rooms")
+                if (onlyOwner != null && onlyOwner == true) {
+                    put("cmp", "0")
+                }
+                if (!rooms.isNullOrEmpty()) {
+                    put("rms", "v.or:${rooms.joinToString(",")}")
                 }
                 if (!metroIds.isNullOrEmpty()) {
                     put("mee", "v.or:${metroIds.joinToString(",")}")

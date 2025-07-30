@@ -31,7 +31,9 @@ class KufarRepositoryImpl(
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
-            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }.distinct()
+            metroIds = filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }.distinct(),
+            onlyOwner = filter.fromOwnerOnly,
+            rooms = filter.numberOfRooms
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),
