@@ -21,7 +21,12 @@ val flatSearchPresentationModule = module {
         onlinerRepository = get(),
         realtRepository = get()
     ) }
-    viewModel { FilterViewModel(filterRepository = get()) }
+    viewModel { FilterViewModel(
+        filterRepository = get(),
+        kufarRepository = get(),
+        onlinerRepository = get(),
+        realtRepository = get()
+    ) }
 }
 
 fun initKoin() {

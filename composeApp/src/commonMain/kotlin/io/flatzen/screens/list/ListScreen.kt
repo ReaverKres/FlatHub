@@ -46,6 +46,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -231,7 +232,7 @@ private fun FlatGrid(
         LazyVerticalGrid(
             state = lazyGridState,
             columns = GridCells.Adaptive(180.dp),
-            modifier = Modifier.weight(1f), // занимает всё доступное пространство
+            modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -256,7 +257,9 @@ private fun FlatGrid(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .padding(horizontal = 56.dp + 6.dp)
+                ,
                 textAlign = TextAlign.Center
             )
         }

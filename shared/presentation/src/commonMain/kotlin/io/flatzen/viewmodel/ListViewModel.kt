@@ -89,9 +89,6 @@ class FlatSearchViewModel(
         filterRepository.cashedFilterFlow
             .distinctUntilChanged()
             .onEach { newFilters ->
-                kufarRepository.clearCashedFlats()
-                realtRepository.clearCashedFlats()
-                onlinerRepository.clearCashedFlats()
                 noFlatsToLoadMore = false
                 onIntent(FlatListScreenAction.SearchFlats(false))
             }
