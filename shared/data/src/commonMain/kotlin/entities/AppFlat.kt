@@ -1,11 +1,21 @@
-// AppFlat.kt
+package entities// entities.AppFlat.kt
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import database.RoomTypeConverter
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.datetime.Instant
 
+@Entity
+@TypeConverters(RoomTypeConverter::class)
 data class AppFlat(
+    @PrimaryKey val adId: Long,
+    @Embedded val flatDevInfo: FlatDevInfo,
+    @Embedded val contactInformation: ContactInformation?,
+    @Embedded val coordinates: Coordinates?,
     val flatPlatform: FlatPlatform,
     val flatDetailUrl: String,
-    val adId: Long,
     val publishedAt: Instant?,
     val publishedAtServer: String?,
     val publishedAtUi: String?,
@@ -15,7 +25,6 @@ data class AppFlat(
     val rooms: Int?,
     val district: String?,
     val address: String?,
-    val coordinates: Pair<Double, Double>?,
     val metroStation: String?,
     val description: String?,
     val yearBuilt: Int?,
@@ -53,5 +62,20 @@ data class AppFlat(
     // Дополнительные параметры
     val forWhom: List<String>?, // ["Семейным", "Студентам"] и т.д.
     val parkingInfo: String?, // Информация о парковке
-    val owner: Boolean? // Собственник или агент
+    val owner: Boolean?, // Собственник или агент
+)
+
+data class FlatDevInfo(
+    val isDetailData: Boolean,
+    val isDetailLoaded: Boolean
+)
+
+data class ContactInformation(
+    val phones: List<String>?,
+    val ownerName: String?
+)
+
+data class Coordinates(
+    val latitude: Double,
+    val longitude: Double
 )

@@ -1,11 +1,10 @@
 package repository.kufar
 
 
-import AppFlat
+import entities.AppFlat
 import api.KufarApi
 import entities.KufarMetroStations
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
@@ -23,6 +22,7 @@ class KufarRepositoryImpl(
 
     private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
     override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
+    private var lastEmitList: List<AppFlat>? = emptyList()
 
     private var pageCursor: String? = null
 
@@ -48,8 +48,14 @@ class KufarRepositoryImpl(
             pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
         }.ads
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
-        _flatsCache.value += (kufarFlatList ?: listOf())
-        emit(kufarFlatList ?: listOf())
+        if (lastEmitList == kufarFlatList) {
+            _flatsCache.value += listOf()
+            emit(listOf())
+        } else {
+            lastEmitList = kufarFlatList
+            _flatsCache.value += (kufarFlatList ?: listOf())
+            emit(kufarFlatList ?: listOf())
+        }
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {

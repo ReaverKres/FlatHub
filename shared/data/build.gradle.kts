@@ -7,6 +7,7 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -41,6 +42,8 @@ kotlin {
                 implementation(libs.ksoup.html)
 
                 implementation(libs.koin.core)
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.androidx.sqlite.bundled)
             }
             // Добавляем путь к сгенерированным KSP файлам
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -62,13 +65,21 @@ dependencies {
     add("kspIosX64", libs.ktorfit.ksp)
     add("kspIosArm64", libs.ktorfit.ksp)
     add("kspIosSimulatorArm64", libs.ktorfit.ksp)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
 }
 
-// ДОБАВЬТЕ ЭТО - настройка зависимостей задач
+//Launch after ktorfit api classes changed
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon>().configureEach {
     if (name != "compileKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {

@@ -1,9 +1,10 @@
 package io.flatzen.viewmodel
 
-import AppFlat
+import entities.AppFlat
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -14,20 +15,16 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import repository.fillter.FilterRepository
-import repository.kufar.KufarRepository
-import repository.onliner.OnlinerRepository
-import repository.realt.RealtRepository
+import repository.mergedrepo.MergedRepository
 
 sealed interface FlatListScreenAction : MviAction {
-    class SearchKufarFlats() : FlatListScreenAction
-    class SearchOnlinerFlats() : FlatListScreenAction
     class SearchFlats(val isLoadMore: Boolean) : FlatListScreenAction
 }
 
@@ -59,17 +56,14 @@ data class UiPrice(
 )
 
 sealed interface FlatListEvents : MviEvent {
-    data class KufarFlatsLoaded(val kufarFlats: LCE<List<AppFlat>>) : FlatListEvents
-    data class OnlinerFlatsLoaded(val onlinerFlats: LCE<List<AppFlat>>) : FlatListEvents
     data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>, val isLoadMore: Boolean) :
         FlatListEvents
 }
 
 class FlatSearchViewModel(
-    private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository,
-    private val realtRepository: RealtRepository,
-    private val filterRepository: FilterRepository
+    private val mergedRepository: MergedRepository,
+    private val filterRepository: FilterRepository,
+    private val connectionMonitor: ConnectionMonitor
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -112,34 +106,21 @@ class FlatSearchViewModel(
                 }
                 loadAllFlats(action.isLoadMore)
             }
-
-            is FlatListScreenAction.SearchKufarFlats -> {
-                loadKufarFlats()
-            }
-
-            is FlatListScreenAction.SearchOnlinerFlats -> {
-                loadOnlinerFlats()
-            }
         }
     }
 
     private suspend fun loadAllFlats(isLoadMore: Boolean): Flow<FlatListEvents> {
-        return kufarRepository.searchFlats()
-            .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
-            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
-            .asLCE()
-            .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
-    }
-
-    private suspend fun loadKufarFlats(): Flow<FlatListEvents> {
-        return kufarRepository.searchFlats().asLCE().map {
-            FlatListEvents.KufarFlatsLoaded(it)
-        }
-    }
-
-    private suspend fun loadOnlinerFlats(): Flow<FlatListEvents> {
-        return onlinerRepository.searchFlats().asLCE().map {
-            FlatListEvents.OnlinerFlatsLoaded(it)
+        return when {
+            connectionMonitor.isNetworkAvailable.first().not() -> {
+                mergedRepository.getAllFlatsFromLocalDb()
+                    .asLCE()
+                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
+            }
+            else -> {
+                mergedRepository.searchFlats()
+                    .asLCE()
+                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
+            }
         }
     }
 
@@ -148,26 +129,6 @@ class FlatSearchViewModel(
         currentState: FlatListScreenState
     ): FlatListScreenState {
         return when (event) {
-            is FlatListEvents.KufarFlatsLoaded -> event.kufarFlats.process(
-                onLoading = {
-                    currentState.copy(isLoading = true)
-                },
-                onError = { message, _ ->
-                    currentState
-                },
-                onSuccess = { flatsLoaded(it, currentState) }
-            )
-
-            is FlatListEvents.OnlinerFlatsLoaded -> event.onlinerFlats.process(
-                onLoading = {
-                    currentState.copy(isLoading = true)
-                },
-                onError = { message, _ ->
-                    currentState
-                },
-                onSuccess = { flatsLoaded(it, currentState) }
-            )
-
             is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
                     currentState.copy(isLoading = true, isLoadingMore = event.isLoadMore)

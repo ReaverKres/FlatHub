@@ -1,7 +1,7 @@
 package repository.realt
 
 
-import AppFlat
+import entities.AppFlat
 import api.AddressV2
 import api.PaginationRequestRealt
 import api.RealtApi
@@ -12,11 +12,8 @@ import api.Variables
 import api.Where
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map

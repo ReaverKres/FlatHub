@@ -1,20 +1,26 @@
 package mappers
 
-import AppFlat
+import entities.AppFlat
+import entities.ContactInformation
+import entities.Coordinates
+import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
-import server_response.RealtListResponse
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class RealtFlatMapper: ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
+class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
         return AppFlat(
             flatPlatform = FlatPlatform.REALT,
+            flatDevInfo = FlatDevInfo(
+                isDetailData = true,
+                isDetailLoaded = true
+            ),
             flatDetailUrl = "https://realt.by${response.code?.let { "/rent-flat-for-long/object/$it" } ?: ""}",
             adId = response.code?.toLong() ?: 0L,
             publishedAt = DateConverter.stringToInstant(response.updatedAt.orEmpty()),
@@ -30,7 +36,12 @@ class RealtFlatMapper: ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> 
             district = response.stateDistrictName,
             address = listOfNotNull(response.streetName, response.buildingNumber).joinToString(" "),
             coordinates = response.location?.let { latLng ->
-                if (latLng.size >= 2) latLng[1]!! to latLng[0]!! else null
+                if (latLng.size >= 2) {
+                    Coordinates(
+                        latitude = latLng[1]!!,
+                        longitude = latLng[0]!!
+                    )
+                } else null
             },
             metroStation = response.metroStationName,
             description = response.description,
@@ -62,7 +73,11 @@ class RealtFlatMapper: ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> 
             kitchenEquipment = emptyList(), // в ответе Realt нет такого поля
             forWhom = emptyList(), // в ответе Realt нет такого поля
             parkingInfo = null,
-            owner = response.agencyUuid == null && response.agencyName == null
+            owner = response.agencyUuid == null && response.agencyName == null,
+            contactInformation = ContactInformation(
+                phones = response.contactPhones?.filterNotNull(),
+                ownerName = response.contactName
+            )
         )
     }
 }

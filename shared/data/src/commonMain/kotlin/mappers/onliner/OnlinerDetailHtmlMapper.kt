@@ -1,8 +1,11 @@
 package mappers.onliner
 
-import AppFlat
+import entities.AppFlat
+import entities.ContactInformation
+import entities.FlatDevInfo
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
+import entities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.base.AdditionalParamMapper
 import kotlin.time.ExperimentalTime
@@ -73,6 +76,10 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
 
         return AppFlat(
             flatPlatform = FlatPlatform.ONLINER,
+            flatDevInfo = FlatDevInfo(
+                isDetailData = true,
+                isDetailLoaded = true
+            ),
             flatDetailUrl = baseFlat.flatDetailUrl,
             adId = baseFlat.adId,
             publishedAt = baseFlat.publishedAt,
@@ -110,7 +117,11 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             kitchenEquipment = kitchenEquipment,
             forWhom = parseTableListParam(tableParams["Кому сдается"]),
             parkingInfo = tableParams["Парковка"],
-            owner = baseFlat.owner
+            owner = baseFlat.owner,
+            contactInformation = ContactInformation(
+                phones = listOfNotNull(extractRawPhoneNumber(doc)),
+                ownerName = extractOwnerName(doc)
+            )
         )
     }
 
@@ -122,7 +133,20 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
         }
     }
 
-    private fun extractCoordinatesFromScript(doc: Document): Pair<Double, Double>? {
+    private fun extractRawPhoneNumber(doc: Document): String? {
+        val phoneLink = doc.selectFirst("a[href^='tel:']")
+        return phoneLink?.attr("href")?.removePrefix("tel:")
+    }
+
+    private fun extractOwnerName(doc: Document): String? {
+        return doc.select("a[href^='https://profile.onliner.by/user/']")
+            .firstOrNull()
+            ?.text()
+            ?.trim()
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    private fun extractCoordinatesFromScript(doc: Document): Coordinates? {
         val scripts = doc.select("script").map { it.html() }
         for (script in scripts) {
             val latMatch = Regex("latitude\\s*=\\s*([\\d.]+)").find(script)
@@ -132,7 +156,7 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
                 val lat = latMatch.groupValues[1].toDoubleOrNull()
                 val lon = lonMatch.groupValues[1].toDoubleOrNull()
                 if (lat != null && lon != null) {
-                    return lat to lon
+                    return Coordinates(lat, lon)
                 }
             }
         }
