@@ -1,6 +1,6 @@
 package io.flatzen.viewmodel
 
-import AppFlat
+import entities.AppFlat
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
@@ -13,15 +13,13 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import repository.kufar.KufarRepository
-import repository.onliner.OnlinerRepository
-import repository.realt.RealtRepository
-import kotlin.time.ExperimentalTime
+import repository.mergedrepo.MergedRepository
 
 @Immutable
 data class UiDetailFlat(
     val adId: Long,
     val platform: FlatPlatform,
+    val isDetailDataLoaded: Boolean?,
     val flatUrl: String,
     val description: String,
     val imageUrls: List<String>,
@@ -51,7 +49,14 @@ data class UiDetailFlat(
     val forWhom: List<String>?,
     val parkingInfo: String?,
     val isOwner: Boolean?,
-    val publishedAt: String?
+    val publishedAt: String?,
+    val contactInformation: ContactInformationUi
+)
+
+@Immutable
+data class ContactInformationUi(
+    val phones: List<String>?,
+    val ownerName: String?
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
@@ -70,9 +75,7 @@ sealed interface FlatDetailEvents : MviEvent {
 }
 
 class FlatDetailViewModel(
-    private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository,
-    private val realtRepository: RealtRepository
+    private val mergedRepository: MergedRepository,
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
@@ -93,23 +96,8 @@ class FlatDetailViewModel(
     }
 
     private suspend fun loadFlatDetails(flatPlatform: FlatPlatform, flatId: Long): Flow<FlatDetailEvents> {
-        return when (flatPlatform) {
-            FlatPlatform.KUFAR -> {
-                kufarRepository.getFlatById(flatId).asLCE().map {
-                    FlatDetailEvents.FlatLoaded(it)
-                }
-            }
-
-            FlatPlatform.ONLINER -> {
-                onlinerRepository.getFlatById(flatId).asLCE().map {
-                    FlatDetailEvents.FlatLoaded(it)
-                }
-            }
-            FlatPlatform.REALT -> {
-                realtRepository.getFlatById(flatId).asLCE().map {
-                    FlatDetailEvents.FlatLoaded(it)
-                }
-            }
+        return mergedRepository.getFlatById(flatPlatform, flatId).asLCE().map {
+            FlatDetailEvents.FlatLoaded(it)
         }
     }
 
@@ -141,10 +129,10 @@ class FlatDetailViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun appFlatToUiFlat(appFlat: AppFlat): UiDetailFlat {
         return UiDetailFlat(
             adId = appFlat.adId,
+            isDetailDataLoaded = appFlat.flatDevInfo.isDetailLoaded,
             platform = appFlat.flatPlatform,
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
@@ -177,7 +165,11 @@ class FlatDetailViewModel(
             forWhom = appFlat.forWhom,
             parkingInfo = appFlat.parkingInfo,
             isOwner = appFlat.owner,
-            publishedAt = appFlat.publishedAtUi
+            publishedAt = appFlat.publishedAtUi,
+            contactInformation = ContactInformationUi(
+                phones = appFlat.contactInformation?.phones,
+                ownerName = appFlat.contactInformation?.ownerName
+            )
         )
     }
 

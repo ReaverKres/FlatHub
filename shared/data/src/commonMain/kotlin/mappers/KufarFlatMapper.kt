@@ -1,7 +1,9 @@
 // KufarFlatMapper.kt
 package mappers
 
-import AppFlat
+import entities.AppFlat
+import entities.Coordinates
+import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant
@@ -9,7 +11,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.*
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.KufarListResponse
-import kotlin.time.ExperimentalTime
 
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 
@@ -83,7 +84,7 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         val coordinates = adParams.findParamValue("coordinates")
             ?.safeDoubleList()
             ?.takeIf { it.size >= 2 }
-            ?.let { it[1] to it[0] }
+            ?.let { Coordinates(latitude = it[1], longitude = it[0]) }
 
         val metroStation = adParams.findParamStringValue("metro")
             ?.safeStringList()
@@ -155,6 +156,10 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
 
         return AppFlat(
             flatPlatform = FlatPlatform.KUFAR,
+            flatDevInfo = FlatDevInfo(
+                isDetailData = true,
+                isDetailLoaded = true
+            ),
             flatDetailUrl = data.adLink.orEmpty(),
             adId = data.adId ?: -1,
             publishedAt = flatDateInstant,
@@ -189,7 +194,8 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             forWhom = forWhom,
             parkingInfo = if (buildingImprovements?.contains("Стояночное место") == true)
                 "Есть парковочное место" else null,
-            owner = data.companyAd?.let { !it } // Если не компания, то собственник
+            owner = data.companyAd?.let { !it }, // Если не компания, то собственник
+            contactInformation = null
         )
     }
 

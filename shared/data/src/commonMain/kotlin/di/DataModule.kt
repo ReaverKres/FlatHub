@@ -1,6 +1,6 @@
 package di
 
-import AppFlat
+import entities.AppFlat
 import api.KufarApi
 import api.OnlinerApi
 import api.RealtApi
@@ -19,6 +19,8 @@ import repository.fillter.FilterRepository
 import repository.fillter.FilterRepositoryImpl
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl
+import repository.mergedrepo.MergedRepository
+import repository.mergedrepo.MergedRepositoryImpl
 import repository.onliner.OnlinerRepository
 import repository.onliner.OnlinerRepositoryImpl
 import repository.realt.RealtRepository
@@ -39,6 +41,15 @@ val dataModule = module {
             api = get(),
             kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
             filterRepository = get()
+        )
+    }
+
+    single<MergedRepository> {
+        MergedRepositoryImpl(
+            kufarRepository = get(),
+            onlinerRepository = get(),
+            realtRepository = get(),
+            flatsDao = get()
         )
     }
 

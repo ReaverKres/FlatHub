@@ -17,13 +17,15 @@ interface KufarApi {
     ): KufarListResponse
 
     companion object {
+        const val KUFAR_PAGE_SIZE = 30
+
         fun createQueryParams(
             categoryId: Int = 1010,
             currency: String = "USD",
             geoTag: String = "country-belarus~province-minsk~locality-minsk",
             language: String = "ru",
             cursor: String? = null,
-            pageSize: Int = 30,
+            pageSize: Int = KUFAR_PAGE_SIZE,
             dealType: String = "let",
             sort: String = "lst.d",
             minPrice: Double? = null,

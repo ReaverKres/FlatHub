@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
+import repository.mergedrepo.MergedRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
 
@@ -37,9 +38,7 @@ sealed interface FilterScreenEvent : MviEvent {
 }
 
 class FilterViewModel(
-    private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository,
-    private val realtRepository: RealtRepository,
+    private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
@@ -78,9 +77,7 @@ class FilterViewModel(
                 currentState.copy(filters = event.newFilterState).also {
                     val filterModel = mapFilterStateToFilterModel(it.filters)
                     if (filterModel != filterRepository.cashedFilterFlow.replayCache.firstOrNull()){
-                        kufarRepository.clearCashedFlats()
-                        realtRepository.clearCashedFlats()
-                        onlinerRepository.clearCashedFlats()
+                        mergedRepository.searchFlats()
 
                         filterRepository.updateFilter(
                             mapFilterStateToFilterModel(it.filters)

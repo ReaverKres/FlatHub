@@ -33,6 +33,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.list.ImagePager
 import io.flatzen.screens.list.LoadingContent
+import io.flatzen.viewmodel.ContactInformationUi
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.UiDetailFlat
@@ -67,8 +68,9 @@ fun DetailScreen(
 
         when {
             state.isLoading -> {
-                LoadingContent(modifier = Modifier.fillMaxSize())
+
             }
+
             state.error != null -> {
                 // ErrorContent(
                 //     error = state.error,
@@ -78,12 +80,14 @@ fun DetailScreen(
                 //     modifier = Modifier.fillMaxSize()
                 // )
             }
+
             state.flat != null -> {
                 FlatDetailContent(
                     flat = state.flat!!,
                     modifier = Modifier.fillMaxSize()
                 )
             }
+
             else -> {
                 EmptyScreenContent(modifier = Modifier.fillMaxSize())
             }
@@ -118,6 +122,19 @@ private fun FlatDetailContent(
             }
 
             SourceLinkSection(flat.platform, flat.flatUrl)
+
+            if (flat.isDetailDataLoaded == true){
+                if (hasContactData(flat.contactInformation)) {
+                    ContactInfoSection(contactInfo = flat.contactInformation)
+                } else {
+                    Text(
+                        text = "Для связи перейдите на сайт объявления",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+            }
 
             // Цены
             PriceSection(
@@ -294,6 +311,56 @@ private fun AddressSection(address: String, metroStation: String?) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
+        }
+    }
+}
+
+private fun hasContactData(contactInfo: ContactInformationUi?): Boolean {
+    return contactInfo != null && (!contactInfo.ownerName.isNullOrBlank() || !contactInfo.phones.isNullOrEmpty())
+}
+
+@Composable
+private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
+    // Return early if there's no information to display.
+    if (contactInfo == null || (contactInfo.ownerName.isNullOrBlank() && contactInfo.phones.isNullOrEmpty())) {
+        return
+    }
+
+    val uriHandler = LocalUriHandler.current
+
+    SectionCard(title = "Контактная информация") {
+        // Display the owner's name if available
+        contactInfo.ownerName?.takeIf { it.isNotBlank() }?.let { name ->
+            InfoRow(label = "Контактное лицо", value = name)
+        }
+
+        // Display each phone number, making it clickable
+        contactInfo.phones?.forEach { phone ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Телефон",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = phone,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            uriHandler.openUri("tel:$phone")
+                        }
+                )
+            }
         }
     }
 }

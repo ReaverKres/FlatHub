@@ -1,7 +1,7 @@
 package repository.onliner
 
 
-import AppFlat
+import entities.AppFlat
 import api.OnlinerApi
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -10,7 +10,6 @@ import io.ktor.http.parsing.ParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import server_request.OnlinerSearchParams
 import server_response.OnlinerListResponse
 
 class OnlinerRepositoryImpl(

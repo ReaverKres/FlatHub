@@ -1,6 +1,8 @@
 package mappers.onliner
 
-import AppFlat
+import entities.AppFlat
+import entities.Coordinates
+import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant
@@ -21,7 +23,7 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
         val coordinates = data.location?.let { location ->
             location.latitude?.let { lat ->
                 location.longitude?.let { lng ->
-                    Pair(lat, lng)
+                    Coordinates(lat, lng)
                 }
             }
         }
@@ -33,6 +35,10 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
 
         return AppFlat(
             flatPlatform = FlatPlatform.ONLINER,
+            flatDevInfo = FlatDevInfo(
+                isDetailData = false,
+                isDetailLoaded = false
+            ),
             flatDetailUrl = data.url.orEmpty(),
             adId = data.id?.toLong() ?: -1L,
             publishedAt = flatDateInstant,
@@ -67,7 +73,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             kitchenEquipment = null,
             forWhom = null,
             parkingInfo = null,
-            owner = data.contact?.owner
+            owner = data.contact?.owner,
+            contactInformation = null
         )
     }
 
