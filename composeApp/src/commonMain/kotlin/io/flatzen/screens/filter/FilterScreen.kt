@@ -1,24 +1,48 @@
 package io.flatzen.screens.filter
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.states.Amenity
 import io.flatzen.states.MetroLineState
-import io.flatzen.states.RepairType
 import io.flatzen.states.Room
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
 import io.flatzen.widgets.FilterSwitch
+import io.flatzen.mappers.LocationUiMapper
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -26,6 +50,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun FilterScreen(
     navigateBack: () -> Unit,
+    onOpenLocation: () -> Unit = {},
 ) {
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -70,6 +95,19 @@ fun FilterScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Расположение
+            FilterSectionTitle(title = "Расположение")
+            ListItem(
+                headlineContent = {
+                    Text(LocationUiMapper.displayName(state.filters.location?.city?.code.orEmpty()))
+                },
+                supportingContent = { Text("Метро") },
+                trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenLocation() }
+            )
+
             // Цена
             FilterSectionTitle(title = "Цена")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -111,23 +149,6 @@ fun FilterScreen(
                             currentFilters = currentFilters.copy(rooms = newTypes)
                         },
                         label = { Text(it.displayName) }
-                    )
-                }
-            }
-
-            FilterSectionTitle(title = "Метро")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MetroLineState.values().forEach { metroLine ->
-                    FilterChip(
-                        selected = currentFilters.metroLineState.contains(metroLine),
-                        onClick = {
-                            val newTypes = currentFilters.metroLineState.toMutableList()
-                            if (newTypes.contains(metroLine)) newTypes.remove(metroLine) else newTypes.add(
-                                metroLine
-                            )
-                            currentFilters = currentFilters.copy(metroLineState = newTypes)
-                        },
-                        label = { Text(metroLine.displayName) }
                     )
                 }
             }

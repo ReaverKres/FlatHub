@@ -17,7 +17,7 @@ interface KufarApi {
     ): KufarListResponse
 
     companion object {
-        const val KUFAR_PAGE_SIZE = 30
+        private const val KUFAR_PAGE_SIZE = 30
 
         fun createQueryParams(
             categoryId: Int = 1010,
