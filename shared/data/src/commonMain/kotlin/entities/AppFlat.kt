@@ -14,6 +14,7 @@ data class AppFlat(
     @Embedded val flatDevInfo: FlatDevInfo,
     @Embedded val contactInformation: ContactInformation?,
     @Embedded val coordinates: Coordinates?,
+    val flatSavedInFavorites: Boolean = false,
     val flatPlatform: FlatPlatform,
     val flatDetailUrl: String,
     val publishedAt: Instant?,

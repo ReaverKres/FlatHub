@@ -10,6 +10,7 @@ import api.SearchData
 import api.SortItem
 import api.Variables
 import api.Where
+import database.FlatsDao
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
@@ -24,7 +26,8 @@ import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObject
 class RealtRepositoryImpl(
     private val api: RealtApi,
     private val realtResponseMapper: ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>,
-    private val filterRepository: FilterRepository
+    private val filterRepository: FilterRepository,
+    private val flatsDao: FlatsDao,
 ) : RealtRepository {
 
     private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
@@ -79,11 +82,12 @@ class RealtRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {
-        return _flatsCache
+        return flatsDao.getAllAsFlow()
             .map { flats ->
                 flats.find { it.adId == flatId }
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
             }
+            .take(1)
     }
 
     override fun clearCashedFlats() {

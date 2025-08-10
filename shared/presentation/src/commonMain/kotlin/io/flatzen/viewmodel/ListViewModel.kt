@@ -26,6 +26,7 @@ import repository.mergedrepo.MergedRepository
 
 sealed interface FlatListScreenAction : MviAction {
     class SearchFlats(val isLoadMore: Boolean) : FlatListScreenAction
+    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatListScreenAction
 }
 
 @Immutable
@@ -40,6 +41,7 @@ data class FlatListScreenState(
 data class UiFlat(
     val adId: Long,
     val flatPlatform: FlatPlatform,
+    val savedInFavorite: Boolean,
     val imageUrls: List<String>,
     val priceUsd: UiPrice,
     val priceByn: UiPrice,
@@ -58,6 +60,7 @@ data class UiPrice(
 sealed interface FlatListEvents : MviEvent {
     data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>, val isLoadMore: Boolean) :
         FlatListEvents
+    data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -96,6 +99,9 @@ class FlatSearchViewModel(
     ): Flow<FlatListEvents> {
         return when (action) {
             is FlatListScreenAction.SearchFlats -> {
+                if(currentState.flatList.isNotEmpty() &&
+                    connectionMonitor.isNetworkAvailable.first().not()
+                    ) { return flowOf() }
                 if(noFlatsToLoadMore) {
                     return flowOf()
                 }
@@ -105,6 +111,11 @@ class FlatSearchViewModel(
                     filterRepository.currentAppPage = 1
                 }
                 loadAllFlats(action.isLoadMore)
+            }
+            is FlatListScreenAction.ClickOnFavorite -> {
+                mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).asLCE().map {
+                    FlatListEvents.FlatUpdateInFavorite(it)
+                }
             }
         }
     }
@@ -137,6 +148,23 @@ class FlatSearchViewModel(
                     currentState
                 },
                 onSuccess = { flatsLoaded(it, currentState, event.isLoadMore) }
+            )
+
+            is FlatListEvents.FlatUpdateInFavorite -> event.flat.process(
+                onLoading = { currentState },
+                onError = { _, _ -> currentState },
+                onSuccess = { updatedFlat ->
+                    val updatedList = currentState.flatList.map { uiFlat ->
+                        if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
+                            uiFlat.copy(
+                                savedInFavorite = updatedFlat.flatSavedInFavorites
+                            )
+                        } else {
+                            uiFlat
+                        }
+                    }
+                    currentState.copy(flatList = updatedList)
+                }
             )
         }
     }
@@ -179,6 +207,7 @@ class FlatSearchViewModel(
                 adId = it.adId,
                 flatPlatform = it.flatPlatform,
                 imageUrls = it.imageUrls ?: listOf(),
+                savedInFavorite = it.flatSavedInFavorites,
                 priceByn = UiPrice(
                     price = it.priceByn,
                     currency = "BYN"

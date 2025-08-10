@@ -3,6 +3,7 @@ package repository.kufar
 
 import entities.AppFlat
 import api.KufarApi
+import database.FlatsDao
 import entities.KufarMetroStations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import server_response.KufarListResponse
@@ -17,6 +19,7 @@ import server_response.KufarListResponse
 class KufarRepositoryImpl(
     private val api: KufarApi,
     private val kufarResponseMapper: ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>,
+    private val flatsDao: FlatsDao,
     private val filterRepository: FilterRepository
 ) : KufarRepository {
 
@@ -59,11 +62,12 @@ class KufarRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {
-        return _flatsCache
+        return flatsDao.getAllAsFlow()
             .map { flats ->
                 flats.find { it.adId == flatId }
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
             }
+            .take(1)
     }
 
     private fun generateSearchId(): String {

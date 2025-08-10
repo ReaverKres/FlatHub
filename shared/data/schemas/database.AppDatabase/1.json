@@ -2,15 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "026927d0bfa012b06f6093610ba68f5d",
+    "identityHash": "584ae97a88bb1851c33113dcc954ce07",
     "entities": [
       {
         "tableName": "AppFlat",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`adId` INTEGER NOT NULL, `flatPlatform` TEXT NOT NULL, `flatDetailUrl` TEXT NOT NULL, `publishedAt` INTEGER, `publishedAtServer` TEXT, `publishedAtUi` TEXT, `imageUrls` TEXT, `priceUsd` REAL, `priceByn` REAL, `rooms` INTEGER, `district` TEXT, `address` TEXT, `metroStation` TEXT, `description` TEXT, `yearBuilt` INTEGER, `totalArea` REAL, `livingArea` REAL, `kitchenArea` REAL, `floor` INTEGER, `totalFloors` INTEGER, `sleepingPlaces` INTEGER, `isStudio` INTEGER, `bathroomType` TEXT, `balcony` TEXT, `repairType` TEXT, `condition` TEXT, `windowDirections` TEXT, `buildingImprovements` TEXT, `prepaymentType` TEXT, `amenities` TEXT, `kitchenEquipment` TEXT, `forWhom` TEXT, `parkingInfo` TEXT, `owner` INTEGER, `isDetailData` INTEGER NOT NULL, `isDetailLoaded` INTEGER NOT NULL, `phones` TEXT, `ownerName` TEXT, `latitude` REAL, `longitude` REAL, PRIMARY KEY(`adId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`adId` INTEGER NOT NULL, `flatSavedInFavorites` INTEGER NOT NULL, `flatPlatform` TEXT NOT NULL, `flatDetailUrl` TEXT NOT NULL, `publishedAt` INTEGER, `publishedAtServer` TEXT, `publishedAtUi` TEXT, `imageUrls` TEXT, `priceUsd` REAL, `priceByn` REAL, `rooms` INTEGER, `district` TEXT, `address` TEXT, `metroStation` TEXT, `description` TEXT, `yearBuilt` INTEGER, `totalArea` REAL, `livingArea` REAL, `kitchenArea` REAL, `floor` INTEGER, `totalFloors` INTEGER, `sleepingPlaces` INTEGER, `isStudio` INTEGER, `bathroomType` TEXT, `balcony` TEXT, `repairType` TEXT, `condition` TEXT, `windowDirections` TEXT, `buildingImprovements` TEXT, `prepaymentType` TEXT, `amenities` TEXT, `kitchenEquipment` TEXT, `forWhom` TEXT, `parkingInfo` TEXT, `owner` INTEGER, `isDetailData` INTEGER NOT NULL, `isDetailLoaded` INTEGER NOT NULL, `phones` TEXT, `ownerName` TEXT, `latitude` REAL, `longitude` REAL, PRIMARY KEY(`adId`))",
         "fields": [
           {
             "fieldPath": "adId",
             "columnName": "adId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flatSavedInFavorites",
+            "columnName": "flatSavedInFavorites",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -224,7 +230,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '026927d0bfa012b06f6093610ba68f5d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '584ae97a88bb1851c33113dcc954ce07')"
     ]
   }
 }
