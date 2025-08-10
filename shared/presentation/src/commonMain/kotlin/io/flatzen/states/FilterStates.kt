@@ -39,12 +39,26 @@ enum class Room(val displayName: String) {
 }
 
 @Immutable
+data class UiCountry(val code: String)
+
+@Immutable
+data class UiCity(val code: String)
+
+@Immutable
+data class LocationUiFilter(
+    val country: UiCountry = UiCountry("BY"),
+    val city: UiCity = UiCity("MINSK")
+)
+
+@Immutable
 data class FilterState(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
     val rooms: Set<Int> = emptySet(),
     val metroLineState: List<MetroLineState> = emptyList(),
+    val location: LocationUiFilter? = null,
+    val selectedMetroStationIds: Set<Int> = emptySet(),
     val fromOwnerOnly: Boolean = false,
     val kidsAllowed: Boolean = false,
     val petsAllowed: Boolean = false,

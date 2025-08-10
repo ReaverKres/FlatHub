@@ -46,6 +46,16 @@ data class DetailScreenDestination(val flatPlatform: FlatPlatform, val objectId:
 
 @Serializable
 object FilterScreenDestination
+
+@Serializable
+object LocationScreenDestination
+
+@Serializable
+object CitySelectScreenDestination
+
+@Serializable
+object MetroSelectScreenDestination
+
 // Определяем элементы для BottomBar. Теперь маршрут - это сам объект-назначение.
 val bottomNavItems = listOf(
     BottomNavItem(ListGraph, "Список", Icons.Default.List),
@@ -157,6 +167,27 @@ fun App() {
                 // Экран Фильтров (открывается поверх)
                 composable<FilterScreenDestination> {
                     io.flatzen.screens.filter.FilterScreen(
+                        navigateBack = { navController.popBackStack() },
+                        onOpenLocation = { navController.navigate(LocationScreenDestination) }
+                    )
+                }
+
+                composable<LocationScreenDestination> {
+                    io.flatzen.screens.location.LocationScreen(
+                        navigateBack = { navController.popBackStack() },
+                        openCity = { navController.navigate(CitySelectScreenDestination) },
+                        openMetro = { navController.navigate(MetroSelectScreenDestination) }
+                    )
+                }
+
+                composable<CitySelectScreenDestination> {
+                    io.flatzen.screens.location.CitySelectScreen(
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable<MetroSelectScreenDestination> {
+                    io.flatzen.screens.location.MetroSelectScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }

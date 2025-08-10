@@ -6,9 +6,11 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.zip
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
@@ -35,6 +37,7 @@ class MergedRepositoryImpl(
             }
 
         val favoritesFlow = flatsDao.getAllFavoritesAsFlow()
+            .distinctUntilChanged()
 
         return combine(loadedFromNetworkFlats, favoritesFlow) { list, favs ->
             val favIds = favs.map { it.adId }.toHashSet()

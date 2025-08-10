@@ -219,7 +219,6 @@ fun FlatGrid(
     modifier: Modifier = Modifier,
     isLoadingMore: Boolean,
     noFlatsToLoadMore: Boolean,
-    isFavorites: Boolean = false,
     flats: List<UiFlat>,
     onFlatClick: (UiFlat) -> Unit,
     clickOnFavorite: (UiFlat) -> Unit,
