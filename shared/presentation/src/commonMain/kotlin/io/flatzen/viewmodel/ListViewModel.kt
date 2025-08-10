@@ -174,7 +174,7 @@ class FlatSearchViewModel(
         currentState: FlatListScreenState,
         isLoadMore: Boolean = false
     ): FlatListScreenState {
-        val uiFlatList = appFlatListToUiFlatList(flats.sortedByDescending { it.publishedAt })
+        val uiFlatList = appFlatListToUiFlatList(flats)
 
         return if(currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()){
             noFlatsToLoadMore = true

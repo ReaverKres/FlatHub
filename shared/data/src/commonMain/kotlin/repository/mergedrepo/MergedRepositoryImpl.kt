@@ -5,14 +5,10 @@ import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.zip
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
@@ -43,7 +39,7 @@ class MergedRepositoryImpl(
         return combine(loadedFromNetworkFlats, favoritesFlow) { list, favs ->
             val favIds = favs.map { it.adId }.toHashSet()
             val merged = list.map { it.copy(flatSavedInFavorites = it.adId in favIds) }
-            merged
+            applyLocalSortOrFilters(merged)
         }
     }
 
@@ -62,8 +58,13 @@ class MergedRepositoryImpl(
     }
 
     override fun getAllFlatsFromLocalDb(): Flow<List<AppFlat>> {
-        return flatsDao.getAllAsFlow()
+        return flatsDao.getAllAsFlow().map { flats ->
+            applyLocalSortOrFilters(flats)
+        }
     }
+
+    private fun applyLocalSortOrFilters(flats: List<AppFlat>) =
+        flats.sortedByDescending { it.publishedAt }
 
     override fun getFavoritesFromLocalDb(): Flow<List<AppFlat>> {
         return flatsDao.getAllFavoritesAsFlow()
