@@ -3,6 +3,8 @@ package repository.onliner
 
 import entities.AppFlat
 import api.OnlinerApi
+import database.FlatsDao
+import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -26,7 +28,9 @@ class OnlinerRepositoryImpl(
     private val ktorClient: HttpClient,
     private val onlinerResponseMapper: ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat>,
     private val onlinerDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>,
-    private val filterRepository: FilterRepository
+    private val filterRepository: FilterRepository,
+    private val flatsDao: FlatsDao,
+    private val connectionMonitor: ConnectionMonitor
 ) : OnlinerRepository {
 
     private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
@@ -49,15 +53,17 @@ class OnlinerRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        val flatFromList = _flatsCache
+        val flatFromList = flatsDao.getAllAsFlow()
             .map { flats ->
                 flats.find { it.adId == flatId }
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
             }.first()
         emit(flatFromList)
-        val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
-        val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)
-        emit(onlinerDetailFlat)
+        if (connectionMonitor.isNetworkAvailable.first()) {
+            val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
+            val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)
+            emit(onlinerDetailFlat)
+        }
 
     }.flowOn(Dispatchers.IO)
 

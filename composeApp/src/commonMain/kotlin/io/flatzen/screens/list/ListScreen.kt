@@ -32,16 +32,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,6 +94,9 @@ fun ListScreen(
                 noFlatsToLoadMore = state.noFlatsToLoadMore,
                 flats = state.flatList,
                 onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                clickOnFavorite = {
+                    viewModel.onIntent(FlatListScreenAction.ClickOnFavorite(it.flatPlatform, it.adId))
+                },
                 onLoadMore = {
                     viewModel.onIntent(FlatListScreenAction.SearchFlats(true))
                 }
@@ -206,12 +215,14 @@ private fun SkeletonFlatCard(
 }
 
 @Composable
-private fun FlatGrid(
+fun FlatGrid(
     modifier: Modifier = Modifier,
     isLoadingMore: Boolean,
     noFlatsToLoadMore: Boolean,
+    isFavorites: Boolean = false,
     flats: List<UiFlat>,
     onFlatClick: (UiFlat) -> Unit,
+    clickOnFavorite: (UiFlat) -> Unit,
     onLoadMore: (Int) -> Unit
 ) {
     val lazyGridState: LazyGridState = rememberLazyGridState()
@@ -240,7 +251,10 @@ private fun FlatGrid(
             items(flats, key = { it.adId }) { flat ->
                 FlatCard(
                     flat = flat,
-                    onClick = { onFlatClick(flat) }
+                    onClick = { onFlatClick(flat) },
+                    clickOnFavorite = {
+                        clickOnFavorite(flat)
+                    }
                 )
             }
 
@@ -268,9 +282,10 @@ private fun FlatGrid(
 
 @Composable
 private fun FlatCard(
+    modifier: Modifier = Modifier,
     flat: UiFlat,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    clickOnFavorite: () -> Unit
 ) {
     Card(
         onClick = onClick,
@@ -284,7 +299,7 @@ private fun FlatCard(
                 .padding(8.dp)
         ) {
             if (flat.imageUrls.isNotEmpty()) {
-                ImagePager(flat.imageUrls)
+                ImagePager(flat.imageUrls, flat.savedInFavorite,  clickOnFavorite)
             } else {
                 FlatEmptyImage()
             }
@@ -364,7 +379,11 @@ private fun FlatEmptyImage() {
 }
 
 @Composable
-fun ImagePager(imageUrls: List<String>) {
+fun ImagePager(
+    imageUrls: List<String>,
+    savedInFavorite: Boolean = false,
+    clickOnFavorite: () -> Unit = {},
+    ) {
     val pagerState = rememberPagerState { imageUrls.size }
 
     Box(
@@ -380,6 +399,21 @@ fun ImagePager(imageUrls: List<String>) {
                 imageUrl = imageUrls[page],
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
+            )
+        }
+
+        IconButton(
+            onClick = { clickOnFavorite() },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(8.dp)
+                .size(24.dp)
+        ) {
+            Icon(
+                imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "Добавить в избранное",
+                tint = if (savedInFavorite) Color.Red else Color.White.copy(alpha = 0.8f),
+                modifier = Modifier.fillMaxSize()
             )
         }
 

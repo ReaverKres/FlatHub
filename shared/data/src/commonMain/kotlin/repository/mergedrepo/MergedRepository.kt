@@ -16,4 +16,8 @@ interface MergedRepository {
     fun clearCashedFlats()
 
     fun getAllFlatsFromLocalDb(): Flow<List<AppFlat>>
+
+    fun getFavoritesFromLocalDb(): Flow<List<AppFlat>>
+
+    fun saveFlatToFavorite(flatPlatform: FlatPlatform, adId: Long): Flow<AppFlat?>
 }

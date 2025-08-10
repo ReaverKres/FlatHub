@@ -5,6 +5,7 @@ import di.networkModule
 import di.databaseModule
 import io.flatzen.viewmodel.FilterViewModel
 import io.flatzen.viewmodel.FlatDetailViewModel
+import io.flatzen.viewmodel.FavoritesViewModel
 import org.koin.core.context.startKoin
 import io.flatzen.viewmodel.FlatSearchViewModel
 import org.koin.core.KoinApplication
@@ -19,6 +20,9 @@ val flatSearchPresentationModule = module {
         connectionMonitor = get()
     ) }
     viewModel { FlatDetailViewModel(
+        mergedRepository = get(),
+    ) }
+    viewModel { FavoritesViewModel(
         mergedRepository = get(),
     ) }
     viewModel { FilterViewModel(

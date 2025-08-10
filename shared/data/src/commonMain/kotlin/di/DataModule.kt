@@ -40,7 +40,8 @@ val dataModule = module {
         KufarRepositoryImpl(
             api = get(),
             kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
-            filterRepository = get()
+            filterRepository = get(),
+            flatsDao = get()
         )
     }
 
@@ -65,7 +66,9 @@ val dataModule = module {
             ktorClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
             onlinerResponseMapper = get(qualifier = DataQualifiers.ONLINER_FLAT_MAPPER),
             onlinerDetailHtmlMapper = get(),
-            filterRepository = get()
+            filterRepository = get(),
+            flatsDao = get(),
+            connectionMonitor = get()
         )
     }
 
@@ -79,7 +82,8 @@ val dataModule = module {
         RealtRepositoryImpl(
             api = get(),
             realtResponseMapper = get(qualifier = DataQualifiers.REALT_FLAT_MAPPER),
-            filterRepository = get()
+            filterRepository = get(),
+            flatsDao = get()
         )
     }
 }
