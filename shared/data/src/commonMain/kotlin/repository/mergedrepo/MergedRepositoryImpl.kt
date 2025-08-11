@@ -33,17 +33,9 @@ class MergedRepositoryImpl(
                     net.copy(flatSavedInFavorites = fromDb?.flatSavedInFavorites == true)
                 }
                 flatsDao.upsertAll(merged)
-                merged
+                applyLocalSortOrFilters(merged)
             }
-
-        val favoritesFlow = flatsDao.getAllFavoritesAsFlow()
-            .distinctUntilChanged()
-
-        return combine(loadedFromNetworkFlats, favoritesFlow) { list, favs ->
-            val favIds = favs.map { it.adId }.toHashSet()
-            val merged = list.map { it.copy(flatSavedInFavorites = it.adId in favIds) }
-            applyLocalSortOrFilters(merged)
-        }
+        return loadedFromNetworkFlats
     }
 
     override fun getFlatById(flatPlatform: FlatPlatform, flatId: Long): Flow<AppFlat> {

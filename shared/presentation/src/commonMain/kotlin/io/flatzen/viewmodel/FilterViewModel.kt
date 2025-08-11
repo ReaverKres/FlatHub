@@ -18,6 +18,7 @@ import io.flatzen.states.UiCountry
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import repository.fillter.FilterRepository
@@ -84,7 +85,7 @@ class FilterViewModel(
                     val filterModel: CommonFilterRequestModel =
                         mapFilterStateToFilterModel(it.filters)
                     if (filterModel != filterRepository.cashedFilterFlow.replayCache.firstOrNull()) {
-                        mergedRepository.searchFlats()
+                        mergedRepository.searchFlats().last()
 
                         filterRepository.updateFilter(
                             mapFilterStateToFilterModel(it.filters)
