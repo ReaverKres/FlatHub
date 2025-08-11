@@ -23,8 +23,6 @@ class KufarRepositoryImpl(
     private val filterRepository: FilterRepository
 ) : KufarRepository {
 
-    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
-    override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
     private var lastEmitList: List<AppFlat>? = emptyList()
 
     private var pageCursor: String? = null
@@ -35,16 +33,16 @@ class KufarRepositoryImpl(
             pageCursor = null
         }
         val filter = filterRepository.cashedFilterFlow.first()
-        val metroIds: List<Int>? = (
-            filter.selectedMetroStationIds.takeIf { it.isNotEmpty() }?.toList()
-                ?: filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
-                    .distinct()
-            ).takeIf { it.isNotEmpty() }
+//        val metroIds: List<Int>? = (
+//            filter.selectedMetroStationIds.takeIf { it.isNotEmpty() }?.toList()
+//                ?: filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
+//                    .distinct()
+//            ).takeIf { it.isNotEmpty() }
 
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
-            metroIds = metroIds,
+//            metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,
             cursor = pageCursor
@@ -56,14 +54,7 @@ class KufarRepositoryImpl(
             pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
         }.ads
             ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
-        if (lastEmitList == kufarFlatList) {
-            _flatsCache.value += listOf()
-            emit(listOf())
-        } else {
-            lastEmitList = kufarFlatList
-            _flatsCache.value += (kufarFlatList ?: listOf())
-            emit(kufarFlatList ?: listOf())
-        }
+        emit(kufarFlatList ?: listOf())
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {
@@ -81,6 +72,5 @@ class KufarRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
-        _flatsCache.value = emptyList()
     }
 }

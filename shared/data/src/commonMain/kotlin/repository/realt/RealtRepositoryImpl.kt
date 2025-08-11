@@ -30,8 +30,6 @@ class RealtRepositoryImpl(
     private val flatsDao: FlatsDao,
 ) : RealtRepository {
 
-    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
-    override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
     private var lastEmitList: List<AppFlat>? = emptyList()
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
@@ -71,14 +69,7 @@ class RealtRepositoryImpl(
                 query = RealtGraphqlRequest.QUERY
             )
         ).data?.searchObjects?.body?.results?.filterNotNull()?.map { realtResponseMapper.map(it) }
-        if (lastEmitList == realtFlatList) {
-            _flatsCache.value += listOf()
-            emit(listOf())
-        } else {
-            lastEmitList = realtFlatList
-            _flatsCache.value += (realtFlatList ?: listOf())
-            emit(realtFlatList ?: listOf())
-        }
+        emit(realtFlatList ?: listOf())
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {
@@ -91,6 +82,5 @@ class RealtRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
-        _flatsCache.value = emptyList()
     }
 }

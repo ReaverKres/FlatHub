@@ -33,9 +33,6 @@ class OnlinerRepositoryImpl(
     private val connectionMonitor: ConnectionMonitor
 ) : OnlinerRepository {
 
-    private val _flatsCache = MutableStateFlow<List<AppFlat>>(emptyList())
-    override val cashedFlatsFlow: SharedFlow<List<AppFlat>> = _flatsCache
-
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.cashedFilterFlow.first()
         val params = OnlinerApi.createParams(
@@ -48,7 +45,6 @@ class OnlinerRepositoryImpl(
         )
         val onlinerFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
-        _flatsCache.value += (onlinerFlatList ?: listOf())
         emit(onlinerFlatList ?: listOf())
     }
 
@@ -76,6 +72,5 @@ class OnlinerRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
-        _flatsCache.value = emptyList()
     }
 }

@@ -27,6 +27,7 @@ import repository.mergedrepo.MergedRepository
 sealed interface FlatListScreenAction : MviAction {
     class SearchFlats(val isLoadMore: Boolean) : FlatListScreenAction
     class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatListScreenAction
+    class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
 }
 
 @Immutable
@@ -61,6 +62,7 @@ sealed interface FlatListEvents : MviEvent {
     data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>, val isLoadMore: Boolean) :
         FlatListEvents
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
+    data class FavoritesLoaded(val favoriteFlats: LCE<List<AppFlat>>) : FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -91,6 +93,11 @@ class FlatSearchViewModel(
             }
             .launchIn(viewModelScope)
 
+        mergedRepository.getFavoritesFromLocalDb()
+            .asLCE()
+            .onEach { event -> onIntent(FlatListScreenAction.LoadFavorites(event)) }
+            .launchIn(viewModelScope)
+
     }
 
     override suspend fun handleIntent(
@@ -116,6 +123,9 @@ class FlatSearchViewModel(
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).asLCE().map {
                     FlatListEvents.FlatUpdateInFavorite(it)
                 }
+            }
+            is FlatListScreenAction.LoadFavorites -> {
+                flowOf(FlatListEvents.FavoritesLoaded(action.favoritesFlats))
             }
         }
     }
@@ -164,6 +174,23 @@ class FlatSearchViewModel(
                         }
                     }
                     currentState.copy(flatList = updatedList)
+                }
+            )
+
+            is FlatListEvents.FavoritesLoaded -> event.favoriteFlats.process(
+                onLoading = { currentState.copy(isLoading = true) },
+                onError = { _, _ -> currentState.copy(isLoading = false) },
+                onSuccess = { favFlats ->
+                    val favIds = favFlats.map { it.adId }.toHashSet()
+                    currentState.copy(
+                        isLoading = false,
+                        flatList = currentState.flatList.map { flatOnScreen ->
+                        if (flatOnScreen.adId in favIds) {
+                            flatOnScreen.copy(savedInFavorite = true)
+                        } else {
+                            flatOnScreen.copy(savedInFavorite = false)
+                        }
+                    })
                 }
             )
         }

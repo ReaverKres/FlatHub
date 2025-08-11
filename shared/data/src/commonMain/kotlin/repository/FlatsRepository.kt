@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 interface FlatsRepository {
-    val cashedFlatsFlow: SharedFlow<List<AppFlat>>
 
     fun searchFlats(): Flow<List<AppFlat>>
 

@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.launchIn
 import repository.mergedrepo.MergedRepository
 
 sealed interface FavoritesScreenAction : MviAction {
-    data object LoadFavorites : FavoritesScreenAction
-    data class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FavoritesScreenAction
+    class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FavoritesScreenAction
+    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FavoritesScreenAction
 }
 
 @Immutable
@@ -46,7 +46,7 @@ class FavoritesViewModel(
     init {
         mergedRepository.getFavoritesFromLocalDb()
             .asLCE()
-            .onEach { event -> onIntent(FavoritesScreenAction.LoadFavorites) }
+            .onEach { event -> onIntent(FavoritesScreenAction.LoadFavorites(event)) }
             .launchIn(viewModelScope)
     }
 
@@ -55,11 +55,9 @@ class FavoritesViewModel(
         currentState: FavoritesScreenState
     ): Flow<FavoritesEvents> {
         return when (action) {
-            FavoritesScreenAction.LoadFavorites -> {
-                mergedRepository.getFavoritesFromLocalDb()
-                    .asLCE()
-                    .map { FavoritesEvents.FavoritesLoaded(it) }
-            }
+           is FavoritesScreenAction.LoadFavorites -> {
+               flowOf(FavoritesEvents.FavoritesLoaded(action.favoritesFlats))
+           }
             is FavoritesScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId)
                     .asLCE()
