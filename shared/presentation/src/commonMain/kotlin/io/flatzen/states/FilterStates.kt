@@ -1,6 +1,8 @@
 package io.flatzen.states
 
 import androidx.compose.runtime.Immutable
+import io.flatzen.mappers.LocationUiMapper.UiCityItem
+import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
 
 enum class RepairType(val displayName: String) {
@@ -23,11 +25,18 @@ enum class Amenity(val displayName: String) {
     KITCHEN_FURNITURE("Кухонная мебель")
 }
 
-enum class MetroLineState(val displayName: String) {
-    GREEN("Зеленолужская линия"),
-    BLUE("Московская линия"),
-    RED("Автозаводская линия"),
+enum class MetroLineState() {
+    GREEN,
+    BLUE,
+    RED,
 }
+
+@Immutable
+data class UiMetroStation(
+    val name: String,
+    val line: MetroLineState,
+    val selected: Boolean = false
+)
 
 enum class Room(val displayName: String) {
     ONE("1"),
@@ -39,15 +48,16 @@ enum class Room(val displayName: String) {
 }
 
 @Immutable
-data class UiCountry(val code: String)
+data class UiCountry(val code: String, val name: String? = null)
 
 @Immutable
-data class UiCity(val code: String)
+data class UiCity(val code: String, val name: String? = null)
 
 @Immutable
 data class LocationUiFilter(
-    val country: UiCountry = UiCountry("BY"),
-    val city: UiCity = UiCity("MINSK")
+    val selectedCountry: UiCountry = UiCountry("BY"),
+    val selectedCity: UiCity = UiCity("MINSK"),
+    val availableCities: List<UiCityItem> = listOf()
 )
 
 @Immutable
@@ -56,9 +66,8 @@ data class FilterState(
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
     val rooms: Set<Int> = emptySet(),
-    val metroLineState: List<MetroLineState> = emptyList(),
+    val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val location: LocationUiFilter? = null,
-    val selectedMetroStationIds: Set<Int> = emptySet(),
     val fromOwnerOnly: Boolean = false,
     val kidsAllowed: Boolean = false,
     val petsAllowed: Boolean = false,
