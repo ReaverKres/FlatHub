@@ -6,30 +6,31 @@ import entities.City
 import entities.Country
 import entities.LocationFilter
 import entities.MetroLine
+import entities.MetroStation
+import entities.MetroStations
+import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.states.FilterState
 import io.flatzen.states.LocationUiFilter
-import io.flatzen.states.MetroLineState
 import io.flatzen.states.UiCity
 import io.flatzen.states.UiCountry
+import io.flatzen.states.UiMetroStation
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import repository.fillter.FilterRepository
-import repository.kufar.KufarRepository
 import repository.mergedrepo.MergedRepository
-import repository.onliner.OnlinerRepository
-import repository.realt.RealtRepository
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
     data class UpdateFilter(val newFilterState: FilterState) : FilterScreenAction
+    data class UpdateMetroFilter(val metroStation: UiMetroStation): FilterScreenAction
     object ClearFilters : FilterScreenAction
 }
 
@@ -69,6 +70,19 @@ class FilterViewModel(
                 flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState))
             }
 
+            is FilterScreenAction.UpdateMetroFilter -> {
+                val updatedFilterState = currentState.filters.copy(
+                    metroStationsState = currentState.filters.metroStationsState.map {
+                        if (it.name == action.metroStation.name) {
+                            action.metroStation
+                        } else {
+                            it
+                        }
+                    }
+                )
+                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
+            }
+
             is FilterScreenAction.ClearFilters -> {
                 flowOf(FilterScreenEvent.FiltersUpdated(FilterState()))
             }
@@ -85,11 +99,8 @@ class FilterViewModel(
                     val filterModel: CommonFilterRequestModel =
                         mapFilterStateToFilterModel(it.filters)
                     if (filterModel != filterRepository.cashedFilterFlow.replayCache.firstOrNull()) {
-                        mergedRepository.searchFlats().last()
-
-                        filterRepository.updateFilter(
-                            mapFilterStateToFilterModel(it.filters)
-                        )
+                        filterRepository.updateFilter(mapFilterStateToFilterModel(it.filters))
+                        mergedRepository.searchFlats()
                     }
                 }
             }
@@ -103,16 +114,20 @@ class FilterViewModel(
             currency = model.currency,
             fromOwnerOnly = model.fromOwnerOnly ?: false,
             rooms = model.numberOfRooms ?: emptySet(),
-            metroLineState = model.metroLine.mapNotNull { line ->
-                MetroLineState.entries.find { it.name == line.name }
+            metroStationsState = MetroStationsMapper.allStationsOrderedForUi().map { uiStation ->
+                val sameStationFromRequest = model.metroStations.find { it.name == uiStation.name }
+                uiStation.copy(selected = sameStationFromRequest?.selected == true)
             },
             location = model.location?.let {
                 LocationUiFilter(
-                    country = UiCountry(it.country.name),
-                    city = UiCity(it.city.name)
+                    selectedCountry = UiCountry(it.country.name),
+                    selectedCity = UiCity(
+                        it.city.name,
+                        LocationUiMapper.displayName(it.city.name)
+                    ),
+                    availableCities = LocationUiMapper.cities()
                 )
             } ?: LocationUiFilter(),
-            selectedMetroStationIds = model.selectedMetroStationIds
         )
     }
 
@@ -123,16 +138,16 @@ class FilterViewModel(
             currency = filters.currency,
             numberOfRooms = filters.rooms,
             fromOwnerOnly = filters.fromOwnerOnly,
-            metroLine = filters.metroLineState.mapNotNull { line ->
-                MetroLine.entries.find { it.name == line.name }
+            metroStations = MetroStations.allStationsRequest().map { requestStation ->
+                val sameStationFromUi = filters.metroStationsState.find { it.name == requestStation.name }
+                requestStation.copy(selected = sameStationFromUi?.selected == true)
             },
             location = filters.location?.let {
                 LocationFilter(
-                    country = Country.valueOf(filters.location.country.code),
-                    city = City.valueOf(filters.location.city.code)
+                    country = Country.valueOf(filters.location.selectedCountry.code),
+                    city = City.valueOf(filters.location.selectedCity.code)
                 )
             },
-            selectedMetroStationIds = filters.selectedMetroStationIds
         )
     }
 }

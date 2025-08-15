@@ -41,8 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.mappers.MetroStationsMapper
-import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.states.MetroLineState
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
@@ -69,10 +67,12 @@ fun LocationScreen(
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            val cityName = LocationUiMapper.displayName(state.filters.location?.city?.code.orEmpty())
+        Column(
+            modifier = Modifier.padding(padding).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             ListItem(
-                headlineContent = { Text(cityName) },
+                headlineContent = { Text(state.filters.location?.selectedCity?.name.orEmpty()) },
                 trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth().clickable { openCity() },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
@@ -82,7 +82,7 @@ fun LocationScreen(
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {
-                        val count = state.filters.selectedMetroStationIds.size
+                        val count = state.filters.metroStationsState.filter { it.selected }.size
                         if (count > 0) Badge { Text(count.toString()) }
                     }) {
                         Text("Метро")
@@ -100,7 +100,7 @@ fun CitySelectScreen(
     viewModel: FilterViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val cities = remember { LocationUiMapper.cities() }
+    val cities = state.filters.location?.availableCities.orEmpty()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -118,12 +118,16 @@ fun CitySelectScreen(
                 ListItem(
                     headlineContent = { Text(city.displayName) },
                     trailingContent = {
-                        val checked = state.filters.location?.city?.code == city.code
+                        val checked = state.filters.location?.selectedCity?.code == city.code
                         Checkbox(checked = checked, onCheckedChange = {
                             if (!checked) {
                                 viewModel.onIntent(
                                     FilterScreenAction.UpdateFilter(
-                                        state.filters.copy(location = state.filters.location?.copy(city = io.flatzen.states.UiCity(city.code)))
+                                        state.filters.copy(
+                                            location = state.filters.location?.copy(
+                                                selectedCity = io.flatzen.states.UiCity(city.code)
+                                            )
+                                        )
                                     )
                                 )
                             }
@@ -135,7 +139,11 @@ fun CitySelectScreen(
                         .clickable {
                             viewModel.onIntent(
                                 FilterScreenAction.UpdateFilter(
-                                    state.filters.copy(location = state.filters.location?.copy(city = io.flatzen.states.UiCity(city.code)))
+                                    state.filters.copy(
+                                        location = state.filters.location?.copy(
+                                            selectedCity = io.flatzen.states.UiCity(city.code)
+                                        )
+                                    )
                                 )
                             )
                             navigateBack()
@@ -156,11 +164,10 @@ fun MetroSelectScreen(
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val allStations = remember { MetroStationsMapper.allStationsOrderedForUi() }
 
-    val filtered = remember(query.text) {
+    val filteredStation = remember(query.text) {
         val lower = query.text.lowercase()
-        allStations.filter { it.name.lowercase().contains(lower) }
+        state.filters.metroStationsState.filter { it.name.lowercase().contains(lower) }
     }
 
     Scaffold(
@@ -184,8 +191,7 @@ fun MetroSelectScreen(
             )
 
             LazyColumn {
-                items(filtered) { station ->
-                    val isSelected = state.filters.selectedMetroStationIds.contains(station.id)
+                items(filteredStation) { station ->
                     val dotColor = when (station.line) {
                         MetroLineState.BLUE -> Color(0xFF1976D2)
                         MetroLineState.RED -> Color(0xFFD32F2F)
@@ -201,31 +207,31 @@ fun MetroSelectScreen(
                         trailingContent = {
                             Row {
                                 Checkbox(
-                                    checked = isSelected,
+                                    checked = station.selected,
                                     onCheckedChange = {
-                                        val current = state.filters.selectedMetroStationIds.toMutableSet()
-                                        if (isSelected) current.remove(station.id) else current.add(station.id)
                                         viewModel.onIntent(
-                                            FilterScreenAction.UpdateFilter(state.filters.copy(selectedMetroStationIds = current))
+                                            FilterScreenAction.UpdateMetroFilter(
+                                                station.copy(selected = it)
+                                            )
                                         )
                                     }
                                 )
                                 Surface(
-                                color = dotColor,
-                                shape = CircleShape,
-                                modifier = Modifier
-                                    .size(10.dp)
-                                    .clip(CircleShape)
+                                    color = dotColor,
+                                    shape = CircleShape,
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(CircleShape)
                                 ) {}
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                val current = state.filters.selectedMetroStationIds.toMutableSet()
-                                if (isSelected) current.remove(station.id) else current.add(station.id)
                                 viewModel.onIntent(
-                                    FilterScreenAction.UpdateFilter(state.filters.copy(selectedMetroStationIds = current))
+                                    FilterScreenAction.UpdateMetroFilter(
+                                        station.copy(selected = station.selected.not())
+                                    )
                                 )
                             },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)

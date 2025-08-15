@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
@@ -37,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.states.MetroLineState
 import io.flatzen.states.Room
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
@@ -63,7 +63,7 @@ fun FilterScreen(
                 title = { Text("Фильтры") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 },
                 actions = {
@@ -99,7 +99,7 @@ fun FilterScreen(
             FilterSectionTitle(title = "Расположение")
             ListItem(
                 headlineContent = {
-                    Text(LocationUiMapper.displayName(state.filters.location?.city?.code.orEmpty()))
+                    Text(LocationUiMapper.displayName(state.filters.location?.selectedCity?.code.orEmpty()))
                 },
                 supportingContent = { Text("Метро") },
                 trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
