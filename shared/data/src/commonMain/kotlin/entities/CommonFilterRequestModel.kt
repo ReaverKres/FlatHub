@@ -41,10 +41,15 @@ data class CommonFilterRequestModel(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
+    val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
     val fromOwnerOnly: Boolean? = false
+)
+
+data class AddressRequestModel(
+    val address: String
 )
 
 enum class Country { BY }

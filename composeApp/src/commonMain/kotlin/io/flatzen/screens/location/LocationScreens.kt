@@ -3,6 +3,7 @@ package io.flatzen.screens.location
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,8 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Checkbox
@@ -41,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.states.AddressUiState
 import io.flatzen.states.MetroLineState
 import io.flatzen.viewmodel.FilterScreenAction
 import io.flatzen.viewmodel.FilterViewModel
@@ -55,6 +60,10 @@ fun LocationScreen(
 ) {
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    var addressInput by remember { mutableStateOf("") }
+    val addresses = state.filters.address?.toMutableSet() ?: mutableSetOf()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,6 +86,64 @@ fun LocationScreen(
                 modifier = Modifier.fillMaxWidth().clickable { openCity() },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
             )
+
+            // Поле ввода адреса
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = addressInput,
+                    onValueChange = { addressInput = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Введите адрес/улицу") },
+                    maxLines = 1,
+                    singleLine = true
+                )
+                IconButton(
+                    onClick = {
+                        if (addressInput.isNotBlank()) {
+                            viewModel.onIntent(
+                                FilterScreenAction.UpdateAddressFilter(
+                                    addresses + AddressUiState(addressInput.trim())
+                                )
+                            )
+                            addressInput = ""
+                        }
+                    },
+                    modifier = Modifier
+                        .size(56.dp)
+                        .padding(4.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Добавить"
+                    ) // Можешь заменить на Add
+                }
+            }
+
+            // Chips список
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                addresses.forEach { addr ->
+                    AssistChip(
+                        onClick = { /* ничего, просто Chip */ },
+                        label = { Text(addr.address) },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete, // Можешь заменить на Close
+                                contentDescription = "Удалить",
+                                modifier = Modifier.clickable {
+                                    viewModel.onIntent(FilterScreenAction.UpdateAddressFilter(addresses - addr))
+                                }
+                            )
+                        }
+                    )
+                }
+            }
 
             // Плитки действий (минимум метро)
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
@@ -122,7 +189,7 @@ fun CitySelectScreen(
                         Checkbox(checked = checked, onCheckedChange = {
                             if (!checked) {
                                 viewModel.onIntent(
-                                    FilterScreenAction.UpdateFilter(
+                                    FilterScreenAction.UpdateCityFilter(
                                         state.filters.copy(
                                             location = state.filters.location?.copy(
                                                 selectedCity = io.flatzen.states.UiCity(city.code)
@@ -165,9 +232,8 @@ fun MetroSelectScreen(
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val filteredStation = remember(query.text) {
-        val lower = query.text.lowercase()
-        state.filters.metroStationsState.filter { it.name.lowercase().contains(lower) }
+    val filteredStation = state.filters.metroStationsState.filter {
+        it.name.lowercase().contains(query.text.lowercase())
     }
 
     Scaffold(

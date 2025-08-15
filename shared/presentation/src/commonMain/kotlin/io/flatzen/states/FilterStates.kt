@@ -61,6 +61,11 @@ data class LocationUiFilter(
 )
 
 @Immutable
+data class AddressUiState(
+    val address: String
+)
+
+@Immutable
 data class FilterState(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
@@ -68,6 +73,7 @@ data class FilterState(
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val location: LocationUiFilter? = null,
+    val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
     val kidsAllowed: Boolean = false,
     val petsAllowed: Boolean = false,
