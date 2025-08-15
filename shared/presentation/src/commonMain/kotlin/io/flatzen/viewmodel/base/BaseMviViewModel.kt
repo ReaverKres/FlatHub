@@ -41,9 +41,7 @@ abstract class BaseMviViewModel<A : MviAction, S : MviState,EV: MviEvent, EF : M
             .onEach {
                 _state.value = it
                 //TODO: Вставить проверку на дебаг сборку
-//                Logger.(CoreConstants.STATE_LOG) {
-//                    "$this $it"
-//                }
+                println("STATE_LOG ${"$this $it"}")
 
             }
             .launchIn(viewModelScope)

@@ -50,6 +50,7 @@ val dataModule = module {
             kufarRepository = get(),
             onlinerRepository = get(),
             realtRepository = get(),
+            filterRepository = get(),
             flatsDao = get()
         )
     }

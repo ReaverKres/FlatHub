@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.zip
+import repository.fillter.FilterRepository
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
@@ -20,6 +21,7 @@ class MergedRepositoryImpl(
     private val kufarRepository: KufarRepository,
     private val onlinerRepository: OnlinerRepository,
     private val realtRepository: RealtRepository,
+    private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
 ) : MergedRepository {
 
@@ -54,12 +56,22 @@ class MergedRepositoryImpl(
 
     override fun getAllFlatsFromLocalDb(): Flow<List<AppFlat>> {
         return flatsDao.getAllAsFlow().map { flats ->
-            applyLocalSortOrFilters(flats)
+            flats.sortedByDescending { it.publishedAt }
         }
     }
 
-    private fun applyLocalSortOrFilters(flats: List<AppFlat>) =
-        flats.sortedByDescending { it.publishedAt }
+    private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
+        val currentFilter = filterRepository.cashedFilterFlow.replayCache.firstOrNull()
+        return flats.sortedByDescending { it.publishedAt }.apply {
+            if (currentFilter?.addressRequestModel.isNullOrEmpty().not()){
+                return filter { flat ->
+                    currentFilter?.addressRequestModel.orEmpty().any { filterAddress ->
+                        flat.address?.contains(filterAddress.address, ignoreCase = true) == true
+                    }
+                }
+            }
+        }
+    }
 
     override fun getFavoritesFromLocalDb(): Flow<List<AppFlat>> {
         return flatsDao.getAllFavoritesAsFlow()
