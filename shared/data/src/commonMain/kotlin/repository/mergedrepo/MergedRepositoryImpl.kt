@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.zip
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
@@ -61,11 +62,11 @@ class MergedRepositoryImpl(
     }
 
     private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
-        val currentFilter = filterRepository.cashedFilterFlow.replayCache.firstOrNull()
+        val currentFilter = filterRepository.lastFilter()
         return flats.sortedByDescending { it.publishedAt }.apply {
-            if (currentFilter?.addressRequestModel.isNullOrEmpty().not()){
+            if (currentFilter.addressRequestModel.isEmpty().not()){
                 return filter { flat ->
-                    currentFilter?.addressRequestModel.orEmpty().any { filterAddress ->
+                    currentFilter.addressRequestModel.any { filterAddress ->
                         flat.address?.contains(filterAddress.address, ignoreCase = true) == true
                     }
                 }

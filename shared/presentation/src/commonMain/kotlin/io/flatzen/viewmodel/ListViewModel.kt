@@ -22,17 +22,22 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
 
 sealed interface FlatListScreenAction : MviAction {
-    class SearchFlats(val isLoadMore: Boolean) : FlatListScreenAction
-    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatListScreenAction
+    class SearchFlats(val isLoadMore: Boolean, val isRefreshing: Boolean = false) :
+        FlatListScreenAction
+
+    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatListScreenAction
     class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
+    data object ScreenVisible : FlatListScreenAction
 }
 
 @Immutable
 data class FlatListScreenState(
     val isLoading: Boolean,
+    val isRefreshing: Boolean,
     val isLoadingMore: Boolean,
     val noFlatsToLoadMore: Boolean,
     val flatList: List<UiFlat>
@@ -59,8 +64,13 @@ data class UiPrice(
 )
 
 sealed interface FlatListEvents : MviEvent {
-    data class AllFlatsLoaded(val allFlats: LCE<List<AppFlat>>, val isLoadMore: Boolean) :
+    data class AllFlatsLoaded(
+        val allFlats: LCE<List<AppFlat>>,
+        val isLoadMore: Boolean,
+        val isRefreshing: Boolean
+    ) :
         FlatListEvents
+
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
     data class FavoritesLoaded(val favoriteFlats: LCE<List<AppFlat>>) : FlatListEvents
 }
@@ -75,6 +85,7 @@ class FlatSearchViewModel(
 
     override fun initialState(): FlatListScreenState = FlatListScreenState(
         isLoading = true,
+        isRefreshing = false,
         isLoadingMore = false,
         flatList = emptyList(),
         noFlatsToLoadMore = false
@@ -82,14 +93,22 @@ class FlatSearchViewModel(
 
     init {
         viewModelScope.launch {
-            filterRepository.updateFilter(CommonFilterRequestModel())
+            if (filterRepository.cashedFilterFlow.replayCache.isEmpty()) {
+                filterRepository.updateFilter(CommonFilterRequestModel(), true)
+            } else {
+                val last = filterRepository.lastFilter()
+                val lastNet = filterRepository.lastNetworkFilter
+                if (lastNet != last) {
+                    filterRepository.updateFilter(last, true)
+                }
+            }
         }
 
-        filterRepository.cashedFilterFlow
-            .distinctUntilChanged()
-            .onEach { newFilters ->
+        filterRepository.cashedFilterFlow.onEach { newFilters ->
                 noFlatsToLoadMore = false
-                onIntent(FlatListScreenAction.SearchFlats(false))
+                if (newFilters.doNetworkCall) {
+                    onIntent(FlatListScreenAction.SearchFlats(false))
+                }
             }
             .launchIn(viewModelScope)
 
@@ -105,11 +124,19 @@ class FlatSearchViewModel(
         currentState: FlatListScreenState
     ): Flow<FlatListEvents> {
         return when (action) {
+            is FlatListScreenAction.ScreenVisible -> {
+                val last = filterRepository.lastFilter()
+                val lastNet = filterRepository.lastNetworkFilter
+                if (lastNet != last) {
+                    filterRepository.updateFilter(last, true)
+                }
+                flowOf()
+            }
             is FlatListScreenAction.SearchFlats -> {
-                if(currentState.flatList.isNotEmpty() &&
-                    connectionMonitor.isNetworkAvailable.first().not()
-                    ) { return flowOf() }
-                if(noFlatsToLoadMore) {
+                if (connectionMonitor.isNetworkAvailable.first().not()) {
+                    return flowOf()
+                }
+                if (noFlatsToLoadMore && action.isRefreshing.not()) {
                     return flowOf()
                 }
                 if (action.isLoadMore) {
@@ -117,30 +144,36 @@ class FlatSearchViewModel(
                 } else {
                     filterRepository.currentAppPage = 1
                 }
-                loadAllFlats(action.isLoadMore)
+                loadAllFlats(action.isLoadMore, action.isRefreshing)
             }
+
             is FlatListScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).asLCE().map {
                     FlatListEvents.FlatUpdateInFavorite(it)
                 }
             }
+
             is FlatListScreenAction.LoadFavorites -> {
                 flowOf(FlatListEvents.FavoritesLoaded(action.favoritesFlats))
             }
         }
     }
 
-    private suspend fun loadAllFlats(isLoadMore: Boolean): Flow<FlatListEvents> {
+    private suspend fun loadAllFlats(
+        isLoadMore: Boolean,
+        isRefreshing: Boolean
+    ): Flow<FlatListEvents> {
         return when {
             connectionMonitor.isNetworkAvailable.first().not() -> {
                 mergedRepository.getAllFlatsFromLocalDb()
                     .asLCE()
-                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
+                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore, isRefreshing) }
             }
+
             else -> {
                 mergedRepository.searchFlats()
                     .asLCE()
-                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore) }
+                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore, isRefreshing) }
             }
         }
     }
@@ -152,12 +185,16 @@ class FlatSearchViewModel(
         return when (event) {
             is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
-                    currentState.copy(isLoading = true, isLoadingMore = event.isLoadMore)
+                    currentState.copy(
+                        isLoading = true,
+                        isLoadingMore = event.isLoadMore,
+                        isRefreshing = event.isRefreshing
+                    )
                 },
                 onError = { message, _ ->
-                    currentState
+                    currentState.copy(isRefreshing = false)
                 },
-                onSuccess = { flatsLoaded(it, currentState, event.isLoadMore) }
+                onSuccess = { flatsLoaded(it, currentState, event.isLoadMore, event.isRefreshing) }
             )
 
             is FlatListEvents.FlatUpdateInFavorite -> event.flat.process(
@@ -185,12 +222,12 @@ class FlatSearchViewModel(
                     currentState.copy(
                         isLoading = false,
                         flatList = currentState.flatList.map { flatOnScreen ->
-                        if (flatOnScreen.adId in favIds) {
-                            flatOnScreen.copy(savedInFavorite = true)
-                        } else {
-                            flatOnScreen.copy(savedInFavorite = false)
-                        }
-                    })
+                            if (flatOnScreen.adId in favIds) {
+                                flatOnScreen.copy(savedInFavorite = true)
+                            } else {
+                                flatOnScreen.copy(savedInFavorite = false)
+                            }
+                        })
                 }
             )
         }
@@ -199,14 +236,16 @@ class FlatSearchViewModel(
     private fun flatsLoaded(
         flats: List<AppFlat>,
         currentState: FlatListScreenState,
-        isLoadMore: Boolean = false
+        isLoadMore: Boolean = false,
+        isRefreshing: Boolean
     ): FlatListScreenState {
         val uiFlatList = appFlatListToUiFlatList(flats)
 
-        return if(currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()){
+        return if (currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()) {
             noFlatsToLoadMore = true
             currentState.copy(
                 isLoading = false,
+                isRefreshing = false,
                 isLoadingMore = false,
                 flatList = currentState.flatList,
                 noFlatsToLoadMore = true
@@ -214,6 +253,7 @@ class FlatSearchViewModel(
         } else if (isLoadMore) {
             currentState.copy(
                 noFlatsToLoadMore = false,
+                isRefreshing = false,
                 isLoading = false,
                 isLoadingMore = false,
                 flatList = currentState.flatList + uiFlatList
@@ -221,6 +261,7 @@ class FlatSearchViewModel(
         } else {
             currentState.copy(
                 noFlatsToLoadMore = false,
+                isRefreshing = false,
                 isLoading = false,
                 isLoadingMore = false,
                 flatList = uiFlatList

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import server_response.OnlinerListResponse
 
 class OnlinerRepositoryImpl(
@@ -34,7 +35,7 @@ class OnlinerRepositoryImpl(
 ) : OnlinerRepository {
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
-        val filter = filterRepository.cashedFilterFlow.first()
+        val filter = filterRepository.lastFilter()
         val params = OnlinerApi.createParams(
             minPrice = filter.priceFrom?.toInt(),
             maxPrice = filter.priceTo?.toInt(),
@@ -55,7 +56,7 @@ class OnlinerRepositoryImpl(
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
             }.first()
         emit(flatFromList)
-        if (connectionMonitor.isNetworkAvailable.first()) {
+        if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
             val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
             val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)
             emit(onlinerDetailFlat)

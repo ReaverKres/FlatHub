@@ -12,6 +12,8 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import repository.mergedrepo.MergedRepository
 
@@ -20,6 +22,7 @@ data class UiDetailFlat(
     val adId: Long,
     val platform: FlatPlatform,
     val isDetailDataLoaded: Boolean?,
+    val savedInFavorite: Boolean,
     val flatUrl: String,
     val description: String,
     val imageUrls: List<String>,
@@ -61,6 +64,7 @@ data class ContactInformationUi(
 
 sealed interface FlatDetailScreenAction : MviAction {
     data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) : FlatDetailScreenAction
+    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatDetailScreenAction
 }
 
 @Immutable
@@ -91,6 +95,11 @@ class FlatDetailViewModel(
         return when (action) {
             is FlatDetailScreenAction.LoadFlatDetails -> {
                 loadFlatDetails(action.flatPlatform, action.flatId)
+            }
+            is FlatDetailScreenAction.ClickOnFavorite -> {
+                mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).map {
+                    FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().first())
+                }
             }
         }
     }
@@ -133,6 +142,7 @@ class FlatDetailViewModel(
         return UiDetailFlat(
             adId = appFlat.adId,
             isDetailDataLoaded = appFlat.flatDevInfo.isDetailLoaded,
+            savedInFavorite = appFlat.flatSavedInFavorites,
             platform = appFlat.flatPlatform,
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),

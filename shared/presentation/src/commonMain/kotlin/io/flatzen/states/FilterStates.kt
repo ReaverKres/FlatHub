@@ -83,4 +83,12 @@ data class FilterState(
     val floorTo: Int? = null,
     val totalAreaFrom: Double? = null,
     val totalAreaTo: Double? = null
-)
+) {
+    fun isLocationFilterActive(): Boolean {
+        return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
+    }
+
+    fun isAnyFilterActive(): Boolean {
+        return false
+    }
+}

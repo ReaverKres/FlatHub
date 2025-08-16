@@ -36,6 +36,7 @@ import io.flatzen.screens.list.LoadingContent
 import io.flatzen.viewmodel.ContactInformationUi
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
+import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.UiDetailFlat
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,7 +85,10 @@ fun DetailScreen(
             state.flat != null -> {
                 FlatDetailContent(
                     flat = state.flat!!,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    clickOnFavorite = {
+
+                    }
                 )
             }
 
@@ -98,14 +102,15 @@ fun DetailScreen(
 @Composable
 private fun FlatDetailContent(
     flat: UiDetailFlat,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    clickOnFavorite: () -> Unit
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         // Изображения
         if (flat.imageUrls.isNotEmpty()) {
-            ImagePager(imageUrls = flat.imageUrls)
+            ImagePager(imageUrls = flat.imageUrls, flat.savedInFavorite, clickOnFavorite)
         }
 
         // Основная информация

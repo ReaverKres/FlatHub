@@ -1,5 +1,6 @@
 package io.flatzen.screens.list
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -34,20 +35,23 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,14 +65,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.viewmodel.FilterViewModel
 import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.FlatSearchViewModel
 import io.flatzen.viewmodel.UiFlat
 import io.flatzen.widgets.AppAsyncImage
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.random.Random
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
@@ -78,29 +84,67 @@ fun ListScreen(
     val viewModel = koinViewModel<FlatSearchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+//    val filterViewModel = koinViewModel<FilterViewModel>()
+//    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(FlatListScreenAction.ScreenVisible)
+    }
+
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
-            FloatingActionButton(onClick = navigateToFilters) {
-                Icon(Icons.Default.Build, contentDescription = "Фильтры")
+            Box {
+                FloatingActionButton(onClick = navigateToFilters) {
+                    Icon(Icons.Default.Build, contentDescription = "Фильтры")
+                }
+
+//                if (filterState.filters.isAnyFilterActive()) {
+//                    Box(
+//                        modifier = Modifier
+//                            .align(Alignment.TopEnd)
+//                            .size(12.dp)
+//                            .clip(CircleShape)
+//                            .background(Color.Red)
+//                    )
+//                }
             }
         }
     ) { paddingValues ->
-        when {
-            state.isLoading && state.isLoadingMore.not() -> LoadingContent()
-            state.flatList.isEmpty() -> EmptyScreenContent()
-            else -> FlatGrid(
-                isLoadingMore = state.isLoadingMore,
-                noFlatsToLoadMore = state.noFlatsToLoadMore,
-                flats = state.flatList,
-                onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
-                clickOnFavorite = {
-                    viewModel.onIntent(FlatListScreenAction.ClickOnFavorite(it.flatPlatform, it.adId))
-                },
-                onLoadMore = {
-                    viewModel.onIntent(FlatListScreenAction.SearchFlats(true))
+        PullToRefreshBox(
+            onRefresh = {
+                if (state.isLoading.not()) {
+                    viewModel.onIntent(
+                        FlatListScreenAction.SearchFlats(
+                            isLoadMore = false,
+                            isRefreshing = true
+                        )
+                    )
                 }
-            )
+            },
+            isRefreshing = state.isRefreshing
+        ) {
+            when {
+                state.isLoading && state.isLoadingMore.not() -> LoadingContent()
+                state.flatList.isEmpty() -> EmptyScreenContent()
+                else -> FlatGrid(
+                    isLoadingMore = state.isLoadingMore,
+                    noFlatsToLoadMore = state.noFlatsToLoadMore,
+                    flats = state.flatList,
+                    onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                    clickOnFavorite = {
+                        viewModel.onIntent(
+                            FlatListScreenAction.ClickOnFavorite(
+                                it.flatPlatform,
+                                it.adId
+                            )
+                        )
+                    },
+                    onLoadMore = {
+                        viewModel.onIntent(FlatListScreenAction.SearchFlats(true))
+                    }
+                )
+            }
         }
     }
 }
@@ -214,6 +258,7 @@ private fun SkeletonFlatCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlatGrid(
     modifier: Modifier = Modifier,
@@ -225,17 +270,28 @@ fun FlatGrid(
     onLoadMore: (Int) -> Unit
 ) {
     val lazyGridState: LazyGridState = rememberLazyGridState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val firstVisibleItemIndex by remember {
+        derivedStateOf { lazyGridState.firstVisibleItemIndex }
+    }
+
+    val showScrollToTopBtn by remember {
+        derivedStateOf { firstVisibleItemIndex >= 2 } // Появляется после прокрутки двух строк
+    }
+
     LaunchedEffect(flats) {
         snapshotFlow {
             lazyGridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
         }
             .distinctUntilChanged()
             .collect { lastVisibleIndex ->
-                if(lastVisibleIndex == flats.lastIndex) {
+                if (lastVisibleIndex == flats.lastIndex) {
                     onLoadMore(lastVisibleIndex)
                 }
             }
     }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -271,10 +327,38 @@ fun FlatGrid(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .padding(horizontal = 56.dp + 6.dp)
-                ,
+                    .padding(horizontal = 56.dp + 6.dp),
                 textAlign = TextAlign.Center
             )
+        }
+
+        AnimatedVisibility(
+            visible = false/*showScrollToTopBtn*/,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        if (firstVisibleItemIndex < 8) {
+                            lazyGridState.animateScrollToItem(0)
+                        } else {
+                            lazyGridState.scrollToItem(8)
+                            lazyGridState.animateScrollToItem(0)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowUp,
+                    contentDescription = "Scroll to top",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
@@ -298,7 +382,7 @@ private fun FlatCard(
                 .padding(8.dp)
         ) {
             if (flat.imageUrls.isNotEmpty()) {
-                ImagePager(flat.imageUrls, flat.savedInFavorite,  clickOnFavorite)
+                ImagePager(flat.imageUrls, flat.savedInFavorite, clickOnFavorite)
             } else {
                 FlatEmptyImage()
             }
@@ -326,14 +410,14 @@ private fun FlatCard(
                 }
             }
 
-           flat.publishedAt?.let { date ->
-               Spacer(Modifier.height(4.dp))
+            flat.publishedAt?.let { date ->
+                Spacer(Modifier.height(4.dp))
 
-               Text(
-                   text = date,
-                   style = MaterialTheme.typography.bodyMedium
-               )
-           }
+                Text(
+                    text = date,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             Spacer(Modifier.height(4.dp))
 
@@ -382,7 +466,7 @@ fun ImagePager(
     imageUrls: List<String>,
     savedInFavorite: Boolean = false,
     clickOnFavorite: () -> Unit = {},
-    ) {
+) {
     val pagerState = rememberPagerState { imageUrls.size }
 
     Box(

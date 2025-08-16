@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
@@ -29,7 +30,7 @@ class KufarRepositoryImpl(
         if(filterRepository.currentAppPage == 1) {
             pageCursor = null
         }
-        val filter = filterRepository.cashedFilterFlow.first()
+        val filter = filterRepository.lastFilter()
 //        val metroIds: List<Int>? = (
 //            filter.selectedMetroStationIds.takeIf { it.isNotEmpty() }?.toList()
 //                ?: filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }

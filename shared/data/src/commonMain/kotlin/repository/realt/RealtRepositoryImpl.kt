@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
 class RealtRepositoryImpl(
@@ -33,7 +34,7 @@ class RealtRepositoryImpl(
     private var lastEmitList: List<AppFlat>? = emptyList()
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
-        val filter = filterRepository.cashedFilterFlow.first()
+        val filter = filterRepository.lastFilter()
         val onlyOwner = if(filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
             true
         } else null
@@ -69,7 +70,12 @@ class RealtRepositoryImpl(
                 query = RealtGraphqlRequest.QUERY
             )
         ).data?.searchObjects?.body?.results?.filterNotNull()?.map { realtResponseMapper.map(it) }
-        emit(realtFlatList ?: listOf())
+        if(lastEmitList == realtFlatList) {
+            emit(listOf())
+        } else {
+            lastEmitList = realtFlatList
+            emit(realtFlatList ?: listOf())
+        }
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> {
