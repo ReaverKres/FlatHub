@@ -6,8 +6,6 @@ import entities.CommonFilterRequestModel
 import entities.City
 import entities.Country
 import entities.LocationFilter
-import entities.MetroLine
-import entities.MetroStation
 import entities.MetroStations
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
@@ -23,20 +21,21 @@ import io.flatzen.states.UiCountry
 import io.flatzen.states.UiMetroStation
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
-    data class UpdateFilter(val newFilterState: FilterState) : FilterScreenAction
+    data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) : FilterScreenAction
     data class UpdateCityFilter(val newFilterState: FilterState) : FilterScreenAction
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
-    object ClearFilters : FilterScreenAction
+    data object ClearAllFilters : FilterScreenAction
+    data object ClearLocationFilters : FilterScreenAction
 }
 
 // State
@@ -62,8 +61,8 @@ class FilterViewModel(
 
     init {
         filterRepository.cashedFilterFlow.onEach { newFilters ->
-            val filterState = mapFilterModelToFilterState(newFilters)
-            onIntent(FilterScreenAction.UpdateFilter(filterState))
+            val filterState = mapFilterModelToFilterState(newFilters.commonFilterRequestModel)
+            onIntent(FilterScreenAction.UpdateFilter(filterState, newFilters.doNetworkCall))
         }.launchIn(viewModelScope)
     }
 
@@ -73,7 +72,7 @@ class FilterViewModel(
     ): Flow<FilterScreenEvent> {
         return when (action) {
             is FilterScreenAction.UpdateFilter -> {
-                flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState, true))
+                flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState, action.doNetworkCall))
             }
 
             is FilterScreenAction.UpdateAddressFilter -> {
@@ -98,8 +97,17 @@ class FilterViewModel(
                 flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
             }
 
-            is FilterScreenAction.ClearFilters -> {
+            is FilterScreenAction.ClearAllFilters -> {
                 flowOf(FilterScreenEvent.FiltersUpdated(FilterState()))
+            }
+
+            is FilterScreenAction.ClearLocationFilters -> {
+                val filter: FilterState = currentState.filters.copy(
+                    metroStationsState = MetroStationsMapper.allStationsOrderedForUi(),
+                    location = null,
+                    address = null,
+                )
+                flowOf(FilterScreenEvent.FiltersUpdated(filter))
             }
         }
     }
@@ -113,11 +121,8 @@ class FilterViewModel(
                 currentState.copy(filters = event.newFilterState).also {
                     val filterModel: CommonFilterRequestModel =
                         mapFilterStateToFilterModel(it.filters)
-                    if (filterModel != filterRepository.cashedFilterFlow.replayCache.firstOrNull()) {
-                        filterRepository.updateFilter(mapFilterStateToFilterModel(it.filters))
-                        if (event.doNetworkCall) {
-                            mergedRepository.searchFlats()
-                        }
+                    if (filterModel != filterRepository.lastFilter()) {
+                        filterRepository.updateFilter(mapFilterStateToFilterModel(it.filters), event.doNetworkCall)
                     }
                 }
             }

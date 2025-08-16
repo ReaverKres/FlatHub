@@ -1,10 +1,11 @@
 [versions]
 coroutines = "1.10.2"
-agp = "8.9.3"
+agp = "8.11.1"
 androidx-activityCompose = "1.10.1"
 androidx-ui-tooling = "1.7.8"
 coil = "3.2.0"
 compose-multiplatform = "1.8.2"
+compose-multiplatform-backhandler = "1.8.2"
 koin = "4.1.0"
 kotlin = "2.2.0"
 ktor = "3.2.1"
@@ -52,6 +53,7 @@ ksoup-html = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
 lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
 material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+compose-multiplatform-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform-backhandler" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVer"}
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }

@@ -5,10 +5,15 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface FilterRepository {
 
-    val cashedFilterFlow: SharedFlow<CommonFilterRequestModel>
+    val cashedFilterFlow: SharedFlow<FilterInfo>
+    var lastNetworkFilter: CommonFilterRequestModel?
     var currentAppPage: Int
 
     suspend fun updateFilter(
-        commonFilterRequestModel: CommonFilterRequestModel
+        commonFilterRequestModel: CommonFilterRequestModel,
+        doNetworkCall: Boolean
     )
 }
+
+fun FilterRepository.lastFilter(): CommonFilterRequestModel =
+    cashedFilterFlow.replayCache.firstOrNull()?.commonFilterRequestModel ?: CommonFilterRequestModel()
