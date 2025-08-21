@@ -63,15 +63,26 @@ class MergedRepositoryImpl(
 
     private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
         val currentFilter = filterRepository.lastFilter()
-        return flats.sortedByDescending { it.publishedAt }.apply {
-            if (currentFilter.addressRequestModel.isEmpty().not()){
-                return filter { flat ->
-                    currentFilter.addressRequestModel.any { filterAddress ->
-                        flat.address?.contains(filterAddress.address, ignoreCase = true) == true
-                    }
+        var resultList = flats.sortedByDescending { it.publishedAt }
+
+        if (currentFilter.addressRequestModel.isNotEmpty()) {
+            resultList = resultList.filter { flat ->
+                currentFilter.addressRequestModel.any { filterAddress ->
+                    flat.address?.contains(filterAddress.address, ignoreCase = true) == true
                 }
             }
         }
+
+        val selectedMetroStation = currentFilter.metroStations.filter { it.selected }
+        if (selectedMetroStation.isNotEmpty()) {
+            resultList = resultList.filter { flat ->
+                selectedMetroStation.any { filterMetroStation ->
+                    flat.metroStation == filterMetroStation.name
+                }
+            }
+        }
+
+        return resultList
     }
 
     override fun getFavoritesFromLocalDb(): Flow<List<AppFlat>> {
