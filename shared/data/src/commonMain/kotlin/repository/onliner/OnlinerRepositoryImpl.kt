@@ -36,10 +36,11 @@ class OnlinerRepositoryImpl(
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.lastFilter()
+        val metroLines = filter.metroStations.map { it.line.name.lowercase() }.distinct()
         val params = OnlinerApi.createParams(
             minPrice = filter.priceFrom?.toInt(),
             maxPrice = filter.priceTo?.toInt(),
-            metroLines = filter.metroStations.map { it.line.name.lowercase() },
+            metroLines = metroLines,
             rooms = filter.numberOfRooms,
             onlyOwner = filter.fromOwnerOnly,
             page = filterRepository.currentAppPage

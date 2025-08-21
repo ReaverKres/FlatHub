@@ -31,16 +31,12 @@ class KufarRepositoryImpl(
             pageCursor = null
         }
         val filter = filterRepository.lastFilter()
-//        val metroIds: List<Int>? = (
-//            filter.selectedMetroStationIds.takeIf { it.isNotEmpty() }?.toList()
-//                ?: filter.metroLine.flatMap { KufarMetroStations.getStationIdsByLine(it) }
-//                    .distinct()
-//            ).takeIf { it.isNotEmpty() }
+        val metroIds: List<Int>? = filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
 
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
-//            metroIds = metroIds,
+            metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,
             cursor = pageCursor

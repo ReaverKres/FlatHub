@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.SharedFlow
 interface FilterRepository {
 
     val cashedFilterFlow: SharedFlow<FilterInfo>
-    var lastNetworkFilter: CommonFilterRequestModel?
+    val lastNetworkFilter: CommonFilterRequestModel?
     var currentAppPage: Int
 
     suspend fun updateFilter(
