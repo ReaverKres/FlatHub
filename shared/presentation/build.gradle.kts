@@ -31,6 +31,9 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+
+            // MapComposeMP для MapState и API
+            implementation(libs.mp.maps)
         }
     }
 }

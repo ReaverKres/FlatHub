@@ -14,7 +14,9 @@ import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
+import maps.CachedOsmTileProvider
 import org.koin.dsl.module
+import ovh.plrapps.mapcompose.core.TileStreamProvider
 import repository.fillter.FilterRepository
 import repository.fillter.FilterRepositoryImpl
 import repository.kufar.KufarRepository
@@ -87,4 +89,6 @@ val dataModule = module {
             flatsDao = get()
         )
     }
+
+    single<TileStreamProvider> { CachedOsmTileProvider(httpClient = get()) }
 }

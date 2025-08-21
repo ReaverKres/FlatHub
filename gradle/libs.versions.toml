@@ -13,6 +13,7 @@ ktorfit = "2.6.1"
 ksoup = "0.2.4"
 materialIconsCore = "1.7.3"
 navigationCompose = "2.9.0-beta03"
+mapComposeMP = "0.10.0"
 lifecycleCompose = "2.9.1"
 kotlinStdlib = "2.2.0"
 kotlinTest = "2.2.0"
@@ -54,6 +55,7 @@ lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name =
 material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 compose-multiplatform-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform-backhandler" }
+mp-maps = { module = "ovh.plrapps:mapcompose-mp", version.ref = "mapComposeMP"}
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVer"}
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }

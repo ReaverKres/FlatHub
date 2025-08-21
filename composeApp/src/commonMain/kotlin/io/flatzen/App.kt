@@ -8,14 +8,27 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -31,6 +44,9 @@ object FavoritesGraph
 @Serializable
 object SettingsGraph
 
+@Serializable
+object MapGraph
+
 // Вложенные экраны
 @Serializable
 object ListScreenDestination
@@ -40,6 +56,9 @@ object FavoritesScreenDestination
 
 @Serializable
 object SettingsScreenDestination
+
+@Serializable
+object MapScreenDestination
 
 @Serializable
 data class DetailScreenDestination(val flatPlatform: FlatPlatform, val objectId: Long)
@@ -60,6 +79,7 @@ object MetroSelectScreenDestination
 val bottomNavItems = listOf(
     BottomNavItem(ListGraph, "Список", Icons.Default.List),
     BottomNavItem(FavoritesGraph, "Избранное", Icons.Default.Favorite),
+    BottomNavItem(MapGraph, "Карта", Icons.Default.LocationOn),
     BottomNavItem(SettingsGraph, "Настройки", Icons.Default.Settings)
 )
 data class BottomNavItem(val route: Any, val label: String, val icon: ImageVector)
@@ -79,7 +99,8 @@ fun App() {
         val showBottomBar = currentDestination?.route in listOf(
             ListScreenDestination::class.qualifiedName,
             FavoritesScreenDestination::class.qualifiedName,
-            SettingsScreenDestination::class.qualifiedName
+            SettingsScreenDestination::class.qualifiedName,
+            MapScreenDestination::class.qualifiedName
         )
 
         Scaffold(
@@ -151,6 +172,15 @@ fun App() {
                 ) {
                     composable<SettingsScreenDestination> {
                         io.flatzen.screens.settings.SettingsScreen()
+                    }
+                }
+
+                // Граф для вкладки "Карта"
+                navigation<MapGraph>(
+                    startDestination = MapScreenDestination
+                ) {
+                    composable<MapScreenDestination> {
+                        io.flatzen.screens.map.MapScreen()
                     }
                 }
 

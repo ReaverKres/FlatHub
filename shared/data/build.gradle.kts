@@ -44,6 +44,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
+                implementation(libs.mp.maps)
             }
             // Добавляем путь к сгенерированным KSP файлам
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
