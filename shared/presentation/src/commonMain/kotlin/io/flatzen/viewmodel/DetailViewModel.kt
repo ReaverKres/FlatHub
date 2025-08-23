@@ -14,6 +14,7 @@ import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import repository.mergedrepo.MergedRepository
 
@@ -98,7 +99,7 @@ class FlatDetailViewModel(
             }
             is FlatDetailScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).map {
-                    FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().first())
+                    FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().last())
                 }
             }
         }

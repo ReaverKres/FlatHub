@@ -1,9 +1,7 @@
-package io.flatzen.viewmodel
+package io.flatzen.viewmodel.list
 
 import entities.AppFlat
-import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
-import entities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
@@ -12,10 +10,8 @@ import io.flatzen.error_handling.process
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
-import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -35,41 +31,7 @@ sealed interface FlatListScreenAction : MviAction {
     data object ScreenVisible : FlatListScreenAction
 }
 
-@Immutable
-data class FlatListScreenState(
-    val isLoading: Boolean,
-    val isRefreshing: Boolean,
-    val isLoadingMore: Boolean,
-    val noFlatsToLoadMore: Boolean,
-    val flatList: List<UiFlat>
-) : MviState
 
-@Immutable
-data class UiFlat(
-    val adId: Long,
-    val flatPlatform: FlatPlatform,
-    val savedInFavorite: Boolean,
-    val imageUrls: List<String>,
-    val priceUsd: UiPrice,
-    val priceByn: UiPrice,
-    val numberOfRooms: Int?,
-    val publishedAt: String?,
-    val metroStation: String,
-    val address: String,
-    val coordinates: UiCoordinates?
-)
-
-@Immutable
-data class UiCoordinates(
-    val latitude: Double,
-    val longitude: Double
-)
-
-@Immutable
-data class UiPrice(
-    val price: Double?,
-    val currency: String
-)
 
 sealed interface FlatListEvents : MviEvent {
     data class AllFlatsLoaded(
@@ -247,7 +209,7 @@ class FlatSearchViewModel(
         isLoadMore: Boolean = false,
         isRefreshing: Boolean
     ): FlatListScreenState {
-        val uiFlatList = appFlatListToUiFlatList(flats)
+        val uiFlatList = UiFlat.appFlatListToUiFlatList(flats)
 
         return if (currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()) {
             noFlatsToLoadMore = true
@@ -273,32 +235,6 @@ class FlatSearchViewModel(
                 isLoading = false,
                 isLoadingMore = false,
                 flatList = uiFlatList
-            )
-        }
-    }
-
-    private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
-        return appFlatList.map {
-            UiFlat(
-                adId = it.adId,
-                flatPlatform = it.flatPlatform,
-                imageUrls = it.imageUrls ?: listOf(),
-                savedInFavorite = it.flatSavedInFavorites,
-                priceByn = UiPrice(
-                    price = it.priceByn,
-                    currency = "BYN"
-                ),
-                priceUsd = UiPrice(
-                    price = it.priceUsd,
-                    currency = "USD"
-                ),
-                numberOfRooms = it.rooms,
-                publishedAt = it.publishedAtUi,
-                address = it.address.orEmpty(),
-                metroStation = it.metroStation.orEmpty(),
-                coordinates = it.coordinates?.let {
-                    UiCoordinates(it.latitude, it.longitude)
-                }
             )
         }
     }

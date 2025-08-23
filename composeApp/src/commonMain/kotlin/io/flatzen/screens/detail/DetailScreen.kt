@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -23,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -31,13 +34,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
-import io.flatzen.screens.list.ImagePager
-import io.flatzen.screens.list.LoadingContent
 import io.flatzen.viewmodel.ContactInformationUi
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
-import io.flatzen.viewmodel.FlatListScreenAction
 import io.flatzen.viewmodel.UiDetailFlat
+import io.flatzen.widgets.FlatImagePager
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +88,12 @@ fun DetailScreen(
                     flat = state.flat!!,
                     modifier = Modifier.fillMaxSize(),
                     clickOnFavorite = {
-
+                        viewModel.onIntent(
+                            FlatDetailScreenAction.ClickOnFavorite(
+                                state.flat!!.platform,
+                                state.flat!!.adId
+                            )
+                        )
                     }
                 )
             }
@@ -109,9 +115,13 @@ private fun FlatDetailContent(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         // Изображения
-        if (flat.imageUrls.isNotEmpty()) {
-            ImagePager(imageUrls = flat.imageUrls, flat.savedInFavorite, clickOnFavorite)
-        }
+        FlatImagePager(
+            modifier = Modifier.height(300.dp),
+            imageUrls = flat.imageUrls,
+            contentScale = ContentScale.Fit,
+            savedInFavorite = flat.savedInFavorite,
+            clickOnFavorite = clickOnFavorite
+        )
 
         // Основная информация
         Column(
@@ -128,7 +138,7 @@ private fun FlatDetailContent(
 
             SourceLinkSection(flat.platform, flat.flatUrl)
 
-            if (flat.isDetailDataLoaded == true){
+            if (flat.isDetailDataLoaded == true) {
                 if (hasContactData(flat.contactInformation)) {
                     ContactInfoSection(contactInfo = flat.contactInformation)
                 } else {
@@ -196,6 +206,7 @@ private fun FlatDetailContent(
                 HorizontalDivider()
                 LocationSection(
                     district = flat.district,
+                    address = flat.address,
                     metroStation = flat.metroStation
                 )
             }
@@ -371,10 +382,13 @@ private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
 }
 
 @Composable
-private fun LocationSection(district: String?, metroStation: String?) {
+private fun LocationSection(district: String?, address: String?, metroStation: String?) {
     SectionCard(title = "Местоположение") {
         district?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Район", it)
+        }
+        address?.takeIf { it.isNotBlank() }?.let {
+            InfoRow("Адрес", it)
         }
         metroStation?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Метро", it)

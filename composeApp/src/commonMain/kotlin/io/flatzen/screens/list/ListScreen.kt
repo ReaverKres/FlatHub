@@ -27,14 +27,9 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,8 +51,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,11 +58,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
-import io.flatzen.viewmodel.FilterViewModel
-import io.flatzen.viewmodel.FlatListScreenAction
-import io.flatzen.viewmodel.FlatSearchViewModel
-import io.flatzen.viewmodel.UiFlat
-import io.flatzen.widgets.AppAsyncImage
+import io.flatzen.viewmodel.list.FlatListScreenAction
+import io.flatzen.viewmodel.list.FlatSearchViewModel
+import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.widgets.FlatImagePager
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -201,22 +193,12 @@ private fun SkeletonFlatCard(
             // Скелетон цены USD
             ShimmerBox(
                 modifier = Modifier
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth(0.7f)
                     .height(20.dp),
                 shimmerProgress = shimmerProgress
             )
 
             Spacer(Modifier.height(4.dp))
-
-            // Скелетон цены BYN
-            ShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(16.dp),
-                shimmerProgress = shimmerProgress
-            )
-
-            Spacer(Modifier.height(8.dp))
 
             // Скелетон количества комнат
             ShimmerBox(
@@ -381,11 +363,14 @@ private fun FlatCard(
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
-            if (flat.imageUrls.isNotEmpty()) {
-                ImagePager(flat.imageUrls, flat.savedInFavorite, clickOnFavorite)
-            } else {
-                FlatEmptyImage()
-            }
+            FlatImagePager(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                imageUrls = flat.imageUrls,
+                savedInFavorite = flat.savedInFavorite,
+                clickOnFavorite = clickOnFavorite
+            )
 
             Spacer(Modifier.height(8.dp))
 
@@ -440,86 +425,6 @@ private fun FlatCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-    }
-}
-
-@Composable
-private fun FlatEmptyImage() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Face,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-fun ImagePager(
-    imageUrls: List<String>,
-    savedInFavorite: Boolean = false,
-    clickOnFavorite: () -> Unit = {},
-) {
-    val pagerState = rememberPagerState { imageUrls.size }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            AppAsyncImage(
-                imageUrl = imageUrls[page],
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        IconButton(
-            onClick = { clickOnFavorite() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(8.dp)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                contentDescription = "Добавить в избранное",
-                tint = if (savedInFavorite) Color.Red else Color.White.copy(alpha = 0.8f),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        // Индикатор страниц
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            repeat(imageUrls.size) { index ->
-                val color = if (index == pagerState.currentPage) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                }
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                )
-            }
         }
     }
 }

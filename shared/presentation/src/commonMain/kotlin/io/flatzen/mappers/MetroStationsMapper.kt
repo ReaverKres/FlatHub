@@ -2,8 +2,8 @@ package io.flatzen.mappers
 
 import entities.MetroStations
 import entities.MetroLine
-import io.flatzen.states.MetroLineState
-import io.flatzen.states.UiMetroStation
+import io.flatzen.viewmodel.filter.MetroLineState
+import io.flatzen.viewmodel.filter.UiMetroStation
 
 object MetroStationsMapper {
 

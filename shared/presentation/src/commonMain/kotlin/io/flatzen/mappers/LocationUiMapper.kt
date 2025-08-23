@@ -1,7 +1,5 @@
 package io.flatzen.mappers
 
-import io.flatzen.states.UiCity
-
 object LocationUiMapper {
     data class UiCityItem(val code: String, val displayName: String)
 
