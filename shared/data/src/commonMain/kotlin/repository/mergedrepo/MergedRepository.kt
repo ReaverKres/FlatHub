@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface MergedRepository {
 
+    val lastEmittedFlats: Flow<List<AppFlat>>
+
     fun searchFlats(): Flow<List<AppFlat>>
 
     fun getFlatById(

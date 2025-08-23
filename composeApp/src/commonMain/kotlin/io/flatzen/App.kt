@@ -180,7 +180,14 @@ fun App() {
                     startDestination = MapScreenDestination
                 ) {
                     composable<MapScreenDestination> {
-                        io.flatzen.screens.map.MapScreen()
+                        io.flatzen.screens.map.MapScreen(
+                            navigateToDetails = { platform, id ->
+                                navController.navigate(DetailScreenDestination(platform, id))
+                            },
+                            navigateToFilters = {
+                                navController.navigate(FilterScreenDestination)
+                            }
+                        )
                     }
                 }
 
