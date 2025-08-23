@@ -3,6 +3,7 @@ package maps
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.http.Url
 import kotlinx.io.Buffer
 import kotlinx.io.RawSource
 import ovh.plrapps.mapcompose.core.TileStreamProvider
@@ -22,7 +23,7 @@ class CachedOsmTileProvider(
         val cacheKey = "$zoomLvl/$col/$row"
 
         return try {
-            // Проверяем кэш
+//            // Проверяем кэш
             val cachedData = cache[cacheKey]
             if (cachedData != null) {
                 return createRawSourceFromBytes(cachedData)
@@ -32,9 +33,9 @@ class CachedOsmTileProvider(
             val url = "https://tile.openstreetmap.org/$zoomLvl/$col/$row.png"
             val bytes: ByteArray = httpClient.get(url).body()
 
-            // Сохраняем в кэш (с ограничением размера)
+//            // Сохраняем в кэш (с ограничением размера)
             if (cache.size >= cacheSize) {
-                cache.clear() // Простая стратегия очистки
+                clearCache() // Простая стратегия очистки
             }
             cache[cacheKey] = bytes
 

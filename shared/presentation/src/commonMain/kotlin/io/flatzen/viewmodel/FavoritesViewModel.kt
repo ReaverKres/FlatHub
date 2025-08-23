@@ -110,7 +110,10 @@ class FavoritesViewModel(
                 numberOfRooms = it.rooms,
                 publishedAt = it.publishedAtUi,
                 address = it.address.orEmpty(),
-                metroStation = it.metroStation.orEmpty()
+                metroStation = it.metroStation.orEmpty(),
+                coordinates = it.coordinates?.let {
+                    UiCoordinates(it.latitude, it.longitude)
+                }
             )
         }
     }

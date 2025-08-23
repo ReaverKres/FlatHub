@@ -4,6 +4,7 @@ import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.first
@@ -26,6 +27,8 @@ class MergedRepositoryImpl(
     private val flatsDao: FlatsDao,
 ) : MergedRepository {
 
+    override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
+
     override fun searchFlats(): Flow<List<AppFlat>> {
         val loadedFromNetworkFlats = kufarRepository.searchFlats()
             .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
@@ -36,7 +39,9 @@ class MergedRepositoryImpl(
                     net.copy(flatSavedInFavorites = fromDb?.flatSavedInFavorites == true)
                 }
                 flatsDao.upsertAll(merged)
-                applyLocalSortOrFilters(merged)
+                val sortedFlatList = applyLocalSortOrFilters(merged)
+                lastEmittedFlats.emit(sortedFlatList)
+                sortedFlatList
             }
         return loadedFromNetworkFlats
     }

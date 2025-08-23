@@ -3,6 +3,7 @@ package io.flatzen.viewmodel
 import entities.AppFlat
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
+import entities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
@@ -54,7 +55,14 @@ data class UiFlat(
     val numberOfRooms: Int?,
     val publishedAt: String?,
     val metroStation: String,
-    val address: String
+    val address: String,
+    val coordinates: UiCoordinates?
+)
+
+@Immutable
+data class UiCoordinates(
+    val latitude: Double,
+    val longitude: Double
 )
 
 @Immutable
@@ -287,7 +295,10 @@ class FlatSearchViewModel(
                 numberOfRooms = it.rooms,
                 publishedAt = it.publishedAtUi,
                 address = it.address.orEmpty(),
-                metroStation = it.metroStation.orEmpty()
+                metroStation = it.metroStation.orEmpty(),
+                coordinates = it.coordinates?.let {
+                    UiCoordinates(it.latitude, it.longitude)
+                }
             )
         }
     }
