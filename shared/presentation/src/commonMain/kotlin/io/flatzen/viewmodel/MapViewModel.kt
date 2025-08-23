@@ -27,7 +27,7 @@ class MapViewModel(
     private val minsk = lonLatToNormalized(53.902147, 27.561388) // Minsk
     private val x = minsk.first
     private val y = minsk.second
-    val mapState = MapState(levelCount = maxLevel + 1, mapSize, mapSize, workerCount = 16) {
+    val mapState = MapState(levelCount = maxLevel + 1, mapSize, mapSize) {
         minimumScaleMode(Forced(1 / 2.0.pow(maxLevel - minLevel)))
         scroll(x, y)
         scale(0.0) // to zoom out initially

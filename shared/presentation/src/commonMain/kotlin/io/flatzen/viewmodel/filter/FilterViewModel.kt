@@ -1,4 +1,4 @@
-package io.flatzen.viewmodel
+package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import entities.AddressRequestModel
@@ -13,12 +13,6 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
-import io.flatzen.states.AddressUiState
-import io.flatzen.states.FilterState
-import io.flatzen.states.LocationUiFilter
-import io.flatzen.states.UiCity
-import io.flatzen.states.UiCountry
-import io.flatzen.states.UiMetroStation
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -30,7 +24,8 @@ import repository.mergedrepo.MergedRepository
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
-    data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) : FilterScreenAction
+    data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) :
+        FilterScreenAction
     data class UpdateCityFilter(val newFilterState: FilterState) : FilterScreenAction
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
@@ -72,7 +67,12 @@ class FilterViewModel(
     ): Flow<FilterScreenEvent> {
         return when (action) {
             is FilterScreenAction.UpdateFilter -> {
-                flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState, action.doNetworkCall))
+                flowOf(
+                    FilterScreenEvent.FiltersUpdated(
+                        action.newFilterState,
+                        action.doNetworkCall
+                    )
+                )
             }
 
             is FilterScreenAction.UpdateAddressFilter -> {

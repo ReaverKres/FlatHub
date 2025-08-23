@@ -11,6 +11,7 @@ import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
+import io.flatzen.viewmodel.list.UiFlat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -75,7 +76,7 @@ class FavoritesViewModel(
                 onLoading = { currentState.copy(isLoading = true) },
                 onError = { _, _ -> currentState.copy(isLoading = false) },
                 onSuccess = { flats ->
-                    val uiFlats = appFlatListToUiFlatList(flats)
+                    val uiFlats = UiFlat.appFlatListToUiFlatList(flats)
                     currentState.copy(isLoading = false, flatList = uiFlats)
                 }
             )
@@ -87,32 +88,6 @@ class FavoritesViewModel(
                         currentState.flatList.filterNot { it.adId == updatedFlat.adId && it.flatPlatform == updatedFlat.flatPlatform }
                     }
                     currentState.copy(flatList = updatedList)
-                }
-            )
-        }
-    }
-
-    private fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
-        return appFlatList.map {
-            UiFlat(
-                adId = it.adId,
-                flatPlatform = it.flatPlatform,
-                imageUrls = it.imageUrls ?: listOf(),
-                savedInFavorite = it.flatSavedInFavorites,
-                priceByn = UiPrice(
-                    price = it.priceByn,
-                    currency = "BYN"
-                ),
-                priceUsd = UiPrice(
-                    price = it.priceUsd,
-                    currency = "USD"
-                ),
-                numberOfRooms = it.rooms,
-                publishedAt = it.publishedAtUi,
-                address = it.address.orEmpty(),
-                metroStation = it.metroStation.orEmpty(),
-                coordinates = it.coordinates?.let {
-                    UiCoordinates(it.latitude, it.longitude)
                 }
             )
         }

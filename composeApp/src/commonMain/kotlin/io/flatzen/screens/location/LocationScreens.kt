@@ -46,10 +46,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.states.AddressUiState
-import io.flatzen.states.MetroLineState
-import io.flatzen.viewmodel.FilterScreenAction
-import io.flatzen.viewmodel.FilterViewModel
+import io.flatzen.viewmodel.filter.AddressUiState
+import io.flatzen.viewmodel.filter.MetroLineState
+import io.flatzen.viewmodel.filter.FilterScreenAction
+import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.UiCity
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,7 +201,7 @@ fun CitySelectScreen(
                                     FilterScreenAction.UpdateCityFilter(
                                         state.filters.copy(
                                             location = state.filters.location?.copy(
-                                                selectedCity = io.flatzen.states.UiCity(city.code)
+                                                selectedCity = UiCity(city.code)
                                             )
                                         )
                                     )
@@ -216,7 +217,7 @@ fun CitySelectScreen(
                                 FilterScreenAction.UpdateFilter(
                                     state.filters.copy(
                                         location = state.filters.location?.copy(
-                                            selectedCity = io.flatzen.states.UiCity(city.code)
+                                            selectedCity = UiCity(city.code)
                                         )
                                     )
                                 )

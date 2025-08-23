@@ -1,4 +1,4 @@
-package io.flatzen.states
+package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
