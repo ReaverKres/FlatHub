@@ -78,6 +78,8 @@ data class SavedFilterState(
     val id: Long,
     val name: String,
     val selected: Boolean = false,
+    val isNotification: Boolean = false,
+    val notificationInterval: Int? = null,
     val createdAt: Long
 )
 

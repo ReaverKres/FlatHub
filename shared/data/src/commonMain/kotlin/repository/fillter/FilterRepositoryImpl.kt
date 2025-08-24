@@ -70,6 +70,40 @@ class FilterRepositoryImpl(
     override suspend fun clearAllSavedFilterSelections() {
         savedFiltersDao.deselectAllFilters()
     }
+
+    override suspend fun saveNotificationFilter(
+        name: String,
+        filter: CommonFilterRequestModel,
+        interval: Int
+    ): Long {
+        // Clear any existing notification filter first
+        deleteNotificationFilter()
+        
+        val notificationFilter = SavedFilter(
+            name = name,
+            filterData = filter,
+            isNotification = true,
+            notificationInterval = interval,
+            createdAt = Clock.System.now().toEpochMilliseconds()
+        )
+        return savedFiltersDao.saveFilter(notificationFilter)
+    }
+
+    override suspend fun getNotificationFilter(): SavedFilter? {
+        return savedFiltersDao.getNotificationFilter()
+    }
+
+    override suspend fun deleteNotificationFilter() {
+        val notificationFilter = savedFiltersDao.getNotificationFilter()
+        notificationFilter?.let { filter ->
+            savedFiltersDao.deleteSavedFilter(filter)
+        }
+        savedFiltersDao.clearNotificationFilter()
+    }
+
+    override suspend fun hasNotificationFilter(): Boolean {
+        return savedFiltersDao.hasNotificationFilter()
+    }
 }
 
 class FilterInfo(

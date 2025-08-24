@@ -25,6 +25,12 @@ interface FilterRepository {
     suspend fun updateSavedFilterSelection(selectedId: Long)
     suspend fun getSelectedSavedFilter(): SavedFilter?
     suspend fun clearAllSavedFilterSelections()
+
+    // Notification filters methods
+    suspend fun saveNotificationFilter(name: String, filter: CommonFilterRequestModel, interval: Int): Long
+    suspend fun getNotificationFilter(): SavedFilter?
+    suspend fun deleteNotificationFilter()
+    suspend fun hasNotificationFilter(): Boolean
 }
 
 fun FilterRepository.lastFilter(): CommonFilterRequestModel =

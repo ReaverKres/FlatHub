@@ -1,6 +1,7 @@
 package repository.mergedrepo
 
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 
@@ -22,4 +23,8 @@ interface MergedRepository {
     fun getFavoritesFromLocalDb(): Flow<List<AppFlat>>
 
     fun saveFlatToFavorite(flatPlatform: FlatPlatform, adId: Long): Flow<AppFlat?>
+    
+    // Methods for notification background work
+    suspend fun getFlatsCount(filter: CommonFilterRequestModel): Int
+    suspend fun fetchAndSaveFlats(filter: CommonFilterRequestModel)
 }

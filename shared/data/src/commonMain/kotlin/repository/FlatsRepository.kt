@@ -1,6 +1,7 @@
 package repository
 
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 

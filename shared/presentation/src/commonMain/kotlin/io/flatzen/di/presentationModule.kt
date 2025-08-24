@@ -3,6 +3,7 @@ package io.flatzen.di
 import di.dataModule
 import di.networkModule
 import di.databaseModule
+import io.flatzen.platformtools.di.platformToolsModule
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.FavoritesViewModel
@@ -28,7 +29,9 @@ val flatSearchPresentationModule = module {
     ) }
     viewModel { FilterViewModel(
         filterRepository = get(),
-        mergedRepository = get()
+        mergedRepository = get(),
+        notificationPermissionProvider = get(),
+        backgroundWorkManager = get()
     ) }
 
     viewModel { MapViewModel(tileStreamProvider = get()) }
@@ -42,7 +45,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             networkModule,
             dataModule,
             databaseModule(),
-            dataUtilsModule()
+            dataUtilsModule(),
+            platformToolsModule
         )
     }
 }

@@ -29,4 +29,13 @@ interface SavedFiltersDao {
 
     @Query("SELECT * FROM saved_filters WHERE selected = 1 LIMIT 1")
     suspend fun getSelectedFilter(): SavedFilter?
+
+    @Query("SELECT * FROM saved_filters WHERE isNotification = 1 LIMIT 1")
+    suspend fun getNotificationFilter(): SavedFilter?
+
+    @Query("UPDATE saved_filters SET isNotification = 0 WHERE isNotification = 1")
+    suspend fun clearNotificationFilter()
+
+    @Query("SELECT COUNT(*) > 0 FROM saved_filters WHERE isNotification = 1")
+    suspend fun hasNotificationFilter(): Boolean
 }

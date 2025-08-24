@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
+import io.flatzen.platformtools.notifications.NotificationPermissionProvider
+import io.flatzen.platformtools.background.BackgroundWorkManager
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
@@ -45,6 +47,18 @@ sealed interface FilterScreenAction : MviAction {
     data class DeleteSavedFilter(val id: Long) : FilterScreenAction
     data class ToggleSavedFilterSelection(val filterId: Long) : FilterScreenAction
     data class CheckFilterMatchesSelected(val currentFilter: FilterState) : FilterScreenAction
+    
+    // Notification actions
+    data object ToggleNotificationEnabled : FilterScreenAction
+    data class UpdateNotificationInterval(val interval: Int) : FilterScreenAction
+    data object ApplyNotificationFilter : FilterScreenAction
+    data object DeleteNotificationFilter : FilterScreenAction
+    data class UpdateNotificationState(
+        val enabled: Boolean,
+        val interval: Int?,
+        val hasNotificationFilter: Boolean,
+        val hasPermission: Boolean
+    ) : FilterScreenAction
 }
 
 // State
@@ -52,7 +66,11 @@ sealed interface FilterScreenAction : MviAction {
 data class FilterScreenState(
     val filters: FilterState,
     val savedFilters: List<SavedFilterState> = emptyList(),
-    val dialogState: FilterDialogState = FilterDialogState()
+    val dialogState: FilterDialogState = FilterDialogState(),
+    val notificationEnabled: Boolean = false,
+    val notificationInterval: Int? = null,
+    val hasNotificationFilter: Boolean = false,
+    val hasNotificationPermission: Boolean = false
 ) : MviState
 
 // Events
@@ -65,11 +83,23 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FilterApplied(val filter: SavedFilter) : FilterScreenEvent
     data class DialogStateUpdated(val dialogState: FilterDialogState) : FilterScreenEvent
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
+    
+    // Notification events
+    data class NotificationStateUpdated(
+        val enabled: Boolean,
+        val interval: Int?,
+        val hasNotificationFilter: Boolean,
+        val hasPermission: Boolean
+    ) : FilterScreenEvent
+    data class NotificationFilterApplied(val filterId: Long) : FilterScreenEvent
+    data object NotificationFilterDeleted : FilterScreenEvent
 }
 
 class FilterViewModel(
     private val mergedRepository: MergedRepository,
-    private val filterRepository: FilterRepository
+    private val filterRepository: FilterRepository,
+    private val notificationPermissionProvider: NotificationPermissionProvider,
+    private val backgroundWorkManager: BackgroundWorkManager
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
     override fun initialState(): FilterScreenState = FilterScreenState(
@@ -86,6 +116,20 @@ class FilterViewModel(
         filterRepository.getAllSavedFilters().onEach { savedFilters ->
             onIntent(FilterScreenAction.LoadSavedFilters)
         }.launchIn(viewModelScope)
+        
+        // Initialize notification state
+        viewModelScope.launch {
+            val hasNotificationFilter = filterRepository.hasNotificationFilter()
+            val notificationFilter = filterRepository.getNotificationFilter()
+            val hasPermission = notificationPermissionProvider.hasPermission()
+            
+            onIntent(FilterScreenAction.UpdateNotificationState(
+                enabled = hasNotificationFilter,
+                interval = notificationFilter?.notificationInterval,
+                hasNotificationFilter = hasNotificationFilter,
+                hasPermission = hasPermission
+            ))
+        }
     }
 
     override suspend fun handleIntent(
@@ -254,6 +298,102 @@ class FilterViewModel(
                     }
                 } ?: flowOf()
             }
+            
+            // Notification actions
+            is FilterScreenAction.UpdateNotificationState -> {
+                flowOf(FilterScreenEvent.NotificationStateUpdated(
+                    enabled = action.enabled,
+                    interval = action.interval,
+                    hasNotificationFilter = action.hasNotificationFilter,
+                    hasPermission = action.hasPermission
+                ))
+            }
+            
+            is FilterScreenAction.ToggleNotificationEnabled -> {
+                if (currentState.notificationEnabled) {
+                    // Disable notifications - delete notification filter and cancel background work
+                    filterRepository.deleteNotificationFilter()
+                    backgroundWorkManager.cancelWork()
+                    flowOf(
+                        FilterScreenEvent.NotificationFilterDeleted,
+                        FilterScreenEvent.NotificationStateUpdated(
+                            enabled = false,
+                            interval = null,
+                            hasNotificationFilter = false,
+                            hasPermission = currentState.hasNotificationPermission
+                        )
+                    )
+                } else {
+                    // Enable notifications - just update state, filter will be applied when user clicks "Apply"
+                    flowOf(FilterScreenEvent.NotificationStateUpdated(
+                        enabled = true,
+                        interval = currentState.notificationInterval ?: 15, // Default to 15 minutes
+                        hasNotificationFilter = currentState.hasNotificationFilter,
+                        hasPermission = currentState.hasNotificationPermission
+                    ))
+                }
+            }
+            
+            is FilterScreenAction.UpdateNotificationInterval -> {
+                flowOf(FilterScreenEvent.NotificationStateUpdated(
+                    enabled = currentState.notificationEnabled,
+                    interval = action.interval,
+                    hasNotificationFilter = currentState.hasNotificationFilter,
+                    hasPermission = currentState.hasNotificationPermission
+                ))
+            }
+            
+            is FilterScreenAction.ApplyNotificationFilter -> {
+                // Check notification permission first
+                val hasPermission = notificationPermissionProvider.hasPermission()
+                if (!hasPermission) {
+                    val granted = notificationPermissionProvider.requestPermission()
+                    if (!granted) {
+                        return@handleIntent flowOf(FilterScreenEvent.NotificationStateUpdated(
+                            enabled = currentState.notificationEnabled,
+                            interval = currentState.notificationInterval,
+                            hasNotificationFilter = currentState.hasNotificationFilter,
+                            hasPermission = false
+                        ))
+                    }
+                }
+                
+                // Save notification filter
+                val currentFilter = mapFilterStateToFilterModel(currentState.filters)
+                val interval = currentState.notificationInterval ?: 15
+                val filterId = filterRepository.saveNotificationFilter(
+                    "Notification Filter",
+                    currentFilter,
+                    interval
+                )
+                
+                // Schedule background work
+                backgroundWorkManager.schedulePeriodicWork(interval, currentFilter)
+                
+                flowOf(
+                    FilterScreenEvent.NotificationFilterApplied(filterId),
+                    FilterScreenEvent.NotificationStateUpdated(
+                        enabled = true,
+                        interval = interval,
+                        hasNotificationFilter = true,
+                        hasPermission = true
+                    )
+                )
+            }
+            
+            is FilterScreenAction.DeleteNotificationFilter -> {
+                filterRepository.deleteNotificationFilter()
+                backgroundWorkManager.cancelWork()
+                flowOf(
+                    FilterScreenEvent.NotificationFilterDeleted,
+                    FilterScreenEvent.NotificationStateUpdated(
+                        enabled = false,
+                        interval = null,
+                        hasNotificationFilter = false,
+                        hasPermission = currentState.hasNotificationPermission
+                    )
+                )
+            }
         }
     }
 
@@ -293,6 +433,29 @@ class FilterViewModel(
                     savedFilters = currentState.savedFilters.map { filter ->
                         filter.copy(selected = filter.id == event.selectedFilterId)
                     }
+                )
+            }
+            
+            // Notification events
+            is FilterScreenEvent.NotificationStateUpdated -> {
+                currentState.copy(
+                    notificationEnabled = event.enabled,
+                    notificationInterval = event.interval,
+                    hasNotificationFilter = event.hasNotificationFilter,
+                    hasNotificationPermission = event.hasPermission
+                )
+            }
+            
+            is FilterScreenEvent.NotificationFilterApplied -> {
+                currentState
+            }
+            
+            is FilterScreenEvent.NotificationFilterDeleted -> {
+                // Remove notification filter from saved filters list and update UI state
+                currentState.copy(
+                    savedFilters = currentState.savedFilters.filter { !it.isNotification },
+                    notificationEnabled = false,
+                    hasNotificationFilter = false
                 )
             }
         }
@@ -353,6 +516,8 @@ class FilterViewModel(
             id = savedFilter.id,
             name = savedFilter.name,
             selected = savedFilter.selected,
+            isNotification = savedFilter.isNotification,
+            notificationInterval = savedFilter.notificationInterval,
             createdAt = savedFilter.createdAt
         )
     }

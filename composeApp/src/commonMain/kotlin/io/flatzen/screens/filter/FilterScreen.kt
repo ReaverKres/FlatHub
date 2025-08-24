@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -103,7 +104,12 @@ fun FilterScreen(
                         viewModel.onIntent(FilterScreenAction.ToggleSavedFilterSelection(filter.id))
                     },
                     onDeleteClick = { filterId ->
-                        viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
+                        val filter = state.savedFilters.find { it.id == filterId }
+                        if (filter?.isNotification == true) {
+                            viewModel.onIntent(FilterScreenAction.DeleteNotificationFilter)
+                        } else {
+                            viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
+                        }
                     }
                 )
             }
@@ -170,6 +176,23 @@ fun FilterScreen(
                 }
             }
 
+            // Уведомления
+            FilterSectionTitle(title = "Notifications")
+            NotificationSection(
+                enabled = state.notificationEnabled,
+                interval = state.notificationInterval,
+                hasNotificationFilter = state.hasNotificationFilter,
+                onEnabledChange = { enabled ->
+                    viewModel.onIntent(FilterScreenAction.ToggleNotificationEnabled)
+                },
+                onIntervalChange = { interval ->
+                    viewModel.onIntent(FilterScreenAction.UpdateNotificationInterval(interval))
+                },
+                onApplyFilter = {
+                    viewModel.onIntent(FilterScreenAction.ApplyNotificationFilter)
+                }
+            )
+
             TextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
@@ -232,8 +255,16 @@ private fun SavedFiltersChips(
                         modifier = Modifier.size(16.dp)
                     ) {
                         Icon(
-                            Icons.Default.Delete,
-                            contentDescription = "Удалить фильтр",
+                            imageVector = if (filter.isNotification) {
+                                Icons.Default.Notifications
+                            } else {
+                                Icons.Default.Delete
+                            },
+                            contentDescription = if (filter.isNotification) {
+                                "Notification filter"
+                            } else {
+                                "Delete filter"
+                            },
                             modifier = Modifier.size(12.dp)
                         )
                     }

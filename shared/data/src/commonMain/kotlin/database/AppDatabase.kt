@@ -8,7 +8,7 @@ import entities.SavedFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [AppFlat::class, SavedFilter::class], version = 3)
+@Database(entities = [AppFlat::class, SavedFilter::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): FlatsDao
     abstract fun getSavedFiltersDao(): SavedFiltersDao

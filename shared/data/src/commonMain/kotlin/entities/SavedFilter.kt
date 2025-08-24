@@ -13,5 +13,7 @@ data class SavedFilter(
     val name: String,
     val filterData: CommonFilterRequestModel,
     val selected: Boolean = false,
+    val isNotification: Boolean = false,
+    val notificationInterval: Int? = null, // Minutes: 15, 30, 60
     val createdAt: Long = Clock.System.now().toEpochMilliseconds()
 )

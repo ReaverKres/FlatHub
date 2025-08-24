@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeCompiler)
     id("com.android.library")
 }
 
@@ -19,28 +18,33 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Presentation"
+            baseName = "PlatformSpecificTools"
             isStatic = true
         }
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(project(":shared:commoncomponents"))
-            implementation(project(":shared:data"))
-            implementation(project(":shared:platformSpecificTools"))
+        commonMain {
+            dependencies {
+                implementation(project(":shared:data"))
+                implementation(libs.koin.core)
+                implementation(libs.kotlinx.coroutines.core)
+            }
+        }
 
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose.viewmodel)
+        androidMain.dependencies {
+            implementation("androidx.core:core-ktx:1.12.0")
+            implementation("androidx.work:work-runtime-ktx:2.9.0")
+        }
 
-            // MapComposeMP для MapState и API
-            implementation(libs.mp.maps)
+        iosMain.dependencies {
+            // iOS specific dependencies if needed
         }
     }
 }
 
 android {
-    namespace = "io.flatzen.shared.presentation"
+    namespace = "io.flatzen.shared.platformspecifictools"
     compileSdk = 35
     defaultConfig.minSdk = 24
     compileOptions {

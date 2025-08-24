@@ -2,6 +2,7 @@ package repository.mergedrepo
 
 import database.FlatsDao
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -108,6 +109,32 @@ class MergedRepositoryImpl(
             )
             flatsDao.upsert(updated)
             emit(flatsDao.getById(adId))
+        }
+    }
+    
+    override suspend fun getFlatsCount(filter: CommonFilterRequestModel): Int {
+        return flatsDao.getCount()
+    }
+    
+    override suspend fun fetchAndSaveFlats(filter: CommonFilterRequestModel) {
+        // Update filter in FilterRepository to trigger network calls
+        filterRepository.updateFilter(filter, true)
+        
+        // Fetch from all repositories and save to database
+        try {
+            val kufarFlats = kufarRepository.searchFlats().first()
+            val onlinerFlats = onlinerRepository.searchFlats().first() 
+            val realtFlats = realtRepository.searchFlats().first()
+            
+            val allFlats = (kufarFlats + onlinerFlats + realtFlats).map { net ->
+                val fromDb = flatsDao.getById(net.adId)
+                net.copy(flatSavedInFavorites = fromDb?.flatSavedInFavorites == true)
+            }
+            
+            flatsDao.upsertAll(allFlats)
+        } catch (e: Exception) {
+            // Handle network errors gracefully
+            throw e
         }
     }
 }
