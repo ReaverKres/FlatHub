@@ -37,7 +37,7 @@ val dataModule = module {
     single<ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>>(
         qualifier = DataQualifiers.KUFAR_FLAT_MAPPER
     ) { KufarFlatMapper() }
-    single<FilterRepository> { FilterRepositoryImpl() }
+    single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
     single<KufarRepository> {
         KufarRepositoryImpl(
             api = get(),

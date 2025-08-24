@@ -58,6 +58,7 @@ import io.flatzen.viewmodel.MapViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -148,21 +149,10 @@ fun MapScreen(
                 })
             },
             floatingActionButton = {
-                Box {
-                    FloatingActionButton(onClick = navigateToFilters) {
-                        Icon(Icons.Default.Build, contentDescription = "Фильтры")
-                    }
-
-//                if (filterState.filters.isAnyFilterActive()) {
-//                    Box(
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .size(12.dp)
-//                            .clip(CircleShape)
-//                            .background(Color.Red)
-//                    )
-//                }
-                }
+                FilterActionButton(
+                    onClick = navigateToFilters,
+                    isAnyFilterApplied = listState.isAnyFilterApplied
+                )
             }
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {

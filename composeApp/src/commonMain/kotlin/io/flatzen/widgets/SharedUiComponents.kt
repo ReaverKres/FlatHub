@@ -14,9 +14,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -136,5 +138,24 @@ fun BoxScope.AddToFavoriteIcon(
             tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
             modifier = Modifier.fillMaxSize()
         )
+    }
+}
+
+@Composable
+fun FilterActionButton(onClick: () -> Unit, isAnyFilterApplied: Boolean) {
+    Box {
+        FloatingActionButton(onClick = onClick) {
+            Icon(Icons.Default.Build, contentDescription = "Фильтры")
+        }
+
+        if (isAnyFilterApplied) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(Color.Red)
+            )
+        }
     }
 }

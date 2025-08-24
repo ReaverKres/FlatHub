@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -28,22 +32,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.viewmodel.filter.Room
+import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.Room
 import io.flatzen.widgets.FilterSwitch
-import io.flatzen.mappers.LocationUiMapper
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -56,13 +62,6 @@ fun FilterScreen(
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
-
-    val latestFilters by rememberUpdatedState(newValue = currentFilters)
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.onIntent(FilterScreenAction.UpdateFilter(latestFilters, false))
-        }
-    }
 
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
@@ -95,6 +94,20 @@ fun FilterScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Сохраненные фильтры
+            if (state.savedFilters.isNotEmpty()) {
+                FilterSectionTitle(title = "Мои фильтры")
+                SavedFiltersChips(
+                    savedFilters = state.savedFilters,
+                    onFilterClick = { filter ->
+                        viewModel.onIntent(FilterScreenAction.ToggleSavedFilterSelection(filter.id))
+                    },
+                    onDeleteClick = { filterId ->
+                        viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
+                    }
+                )
+            }
+
             // Расположение
             FilterSectionTitle(title = "Расположение")
             ListItem(
@@ -157,19 +170,126 @@ fun FilterScreen(
                 }
             }
 
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = {
+                    viewModel.onIntent(FilterScreenAction.ShowSaveFilterDialog)
+                }) {
+                Text("Добавить в Мои фильтры")
+            }
+
             Spacer(Modifier.height(32.dp))
         }
+    }
+
+    // Диалог сохранения фильтра
+    if (state.dialogState.isVisible) {
+        SaveFilterDialog(
+            dialogState = state.dialogState,
+            onNameChange = { name ->
+                viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
+            },
+            onSave = {
+                viewModel.onIntent(FilterScreenAction.SaveFilter)
+            },
+            onCancel = {
+                viewModel.onIntent(FilterScreenAction.HideSaveFilterDialog)
+            }
+        )
     }
 }
 
 @Composable
 private fun FilterSectionTitle(
-    modifier: Modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+    modifier: Modifier = Modifier.padding(vertical = 4.dp),
     title: String
 ) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleLarge,
         modifier = modifier
+    )
+}
+
+@Composable
+private fun SavedFiltersChips(
+    savedFilters: List<io.flatzen.viewmodel.filter.SavedFilterState>,
+    onFilterClick: (io.flatzen.viewmodel.filter.SavedFilterState) -> Unit,
+    onDeleteClick: (Long) -> Unit
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        savedFilters.forEach { filter ->
+            FilterChip(
+                selected = filter.selected,
+                onClick = { onFilterClick(filter) },
+                label = { Text(filter.name) },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { onDeleteClick(filter.id) },
+                        modifier = Modifier.size(16.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Удалить фильтр",
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SaveFilterDialog(
+    dialogState: io.flatzen.viewmodel.filter.FilterDialogState,
+    onNameChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text("Сохранить фильтр") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = dialogState.filterName,
+                    onValueChange = onNameChange,
+                    label = { Text("Название фильтра") },
+                    isError = !dialogState.isNameValid,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (dialogState.errorMessage != null) {
+                    Text(
+                        text = dialogState.errorMessage.orEmpty(),
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                Text(
+                    text = "Название фильтра не должно превышать 15 символов",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onSave,
+                enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
+            ) {
+                Text("Сохранить")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) {
+                Text("Отменить")
+            }
+        }
     )
 }

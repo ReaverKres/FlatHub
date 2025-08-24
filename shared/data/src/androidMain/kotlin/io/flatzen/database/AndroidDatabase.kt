@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import database.AppDatabase
+import database.getRoomDatabase
 
 fun getDatabaseBuilder(ctx: Context): RoomDatabase.Builder<AppDatabase> {
     val appContext = ctx.applicationContext
@@ -12,8 +13,9 @@ fun getDatabaseBuilder(ctx: Context): RoomDatabase.Builder<AppDatabase> {
         context = appContext,
         name = dbFile.absolutePath
     )
+        .fallbackToDestructiveMigration(true)
 }
 
 fun getDatabase(ctx: Context): AppDatabase {
-    return getDatabaseBuilder(ctx).build()
+    return getRoomDatabase(getDatabaseBuilder(ctx))
 }

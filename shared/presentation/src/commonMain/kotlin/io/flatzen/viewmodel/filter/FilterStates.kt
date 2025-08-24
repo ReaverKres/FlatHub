@@ -66,6 +66,22 @@ data class AddressUiState(
 )
 
 @Immutable
+data class FilterDialogState(
+    val isVisible: Boolean = false,
+    val filterName: String = "",
+    val isNameValid: Boolean = true,
+    val errorMessage: String? = null
+)
+
+@Immutable
+data class SavedFilterState(
+    val id: Long,
+    val name: String,
+    val selected: Boolean = false,
+    val createdAt: Long
+)
+
+@Immutable
 data class FilterState(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
