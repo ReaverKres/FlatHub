@@ -35,8 +35,10 @@ import entities.MetroStationNames.TRAKTORNY_ZAVOD
 import entities.MetroStationNames.URUCHIE
 import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
+import kotlinx.serialization.Serializable
 import server_request.Currency
 
+@Serializable
 data class CommonFilterRequestModel(
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
@@ -46,19 +48,77 @@ data class CommonFilterRequestModel(
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
     val fromOwnerOnly: Boolean? = false
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
 
+        other as CommonFilterRequestModel
+
+        // Всегда сравниваем только выбранные станции
+        val thisSelectedMetro = this.metroStations.filter { it.selected }
+        val otherSelectedMetro = other.metroStations.filter { it.selected }
+
+        //TODO
+        // Специальная логика сравнения location: null эквивалентен LocationFilter(BY, MINSK)
+        val isLocationEqual = when {
+            this.location == null && other.location == null -> true
+            this.location == null && other.location != null ->
+                other.location.country == Country.BY && other.location.city == City.MINSK
+            this.location != null && other.location == null ->
+                this.location.country == Country.BY && this.location.city == City.MINSK
+            else -> this.location == other.location
+        }
+
+        if (priceFrom != other.priceFrom) return false
+        if (priceTo != other.priceTo) return false
+        if (fromOwnerOnly != other.fromOwnerOnly) return false
+        if (currency != other.currency) return false
+        if (addressRequestModel != other.addressRequestModel) return false
+        if (numberOfRooms != other.numberOfRooms) return false
+        if (thisSelectedMetro != otherSelectedMetro) return false
+        if (!isLocationEqual) return false // Используем кастомную проверку location
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = priceFrom?.hashCode() ?: 0
+        result = 31 * result + (priceTo?.hashCode() ?: 0)
+        result = 31 * result + fromOwnerOnly.hashCode()
+        result = 31 * result + currency.hashCode()
+        result = 31 * result + addressRequestModel.hashCode()
+        result = 31 * result + (numberOfRooms?.hashCode() ?: 0)
+        result = 31 * result + metroStations.filter { it.selected }.hashCode()
+
+        //TODO
+        // Для hashCode тоже учитываем специальную логику
+        val locationForHashCode = location ?: LocationFilter(
+            country = Country.BY, city = City.MINSK
+        )
+        result = 31 * result + (locationForHashCode.hashCode())
+
+        return result
+    }
+}
+
+@Serializable
 data class AddressRequestModel(
     val address: String
 )
 
+@Serializable
 enum class Country { BY }
+@Serializable
 enum class City { MINSK, BREST, VITEBSK, GOMEL, GRODNO, MOGILEV }
+@Serializable
 data class LocationFilter(val country: Country, val city: City)
+@Serializable
 enum class MetroLine {
     GREEN, BLUE, RED,
 }
 
+@Serializable
 data class MetroStation(
     val line: MetroLine,
     val metroId: Int,

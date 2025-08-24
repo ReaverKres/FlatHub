@@ -11,6 +11,7 @@ data class FlatListScreenState(
     val isRefreshing: Boolean,
     val isLoadingMore: Boolean,
     val noFlatsToLoadMore: Boolean,
+    val isAnyFilterApplied: Boolean,
     val flatList: List<UiFlat>
 ) : MviState
 

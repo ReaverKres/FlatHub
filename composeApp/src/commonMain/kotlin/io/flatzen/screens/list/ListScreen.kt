@@ -61,6 +61,7 @@ import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -86,21 +87,10 @@ fun ListScreen(
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
-            Box {
-                FloatingActionButton(onClick = navigateToFilters) {
-                    Icon(Icons.Default.Build, contentDescription = "Фильтры")
-                }
-
-//                if (filterState.filters.isAnyFilterActive()) {
-//                    Box(
-//                        modifier = Modifier
-//                            .align(Alignment.TopEnd)
-//                            .size(12.dp)
-//                            .clip(CircleShape)
-//                            .background(Color.Red)
-//                    )
-//                }
-            }
+            FilterActionButton(
+                onClick = navigateToFilters,
+                isAnyFilterApplied = state.isAnyFilterApplied
+            )
         }
     ) { paddingValues ->
         PullToRefreshBox(

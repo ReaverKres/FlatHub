@@ -1,6 +1,8 @@
 package repository.fillter
 
 import entities.CommonFilterRequestModel
+import entities.SavedFilter
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 interface FilterRepository {
@@ -13,6 +15,16 @@ interface FilterRepository {
         commonFilterRequestModel: CommonFilterRequestModel,
         doNetworkCall: Boolean
     )
+
+    // Saved filters methods
+    suspend fun saveFilter(name: String, filter: CommonFilterRequestModel): Long
+    fun getAllSavedFilters(): Flow<List<SavedFilter>>
+    suspend fun deleteSavedFilter(id: Long)
+    suspend fun applySavedFilter(filter: SavedFilter, doNetworkCall: Boolean)
+    suspend fun getSavedFilterById(id: Long): SavedFilter?
+    suspend fun updateSavedFilterSelection(selectedId: Long)
+    suspend fun getSelectedSavedFilter(): SavedFilter?
+    suspend fun clearAllSavedFilterSelections()
 }
 
 fun FilterRepository.lastFilter(): CommonFilterRequestModel =

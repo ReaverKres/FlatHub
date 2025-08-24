@@ -13,6 +13,7 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -28,10 +29,9 @@ sealed interface FlatListScreenAction : MviAction {
 
     class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatListScreenAction
     class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
+    class IsAnyFilterAppliedCheck(val applied: Boolean) : FlatListScreenAction
     data object ScreenVisible : FlatListScreenAction
 }
-
-
 
 sealed interface FlatListEvents : MviEvent {
     data class AllFlatsLoaded(
@@ -43,6 +43,7 @@ sealed interface FlatListEvents : MviEvent {
 
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
     data class FavoritesLoaded(val favoriteFlats: LCE<List<AppFlat>>) : FlatListEvents
+    class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -58,35 +59,28 @@ class FlatSearchViewModel(
         isRefreshing = false,
         isLoadingMore = false,
         flatList = emptyList(),
-        noFlatsToLoadMore = false
+        noFlatsToLoadMore = false,
+        isAnyFilterApplied = false
     )
 
     init {
-        viewModelScope.launch {
-            if (filterRepository.cashedFilterFlow.replayCache.isEmpty()) {
-                filterRepository.updateFilter(CommonFilterRequestModel(), true)
-            } else {
-                val last = filterRepository.lastFilter()
-                val lastNet = filterRepository.lastNetworkFilter
-                if (lastNet != last) {
-                    filterRepository.updateFilter(last, true)
-                }
-            }
-        }
-
         filterRepository.cashedFilterFlow.onEach { newFilters ->
-                noFlatsToLoadMore = false
-                if (newFilters.doNetworkCall) {
-                    onIntent(FlatListScreenAction.SearchFlats(false))
-                }
+            noFlatsToLoadMore = false
+            if (newFilters.doNetworkCall) {
+                onIntent(FlatListScreenAction.SearchFlats(false))
             }
+            onIntent(
+                FlatListScreenAction.IsAnyFilterAppliedCheck(
+                    newFilters.commonFilterRequestModel != CommonFilterRequestModel()
+                )
+            )
+        }
             .launchIn(viewModelScope)
 
         mergedRepository.getFavoritesFromLocalDb()
             .asLCE()
             .onEach { event -> onIntent(FlatListScreenAction.LoadFavorites(event)) }
             .launchIn(viewModelScope)
-
     }
 
     override suspend fun handleIntent(
@@ -95,13 +89,30 @@ class FlatSearchViewModel(
     ): Flow<FlatListEvents> {
         return when (action) {
             is FlatListScreenAction.ScreenVisible -> {
-                val last = filterRepository.lastFilter()
                 val lastNet = filterRepository.lastNetworkFilter
-                if (lastNet != last) {
-                    filterRepository.updateFilter(last, true)
+                // First, check and apply selected saved filter if exists
+                val selectedFilter = filterRepository.getSelectedSavedFilter()
+                if (selectedFilter != null && selectedFilter.filterData != lastNet) {
+                    // Apply the selected saved filter
+                    filterRepository.applySavedFilter(selectedFilter, true)
+                } else {
+                    // No saved filter selected, use default or cached filter
+                    if (filterRepository.cashedFilterFlow.replayCache.isEmpty()) {
+                        filterRepository.updateFilter(CommonFilterRequestModel(), true)
+                    } else {
+                        val last = filterRepository.lastFilter()
+                        if (lastNet != last) {
+                            filterRepository.updateFilter(last, true)
+                        }
+                    }
                 }
                 flowOf()
             }
+
+            is FlatListScreenAction.IsAnyFilterAppliedCheck -> {
+                flowOf(FlatListEvents.IsAnyFilterApplied(action.applied))
+            }
+
             is FlatListScreenAction.SearchFlats -> {
                 if (connectionMonitor.isNetworkAvailable.first().not()) {
                     return flowOf()
@@ -166,6 +177,10 @@ class FlatSearchViewModel(
                 },
                 onSuccess = { flatsLoaded(it, currentState, event.isLoadMore, event.isRefreshing) }
             )
+
+            is FlatListEvents.IsAnyFilterApplied -> {
+                currentState.copy(isAnyFilterApplied = event.applied)
+            }
 
             is FlatListEvents.FlatUpdateInFavorite -> event.flat.process(
                 onLoading = { currentState },

@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import database.AppDatabase
+import database.getRoomDatabase
 import kotlinx.coroutines.Dispatchers
 import platform.Foundation.NSHomeDirectory
 
@@ -15,8 +16,9 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
     )
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
+        .fallbackToDestructiveMigration(true)
 }
 
 fun getDatabase(): AppDatabase {
-    return getDatabaseBuilder().build()
+    return getRoomDatabase(getDatabaseBuilder())
 }
