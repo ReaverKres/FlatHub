@@ -49,6 +49,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -57,6 +59,7 @@ import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FlatImagePager
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -80,12 +83,13 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
     val clusterId = "default"
+    val isMarkersSizeTooBig = listState.flatList.size >= 270
 
     mapViewModel.mapState.apply {
         onMarkerClick { id, x, y ->
             selectedFlatId = id.toLongOrNull()
         }
-        if (listState.flatList.isNotEmpty()) {
+        if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
             removeAllMarkers()
             listState.flatList.forEach {
                 val mercatorCoordinates =
@@ -163,15 +167,17 @@ fun MapScreen(
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {
                 MapUI(modifier = Modifier.fillMaxSize(), state = mapViewModel.mapState)
+                if (listState.isLoading || listState.isLoadingMore) {
+                    LinearProgressIndicator(
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .padding(4.dp)
+                    )
+                }
                 Column(Modifier.fillMaxWidth().wrapContentHeight()) {
-                    if (listState.isLoading || listState.isLoadingMore) {
-                        LinearProgressIndicator(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(5.dp)
-                                .padding(horizontal = 2.dp)
-                        )
-                    }
+                    Spacer(Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.Center
@@ -191,7 +197,11 @@ fun MapScreen(
                         Spacer(Modifier.width(10.dp))
                         Button(
                             contentPadding = ButtonDefaults.TextButtonContentPadding,
-                            enabled = listState.noFlatsToLoadMore.not(),
+                            enabled = listState.noFlatsToLoadMore.not() && isMarkersSizeTooBig.not(),
+                            colors = ButtonDefaults.buttonColors().copy(
+                                disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(alpha = 0.7f),
+                                disabledContentColor = ButtonDefaults.buttonColors().contentColor.copy(alpha = 0.5f)
+                            ),
                             onClick = {
                                 listViewModel.onIntent(
                                     FlatListScreenAction.SearchFlats(true)
@@ -199,6 +209,31 @@ fun MapScreen(
                             }) {
                             Text("Загрузить больше")
                         }
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 56.dp + 6.dp)
+                ) {
+                    if (listState.noFlatsToLoadMore) {
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = "Квартиры с текущими фильтрами закончились",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            color = Color.DarkGray
+                        )
+                    }
+                    if (isMarkersSizeTooBig) {
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = "Слишком много объектов на карте, отображена только часть," +
+                                    " добавьте фильтры или нажмите кнопку обновить",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            color = Color.DarkGray
+                        )
                     }
                 }
             }
