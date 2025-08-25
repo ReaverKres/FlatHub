@@ -23,6 +23,7 @@ private const val HTTP_TIMEOUT: Long = 20_000
 private const val KUFAR_BASE_URL: String = "https://api.kufar.by/"
 private const val ONLINER_BASE_URL: String = "https://r.onliner.by/"
 private const val REALT_BASE_URL: String = "https://realt.by/"
+private const val DOMOVITA_BASE_URL: String = "https://api.domovita.by/"
 
 val networkModule = module {
 
@@ -114,6 +115,15 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(REALT_BASE_URL)
+            .build()
+    }
+
+    single<Ktorfit>(qualifier = DataQualifiers.DOMOVITA_KTORFIT) {
+        val client: HttpClient = get()
+
+        Ktorfit.Builder()
+            .httpClient(client)
+            .baseUrl(DOMOVITA_BASE_URL)
             .build()
     }
 }

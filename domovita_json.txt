@@ -1,0 +1,2075 @@
+{
+    "totalCount": 373,
+    "items": [
+        {
+            "id": 146706,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-07-23 23:32:59",
+            "date_revision": "2025-08-25",
+            "description": "<p>24/26 этажного каркасно-блочного дома, телефон, мебель, сан/узел - 2 сан/узла, ремонт - евроремонт, электрическая плита, площадь 67/39/14 кв.м., лоджия застекленная, год постройки 2015, VIP-квартира, домофон, металлическая дверь, консьержка, лифт, встроенные шкафы, стеклопакеты, подземный гараж, парковка, хороший вид из окна, окна во двор, благоустроенный двор, детская площадка, рядом магазин, супермаркет, спортивный центр, зеленый парк</p><p>Скрыть</p><p><br /></p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.9385,
+                    "position_y": 27.5849
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 7,
+                    "name": "Советский район",
+                    "subDistrict": {
+                        "id": 289,
+                        "name": "Беды"
+                    }
+                },
+                "metro": null,
+                "street_name": "ул. Максима Богдановича",
+                "house_number": "136"
+            },
+            "title": "2-комнатная квартира, Минск, ул. Максима Богдановича, д. 136",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/44/08c1f344148c3dfc5e90f34c4da09e68.webp",
+                    "url_mini": "https://s.domovita.by/images/44/08c1f344148c3dfc5e90f34c4da09e68.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/44/08c1f344148c3dfc5e90f34c4da09e68.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/db/cab03566bc65a0168000a0ef3a2bbe21.webp",
+                    "url_mini": "https://s.domovita.by/images/db/cab03566bc65a0168000a0ef3a2bbe21.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/db/cab03566bc65a0168000a0ef3a2bbe21.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/50/e4f17e8b1c586d97151d17ec13b9bca3.webp",
+                    "url_mini": "https://s.domovita.by/images/50/e4f17e8b1c586d97151d17ec13b9bca3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/50/e4f17e8b1c586d97151d17ec13b9bca3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/2d/9f1f8b2c4ea0634edc848161a4770293.webp",
+                    "url_mini": "https://s.domovita.by/images/2d/9f1f8b2c4ea0634edc848161a4770293.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/2d/9f1f8b2c4ea0634edc848161a4770293.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/49/94b78f3686216c8378c918aede592557.webp",
+                    "url_mini": "https://s.domovita.by/images/49/94b78f3686216c8378c918aede592557.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/49/94b78f3686216c8378c918aede592557.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/27/0617caf01df163391064b263152ffcc9.webp",
+                    "url_mini": "https://s.domovita.by/images/27/0617caf01df163391064b263152ffcc9.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/27/0617caf01df163391064b263152ffcc9.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ee/97a0a35445f27125e53a84d62b914bfd.webp",
+                    "url_mini": "https://s.domovita.by/images/ee/97a0a35445f27125e53a84d62b914bfd.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ee/97a0a35445f27125e53a84d62b914bfd.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/61/49812a672de750d79bb643b22ed320f5.webp",
+                    "url_mini": "https://s.domovita.by/images/61/49812a672de750d79bb643b22ed320f5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/61/49812a672de750d79bb643b22ed320f5.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-ul-maksima-bogdanovica-136-60",
+            "type": "OFlatsRent",
+            "owner_type": "Агент",
+            "user_id": 3571,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 67,
+                "living": 43,
+                "kitchen": 17
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 24,
+            "storeys": 26,
+            "house_type": null,
+            "repair_year": null,
+            "building_year": null,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 340-23-49",
+                    "(29) 340-23-49"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "агент",
+                "period_on_site": "8 лет"
+            },
+            "price": {
+                "USD": 555,
+                "BYN": 1653.345,
+                "EUR": 478.5785,
+                "RUB": 44760.0032
+            },
+            "ads_text": "<p>Сдается отличный вид 2х комнатной квартиры 24этажа</p>"
+        },
+        {
+            "id": 145846,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-05-20 17:25:58",
+            "date_revision": "2025-08-25",
+            "description": "<p>Сдам в долгосрочную аренду 3- комнатную квартиру по адресу: пр-т Независимости, 46 . Первое заселение. Ремонт в квартире выполнен из дорогостоящих материалов и полностью укомплектована всем необходимым:газовая плита, духовой шкаф,печь СВЧ , вытяжка, холодильник, стиральная машина,пылесос. Большой , зелёный,благоустроенный двор где всегда можно спокойно припарковать свой автомобиль.В шаговой доступности находится Цум , Комаровский рынок ,метро, рестораны . Напротив дома находится 23 гимназия. Свободную комнату можно использовать под кабинет или детскую. </p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.9128,
+                    "position_y": 27.5807
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 7,
+                    "name": "Советский район",
+                    "subDistrict": {
+                        "id": 48,
+                        "name": "Гикало"
+                    }
+                },
+                "metro": {
+                    "id": 105,
+                    "name": "Площадь Якуба Коласа",
+                    "branch": "blue",
+                    "position_x": 53.9159,
+                    "position_y": 27.5838,
+                    "time_by_walking": "6 мин",
+                    "time_by_transport": ""
+                },
+                "street_name": "пр-т Независимости",
+                "house_number": "46"
+            },
+            "title": "3-комнатная квартира, Минск, пр-т Независимости, д. 46",
+            "price_history": [
+                {
+                    "price": {
+                        "USD": 800,
+                        "BYN": 2383.2,
+                        "EUR": 689.8428,
+                        "RUB": 64518.9236
+                    },
+                    "date": 1755412718,
+                    "changePrice": {
+                        "USD": 100,
+                        "BYN": 297.9,
+                        "EUR": 86.2304,
+                        "RUB": 8064.8655
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 900,
+                        "BYN": 2681.1,
+                        "EUR": 776.0732,
+                        "RUB": 72583.7891
+                    },
+                    "date": 1755092502,
+                    "changePrice": {
+                        "USD": 80,
+                        "BYN": 238.32,
+                        "EUR": 68.9843,
+                        "RUB": 6451.8924
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 980,
+                        "BYN": 2919.42,
+                        "EUR": 845.0575,
+                        "RUB": 79035.6814
+                    },
+                    "date": 1754022144,
+                    "changePrice": {
+                        "USD": 80,
+                        "BYN": 238.32,
+                        "EUR": 68.9843,
+                        "RUB": 6451.8924
+                    },
+                    "isUp": true
+                },
+                {
+                    "price": {
+                        "USD": 900,
+                        "BYN": 2681.1,
+                        "EUR": 776.0732,
+                        "RUB": 72583.7891
+                    },
+                    "date": 1753694947,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 950,
+                        "BYN": 2830.05,
+                        "EUR": 819.1884,
+                        "RUB": 76616.2218
+                    },
+                    "date": 1752675991,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 1000,
+                        "BYN": 2979,
+                        "EUR": 862.3035,
+                        "RUB": 80648.6545
+                    },
+                    "date": 1752134662,
+                    "changePrice": {
+                        "USD": 100,
+                        "BYN": 297.9,
+                        "EUR": 86.2304,
+                        "RUB": 8064.8655
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 1100,
+                        "BYN": 3276.9,
+                        "EUR": 948.5339,
+                        "RUB": 88713.52
+                    },
+                    "date": 1748095686,
+                    "changePrice": {
+                        "USD": 100,
+                        "BYN": 297.9,
+                        "EUR": 86.2304,
+                        "RUB": 8064.8655
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 1200,
+                        "BYN": 3574.8,
+                        "EUR": 1034.7642,
+                        "RUB": 96778.3854
+                    },
+                    "date": 1747751158,
+                    "changePrice": null,
+                    "isUp": false
+                }
+            ],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/ff/36c86bd18e1531b7a6582b8d75815ac6.webp",
+                    "url_mini": "https://s.domovita.by/images/ff/36c86bd18e1531b7a6582b8d75815ac6.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ff/36c86bd18e1531b7a6582b8d75815ac6.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c0/236b9040f4d64d3717905364c7d9fdee.webp",
+                    "url_mini": "https://s.domovita.by/images/c0/236b9040f4d64d3717905364c7d9fdee.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c0/236b9040f4d64d3717905364c7d9fdee.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c1/cd1c5a11765076b44fa52752ede38146.webp",
+                    "url_mini": "https://s.domovita.by/images/c1/cd1c5a11765076b44fa52752ede38146.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c1/cd1c5a11765076b44fa52752ede38146.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/60/02f60d8201a73ee023fd7264c138406c.webp",
+                    "url_mini": "https://s.domovita.by/images/60/02f60d8201a73ee023fd7264c138406c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/60/02f60d8201a73ee023fd7264c138406c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f7/0a87edbeb3f002c637639365016425bd.webp",
+                    "url_mini": "https://s.domovita.by/images/f7/0a87edbeb3f002c637639365016425bd.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f7/0a87edbeb3f002c637639365016425bd.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/76/11a23ed5c0629a990aca2a9d0c5c8a9d.webp",
+                    "url_mini": "https://s.domovita.by/images/76/11a23ed5c0629a990aca2a9d0c5c8a9d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/76/11a23ed5c0629a990aca2a9d0c5c8a9d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/13/3fd635ad56e0342b16bfd98df931aa7a.webp",
+                    "url_mini": "https://s.domovita.by/images/13/3fd635ad56e0342b16bfd98df931aa7a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/13/3fd635ad56e0342b16bfd98df931aa7a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/07/1ba0a85592daad774d2b3febfcc8de27.webp",
+                    "url_mini": "https://s.domovita.by/images/07/1ba0a85592daad774d2b3febfcc8de27.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/07/1ba0a85592daad774d2b3febfcc8de27.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7b/3e2f84ab4a45e51c136d73fc43ae6154.webp",
+                    "url_mini": "https://s.domovita.by/images/7b/3e2f84ab4a45e51c136d73fc43ae6154.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7b/3e2f84ab4a45e51c136d73fc43ae6154.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6d/46022a3174b907a7d2525c733b8bd13f.webp",
+                    "url_mini": "https://s.domovita.by/images/6d/46022a3174b907a7d2525c733b8bd13f.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6d/46022a3174b907a7d2525c733b8bd13f.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6c/b023ba462b655c7febf02fd56c1a5091.webp",
+                    "url_mini": "https://s.domovita.by/images/6c/b023ba462b655c7febf02fd56c1a5091.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6c/b023ba462b655c7febf02fd56c1a5091.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/02/55db94c94a2ec7eeb6c1990636d0e228.webp",
+                    "url_mini": "https://s.domovita.by/images/02/55db94c94a2ec7eeb6c1990636d0e228.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/02/55db94c94a2ec7eeb6c1990636d0e228.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e0/f673f994675a0bf8d5b4bf814b8eddd9.webp",
+                    "url_mini": "https://s.domovita.by/images/e0/f673f994675a0bf8d5b4bf814b8eddd9.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e0/f673f994675a0bf8d5b4bf814b8eddd9.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/50/0467d2f14d4053a6a23b5c012f3b44b1.webp",
+                    "url_mini": "https://s.domovita.by/images/50/0467d2f14d4053a6a23b5c012f3b44b1.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/50/0467d2f14d4053a6a23b5c012f3b44b1.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/39/82734b0640aabec37e53c9e940e47ba0.webp",
+                    "url_mini": "https://s.domovita.by/images/39/82734b0640aabec37e53c9e940e47ba0.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/39/82734b0640aabec37e53c9e940e47ba0.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/47/a6fbdc33cf641b6bd21e9130541bb75c.webp",
+                    "url_mini": "https://s.domovita.by/images/47/a6fbdc33cf641b6bd21e9130541bb75c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/47/a6fbdc33cf641b6bd21e9130541bb75c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6c/3a854fa05d0b3864b06cd9144c492cac.webp",
+                    "url_mini": "https://s.domovita.by/images/6c/3a854fa05d0b3864b06cd9144c492cac.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6c/3a854fa05d0b3864b06cd9144c492cac.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/59/5131a2821d46bb7dca60c77555086808.webp",
+                    "url_mini": "https://s.domovita.by/images/59/5131a2821d46bb7dca60c77555086808.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/59/5131a2821d46bb7dca60c77555086808.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/cf/c73ba2f147e723f8088c58f6f66ca252.webp",
+                    "url_mini": "https://s.domovita.by/images/cf/c73ba2f147e723f8088c58f6f66ca252.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/cf/c73ba2f147e723f8088c58f6f66ca252.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/4c/753c5171fb8b875ff22be5525858ca7b.webp",
+                    "url_mini": "https://s.domovita.by/images/4c/753c5171fb8b875ff22be5525858ca7b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/4c/753c5171fb8b875ff22be5525858ca7b.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/45/5b956bd3549d9495467057a1b2c7c397.webp",
+                    "url_mini": "https://s.domovita.by/images/45/5b956bd3549d9495467057a1b2c7c397.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/45/5b956bd3549d9495467057a1b2c7c397.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/62/2e4513e7ab49610567d915a6915cfaf2.webp",
+                    "url_mini": "https://s.domovita.by/images/62/2e4513e7ab49610567d915a6915cfaf2.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/62/2e4513e7ab49610567d915a6915cfaf2.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/63/7d8a4c727207d7800cd7f5cce4d14a7d.webp",
+                    "url_mini": "https://s.domovita.by/images/63/7d8a4c727207d7800cd7f5cce4d14a7d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/63/7d8a4c727207d7800cd7f5cce4d14a7d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/67/2feed3307e3d288393fe47b121c3e755.webp",
+                    "url_mini": "https://s.domovita.by/images/67/2feed3307e3d288393fe47b121c3e755.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/67/2feed3307e3d288393fe47b121c3e755.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/2c/03c5f879f7248fedf0f9101575bd2abf.webp",
+                    "url_mini": "https://s.domovita.by/images/2c/03c5f879f7248fedf0f9101575bd2abf.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/2c/03c5f879f7248fedf0f9101575bd2abf.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/3-komnatnaa-kvartira-pr-t-nezavisimosti-46-13",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 219722,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 72,
+                "living": 48.5,
+                "kitchen": 7.4
+            },
+            "rooms": 3,
+            "separate_rooms": null,
+            "storey": 2,
+            "storeys": 5,
+            "house_type": "Кирпичный",
+            "repair_year": null,
+            "building_year": 1957,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 355-27-72",
+                    "(29) 355-27-72"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "3 года"
+            },
+            "price": {
+                "USD": 800,
+                "BYN": 2383.2,
+                "EUR": 689.8428,
+                "RUB": 64518.9236
+            },
+            "ads_text": null
+        },
+        {
+            "id": 147126,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-23 16:44:29",
+            "date_revision": "2025-08-25",
+            "description": "<p>Сдается чистая, ухоженная квартира Минск, Логойский тр-т, д.1, к 1, 1-я, 40/21/7. Кирпичный дом, окна во двор, деревянные стеклопакеты, паркетный пол, ремонт, интернет, телевизор.</p><p>Квартира укомплектована мебелью: прихожая, кухня, мягкий угол, кушетка. На полу ковер 3 на 4.</p><p>Квартира по-домашнему уютная.</p><p>Сдается на продолжительный срок.</p><p>Договор найма. Предоплата первый и последний месяц. Жду аккуратных квартирантов.</p><p></p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.9405,
+                    "position_y": 27.6056
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 7,
+                    "name": "Советский район",
+                    "subDistrict": {
+                        "id": 289,
+                        "name": "Беды"
+                    }
+                },
+                "metro": {
+                    "id": 107,
+                    "name": "Парк Челюскинцев",
+                    "branch": "blue",
+                    "position_x": 53.9241,
+                    "position_y": 27.6133,
+                    "time_by_walking": "25 мин",
+                    "time_by_transport": "14 мин"
+                },
+                "street_name": "Логойский тр-т",
+                "house_number": "1/1"
+            },
+            "title": "1-комнатная квартира, Минск, Логойский тр-т, д. 1/1",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/f2/d294d97cc3b4b7e36d4c9b2f3b39052f.webp",
+                    "url_mini": "https://s.domovita.by/images/f2/d294d97cc3b4b7e36d4c9b2f3b39052f.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f2/d294d97cc3b4b7e36d4c9b2f3b39052f.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b3/7ad296a6de67f84595ebb2fef97df7c5.webp",
+                    "url_mini": "https://s.domovita.by/images/b3/7ad296a6de67f84595ebb2fef97df7c5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b3/7ad296a6de67f84595ebb2fef97df7c5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d9/631c54f6550dff6cf5e303842740a42d.webp",
+                    "url_mini": "https://s.domovita.by/images/d9/631c54f6550dff6cf5e303842740a42d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d9/631c54f6550dff6cf5e303842740a42d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/9f/8e2b751267cacd7224020c79717b7c27.webp",
+                    "url_mini": "https://s.domovita.by/images/9f/8e2b751267cacd7224020c79717b7c27.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/9f/8e2b751267cacd7224020c79717b7c27.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f6/99c806dfe5b09f2687b456e1c7aa6c81.webp",
+                    "url_mini": "https://s.domovita.by/images/f6/99c806dfe5b09f2687b456e1c7aa6c81.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f6/99c806dfe5b09f2687b456e1c7aa6c81.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/3b/8eb2b8bb5c64e99d36f06b8c5a39b79e.webp",
+                    "url_mini": "https://s.domovita.by/images/3b/8eb2b8bb5c64e99d36f06b8c5a39b79e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/3b/8eb2b8bb5c64e99d36f06b8c5a39b79e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/70/4685e900a5a8e8bede9f370154ee2eda.webp",
+                    "url_mini": "https://s.domovita.by/images/70/4685e900a5a8e8bede9f370154ee2eda.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/70/4685e900a5a8e8bede9f370154ee2eda.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/36/fdb8eba1c5e2e32a6750d9dde1ebe61a.webp",
+                    "url_mini": "https://s.domovita.by/images/36/fdb8eba1c5e2e32a6750d9dde1ebe61a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/36/fdb8eba1c5e2e32a6750d9dde1ebe61a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/a8/d94bb8a300269abb5c16863b3e38e36d.webp",
+                    "url_mini": "https://s.domovita.by/images/a8/d94bb8a300269abb5c16863b3e38e36d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/a8/d94bb8a300269abb5c16863b3e38e36d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/bc/beafbeabbef491c1fe69d46e0a4360f6.webp",
+                    "url_mini": "https://s.domovita.by/images/bc/beafbeabbef491c1fe69d46e0a4360f6.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/bc/beafbeabbef491c1fe69d46e0a4360f6.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b6/8cbe8ea5323550ceb0cb5a868e63a5ec.webp",
+                    "url_mini": "https://s.domovita.by/images/b6/8cbe8ea5323550ceb0cb5a868e63a5ec.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b6/8cbe8ea5323550ceb0cb5a868e63a5ec.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/56/cb5034750294def69e83ec08ae65c452.webp",
+                    "url_mini": "https://s.domovita.by/images/56/cb5034750294def69e83ec08ae65c452.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/56/cb5034750294def69e83ec08ae65c452.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/1-komnatnaa-kvartira-logojskij-tr-t-11-66",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 183128,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 40,
+                "living": 21,
+                "kitchen": 7
+            },
+            "rooms": 1,
+            "separate_rooms": null,
+            "storey": 9,
+            "storeys": 9,
+            "house_type": "Панельный",
+            "repair_year": null,
+            "building_year": 1977,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(44) 588-49-94"
+                ],
+                "email": null,
+                "viber_phone": "445884994",
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "4 года"
+            },
+            "price": {
+                "USD": 300,
+                "BYN": 893.7,
+                "EUR": 258.6911,
+                "RUB": 24194.5964
+            },
+            "ads_text": null
+        },
+        {
+            "id": 147139,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-25 00:46:14",
+            "date_revision": "2025-08-25",
+            "description": "<p>Сдаётся 2квартира метро`Уручье `, ул.Городецкая . Элитная новостройка, с подземной стоянкой для машины. Кухня,холодильник, свч,шкаф-купе, стиральная машинка, двуспальная кровать,2 диван,один кожаный угловой,второй диван-книга,телевизор.,двухспальная кровать.Квартира с евро ремонтом,высокие потолки,стеклопакеты, пол ламинат+ плитка ,большая лоджия застекленная,<br />металлическая дверь. Только Белорусам.<br />Без животных.Студентов прошу не беспокоить.<br />Агент по Факту заселения.</p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.9466,
+                    "position_y": 27.6745
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 6,
+                    "name": "Первомайский район",
+                    "subDistrict": {
+                        "id": 44,
+                        "name": "Уручье"
+                    }
+                },
+                "metro": {
+                    "id": 111,
+                    "name": "Уручье",
+                    "branch": "blue",
+                    "position_x": 53.9456,
+                    "position_y": 27.6877,
+                    "time_by_walking": "12 мин",
+                    "time_by_transport": "7 мин"
+                },
+                "street_name": "ул. Городецкая",
+                "house_number": "36/1"
+            },
+            "title": "2-комнатная квартира, Минск, ул. Городецкая, д. 36/1",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/12/2db744171aebd58e369c872e8a7d43b3.webp",
+                    "url_mini": "https://s.domovita.by/images/12/2db744171aebd58e369c872e8a7d43b3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/12/2db744171aebd58e369c872e8a7d43b3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/8c/713deedc32c752e416d192afa94dc3fc.webp",
+                    "url_mini": "https://s.domovita.by/images/8c/713deedc32c752e416d192afa94dc3fc.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/8c/713deedc32c752e416d192afa94dc3fc.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/bb/3727487da3d040e7b7798f3dab5201cf.webp",
+                    "url_mini": "https://s.domovita.by/images/bb/3727487da3d040e7b7798f3dab5201cf.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/bb/3727487da3d040e7b7798f3dab5201cf.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7a/2fee8e42cb026a21bb753e0d52d4ce60.webp",
+                    "url_mini": "https://s.domovita.by/images/7a/2fee8e42cb026a21bb753e0d52d4ce60.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7a/2fee8e42cb026a21bb753e0d52d4ce60.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/4b/9be17f8042931d6dc1ab23aed0e3bbb1.webp",
+                    "url_mini": "https://s.domovita.by/images/4b/9be17f8042931d6dc1ab23aed0e3bbb1.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/4b/9be17f8042931d6dc1ab23aed0e3bbb1.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/2a/e38cc5889054e2481ce3213bbb38ae87.webp",
+                    "url_mini": "https://s.domovita.by/images/2a/e38cc5889054e2481ce3213bbb38ae87.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/2a/e38cc5889054e2481ce3213bbb38ae87.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/5c/cdfbf7dbb221029a680799c9a6eec360.webp",
+                    "url_mini": "https://s.domovita.by/images/5c/cdfbf7dbb221029a680799c9a6eec360.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/5c/cdfbf7dbb221029a680799c9a6eec360.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/8d/6b1afe60e60eae792e207aec13b98e06.webp",
+                    "url_mini": "https://s.domovita.by/images/8d/6b1afe60e60eae792e207aec13b98e06.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/8d/6b1afe60e60eae792e207aec13b98e06.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/2e/a91927863567d849b359708d0a145108.webp",
+                    "url_mini": "https://s.domovita.by/images/2e/a91927863567d849b359708d0a145108.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/2e/a91927863567d849b359708d0a145108.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/70/6b70aefb79ac5cdd12750843b0cc414b.webp",
+                    "url_mini": "https://s.domovita.by/images/70/6b70aefb79ac5cdd12750843b0cc414b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/70/6b70aefb79ac5cdd12750843b0cc414b.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d8/65bee2cc4a4454e419f85491e27b7ab6.webp",
+                    "url_mini": "https://s.domovita.by/images/d8/65bee2cc4a4454e419f85491e27b7ab6.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d8/65bee2cc4a4454e419f85491e27b7ab6.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/bc/35c08f86f37f4911df294f433e7f3d82.webp",
+                    "url_mini": "https://s.domovita.by/images/bc/35c08f86f37f4911df294f433e7f3d82.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/bc/35c08f86f37f4911df294f433e7f3d82.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/2b/4efedce8e01fc632d63d102d87f40687.webp",
+                    "url_mini": "https://s.domovita.by/images/2b/4efedce8e01fc632d63d102d87f40687.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/2b/4efedce8e01fc632d63d102d87f40687.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/45/757a543790efa4e828c7d10e9d020dd1.webp",
+                    "url_mini": "https://s.domovita.by/images/45/757a543790efa4e828c7d10e9d020dd1.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/45/757a543790efa4e828c7d10e9d020dd1.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e8/744079287ca9f3b516a5abbd4483d3d8.webp",
+                    "url_mini": "https://s.domovita.by/images/e8/744079287ca9f3b516a5abbd4483d3d8.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e8/744079287ca9f3b516a5abbd4483d3d8.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c7/62a48fcd9dd7c6cc46b0d3c4b546581d.webp",
+                    "url_mini": "https://s.domovita.by/images/c7/62a48fcd9dd7c6cc46b0d3c4b546581d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c7/62a48fcd9dd7c6cc46b0d3c4b546581d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/43/29fc00e8aee2104844e2940a19ddc275.webp",
+                    "url_mini": "https://s.domovita.by/images/43/29fc00e8aee2104844e2940a19ddc275.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/43/29fc00e8aee2104844e2940a19ddc275.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ad/b24035ad4bb5236b1e1c3b890c35ae8a.webp",
+                    "url_mini": "https://s.domovita.by/images/ad/b24035ad4bb5236b1e1c3b890c35ae8a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ad/b24035ad4bb5236b1e1c3b890c35ae8a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/cb/7175cc71cee7a9772f3d48db34b95699.webp",
+                    "url_mini": "https://s.domovita.by/images/cb/7175cc71cee7a9772f3d48db34b95699.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/cb/7175cc71cee7a9772f3d48db34b95699.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/4e/3e6d69a843509a446aee9f7a05fab1ca.webp",
+                    "url_mini": "https://s.domovita.by/images/4e/3e6d69a843509a446aee9f7a05fab1ca.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/4e/3e6d69a843509a446aee9f7a05fab1ca.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-ul-gorodeckaa-361-5",
+            "type": "OFlatsRent",
+            "owner_type": "Агент",
+            "user_id": 295080,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 62,
+                "living": 34,
+                "kitchen": 10
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 7,
+            "storeys": 12,
+            "house_type": null,
+            "repair_year": null,
+            "building_year": null,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 318-58-51"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "агент",
+                "period_on_site": "5 месяцев"
+            },
+            "price": {
+                "USD": 450,
+                "BYN": 1340.55,
+                "EUR": 388.0366,
+                "RUB": 36291.8945
+            },
+            "ads_text": null
+        },
+        {
+            "id": 146762,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-07-28 15:49:40",
+            "date_revision": "2025-08-21",
+            "description": "<p>Первая сдача. От собственника. Элитный комплекс, река, лес, парковка, закрытая территория. Депозит за 2 месяца. Без животных. Если не отвечаю- пишите/звоните в вайбер, тк могу быть в роуминге. Благодарю!</p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.9183,
+                    "position_y": 27.6371
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 5,
+                    "name": "Партизанский район",
+                    "subDistrict": {
+                        "id": 291,
+                        "name": "Парниковая"
+                    }
+                },
+                "metro": {
+                    "id": 108,
+                    "name": "Московская",
+                    "branch": "blue",
+                    "position_x": 53.9277,
+                    "position_y": 27.627,
+                    "time_by_walking": "16 мин",
+                    "time_by_transport": "9 мин"
+                },
+                "street_name": "ул. Филимонова",
+                "house_number": "22"
+            },
+            "title": "2-комнатная квартира, Минск, ул. Филимонова, д. 22",
+            "price_history": [
+                {
+                    "price": {
+                        "USD": 700,
+                        "BYN": 2085.3,
+                        "EUR": 603.6125,
+                        "RUB": 56454.0582
+                    },
+                    "date": 1755726158,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 750,
+                        "BYN": 2234.25,
+                        "EUR": 646.7276,
+                        "RUB": 60486.4909
+                    },
+                    "date": 1755724023,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": true
+                },
+                {
+                    "price": {
+                        "USD": 700,
+                        "BYN": 2085.3,
+                        "EUR": 603.6125,
+                        "RUB": 56454.0582
+                    },
+                    "date": 1755635980,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 750,
+                        "BYN": 2234.25,
+                        "EUR": 646.7276,
+                        "RUB": 60486.4909
+                    },
+                    "date": 1755445594,
+                    "changePrice": {
+                        "USD": 50,
+                        "BYN": 148.95,
+                        "EUR": 43.1152,
+                        "RUB": 4032.4327
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 800,
+                        "BYN": 2383.2,
+                        "EUR": 689.8428,
+                        "RUB": 64518.9236
+                    },
+                    "date": 1755083467,
+                    "changePrice": {
+                        "USD": 10,
+                        "BYN": 29.79,
+                        "EUR": 8.623,
+                        "RUB": 806.4865
+                    },
+                    "isUp": true
+                },
+                {
+                    "price": {
+                        "USD": 790,
+                        "BYN": 2353.41,
+                        "EUR": 681.2198,
+                        "RUB": 63712.4371
+                    },
+                    "date": 1755082872,
+                    "changePrice": {
+                        "USD": 10,
+                        "BYN": 29.79,
+                        "EUR": 8.623,
+                        "RUB": 806.4865
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 800,
+                        "BYN": 2383.2,
+                        "EUR": 689.8428,
+                        "RUB": 64518.9236
+                    },
+                    "date": 1753706980,
+                    "changePrice": null,
+                    "isUp": false
+                }
+            ],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/13/2be03e88a7d05409062b88864656fed5.webp",
+                    "url_mini": "https://s.domovita.by/images/13/2be03e88a7d05409062b88864656fed5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/13/2be03e88a7d05409062b88864656fed5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c6/3b1c0933e926a9ac7f045e56b103c20d.webp",
+                    "url_mini": "https://s.domovita.by/images/c6/3b1c0933e926a9ac7f045e56b103c20d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c6/3b1c0933e926a9ac7f045e56b103c20d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/64/16c03de11c49513fb234d8ed2fb1c730.webp",
+                    "url_mini": "https://s.domovita.by/images/64/16c03de11c49513fb234d8ed2fb1c730.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/64/16c03de11c49513fb234d8ed2fb1c730.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/5c/3a8ef3c1fe9774ac49339ac1c6edbe7e.webp",
+                    "url_mini": "https://s.domovita.by/images/5c/3a8ef3c1fe9774ac49339ac1c6edbe7e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/5c/3a8ef3c1fe9774ac49339ac1c6edbe7e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b0/2c5070bd6bd29ed8984fb674bc1fdd6a.webp",
+                    "url_mini": "https://s.domovita.by/images/b0/2c5070bd6bd29ed8984fb674bc1fdd6a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b0/2c5070bd6bd29ed8984fb674bc1fdd6a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/a2/f4305128a55edbc46086a8af0749267e.webp",
+                    "url_mini": "https://s.domovita.by/images/a2/f4305128a55edbc46086a8af0749267e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/a2/f4305128a55edbc46086a8af0749267e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/64/4d752026bbeb4e93bc6bf859d599a6fe.webp",
+                    "url_mini": "https://s.domovita.by/images/64/4d752026bbeb4e93bc6bf859d599a6fe.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/64/4d752026bbeb4e93bc6bf859d599a6fe.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c3/d4e1eedabd45a6c4bf39a5dd37438593.webp",
+                    "url_mini": "https://s.domovita.by/images/c3/d4e1eedabd45a6c4bf39a5dd37438593.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c3/d4e1eedabd45a6c4bf39a5dd37438593.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/26/626b66fbcca54c9e4f4d66be20172229.webp",
+                    "url_mini": "https://s.domovita.by/images/26/626b66fbcca54c9e4f4d66be20172229.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/26/626b66fbcca54c9e4f4d66be20172229.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ef/88e30da86b645d0b8cd09eee246aeee5.webp",
+                    "url_mini": "https://s.domovita.by/images/ef/88e30da86b645d0b8cd09eee246aeee5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ef/88e30da86b645d0b8cd09eee246aeee5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c3/7e5cb3af3b7f3678bfb3f219936d5a58.webp",
+                    "url_mini": "https://s.domovita.by/images/c3/7e5cb3af3b7f3678bfb3f219936d5a58.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c3/7e5cb3af3b7f3678bfb3f219936d5a58.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/40/d5e36fd0c7b24f2850e6d9dfcf5003b5.webp",
+                    "url_mini": "https://s.domovita.by/images/40/d5e36fd0c7b24f2850e6d9dfcf5003b5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/40/d5e36fd0c7b24f2850e6d9dfcf5003b5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/86/1f4654993d78f8db6da047f3accc0217.webp",
+                    "url_mini": "https://s.domovita.by/images/86/1f4654993d78f8db6da047f3accc0217.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/86/1f4654993d78f8db6da047f3accc0217.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/5d/77b2fca9aca5a4fc7351ed5981e9dc23.webp",
+                    "url_mini": "https://s.domovita.by/images/5d/77b2fca9aca5a4fc7351ed5981e9dc23.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/5d/77b2fca9aca5a4fc7351ed5981e9dc23.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/29/40ee4c664eae43e7e69dffe2ffdc3a7e.webp",
+                    "url_mini": "https://s.domovita.by/images/29/40ee4c664eae43e7e69dffe2ffdc3a7e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/29/40ee4c664eae43e7e69dffe2ffdc3a7e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e7/4a8d24fb5fa56d329b04c874ee567ad3.webp",
+                    "url_mini": "https://s.domovita.by/images/e7/4a8d24fb5fa56d329b04c874ee567ad3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e7/4a8d24fb5fa56d329b04c874ee567ad3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/32/2f930f57819574147ef76bdb5a255699.webp",
+                    "url_mini": "https://s.domovita.by/images/32/2f930f57819574147ef76bdb5a255699.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/32/2f930f57819574147ef76bdb5a255699.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/04/f4672c95f11865b7d57f343e81cd1a25.webp",
+                    "url_mini": "https://s.domovita.by/images/04/f4672c95f11865b7d57f343e81cd1a25.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/04/f4672c95f11865b7d57f343e81cd1a25.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ae/68b3272bb5053887bb35fc6d5322342f.webp",
+                    "url_mini": "https://s.domovita.by/images/ae/68b3272bb5053887bb35fc6d5322342f.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ae/68b3272bb5053887bb35fc6d5322342f.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/07/5c42e56c0b152060ae5db88fc6e739ad.webp",
+                    "url_mini": "https://s.domovita.by/images/07/5c42e56c0b152060ae5db88fc6e739ad.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/07/5c42e56c0b152060ae5db88fc6e739ad.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/a5/24e4157c55c0f72c56b2c1431db2b2bd.webp",
+                    "url_mini": "https://s.domovita.by/images/a5/24e4157c55c0f72c56b2c1431db2b2bd.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/a5/24e4157c55c0f72c56b2c1431db2b2bd.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/68/3274dae223ce6c8140f117d6a8d5ff9d.webp",
+                    "url_mini": "https://s.domovita.by/images/68/3274dae223ce6c8140f117d6a8d5ff9d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/68/3274dae223ce6c8140f117d6a8d5ff9d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/01/484db17a483f44b78b52768ba02791f5.webp",
+                    "url_mini": "https://s.domovita.by/images/01/484db17a483f44b78b52768ba02791f5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/01/484db17a483f44b78b52768ba02791f5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7d/9162b2844b2f8d6ffd53c192ce5ca7c5.webp",
+                    "url_mini": "https://s.domovita.by/images/7d/9162b2844b2f8d6ffd53c192ce5ca7c5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7d/9162b2844b2f8d6ffd53c192ce5ca7c5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/18/2eacf186f0c526d39e548ccfcf3bc859.webp",
+                    "url_mini": "https://s.domovita.by/images/18/2eacf186f0c526d39e548ccfcf3bc859.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/18/2eacf186f0c526d39e548ccfcf3bc859.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/9d/ab76c194ba56f580f1bfb77329f3e085.webp",
+                    "url_mini": "https://s.domovita.by/images/9d/ab76c194ba56f580f1bfb77329f3e085.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/9d/ab76c194ba56f580f1bfb77329f3e085.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/de/85d51395cb1cd9a432ef4554f8ca4af9.webp",
+                    "url_mini": "https://s.domovita.by/images/de/85d51395cb1cd9a432ef4554f8ca4af9.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/de/85d51395cb1cd9a432ef4554f8ca4af9.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/67/d9e8663530dac6ab8f03f953d43dd189.webp",
+                    "url_mini": "https://s.domovita.by/images/67/d9e8663530dac6ab8f03f953d43dd189.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/67/d9e8663530dac6ab8f03f953d43dd189.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/11/9a1c3d611f5d3dae902036fb7ce3833c.webp",
+                    "url_mini": "https://s.domovita.by/images/11/9a1c3d611f5d3dae902036fb7ce3833c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/11/9a1c3d611f5d3dae902036fb7ce3833c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/bb/44b16eedbad0500cddfc72add6993099.webp",
+                    "url_mini": "https://s.domovita.by/images/bb/44b16eedbad0500cddfc72add6993099.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/bb/44b16eedbad0500cddfc72add6993099.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6b/09a21ec90f53f7ae2086335e2d39a5b3.webp",
+                    "url_mini": "https://s.domovita.by/images/6b/09a21ec90f53f7ae2086335e2d39a5b3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6b/09a21ec90f53f7ae2086335e2d39a5b3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/30/ecea5c95db3ce367da12570864b2a29c.webp",
+                    "url_mini": "https://s.domovita.by/images/30/ecea5c95db3ce367da12570864b2a29c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/30/ecea5c95db3ce367da12570864b2a29c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/04/77fac210ea0c624d97c268293c032408.webp",
+                    "url_mini": "https://s.domovita.by/images/04/77fac210ea0c624d97c268293c032408.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/04/77fac210ea0c624d97c268293c032408.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6c/2aac3a0161e3da06874d03a6b6fe57fb.webp",
+                    "url_mini": "https://s.domovita.by/images/6c/2aac3a0161e3da06874d03a6b6fe57fb.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6c/2aac3a0161e3da06874d03a6b6fe57fb.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/05/97f6f8c795c621b90340715515375680.webp",
+                    "url_mini": "https://s.domovita.by/images/05/97f6f8c795c621b90340715515375680.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/05/97f6f8c795c621b90340715515375680.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/74/d470ae8ddf50f2f8619df8366f665eec.webp",
+                    "url_mini": "https://s.domovita.by/images/74/d470ae8ddf50f2f8619df8366f665eec.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/74/d470ae8ddf50f2f8619df8366f665eec.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/bf/9ecac0c6465c439273cec098336b5aac.webp",
+                    "url_mini": "https://s.domovita.by/images/bf/9ecac0c6465c439273cec098336b5aac.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/bf/9ecac0c6465c439273cec098336b5aac.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/03/dfc91f8090040173caa97832027fd9f4.webp",
+                    "url_mini": "https://s.domovita.by/images/03/dfc91f8090040173caa97832027fd9f4.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/03/dfc91f8090040173caa97832027fd9f4.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/19/e62def73559a2bd0ba3f12de819e21d3.webp",
+                    "url_mini": "https://s.domovita.by/images/19/e62def73559a2bd0ba3f12de819e21d3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/19/e62def73559a2bd0ba3f12de819e21d3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d4/851895f94100aba5f7711221a34ced6b.webp",
+                    "url_mini": "https://s.domovita.by/images/d4/851895f94100aba5f7711221a34ced6b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d4/851895f94100aba5f7711221a34ced6b.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e7/c7ff3c38763a2eb4df390ac7febf114b.webp",
+                    "url_mini": "https://s.domovita.by/images/e7/c7ff3c38763a2eb4df390ac7febf114b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e7/c7ff3c38763a2eb4df390ac7febf114b.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/8e/cd1d7dcbc8d5585538cf0da865854b6a.webp",
+                    "url_mini": "https://s.domovita.by/images/8e/cd1d7dcbc8d5585538cf0da865854b6a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/8e/cd1d7dcbc8d5585538cf0da865854b6a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/06/52257f2e302db3708ac4b25fe45b74a6.webp",
+                    "url_mini": "https://s.domovita.by/images/06/52257f2e302db3708ac4b25fe45b74a6.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/06/52257f2e302db3708ac4b25fe45b74a6.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-ul-filimonova-22-31",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 301022,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 70,
+                "living": 60,
+                "kitchen": null
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 3,
+            "storeys": 9,
+            "house_type": null,
+            "repair_year": null,
+            "building_year": null,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(33) 321-28-74"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "28 дней"
+            },
+            "price": {
+                "USD": 700,
+                "BYN": 2085.3,
+                "EUR": 603.6125,
+                "RUB": 56454.0582
+            },
+            "ads_text": null
+        },
+        {
+            "id": 147022,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-15 23:13:56",
+            "date_revision": "2025-08-24",
+            "description": "<p>Квартира в самом мобильном и уютном месте Минска. Все рядом, очень удобное расположение, развитая инфраструктура. Метро 5 минут, автобусная остановка у дома. 2 бассейная, 2 школы во дворе, двор с детской площадкой, банк, магазин, тренажерный зал, детский сад, парикмахерская, аптека в доме. Рядом несколько огромных магазинов, парк, рестораны, кафе, аптеки и т.д. Мебель, техника, все в идеальном состоянии. Кондиционер, пол подогрев, эл.камин, пылесос посудомоечная машина, посуда, огромный холодильник, джакузи и душевая кабина, утюг, гладильная доска, 2 телевизора смарт, интернет, матрасы с мемори очень удобные, гардеробная и   удобные шкафы, стиральная машина автомат. Только аккуратным людям, без животных. В квартире не курят. На длительный срок, не менее чем на год, с обязательным залогом  в сумме месячной аренды. Коммунальные по счетчикам. Только по договору с уплатой налогов, при необходимости временная регистрация</p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.8445,
+                    "position_y": 27.4741
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 3,
+                    "name": "Московский район",
+                    "subDistrict": {
+                        "id": 16,
+                        "name": "Брилевичи"
+                    }
+                },
+                "metro": {
+                    "id": 115,
+                    "name": "Малиновка",
+                    "branch": "blue",
+                    "position_x": 53.8492,
+                    "position_y": 27.4745,
+                    "time_by_walking": "7 мин",
+                    "time_by_transport": "4 мин"
+                },
+                "street_name": "пр-т Дзержинского",
+                "house_number": "131"
+            },
+            "title": "3-комнатная квартира, Минск, пр-т Дзержинского, д. 131",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/60/3e0fc723407cc9e2cefa574e5b5b3389.webp",
+                    "url_mini": "https://s.domovita.by/images/60/3e0fc723407cc9e2cefa574e5b5b3389.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/60/3e0fc723407cc9e2cefa574e5b5b3389.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/0e/4239e08f60fc88b36dfdf41d93da5d70.webp",
+                    "url_mini": "https://s.domovita.by/images/0e/4239e08f60fc88b36dfdf41d93da5d70.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/0e/4239e08f60fc88b36dfdf41d93da5d70.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d8/cb99b2aaed7f091322d879c297b1e98a.webp",
+                    "url_mini": "https://s.domovita.by/images/d8/cb99b2aaed7f091322d879c297b1e98a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d8/cb99b2aaed7f091322d879c297b1e98a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/1b/f48ba57bd12ff49c818c96433a37030c.webp",
+                    "url_mini": "https://s.domovita.by/images/1b/f48ba57bd12ff49c818c96433a37030c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/1b/f48ba57bd12ff49c818c96433a37030c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e3/dd0a0b32e400676e61e917a50f53c721.webp",
+                    "url_mini": "https://s.domovita.by/images/e3/dd0a0b32e400676e61e917a50f53c721.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e3/dd0a0b32e400676e61e917a50f53c721.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ed/586f56a3efc68ab4dcb5e3e814190551.webp",
+                    "url_mini": "https://s.domovita.by/images/ed/586f56a3efc68ab4dcb5e3e814190551.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ed/586f56a3efc68ab4dcb5e3e814190551.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/3a/786c3b11e10cf70792c9f34306484b96.webp",
+                    "url_mini": "https://s.domovita.by/images/3a/786c3b11e10cf70792c9f34306484b96.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/3a/786c3b11e10cf70792c9f34306484b96.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/04/51f9448ff6b4e2bb209b825c2de85c0a.webp",
+                    "url_mini": "https://s.domovita.by/images/04/51f9448ff6b4e2bb209b825c2de85c0a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/04/51f9448ff6b4e2bb209b825c2de85c0a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f7/533b3faa533be1f44f7298c737714f11.webp",
+                    "url_mini": "https://s.domovita.by/images/f7/533b3faa533be1f44f7298c737714f11.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f7/533b3faa533be1f44f7298c737714f11.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ed/63a00a2f4694b8265b4d176ca4e9f5eb.webp",
+                    "url_mini": "https://s.domovita.by/images/ed/63a00a2f4694b8265b4d176ca4e9f5eb.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ed/63a00a2f4694b8265b4d176ca4e9f5eb.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/40/f879291044c0c8aa93356613ced21496.webp",
+                    "url_mini": "https://s.domovita.by/images/40/f879291044c0c8aa93356613ced21496.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/40/f879291044c0c8aa93356613ced21496.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e9/d3f065b9a3222f6ad1a0a336951ac6ab.webp",
+                    "url_mini": "https://s.domovita.by/images/e9/d3f065b9a3222f6ad1a0a336951ac6ab.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e9/d3f065b9a3222f6ad1a0a336951ac6ab.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/08/08cccc2e665042f59ada7e1286f698df.webp",
+                    "url_mini": "https://s.domovita.by/images/08/08cccc2e665042f59ada7e1286f698df.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/08/08cccc2e665042f59ada7e1286f698df.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/94/fa4eb7b07a642c46c3e9089c1bcafa8f.webp",
+                    "url_mini": "https://s.domovita.by/images/94/fa4eb7b07a642c46c3e9089c1bcafa8f.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/94/fa4eb7b07a642c46c3e9089c1bcafa8f.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c8/89f168396f0f75f44cf55c8e49ff5136.webp",
+                    "url_mini": "https://s.domovita.by/images/c8/89f168396f0f75f44cf55c8e49ff5136.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c8/89f168396f0f75f44cf55c8e49ff5136.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/84/c2f5da1d5cd8be79c0473a748b1c750a.webp",
+                    "url_mini": "https://s.domovita.by/images/84/c2f5da1d5cd8be79c0473a748b1c750a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/84/c2f5da1d5cd8be79c0473a748b1c750a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/1d/c4d3bd181ff56a69fd10749c471c8384.webp",
+                    "url_mini": "https://s.domovita.by/images/1d/c4d3bd181ff56a69fd10749c471c8384.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/1d/c4d3bd181ff56a69fd10749c471c8384.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/c3/06e45e9150539df5d301be8f617cf212.webp",
+                    "url_mini": "https://s.domovita.by/images/c3/06e45e9150539df5d301be8f617cf212.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/c3/06e45e9150539df5d301be8f617cf212.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/9c/5554ed7d6d41d1813a9915e2a0c8afe9.webp",
+                    "url_mini": "https://s.domovita.by/images/9c/5554ed7d6d41d1813a9915e2a0c8afe9.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/9c/5554ed7d6d41d1813a9915e2a0c8afe9.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b9/7715762e9243b6d5f3857b9c296aa894.webp",
+                    "url_mini": "https://s.domovita.by/images/b9/7715762e9243b6d5f3857b9c296aa894.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b9/7715762e9243b6d5f3857b9c296aa894.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/3-komnatnaa-kvartira-pr-t-dzerzinskogo-131-16",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 139296,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 90,
+                "living": 60,
+                "kitchen": 10
+            },
+            "rooms": 3,
+            "separate_rooms": null,
+            "storey": 14,
+            "storeys": 14,
+            "house_type": "каркасно-блочный",
+            "repair_year": null,
+            "building_year": 2012,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 375-75-97"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "4 года"
+            },
+            "price": {
+                "USD": 900,
+                "BYN": 2681.1,
+                "EUR": 776.0732,
+                "RUB": 72583.7891
+            },
+            "ads_text": null
+        },
+        {
+            "id": 147113,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-22 16:31:14",
+            "date_revision": "2025-08-25",
+            "description": "<p>Для Троих Студентов.Сдается 2квартира метро\"Автозаводская\",<br />5 остановок. Проезд Голодёда д.9.Кухня,холодильник, свч,стиральная машинка, три кровати,шкаф,комод.<br />Комнаты раздельные.Пол дсп+ковёр. <br />Квартира в нормальном состоянии.</p><p>Если 4 чел.цена 520у.е.<br />Агент по Факту заселения.</p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.8366,
+                    "position_y": 27.6147
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 1,
+                    "name": "Заводской район",
+                    "subDistrict": {
+                        "id": 10,
+                        "name": "Чижовка"
+                    }
+                },
+                "metro": null,
+                "street_name": "пр-д Голодеда",
+                "house_number": "9"
+            },
+            "title": "2-комнатная квартира, Минск, пр-д Голодеда, д. 9",
+            "price_history": [
+                {
+                    "price": {
+                        "USD": 420,
+                        "BYN": 1251.18,
+                        "EUR": 362.1675,
+                        "RUB": 33872.4349
+                    },
+                    "date": 1756123365,
+                    "changePrice": {
+                        "USD": 70,
+                        "BYN": 208.53,
+                        "EUR": 60.3612,
+                        "RUB": 5645.4058
+                    },
+                    "isUp": true
+                },
+                {
+                    "price": {
+                        "USD": 350,
+                        "BYN": 1042.65,
+                        "EUR": 301.8062,
+                        "RUB": 28227.0291
+                    },
+                    "date": 1755955128,
+                    "changePrice": {
+                        "USD": 20,
+                        "BYN": 59.58,
+                        "EUR": 17.2461,
+                        "RUB": 1612.9731
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 370,
+                        "BYN": 1102.23,
+                        "EUR": 319.0523,
+                        "RUB": 29840.0022
+                    },
+                    "date": 1755871219,
+                    "changePrice": {
+                        "USD": 30,
+                        "BYN": 89.37,
+                        "EUR": 25.8691,
+                        "RUB": 2419.4596
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 400,
+                        "BYN": 1191.6,
+                        "EUR": 344.9214,
+                        "RUB": 32259.4618
+                    },
+                    "date": 1755869474,
+                    "changePrice": null,
+                    "isUp": false
+                }
+            ],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/b0/88613d1a63042d16467bd7e4e4b63754.webp",
+                    "url_mini": "https://s.domovita.by/images/b0/88613d1a63042d16467bd7e4e4b63754.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b0/88613d1a63042d16467bd7e4e4b63754.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/35/5876ba5c181761b9d1031d7fbb0c02bb.webp",
+                    "url_mini": "https://s.domovita.by/images/35/5876ba5c181761b9d1031d7fbb0c02bb.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/35/5876ba5c181761b9d1031d7fbb0c02bb.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/fd/83a1c62e96a62fd3181a0ad01fcddd26.webp",
+                    "url_mini": "https://s.domovita.by/images/fd/83a1c62e96a62fd3181a0ad01fcddd26.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/fd/83a1c62e96a62fd3181a0ad01fcddd26.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/89/6c5acda5c66819fd8de40278e4a159ef.webp",
+                    "url_mini": "https://s.domovita.by/images/89/6c5acda5c66819fd8de40278e4a159ef.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/89/6c5acda5c66819fd8de40278e4a159ef.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/a6/81383b03e8f93f5d3f35cba3d28e75f3.webp",
+                    "url_mini": "https://s.domovita.by/images/a6/81383b03e8f93f5d3f35cba3d28e75f3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/a6/81383b03e8f93f5d3f35cba3d28e75f3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/3b/291bfdfd757e1180bcb5cb80f5f77311.webp",
+                    "url_mini": "https://s.domovita.by/images/3b/291bfdfd757e1180bcb5cb80f5f77311.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/3b/291bfdfd757e1180bcb5cb80f5f77311.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/1c/7ca0aa0c249aa535e804d963859f6e78.webp",
+                    "url_mini": "https://s.domovita.by/images/1c/7ca0aa0c249aa535e804d963859f6e78.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/1c/7ca0aa0c249aa535e804d963859f6e78.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f4/a7f1b46bebbbe7fa74031ae7f553a10e.webp",
+                    "url_mini": "https://s.domovita.by/images/f4/a7f1b46bebbbe7fa74031ae7f553a10e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f4/a7f1b46bebbbe7fa74031ae7f553a10e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ec/44b234a2cda4253a01eb6c9d056c15f7.webp",
+                    "url_mini": "https://s.domovita.by/images/ec/44b234a2cda4253a01eb6c9d056c15f7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ec/44b234a2cda4253a01eb6c9d056c15f7.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-pr-d-golodeda-9-3",
+            "type": "OFlatsRent",
+            "owner_type": "Агент",
+            "user_id": 295080,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 45,
+                "living": 30,
+                "kitchen": 6
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 5,
+            "storeys": 5,
+            "house_type": "Панельный",
+            "repair_year": null,
+            "building_year": 1971,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 318-58-51"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "агент",
+                "period_on_site": "5 месяцев"
+            },
+            "price": {
+                "USD": 420,
+                "BYN": 1251.18,
+                "EUR": 362.1675,
+                "RUB": 33872.4349
+            },
+            "ads_text": "<p>Для Троих Студентов.</p>"
+        },
+        {
+            "id": 146827,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-02 17:31:30",
+            "date_revision": "2025-08-16",
+            "description": "<p>Сдаётся однокомнатная квартира , расположенная ЖК Минск Мир, с видом на ТЦ Avia Mall и бизнес центр. Квартира полностью укомплектована всей необходимой мебелью и техникой для комфортного проживания. Мебель и техника почти в новом состоянии. Квартира очень хорошо зонирована. В шаговой доступности расположены: кофейни , детские сады, огромная школа (границы улиц Савицкого — Братской — Алферова) и 2 поликлиники(взрослая и детская).Квартира со вкусом благоустроена и разумно зонирована: подойдёт и для одинокого работающего арендатора , и для родителя с ребёнком , </p><p>и для семейной пары.Не сдаю арендаторам для проживания с животными, иностранцам и студентам! </p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.8633,
+                    "position_y": 27.5385
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 4,
+                    "name": "Октябрьский район",
+                    "subDistrict": {
+                        "id": 14,
+                        "name": "Маяковского"
+                    }
+                },
+                "metro": {
+                    "id": 1114,
+                    "name": "Аэродромная",
+                    "branch": "green",
+                    "position_x": 53.8653,
+                    "position_y": 27.5439,
+                    "time_by_walking": "6 мин",
+                    "time_by_transport": ""
+                },
+                "street_name": "пр-т Мира",
+                "house_number": "14"
+            },
+            "title": "1-комнатная квартира, Минск, пр-т Мира, д. 14",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/67/fc512d571e5ecf96ebb1f3e49fe88c82.webp",
+                    "url_mini": "https://s.domovita.by/images/67/fc512d571e5ecf96ebb1f3e49fe88c82.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/67/fc512d571e5ecf96ebb1f3e49fe88c82.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6d/3bac18f793c9d805cdc19e60b85f258d.webp",
+                    "url_mini": "https://s.domovita.by/images/6d/3bac18f793c9d805cdc19e60b85f258d.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6d/3bac18f793c9d805cdc19e60b85f258d.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/ff/eb81d818e4fbfe810289aa0bd1f3e7d5.webp",
+                    "url_mini": "https://s.domovita.by/images/ff/eb81d818e4fbfe810289aa0bd1f3e7d5.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/ff/eb81d818e4fbfe810289aa0bd1f3e7d5.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/11/3c70d0f99dacb4618ed66597bc7b9a30.webp",
+                    "url_mini": "https://s.domovita.by/images/11/3c70d0f99dacb4618ed66597bc7b9a30.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/11/3c70d0f99dacb4618ed66597bc7b9a30.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b3/a6026c36bec5d541a37e3ecf18a0fa76.webp",
+                    "url_mini": "https://s.domovita.by/images/b3/a6026c36bec5d541a37e3ecf18a0fa76.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b3/a6026c36bec5d541a37e3ecf18a0fa76.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/49/fe91afd85823ee41e7f446cafda24ca3.webp",
+                    "url_mini": "https://s.domovita.by/images/49/fe91afd85823ee41e7f446cafda24ca3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/49/fe91afd85823ee41e7f446cafda24ca3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/72/a6938439300fc26ff77c4b1cbc2cea98.webp",
+                    "url_mini": "https://s.domovita.by/images/72/a6938439300fc26ff77c4b1cbc2cea98.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/72/a6938439300fc26ff77c4b1cbc2cea98.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/0a/f8dda1754b433ce6d01b91f390c71dda.webp",
+                    "url_mini": "https://s.domovita.by/images/0a/f8dda1754b433ce6d01b91f390c71dda.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/0a/f8dda1754b433ce6d01b91f390c71dda.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7a/079ea18fc022c4024bbc596a8b35af00.webp",
+                    "url_mini": "https://s.domovita.by/images/7a/079ea18fc022c4024bbc596a8b35af00.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7a/079ea18fc022c4024bbc596a8b35af00.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b8/596e95d6daa27b31b4131bb0642ad88a.webp",
+                    "url_mini": "https://s.domovita.by/images/b8/596e95d6daa27b31b4131bb0642ad88a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b8/596e95d6daa27b31b4131bb0642ad88a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/8b/c23f032b95be32085ec7bd804b314964.webp",
+                    "url_mini": "https://s.domovita.by/images/8b/c23f032b95be32085ec7bd804b314964.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/8b/c23f032b95be32085ec7bd804b314964.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f3/d27e176564ab76885123366d14861ee0.webp",
+                    "url_mini": "https://s.domovita.by/images/f3/d27e176564ab76885123366d14861ee0.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f3/d27e176564ab76885123366d14861ee0.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/f8/c3e04cfda46cc483302e0b4c9ce93d0a.webp",
+                    "url_mini": "https://s.domovita.by/images/f8/c3e04cfda46cc483302e0b4c9ce93d0a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/f8/c3e04cfda46cc483302e0b4c9ce93d0a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/42/0f5b32c659571c538bae4775450078b6.webp",
+                    "url_mini": "https://s.domovita.by/images/42/0f5b32c659571c538bae4775450078b6.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/42/0f5b32c659571c538bae4775450078b6.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/a7/fb04d6d5d0d2953ec5eff0bb829ed097.webp",
+                    "url_mini": "https://s.domovita.by/images/a7/fb04d6d5d0d2953ec5eff0bb829ed097.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/a7/fb04d6d5d0d2953ec5eff0bb829ed097.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6c/68c0ae14cab228146383e7ab14cac74a.webp",
+                    "url_mini": "https://s.domovita.by/images/6c/68c0ae14cab228146383e7ab14cac74a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6c/68c0ae14cab228146383e7ab14cac74a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/22/5269c327f5ddcafff70b336efb33fda4.webp",
+                    "url_mini": "https://s.domovita.by/images/22/5269c327f5ddcafff70b336efb33fda4.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/22/5269c327f5ddcafff70b336efb33fda4.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/9d/e38fc51b161b1ecddcd64b86d3fd79e7.webp",
+                    "url_mini": "https://s.domovita.by/images/9d/e38fc51b161b1ecddcd64b86d3fd79e7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/9d/e38fc51b161b1ecddcd64b86d3fd79e7.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/86/a23651134dcba3f407dfb9de9ebe72fd.webp",
+                    "url_mini": "https://s.domovita.by/images/86/a23651134dcba3f407dfb9de9ebe72fd.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/86/a23651134dcba3f407dfb9de9ebe72fd.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/fc/8ad20c0ef3e177aa389ea8850c29954b.webp",
+                    "url_mini": "https://s.domovita.by/images/fc/8ad20c0ef3e177aa389ea8850c29954b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/fc/8ad20c0ef3e177aa389ea8850c29954b.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/1-komnatnaa-kvartira-pr-t-mira-14-16",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 150038,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 29,
+                "living": 24,
+                "kitchen": 4
+            },
+            "rooms": 1,
+            "separate_rooms": null,
+            "storey": 12,
+            "storeys": 12,
+            "house_type": null,
+            "repair_year": null,
+            "building_year": null,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 750-37-85"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "4 года"
+            },
+            "price": {
+                "USD": 419.6039,
+                "BYN": 1250,
+                "EUR": 361.8259,
+                "RUB": 33840.4895
+            },
+            "ads_text": "<p>1-комнатная оборудованная всем квартира с видом на Авиа Молл и бизнес-центр!</p><p></p><p></p>"
+        },
+        {
+            "id": 147109,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-08-22 13:58:49",
+            "date_revision": "2025-08-25",
+            "description": "<p>Сдается на длительный срок уютная двухкомнатная квартира с частичной меблировкой в отличной локации у метро «Неморшанский сад». В квартире есть все для комфортного проживания: удобный диван-кровать, два кресла, тахта, компьютерный и письменный стол, шкаф для одежды и белья. На кухне вас ждет встроенная мебель, обеденный стол с четырьмя стульями, электрическая плита, духовка, холодильник и стиральная машина. По вашему желанию в спальне можно установить двуспальную кровать и большой платяной шкаф. Квартира полностью готова к жизни: проведен интернет, установлена надежная железная дверь и современные стеклопакеты, лоджия застеклена. Жилой комплекс окружен зеленью — прямо перед домом разбит живописный фруктовый сад. Во дворе работает продовольственный магазин с длительным режимом работы (с 7 утра до 10 вечера), а в шаговой доступности находятся супермаркеты «Санта» и «Корона». Квартира сдается предпочтительно парам без животных и маленьких детей или одному человеку (девушке или парню). Условия аренды: ежемесячная плата + залог + коммунальные платежи. По вопросам просмотра и заключения договора обращайтесь к Светлане Андреевне по телефону </p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.85,
+                    "position_y": 27.5319
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 4,
+                    "name": "Октябрьский район",
+                    "subDistrict": {
+                        "id": 299,
+                        "name": "Курасовщина"
+                    }
+                },
+                "metro": {
+                    "id": 1113,
+                    "name": "Неморшанский сад",
+                    "branch": "green",
+                    "position_x": 53.8501,
+                    "position_y": 27.5368,
+                    "time_by_walking": "5 мин",
+                    "time_by_transport": ""
+                },
+                "street_name": "ул. Лейтенанта Кижеватова",
+                "house_number": "60В"
+            },
+            "title": "2-комнатная квартира, Минск, ул. Лейтенанта Кижеватова, д. 60В",
+            "price_history": [],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/74/4e5ae7567165e164ab85153254d92f22.webp",
+                    "url_mini": "https://s.domovita.by/images/74/4e5ae7567165e164ab85153254d92f22.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/74/4e5ae7567165e164ab85153254d92f22.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/cb/79349641c0a6925e87a50408e2383c29.webp",
+                    "url_mini": "https://s.domovita.by/images/cb/79349641c0a6925e87a50408e2383c29.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/cb/79349641c0a6925e87a50408e2383c29.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/b5/e910c4f06440b2240bb59a9b727c717b.webp",
+                    "url_mini": "https://s.domovita.by/images/b5/e910c4f06440b2240bb59a9b727c717b.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/b5/e910c4f06440b2240bb59a9b727c717b.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/16/e097c208d444f09134e8ce91b0e419e7.webp",
+                    "url_mini": "https://s.domovita.by/images/16/e097c208d444f09134e8ce91b0e419e7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/16/e097c208d444f09134e8ce91b0e419e7.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d1/acd37a5393e9452c2795049242c05273.webp",
+                    "url_mini": "https://s.domovita.by/images/d1/acd37a5393e9452c2795049242c05273.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d1/acd37a5393e9452c2795049242c05273.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/22/018e66503cdee30b0fd2b03d192e7724.webp",
+                    "url_mini": "https://s.domovita.by/images/22/018e66503cdee30b0fd2b03d192e7724.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/22/018e66503cdee30b0fd2b03d192e7724.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/64/d369d10eb05067a7483bdabeae897ce7.webp",
+                    "url_mini": "https://s.domovita.by/images/64/d369d10eb05067a7483bdabeae897ce7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/64/d369d10eb05067a7483bdabeae897ce7.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-ul-lejtenanta-kizevatova-60v",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 73803,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 71,
+                "living": 38,
+                "kitchen": 11
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 13,
+            "storeys": 16,
+            "house_type": null,
+            "repair_year": null,
+            "building_year": null,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 768-04-65"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "5 лет"
+            },
+            "price": {
+                "USD": 480,
+                "BYN": 1429.92,
+                "EUR": 413.9057,
+                "RUB": 38711.3542
+            },
+            "ads_text": "<p>Сдаётся уютная двушка возле метро Неморшанский сад. </p>"
+        },
+        {
+            "id": 146051,
+            "unid": null,
+            "status": "Active",
+            "date_reception": "2025-06-03 10:08:46",
+            "date_revision": "2025-08-25",
+            "description": "<p><strong>Стоимость за сутки с человека .Оплата за месяц по безналу ,минимум оплата за пять человек.</strong></p><p><strong>Сдаю Жильё для рабочих строителей сотрудников .дома квартиры Минск . Стоимость указана с человека .Оплата по безналу минимум оплата за пять человек. .</strong></p><p></p><p><strong>В наличии имеем квартиры Минск мир ул.Левина 9 .  И Улица Стахановская 31 (тракторный завод).</strong></p><p></p><p><strong>. Три дома в районе микрорайона Шабаны город Минск улица селицкого 15.</strong></p><p><strong>Дом вместимостью –человек. Отдельностоящий10 соток. 146м², пять комнат в каждой комнате туалет душ. Одна просторная кухня. Отдельный вход в каждую комнату с улицы.</strong></p><p><strong>Дом вместимостью – 24человек. 180м², 3 уровня.Дом вместимостью 36 человек. 250.3м², 2 уровня . В домах  от 5 санузлов. Дома укомплектованы холодильниками чайниками и СВЧ газовые плиты . отопление паровое на газу, электричество есть, газоснабжение есть, вода горячая, канализация местная, душ. Стоимость от 15-20руб сутки  с человека , оплата за месяц по безналу.</strong></p><p><strong>Ежедневная уборка.</strong></p>",
+            "agency": null,
+            "address": {
+                "coords": {
+                    "position_x": 53.8896,
+                    "position_y": 27.6534
+                },
+                "town": {
+                    "id": 15362,
+                    "name": "Минск",
+                    "type": "г.",
+                    "stateRegion": {
+                        "name": "Минская область"
+                    }
+                },
+                "district": {
+                    "id": 5,
+                    "name": "Партизанский район",
+                    "subDistrict": {
+                        "id": 31,
+                        "name": "Дражня"
+                    }
+                },
+                "metro": null,
+                "street_name": "ул. Холмогорская",
+                "house_number": "51"
+            },
+            "title": "2-комнатная квартира, Минск, ул. Холмогорская, д. 51",
+            "price_history": [
+                {
+                    "price": {
+                        "USD": 5,
+                        "BYN": 14.895,
+                        "EUR": 4.3115,
+                        "RUB": 403.2433
+                    },
+                    "date": 1755936232,
+                    "changePrice": {
+                        "USD": 144,
+                        "BYN": 428.976,
+                        "EUR": 124.1717,
+                        "RUB": 11613.4062
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 149,
+                        "BYN": 443.871,
+                        "EUR": 128.4832,
+                        "RUB": 12016.6495
+                    },
+                    "date": 1753892431,
+                    "changePrice": {
+                        "USD": 731,
+                        "BYN": 2177.649,
+                        "EUR": 630.3439,
+                        "RUB": 58954.1664
+                    },
+                    "isUp": false
+                },
+                {
+                    "price": {
+                        "USD": 880,
+                        "BYN": 2621.52,
+                        "EUR": 758.8271,
+                        "RUB": 70970.816
+                    },
+                    "date": 1750000756,
+                    "changePrice": {
+                        "USD": 480,
+                        "BYN": 1429.92,
+                        "EUR": 413.9057,
+                        "RUB": 38711.3542
+                    },
+                    "isUp": true
+                },
+                {
+                    "price": {
+                        "USD": 400,
+                        "BYN": 1191.6,
+                        "EUR": 344.9214,
+                        "RUB": 32259.4618
+                    },
+                    "date": 1748934526,
+                    "changePrice": null,
+                    "isUp": false
+                }
+            ],
+            "photos": [
+                {
+                    "url": "https://s.domovita.by/images/91/4008c2d9c0b83a0f65d2c52a3a22208c.webp",
+                    "url_mini": "https://s.domovita.by/images/91/4008c2d9c0b83a0f65d2c52a3a22208c.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/91/4008c2d9c0b83a0f65d2c52a3a22208c.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/1e/7e1eb3d1e4d1fbce4a64f0bef8d2f2c3.webp",
+                    "url_mini": "https://s.domovita.by/images/1e/7e1eb3d1e4d1fbce4a64f0bef8d2f2c3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/1e/7e1eb3d1e4d1fbce4a64f0bef8d2f2c3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/e7/77c1b44f19d98d5c852c400cbdb9e66e.webp",
+                    "url_mini": "https://s.domovita.by/images/e7/77c1b44f19d98d5c852c400cbdb9e66e.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/e7/77c1b44f19d98d5c852c400cbdb9e66e.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/58/0a7af85967faadba4185c3f24b9b37e7.webp",
+                    "url_mini": "https://s.domovita.by/images/58/0a7af85967faadba4185c3f24b9b37e7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/58/0a7af85967faadba4185c3f24b9b37e7.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7f/605b5dec0b9bdbcd922798d1cc575949.webp",
+                    "url_mini": "https://s.domovita.by/images/7f/605b5dec0b9bdbcd922798d1cc575949.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7f/605b5dec0b9bdbcd922798d1cc575949.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/21/4487a593ccd11c7773dcf26195e6ee91.webp",
+                    "url_mini": "https://s.domovita.by/images/21/4487a593ccd11c7773dcf26195e6ee91.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/21/4487a593ccd11c7773dcf26195e6ee91.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/d5/a4160185bc35afacdc0ddab8e91e9bb7.webp",
+                    "url_mini": "https://s.domovita.by/images/d5/a4160185bc35afacdc0ddab8e91e9bb7.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/d5/a4160185bc35afacdc0ddab8e91e9bb7.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/43/16e179cbb426554cdd6ff056c3f97fcf.webp",
+                    "url_mini": "https://s.domovita.by/images/43/16e179cbb426554cdd6ff056c3f97fcf.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/43/16e179cbb426554cdd6ff056c3f97fcf.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6b/0717dbd4f26e9d011cf3b48d069854f1.webp",
+                    "url_mini": "https://s.domovita.by/images/6b/0717dbd4f26e9d011cf3b48d069854f1.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6b/0717dbd4f26e9d011cf3b48d069854f1.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/72/ded6c3004e50e95b2921987278caa8a3.webp",
+                    "url_mini": "https://s.domovita.by/images/72/ded6c3004e50e95b2921987278caa8a3.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/72/ded6c3004e50e95b2921987278caa8a3.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/54/a463e5d85ed58167978d8f140b93aa7a.webp",
+                    "url_mini": "https://s.domovita.by/images/54/a463e5d85ed58167978d8f140b93aa7a.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/54/a463e5d85ed58167978d8f140b93aa7a.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/7f/7f62a9bef6c6d2bfd369222cc02cc3cd.webp",
+                    "url_mini": "https://s.domovita.by/images/7f/7f62a9bef6c6d2bfd369222cc02cc3cd.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/7f/7f62a9bef6c6d2bfd369222cc02cc3cd.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/6a/472e161dda88d6770a329d1a59704d97.webp",
+                    "url_mini": "https://s.domovita.by/images/6a/472e161dda88d6770a329d1a59704d97.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/6a/472e161dda88d6770a329d1a59704d97.mobi.webp"
+                },
+                {
+                    "url": "https://s.domovita.by/images/80/d69541f431031db482ca68ad2ad2cb91.webp",
+                    "url_mini": "https://s.domovita.by/images/80/d69541f431031db482ca68ad2ad2cb91.mini.webp",
+                    "url_mob": "https://s.domovita.by/images/80/d69541f431031db482ca68ad2ad2cb91.mobi.webp"
+                }
+            ],
+            "url": "https://domovita.by/minsk/flats/rent/2-komnatnaa-kvartira-ul-kholmogorskaa-51-2",
+            "type": "OFlatsRent",
+            "owner_type": "Собственник",
+            "user_id": 38866,
+            "is_favorite": false,
+            "isVipColor": true,
+            "is_vip": 3,
+            "youtube_link": null,
+            "video_360_link": null,
+            "area": {
+                "total": 51,
+                "living": 30,
+                "kitchen": 8.4
+            },
+            "rooms": 2,
+            "separate_rooms": null,
+            "storey": 6,
+            "storeys": 9,
+            "house_type": "Кирпичный",
+            "repair_year": null,
+            "building_year": 1993,
+            "contract_number": null,
+            "contacts": {
+                "phones": [
+                    "(29) 666-49-12"
+                ],
+                "email": null,
+                "viber_phone": null,
+                "contact_name": null,
+                "role": "собственник",
+                "period_on_site": "6 лет"
+            },
+            "price": {
+                "USD": 5.3709,
+                "BYN": 16,
+                "EUR": 4.6314,
+                "RUB": 433.1583
+            },
+            "ads_text": "<p><strong>Сдаю жильё для сотрудников рабочим командировочным от 16 руб. в сутки с чел</strong></p>"
+        }
+    ]
+}
