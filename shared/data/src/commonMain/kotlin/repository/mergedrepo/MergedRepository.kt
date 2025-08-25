@@ -23,8 +23,7 @@ interface MergedRepository {
     fun getFavoritesFromLocalDb(): Flow<List<AppFlat>>
 
     fun saveFlatToFavorite(flatPlatform: FlatPlatform, adId: Long): Flow<AppFlat?>
-    
-    // Methods for notification background work
-    suspend fun getFlatsCount(filter: CommonFilterRequestModel): Int
+
+    suspend fun getFlatsIds(filter: CommonFilterRequestModel): List<Long>
     suspend fun fetchAndSaveFlats(filter: CommonFilterRequestModel)
 }

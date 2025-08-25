@@ -159,7 +159,7 @@ fun FilterScreen(
             }
 
             FilterSectionTitle(title = "Комнат в квартире")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Room.values().forEach {
                     val room = it.displayName.toInt()
                     FilterChip(
@@ -241,8 +241,8 @@ private fun SavedFiltersChips(
     onDeleteClick: (Long) -> Unit
 ) {
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         savedFilters.forEach { filter ->
             FilterChip(

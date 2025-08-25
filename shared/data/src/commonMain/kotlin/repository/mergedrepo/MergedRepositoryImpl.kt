@@ -6,12 +6,9 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.zip
 import repository.fillter.FilterRepository
@@ -112,8 +109,8 @@ class MergedRepositoryImpl(
         }
     }
     
-    override suspend fun getFlatsCount(filter: CommonFilterRequestModel): Int {
-        return flatsDao.getCount()
+    override suspend fun getFlatsIds(filter: CommonFilterRequestModel): List<Long> {
+        return flatsDao.getAllAsFlow().last().map { it.adId }
     }
     
     override suspend fun fetchAndSaveFlats(filter: CommonFilterRequestModel) {
@@ -122,16 +119,7 @@ class MergedRepositoryImpl(
         
         // Fetch from all repositories and save to database
         try {
-            val kufarFlats = kufarRepository.searchFlats().first()
-            val onlinerFlats = onlinerRepository.searchFlats().first() 
-            val realtFlats = realtRepository.searchFlats().first()
-            
-            val allFlats = (kufarFlats + onlinerFlats + realtFlats).map { net ->
-                val fromDb = flatsDao.getById(net.adId)
-                net.copy(flatSavedInFavorites = fromDb?.flatSavedInFavorites == true)
-            }
-            
-            flatsDao.upsertAll(allFlats)
+            searchFlats()
         } catch (e: Exception) {
             // Handle network errors gracefully
             throw e

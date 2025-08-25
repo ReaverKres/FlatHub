@@ -30,19 +30,16 @@ class NotificationWorker(
                 ?: return@withContext Result.failure()
 
             val filterData = filterDataJson[BackgroundWorkManager.FILTER_DATA_KEY] as CommonFilterRequestModel
-
             // Get current count of apartments in database matching the filter
-            val currentCount = flatsRepository.getFlatsCount(filterData)
-            
+            val currentFlatIds = flatsRepository.getFlatsIds(filterData)
             // Fetch new apartments from APIs
             flatsRepository.fetchAndSaveFlats(filterData)
-            
             // Get new count after fetching
-            val newCount = flatsRepository.getFlatsCount(filterData)
-            
+            val newFlatsIds = flatsRepository.getFlatsIds(filterData)
+            val difList: List<Long> = newFlatsIds.filter { currentFlatIds.contains(it).not() }
             // If there are new apartments, send notification
-            if (newCount > currentCount) {
-                val newApartmentsCount = newCount - currentCount
+            if (difList.isNotEmpty()) {
+                val newApartmentsCount = difList.count()
                 val title = "New apartments found!"
                 val body = if (newApartmentsCount == 1) {
                     "1 new apartment matches your filter"
@@ -56,7 +53,7 @@ class NotificationWorker(
                     body = body,
                     data = mapOf(
                         "new_count" to newApartmentsCount.toString(),
-                        "total_count" to newCount.toString()
+                        "total_count" to newFlatsIds.toString()
                     )
                 ).getOrElse { 
                     // If notification fails, still return success for work completion

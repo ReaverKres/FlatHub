@@ -91,7 +91,6 @@ sealed interface FilterScreenEvent : MviEvent {
         val hasNotificationFilter: Boolean,
         val hasPermission: Boolean
     ) : FilterScreenEvent
-    data class NotificationFilterApplied(val filterId: Long) : FilterScreenEvent
     data object NotificationFilterDeleted : FilterScreenEvent
 }
 
@@ -371,7 +370,7 @@ class FilterViewModel(
                 backgroundWorkManager.schedulePeriodicWork(interval, currentFilter)
                 
                 flowOf(
-                    FilterScreenEvent.NotificationFilterApplied(filterId),
+                    FilterScreenEvent.FilterSaved(filterId),
                     FilterScreenEvent.NotificationStateUpdated(
                         enabled = true,
                         interval = interval,
@@ -444,10 +443,6 @@ class FilterViewModel(
                     hasNotificationFilter = event.hasNotificationFilter,
                     hasNotificationPermission = event.hasPermission
                 )
-            }
-            
-            is FilterScreenEvent.NotificationFilterApplied -> {
-                currentState
             }
             
             is FilterScreenEvent.NotificationFilterDeleted -> {

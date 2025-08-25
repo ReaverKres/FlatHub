@@ -28,7 +28,4 @@ interface FlatsDao {
 
     @Query("DELETE FROM AppFlat")
     suspend fun clearAll()
-
-    @Query("SELECT COUNT(*) FROM AppFlat")
-    suspend fun getCount(): Int
 }
