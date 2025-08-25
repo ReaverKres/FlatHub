@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     id("com.android.library")
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 kotlin {
@@ -29,6 +30,7 @@ kotlin {
                 implementation(project(":shared:data"))
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
             }
         }
 

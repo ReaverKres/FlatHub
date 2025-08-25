@@ -4,6 +4,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Add foreground service permissions for Android 14+ as per memory specifications -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:allowBackup="true"
@@ -27,6 +30,12 @@
         <receiver
             android:name="io.flatzen.platformtools.background.NotificationCancelReceiver"
             android:enabled="true"
+            android:exported="false" />
+            
+        <!-- Add service declaration for WorkManager foreground service -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
             android:exported="false" />
     </application>
 

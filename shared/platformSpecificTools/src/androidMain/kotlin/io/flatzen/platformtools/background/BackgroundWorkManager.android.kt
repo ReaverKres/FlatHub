@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import entities.CommonFilterRequestModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 /**
@@ -33,9 +36,10 @@ actual class BackgroundWorkManager(private val context: Context) {
             // Cancel existing work
             workManager.cancelUniqueWork(WORK_NAME)
             
-            // Create input data
+            // Create input data - serialize CommonFilterRequestModel to JSON string
+            val filterDataJson = Json.encodeToString(filterData)
             val inputData = workDataOf(
-                FILTER_DATA_KEY to filterData,
+                FILTER_DATA_KEY to filterDataJson,
                 INTERVAL_KEY to intervalMinutes
             )
             
@@ -50,12 +54,14 @@ actual class BackgroundWorkManager(private val context: Context) {
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()
                 )
+                // Add expedited work for immediate execution and foreground service
+//                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
             
             // Enqueue unique work
             workManager.enqueueUniquePeriodicWork(
                 WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 workRequest
             )
             

@@ -11,6 +11,7 @@ import entities.CommonFilterRequestModel
 import io.flatzen.platformtools.notifications.LocalNotificationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import repository.mergedrepo.MergedRepository
@@ -38,11 +39,11 @@ class NotificationWorker(
     }
     
     private fun createForegroundInfo(): ForegroundInfo {
-        // Create notification channel using LocalNotificationManager
+        // Create notification channel using LocalNotificationManager with HIGH importance
         notificationManager.createNotificationChannel(
             channelId = CHANNEL_ID,
             channelName = "Background Work",
-            importance = android.app.NotificationManager.IMPORTANCE_LOW,
+            importance = NotificationManager.IMPORTANCE_HIGH,
             description = "Background apartment search notifications"
         )
         
@@ -60,17 +61,19 @@ class NotificationWorker(
         return notificationManager.createForegroundInfo(
             notificationId = NOTIFICATION_ID,
             channelId = CHANNEL_ID,
-            title = "Searching for new apartments",
-            text = "Background check is running",
+            title = "🔍 Searching for apartments...",
+            text = "FlatZen is checking for new listings",
             cancelIntent = cancelPendingIntent
         )
     }
     
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            // Get filter data from input
-            val filterData = inputData.keyValueMap[BackgroundWorkManager.FILTER_DATA_KEY] as? CommonFilterRequestModel
-                ?: return@withContext Result.failure()
+            // Get filter data from input - deserialize from JSON string
+            val filterDataJson = inputData.getString(BackgroundWorkManager.FILTER_DATA_KEY)
+            
+            val filterData =
+                Json.decodeFromString<CommonFilterRequestModel>(filterDataJson.orEmpty())
             
             // Get current apartment IDs before fetching
             val currentFlatIds = flatsRepository.getFlatsIds(filterData)
