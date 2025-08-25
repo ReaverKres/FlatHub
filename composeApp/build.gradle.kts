@@ -35,6 +35,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":shared:presentation"))
             implementation(project(":shared:commoncomponents"))
+            implementation(project(":shared:platformSpecificTools"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)

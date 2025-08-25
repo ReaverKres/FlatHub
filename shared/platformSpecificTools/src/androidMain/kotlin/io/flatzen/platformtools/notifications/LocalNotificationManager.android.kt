@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.work.ForegroundInfo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -122,5 +123,55 @@ actual class LocalNotificationManager(private val context: Context) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
         }
+    }
+    
+    /**
+     * Creates a notification channel with custom parameters
+     */
+    fun createNotificationChannel(
+        channelId: String,
+        channelName: String,
+        importance: Int = NotificationManager.IMPORTANCE_DEFAULT,
+        description: String? = null
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                importance
+            ).apply {
+                description?.let { this.description = it }
+            }
+            
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+    }
+    
+    /**
+     * Creates a ForegroundInfo for WorkManager with cancel action
+     */
+    fun createForegroundInfo(
+        notificationId: Int,
+        channelId: String,
+        title: String,
+        text: String,
+        cancelIntent: PendingIntent?
+    ): ForegroundInfo {
+        val builder = NotificationCompat.Builder(context, channelId)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setOngoing(true)
+            
+        cancelIntent?.let {
+            builder.addAction(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                "Cancel",
+                it
+            )
+        }
+        
+        return ForegroundInfo(notificationId, builder.build())
     }
 }
