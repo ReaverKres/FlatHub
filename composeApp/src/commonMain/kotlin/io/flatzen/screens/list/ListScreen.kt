@@ -269,7 +269,7 @@ fun FlatGrid(
     ) {
         LazyVerticalGrid(
             state = lazyGridState,
-            columns = GridCells.Adaptive(180.dp),
+            columns = GridCells.Fixed(2),
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),

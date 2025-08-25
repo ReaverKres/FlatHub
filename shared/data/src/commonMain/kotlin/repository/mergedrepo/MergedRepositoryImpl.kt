@@ -18,11 +18,13 @@ import repository.fillter.lastFilter
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
+import repository.domovita.DomovitaRepository
 
 class MergedRepositoryImpl(
     private val kufarRepository: KufarRepository,
     private val onlinerRepository: OnlinerRepository,
     private val realtRepository: RealtRepository,
+    private val domovitaRepository: DomovitaRepository,
     private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
 ) : MergedRepository {
@@ -30,9 +32,10 @@ class MergedRepositoryImpl(
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
 
     override fun searchFlats(): Flow<List<AppFlat>> {
-        val loadedFromNetworkFlats = kufarRepository.searchFlats()
+        val loadedFromNetworkFlats = /*kufarRepository.searchFlats()
             .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
-            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }*/
+            domovitaRepository.searchFlats() /* { kor, d -> kor + d }*/
             .mapLatest { networkFlats ->
                 val merged = networkFlats.map { net ->
                     val fromDb = flatsDao.getById(net.adId)
@@ -51,6 +54,7 @@ class MergedRepositoryImpl(
             FlatPlatform.KUFAR -> kufarRepository.getFlatById(flatId)
             FlatPlatform.ONLINER -> onlinerRepository.getFlatById(flatId)
             FlatPlatform.REALT -> realtRepository.getFlatById(flatId)
+            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(flatId)
         }
     }
 
@@ -58,6 +62,7 @@ class MergedRepositoryImpl(
         kufarRepository.clearCashedFlats()
         onlinerRepository.clearCashedFlats()
         realtRepository.clearCashedFlats()
+        domovitaRepository.clearCashedFlats()
     }
 
     override fun getAllFlatsFromLocalDb(): Flow<List<AppFlat>> {
@@ -99,6 +104,7 @@ class MergedRepositoryImpl(
             FlatPlatform.KUFAR -> kufarRepository.getFlatById(adId)
             FlatPlatform.ONLINER -> onlinerRepository.getFlatById(adId)
             FlatPlatform.REALT -> realtRepository.getFlatById(adId)
+            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(adId)
         }
         return flow {
             val finalFlat = source.last()
