@@ -2,6 +2,7 @@ package api
 
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
+import server_request.Currency
 import server_request.DomovitaRequest
 import server_response.DomovitaListResponse
 
@@ -16,22 +17,25 @@ interface DomovitaApi {
         fun createRequestParams(
             locationSefAlias: String = "minsk",
             page: Int = 1,
-            limit: Int = 30,
+            limit: Int = 20,
             minPrice: Double? = null,
             maxPrice: Double? = null,
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
             onlyOwner: Boolean? = null
         ): DomovitaRequest {
+            val offset: Int? = if (page >= 2) (page - 1) * limit else null
             return DomovitaRequest(
                 location = locationSefAlias,
-                page = page,
+                offset = offset,
                 limit = limit,
-                min_price_usd = minPrice?.toInt(),
-                max_price_usd = maxPrice?.toInt(),
+                priceType = "price",
+                priceMax = maxPrice,
+                priceMin = minPrice,
+                currency = Currency.USD.name,
                 rooms = rooms?.toList(),
-                metro_ids = metroIds,
-                owner_type = if (onlyOwner == true) "Собственник" else null
+                metroStationIds = metroIds,
+//                isOwner = if (onlyOwner == true) "yes" else null
             )
         }
     }

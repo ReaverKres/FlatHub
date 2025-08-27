@@ -9,7 +9,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,12 +28,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.viewmodel.list.FlatListScreenAction
@@ -77,11 +75,17 @@ fun ListScreen(
     val viewModel = koinViewModel<FlatSearchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-//    val filterViewModel = koinViewModel<FilterViewModel>()
-//    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
-
     LaunchedEffect(Unit) {
         viewModel.onIntent(FlatListScreenAction.ScreenVisible)
+        // Track screen view through MviAction
+        viewModel.onIntent(
+            FlatListScreenAction.TrackScreenView(
+                screenName = AppMetrcica.Screens.LIST,
+                parameters = mapOf(
+                    AppMetrcica.Parameters.SCREEN_TYPE to AppMetrcica.ScreenTypes.MAIN
+                )
+            )
+        )
     }
 
     Scaffold(

@@ -18,17 +18,20 @@ val flatSearchPresentationModule = module {
     single { FlatSearchViewModel(
         mergedRepository = get(),
         filterRepository = get(),
-        connectionMonitor = get()
+        connectionMonitor = get(),
+        analyticsManager = get()
     ) }
     viewModel { FlatDetailViewModel(
         mergedRepository = get(),
+        analyticsManager = get()
     ) }
     viewModel { FavoritesViewModel(
         mergedRepository = get(),
     ) }
     viewModel { FilterViewModel(
         filterRepository = get(),
-        mergedRepository = get()
+        mergedRepository = get(),
+        analyticsManager = get()
     ) }
 
     viewModel { MapViewModel(tileStreamProvider = get()) }
@@ -42,7 +45,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             networkModule,
             dataModule,
             databaseModule(),
-            dataUtilsModule()
+            dataUtilsModule(),
+            analyticsModule()
         )
     }
 }

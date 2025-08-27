@@ -32,12 +32,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +44,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.Room
@@ -65,6 +64,18 @@ fun FilterScreen(
 
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
+    }
+    
+    LaunchedEffect(Unit) {
+        // Track screen view through MviAction
+        viewModel.onIntent(
+            FilterScreenAction.TrackScreenView(
+                screenName = AppMetrcica.Screens.FILTER,
+                parameters = mapOf(
+                    AppMetrcica.Parameters.SCREEN_TYPE to AppMetrcica.ScreenTypes.MODAL
+                )
+            )
+        )
     }
 
     Scaffold(

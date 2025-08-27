@@ -25,6 +25,7 @@ ksp = "2.2.0-2.0.2"
 dateTimeVer = "0.6.0"
 room = "2.7.2"
 sqlite = "2.5.2"
+appmetrica = "7.11.0"
 
 
 [libraries]
@@ -61,6 +62,7 @@ datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "d
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+appmetrica-analytics = { module = "io.appmetrica.analytics:analytics", version.ref = "appmetrica" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

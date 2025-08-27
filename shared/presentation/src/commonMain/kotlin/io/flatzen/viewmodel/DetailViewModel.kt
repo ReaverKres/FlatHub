@@ -3,6 +3,9 @@ package io.flatzen.viewmodel
 import entities.AppFlat
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -12,10 +15,11 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import repository.mergedrepo.MergedRepository
 
 @Immutable
@@ -66,6 +70,10 @@ data class ContactInformationUi(
 sealed interface FlatDetailScreenAction : MviAction {
     data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) : FlatDetailScreenAction
     class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatDetailScreenAction
+    class TrackScreenView(
+        val screenName: String,
+        val parameters: Map<String, Any> = emptyMap()
+    ) : FlatDetailScreenAction
 }
 
 @Immutable
@@ -81,6 +89,7 @@ sealed interface FlatDetailEvents : MviEvent {
 
 class FlatDetailViewModel(
     private val mergedRepository: MergedRepository,
+    private val analyticsManager: AnalyticsManagerInterface
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
@@ -101,6 +110,22 @@ class FlatDetailViewModel(
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).map {
                     FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().last())
                 }
+            }
+            
+            is FlatDetailScreenAction.TrackScreenView -> {
+                // Handle screen view analytics tracking
+                viewModelScope.launch {
+                        analyticsManager.registerEvent(
+                            AnalyticsEvent(
+                                eventName = AppMetrcica.Events.SCREEN_VIEW,
+                                parameters = mapOf(
+                                    AppMetrcica.Parameters.SCREEN_NAME to action.screenName,
+                                    AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
+                                ) + action.parameters
+                            )
+                        )
+                }
+                flowOf()
             }
         }
     }

@@ -32,27 +32,35 @@ class DomovitaRepositoryImpl(
         }
 
         val filter = filterRepository.lastFilter()
-        val metroIds: List<Int>? =
-            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
+        val metroIds: List<Int>? = null
+//            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
 
         val request = DomovitaApi.createRequestParams(
             locationSefAlias = "minsk",
             page = currentPage,
-            limit = 30,
+            limit = 20,
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
             rooms = filter.numberOfRooms,
             metroIds = metroIds,
+            //TODO Add onlyOwner to request
             onlyOwner = filter.fromOwnerOnly
         )
 
         try {
             val response = api.searchFlats(request)
-            val domovitaFlatList =
+            var domovitaFlatList =
                 response.items.filterNotNull().map { domovitaResponseMapper.map(it) }
+            if (filter.fromOwnerOnly != null) {
+                domovitaFlatList = domovitaFlatList.filter { it.owner == filter.fromOwnerOnly }
+            }
 
-            lastEmitList = domovitaFlatList
-            emit(domovitaFlatList)
+            if(lastEmitList == domovitaFlatList) {
+                emit(listOf())
+            } else {
+                lastEmitList = domovitaFlatList
+                emit(domovitaFlatList ?: listOf())
+            }
         } catch (e: Exception) {
             // В случае ошибки отправляем пустой список
             emit(emptyList())

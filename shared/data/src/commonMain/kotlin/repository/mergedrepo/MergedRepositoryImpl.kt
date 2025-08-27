@@ -32,10 +32,10 @@ class MergedRepositoryImpl(
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
 
     override fun searchFlats(): Flow<List<AppFlat>> {
-        val loadedFromNetworkFlats = /*kufarRepository.searchFlats()
+        val loadedFromNetworkFlats = kufarRepository.searchFlats()
             .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
-            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }*/
-            domovitaRepository.searchFlats() /* { kor, d -> kor + d }*/
+            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+            .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
             .mapLatest { networkFlats ->
                 val merged = networkFlats.map { net ->
                     val fromDb = flatsDao.getById(net.adId)

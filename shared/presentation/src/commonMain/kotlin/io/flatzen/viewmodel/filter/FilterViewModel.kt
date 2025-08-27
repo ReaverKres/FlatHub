@@ -8,6 +8,9 @@ import entities.Country
 import entities.LocationFilter
 import entities.MetroStations
 import entities.SavedFilter
+import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.mvi.MviAction
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
@@ -45,6 +49,12 @@ sealed interface FilterScreenAction : MviAction {
     data class DeleteSavedFilter(val id: Long) : FilterScreenAction
     data class ToggleSavedFilterSelection(val filterId: Long) : FilterScreenAction
     data class CheckFilterMatchesSelected(val currentFilter: FilterState) : FilterScreenAction
+    
+    // Analytics actions
+    class TrackScreenView(
+        val screenName: String,
+        val parameters: Map<String, Any> = emptyMap()
+    ) : FilterScreenAction
 }
 
 // State
@@ -69,7 +79,8 @@ sealed interface FilterScreenEvent : MviEvent {
 
 class FilterViewModel(
     private val mergedRepository: MergedRepository,
-    private val filterRepository: FilterRepository
+    private val filterRepository: FilterRepository,
+    private val analyticsManager: AnalyticsManagerInterface
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
     override fun initialState(): FilterScreenState = FilterScreenState(
@@ -253,6 +264,26 @@ class FilterViewModel(
                         flowOf() // No change needed
                     }
                 } ?: flowOf()
+            }
+            
+            is FilterScreenAction.TrackScreenView -> {
+                // Handle screen view analytics tracking
+                viewModelScope.launch {
+                    try {
+                        analyticsManager.registerEvent(
+                            AnalyticsEvent(
+                                eventName = AppMetrcica.Events.SCREEN_VIEW,
+                                parameters = mapOf(
+                                    AppMetrcica.Parameters.SCREEN_NAME to action.screenName,
+                                    AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
+                                ) + action.parameters
+                            )
+                        )
+                    } catch (e: Exception) {
+                        // Log error but don't break the flow
+                    }
+                }
+                flowOf()
             }
         }
     }

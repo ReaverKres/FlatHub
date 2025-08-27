@@ -44,7 +44,7 @@ kotlin {
 
         androidMain {
             dependencies {
-
+                implementation(libs.appmetrica.analytics)
             }
         }
 
