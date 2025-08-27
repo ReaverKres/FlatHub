@@ -2,8 +2,11 @@ package io.flatzen.viewmodel.list
 
 import entities.AppFlat
 import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -13,12 +16,12 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
@@ -31,6 +34,12 @@ sealed interface FlatListScreenAction : MviAction {
     class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
     class IsAnyFilterAppliedCheck(val applied: Boolean) : FlatListScreenAction
     data object ScreenVisible : FlatListScreenAction
+
+    // Analytics actions
+    class TrackScreenView(
+        val screenName: String,
+        val parameters: Map<String, Any> = emptyMap()
+    ) : FlatListScreenAction
 }
 
 sealed interface FlatListEvents : MviEvent {
@@ -49,7 +58,8 @@ sealed interface FlatListEvents : MviEvent {
 class FlatSearchViewModel(
     private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
-    private val connectionMonitor: ConnectionMonitor
+    private val connectionMonitor: ConnectionMonitor,
+    private val analyticsManager: AnalyticsManagerInterface
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -114,16 +124,33 @@ class FlatSearchViewModel(
             }
 
             is FlatListScreenAction.SearchFlats -> {
+                // Track search flats user action
+                viewModelScope.launch {
+                        analyticsManager.registerEvent(
+                            AnalyticsEvent(
+                                eventName = "search_flats",
+                                parameters = mapOf(
+                                    "is_load_more" to action.isLoadMore,
+                                    "is_refreshing" to action.isRefreshing,
+                                    "page" to filterRepository.currentAppPage,
+                                    "has_network" to connectionMonitor.isNetworkAvailable.first()
+                                )
+                            )
+                        )
+                }
+
                 if (connectionMonitor.isNetworkAvailable.first().not()) {
                     return flowOf()
                 }
                 if (noFlatsToLoadMore && action.isRefreshing.not()) {
                     return flowOf()
                 }
+                if (action.isRefreshing || action.isLoadMore.not()) {
+                    filterRepository.currentAppPage = 1
+                    mergedRepository.clearCashedFlats()
+                }
                 if (action.isLoadMore) {
                     filterRepository.currentAppPage++
-                } else {
-                    filterRepository.currentAppPage = 1
                 }
                 loadAllFlats(action.isLoadMore, action.isRefreshing)
             }
@@ -136,6 +163,22 @@ class FlatSearchViewModel(
 
             is FlatListScreenAction.LoadFavorites -> {
                 flowOf(FlatListEvents.FavoritesLoaded(action.favoritesFlats))
+            }
+
+            is FlatListScreenAction.TrackScreenView -> {
+                // Handle screen view analytics tracking
+                viewModelScope.launch {
+                    analyticsManager.registerEvent(
+                        AnalyticsEvent(
+                            eventName = AppMetrcica.Events.SCREEN_VIEW,
+                            parameters = mapOf(
+                                AppMetrcica.Parameters.SCREEN_NAME to action.screenName,
+                                AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
+                            ) + action.parameters
+                        )
+                    )
+                }
+                flowOf()
             }
         }
     }

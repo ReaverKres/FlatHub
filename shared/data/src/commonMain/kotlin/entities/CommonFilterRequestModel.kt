@@ -47,7 +47,7 @@ data class CommonFilterRequestModel(
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
-    val fromOwnerOnly: Boolean? = false
+    val fromOwnerOnly: Boolean? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

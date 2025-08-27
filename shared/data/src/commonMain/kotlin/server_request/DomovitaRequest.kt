@@ -6,11 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DomovitaRequest(
     @SerialName("location_sef_alias" ) val location: String,
-    @SerialName("page" ) val page: Int = 1,
-    @SerialName("limit" ) val limit: Int = 10,
-    @SerialName("min_price_usd" ) val min_price_usd: Int? = null,
-    @SerialName("max_price_usd" ) val max_price_usd: Int? = null,
-    @SerialName("rooms" ) val rooms: List<Int>? = null,
-    @SerialName("metro_ids" ) val metro_ids: List<Int>? = null,
-    @SerialName("owner_type" ) val owner_type: String? = null // "Собственник" for owner only
+    @SerialName("offset" ) val offset: Int?,
+    @SerialName("limit" ) val limit: Int,
+    @SerialName("price_max") val priceMax: Double? = null,
+    @SerialName("price_min") val priceMin: Double? = null,
+    @SerialName("price_currency_text") val currency: String?,
+    @SerialName("price_type") val priceType: String? = null,
+    @SerialName("rooms" ) val rooms: List<Int>?,
+    @SerialName("metro_station_id" ) val metroStationIds: List<Int>?,
+//    @SerialName("individual") val isOwner: String? // "Собственник" for owner only
 )

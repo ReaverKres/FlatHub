@@ -163,7 +163,7 @@ data class DomovitaListResponse(
             @SerialName("name")
             val name: String?,
             @SerialName("rating")
-            val rating: Int?,
+            val rating: Double?,
             @SerialName("reviews_number")
             val reviewsNumber: Int?,
             @SerialName("unp")
