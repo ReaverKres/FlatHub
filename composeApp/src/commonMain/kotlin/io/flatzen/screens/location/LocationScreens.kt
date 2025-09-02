@@ -154,16 +154,20 @@ fun LocationScreen(
                 }
             }
 
-            // Плитки действий (минимум метро)
-            ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    BadgedBox(badge = {
-                        val count = state.filters.metroStationsState.filter { it.selected }.size
-                        if (count > 0) Badge { Text(count.toString()) }
-                    }) {
-                        Text("Метро")
+            if (state.filters.location?.selectedCity?.code == "MINSK") {
+                // Плитки действий (минимум метро)
+                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        BadgedBox(badge = {
+                            val count = state.filters.metroStationsState.filter { it.selected }.size
+                            if (count > 0) Badge { Text(count.toString()) }
+                        }) {
+                            Text("Метро")
+                        }
                     }
                 }
+            } else {
+                viewModel.onIntent(FilterScreenAction.ClearMetroFilters)
             }
         }
     }

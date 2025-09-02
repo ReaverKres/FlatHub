@@ -3,6 +3,7 @@ package repository.domovita
 import api.DomovitaApi
 import database.FlatsDao
 import entities.AppFlat
+import entities.City
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.kufar.KufarCities
 import server_response.DomovitaListResponse
 import server_response.DomovitaListResponse.DomovitaFlat
 
@@ -34,9 +36,30 @@ class DomovitaRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = null
 //            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
+        val city = when {
+            filter.location?.city == null || filter.location.city == City.MINSK -> {
+                DomovitaCities.MINSK
+            }
+            filter.location.city == City.BREST -> {
+                DomovitaCities.BREST
+            }
+            filter.location.city == City.GOMEL -> {
+                DomovitaCities.GOMEL
+            }
+            filter.location.city == City.GRODNO -> {
+                DomovitaCities.GRODNO
+            }
+            filter.location.city == City.MOGILEV -> {
+                DomovitaCities.MOGILEV
+            }
+            filter.location.city == City.VITEBSK -> {
+                DomovitaCities.VITEBSK
+            }
+            else -> DomovitaCities.MINSK
+        }
 
         val request = DomovitaApi.createRequestParams(
-            locationSefAlias = "minsk",
+            locationSefAlias = city,
             page = currentPage,
             limit = 20,
             minPrice = filter.priceFrom,

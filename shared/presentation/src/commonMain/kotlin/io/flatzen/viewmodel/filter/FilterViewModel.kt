@@ -38,7 +38,8 @@ sealed interface FilterScreenAction : MviAction {
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
     data object ClearAllFilters : FilterScreenAction
     data object ClearLocationFilters : FilterScreenAction
-    
+    data object ClearMetroFilters : FilterScreenAction
+
     // Saved filters actions
     data object ShowSaveFilterDialog : FilterScreenAction
     data object HideSaveFilterDialog : FilterScreenAction
@@ -148,6 +149,13 @@ class FilterViewModel(
 
             is FilterScreenAction.ClearAllFilters -> {
                 flowOf(FilterScreenEvent.FiltersUpdated(FilterState()))
+            }
+
+            is FilterScreenAction.ClearMetroFilters -> {
+                val filter: FilterState = currentState.filters.copy(
+                    metroStationsState = MetroStationsMapper.allStationsOrderedForUi()
+                )
+                flowOf(FilterScreenEvent.FiltersUpdated(filter))
             }
 
             is FilterScreenAction.ClearLocationFilters -> {

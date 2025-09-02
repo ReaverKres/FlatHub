@@ -64,11 +64,11 @@ kotlin {
 
 android {
     namespace = "io.flatzen"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "io.flatzen"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
@@ -78,17 +78,15 @@ android {
     }
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     
-//    configurations.configureEach {
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-admob-v23")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-applovin-v12")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-fyber-v3")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-ironsource-v7")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-apphud")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-appsetid")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-identifiers")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-location")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-ndkcrashes")
-//        exclude(group = "io.appmetrica.analytics", module = "analytics-screenshot")
-//    }
+    configurations.configureEach {
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-admob-v23")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-applovin-v12")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-fyber-v3")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-ironsource-v7")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-apphud")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-location")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-ndkcrashes")
+        exclude(group = "io.appmetrica.analytics", module = "analytics-screenshot")
+    }
 }
