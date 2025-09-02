@@ -4,6 +4,7 @@ package repository.kufar
 import entities.AppFlat
 import api.KufarApi
 import database.FlatsDao
+import entities.City
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.realt.RealtCities
 import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
@@ -32,6 +34,27 @@ class KufarRepositoryImpl(
         }
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
+        val city = when {
+            filter.location?.city == null || filter.location.city == City.MINSK -> {
+                KufarCities.MINSK
+            }
+            filter.location.city == City.BREST -> {
+                KufarCities.BREST
+            }
+            filter.location.city == City.GOMEL -> {
+                KufarCities.GOMEL
+            }
+            filter.location.city == City.GRODNO -> {
+                KufarCities.GRODNO
+            }
+            filter.location.city == City.MOGILEV -> {
+                KufarCities.MOGILEV
+            }
+            filter.location.city == City.VITEBSK -> {
+                KufarCities.VITEBSK
+            }
+            else -> KufarCities.MINSK
+        }
 
         val params = KufarApi.createQueryParams(
             minPrice = filter.priceFrom,
@@ -39,7 +62,8 @@ class KufarRepositoryImpl(
             metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,
-            cursor = pageCursor
+            cursor = pageCursor,
+            geoTag = city
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),

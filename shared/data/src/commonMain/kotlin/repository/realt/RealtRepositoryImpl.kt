@@ -11,6 +11,7 @@ import api.SortItem
 import api.Variables
 import api.Where
 import database.FlatsDao
+import entities.City
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.onliner.OnlinerCitiesBounds
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
 class RealtRepositoryImpl(
@@ -38,6 +40,27 @@ class RealtRepositoryImpl(
         val onlyOwner = if(filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
             true
         } else null
+        val townUUid = when {
+            filter.location?.city == null || filter.location.city == City.MINSK -> {
+                RealtCities.MINSK
+            }
+            filter.location.city == City.BREST -> {
+                RealtCities.BREST
+            }
+            filter.location.city == City.GOMEL -> {
+                RealtCities.GOMEL
+            }
+            filter.location.city == City.GRODNO -> {
+                RealtCities.GRODNO
+            }
+            filter.location.city == City.MOGILEV -> {
+                RealtCities.MOGILEV
+            }
+            filter.location.city == City.VITEBSK -> {
+                RealtCities.VITEBSK
+            }
+            else -> RealtCities.MINSK
+        }
         val realtFlatList = api.searchFlats(
             RealtGraphqlRequest(
                 operationName = "searchObjects",
@@ -45,9 +68,7 @@ class RealtRepositoryImpl(
                     data = SearchData(
                         //TODO Добавить метро
                         where = Where(
-                            addressV2 = listOf(AddressV2(
-                                "4cb07174-7b00-11eb-8943-0cc47adabd66" // Минск
-                            )),
+                            addressV2 = listOf(AddressV2(townUUid)),
                             category = 2,
                             rooms = filter.numberOfRooms?.map { it.toString() },
                             seller = onlyOwner.toString(), // Только собственники

@@ -4,6 +4,7 @@ package repository.onliner
 import entities.AppFlat
 import api.OnlinerApi
 import database.FlatsDao
+import entities.City
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -37,13 +38,38 @@ class OnlinerRepositoryImpl(
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.lastFilter()
         val metroLines = filter.metroStations.map { it.line.name.lowercase() }.distinct()
+        val cityBounds = when {
+            filter.location?.city == null || filter.location.city == City.MINSK -> {
+                OnlinerCitiesBounds.MINSK
+            }
+            filter.location.city == City.BREST -> {
+                OnlinerCitiesBounds.BREST
+            }
+            filter.location.city == City.GOMEL -> {
+                OnlinerCitiesBounds.GOMEL
+            }
+            filter.location.city == City.GRODNO -> {
+                OnlinerCitiesBounds.GRODNO
+            }
+            filter.location.city == City.MOGILEV -> {
+                OnlinerCitiesBounds.MOGILEV
+            }
+            filter.location.city == City.VITEBSK -> {
+                OnlinerCitiesBounds.VITEBSK
+            }
+            else -> OnlinerCitiesBounds.MINSK
+        }
         val params = OnlinerApi.createParams(
             minPrice = filter.priceFrom?.toInt(),
             maxPrice = filter.priceTo?.toInt(),
             metroLines = metroLines,
             rooms = filter.numberOfRooms,
             onlyOwner = filter.fromOwnerOnly,
-            page = filterRepository.currentAppPage
+            page = filterRepository.currentAppPage,
+            boundsLbLng = cityBounds.southwest.longitude,
+            boundsLbLat = cityBounds.southwest.latitude,
+            boundsRtLng = cityBounds.northeast.longitude,
+            boundsRtLat = cityBounds.northeast.latitude
         )
         val onlinerFlatList = api.searchFlats(params).apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
