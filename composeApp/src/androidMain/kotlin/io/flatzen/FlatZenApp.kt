@@ -5,7 +5,7 @@ import android.util.Log
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
 import io.flatzen.commoncomponents.config.Config
-import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class FlatZenApp : Application(), KoinComponent {
-    private val analyticsManager: AnalyticsManagerInterface by inject()
+    private val analyticsManager: AnalyticsManager by inject()
     
     override fun onCreate() {
         super.onCreate()

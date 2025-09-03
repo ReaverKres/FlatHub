@@ -9,7 +9,13 @@ import server_response.OnlinerListResponse
 interface OnlinerApi {
 
     @GET("sdapi/ak.api/search/apartments")
-    suspend fun searchFlats(
+    suspend fun searchRentFlats(
+        @QueryMap params: Map<String, Any>,
+        @Header("Accept") accept: String = "application/json"
+    ): OnlinerListResponse
+
+    @GET("sdapi/pk.api/search/apartments")
+    suspend fun searchSaleFlats(
         @QueryMap params: Map<String, Any>,
         @Header("Accept") accept: String = "application/json"
     ): OnlinerListResponse

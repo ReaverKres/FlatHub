@@ -1,12 +1,10 @@
 package io.flatzen.commoncomponents.analytics
 
-import kotlin.coroutines.suspendCoroutine
-
 /**
  * iOS stub implementation of AnalyticsManagerInterface.
  * This is a no-op implementation for iOS platform as requested.
  */
-class AnalyticsManagerImpl : AnalyticsManagerInterface {
+class AnalyticsManagerImpl : AnalyticsManager {
     
     override suspend fun registerEvent(event: AnalyticsEvent) {
         // No-op implementation for iOS

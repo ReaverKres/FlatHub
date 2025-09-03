@@ -2,6 +2,7 @@ package repository.domovita
 
 import api.DomovitaApi
 import database.FlatsDao
+import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
 import entities.City
 import kotlinx.coroutines.flow.Flow
@@ -11,8 +12,6 @@ import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import repository.kufar.KufarCities
-import server_response.DomovitaListResponse
 import server_response.DomovitaListResponse.DomovitaFlat
 
 class DomovitaRepositoryImpl(
@@ -71,10 +70,14 @@ class DomovitaRepositoryImpl(
         )
 
         try {
-            val response = api.searchFlats(request)
+            val response = if(filter.adType == AdType.RENT) {
+                api.searchRentFlats(request)
+            } else {
+                api.searchSaleFlats(request)
+            }
             var domovitaFlatList =
                 response.items.filterNotNull().map { domovitaResponseMapper.map(it) }
-            if (filter.fromOwnerOnly != null) {
+            if (filter.fromOwnerOnly == true) {
                 domovitaFlatList = domovitaFlatList.filter { it.owner == filter.fromOwnerOnly }
             }
 

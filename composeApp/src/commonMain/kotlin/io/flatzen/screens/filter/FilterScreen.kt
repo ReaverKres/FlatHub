@@ -28,6 +28,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -43,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.viewmodel.filter.FilterScreenAction
@@ -117,6 +121,11 @@ fun FilterScreen(
                         viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
                     }
                 )
+            }
+
+            // Продажа или Аренда
+            RentSaleSegmentedButtons(state.filters.adType) {
+                currentFilters = currentFilters.copy(adType = it)
             }
 
             // Расположение
@@ -207,6 +216,33 @@ fun FilterScreen(
                 viewModel.onIntent(FilterScreenAction.HideSaveFilterDialog)
             }
         )
+    }
+}
+
+@Composable
+fun RentSaleSegmentedButtons(
+    selectedAdType: AdType,
+    onClick: (AdType) -> Unit
+) {
+
+    SingleChoiceSegmentedButtonRow {
+        SegmentedButton(
+            selected = selectedAdType == AdType.RENT,
+            onClick = { onClick(AdType.RENT) },
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+            colors = SegmentedButtonDefaults.colors()
+        ) {
+            Text("Аренда")
+        }
+
+        SegmentedButton(
+            selected = selectedAdType == AdType.SALE,
+            onClick = { onClick(AdType.SALE) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+            colors = SegmentedButtonDefaults.colors()
+        ) {
+            Text("Продажа")
+        }
     }
 }
 

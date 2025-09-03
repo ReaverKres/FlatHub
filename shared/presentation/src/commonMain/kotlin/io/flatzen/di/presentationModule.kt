@@ -30,7 +30,6 @@ val flatSearchPresentationModule = module {
     ) }
     viewModel { FilterViewModel(
         filterRepository = get(),
-        mergedRepository = get(),
         analyticsManager = get()
     ) }
 

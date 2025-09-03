@@ -5,6 +5,7 @@ import entities.AppFlat
 import api.KufarApi
 import database.FlatsDao
 import entities.City
+import io.flatzen.commoncomponents.commonentities.AdType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -56,7 +57,9 @@ class KufarRepositoryImpl(
             else -> KufarCities.MINSK
         }
 
+        val dealType = if (filter.isRentType) AdType.RENT else AdType.SALE
         val params = KufarApi.createQueryParams(
+            dealType = dealType,
             minPrice = filter.priceFrom,
             maxPrice = filter.priceTo,
             metroIds = metroIds,

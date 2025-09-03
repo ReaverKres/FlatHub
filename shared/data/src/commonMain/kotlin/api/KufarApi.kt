@@ -2,11 +2,9 @@ package api
 
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
-import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
-import entities.MetroLine
+import io.flatzen.commoncomponents.commonentities.AdType
 import server_response.KufarListResponse
-
 
 interface KufarApi {
 
@@ -26,7 +24,7 @@ interface KufarApi {
             language: String = "ru",
             cursor: String? = null,
             pageSize: Int = KUFAR_PAGE_SIZE,
-            dealType: String = "let",
+            dealType: AdType = AdType.RENT,
             sort: String = "lst.d",
             minPrice: Double? = null,
             maxPrice: Double? = null,
@@ -43,7 +41,11 @@ interface KufarApi {
                     put("cursor", cursor.orEmpty())
                 }
                 put("size", pageSize.toString())
-                put("typ", dealType)
+                if (dealType == AdType.RENT) {
+                    put("typ", "let")
+                } else {
+                    put("typ", "sell")
+                }
                 put("sort", sort)
                 if (onlyOwner != null && onlyOwner == true) {
                     put("cmp", "0")
@@ -56,15 +58,16 @@ interface KufarApi {
                 }
             }
 
+            val priceParamName = if(dealType == AdType.RENT) "prc" else "psm"
             when {
                 minPrice != null && maxPrice != null -> {
-                    params["prc"] = "r:$minPrice,$maxPrice"
+                    params[priceParamName] = "r:$minPrice,$maxPrice"
                 }
                 minPrice != null -> {
-                    params["prc"] = "r:$minPrice"
+                    params[priceParamName] = "r:$minPrice"
                 }
                 maxPrice != null -> {
-                    params["prc"] = "r:0,$maxPrice"
+                    params[priceParamName] = "r:0,$maxPrice"
                 }
             }
 

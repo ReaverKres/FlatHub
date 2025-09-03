@@ -1,6 +1,7 @@
 package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
@@ -83,6 +84,7 @@ data class SavedFilterState(
 
 @Immutable
 data class FilterState(
+    val adType: AdType = AdType.RENT,
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
