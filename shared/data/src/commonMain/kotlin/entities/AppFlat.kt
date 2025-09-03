@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.datetime.Instant
 
@@ -74,9 +75,4 @@ data class FlatDevInfo(
 data class ContactInformation(
     val phones: List<String>?,
     val ownerName: String?
-)
-
-data class Coordinates(
-    val latitude: Double,
-    val longitude: Double
 )

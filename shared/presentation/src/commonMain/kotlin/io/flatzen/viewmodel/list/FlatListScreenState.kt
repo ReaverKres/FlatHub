@@ -2,6 +2,7 @@ package io.flatzen.viewmodel.list
 
 import androidx.compose.runtime.Immutable
 import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.mvi.MviState
 
@@ -27,7 +28,7 @@ data class UiFlat(
     val publishedAt: String?,
     val metroStation: String,
     val address: String,
-    val coordinates: UiCoordinates?
+    val coordinates: Coordinates?
 ) {
     companion object {
         fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
@@ -49,20 +50,12 @@ data class UiFlat(
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
                     metroStation = it.metroStation.orEmpty(),
-                    coordinates = it.coordinates?.let {
-                        UiCoordinates(it.latitude, it.longitude)
-                    }
+                    coordinates = it.coordinates
                 )
             }
         }
     }
 }
-
-@Immutable
-data class UiCoordinates(
-    val latitude: Double,
-    val longitude: Double
-)
 
 @Immutable
 data class UiPrice(

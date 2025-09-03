@@ -5,7 +5,7 @@ import entities.ContactInformation
 import entities.FlatDevInfo
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
-import entities.Coordinates
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.base.AdditionalParamMapper
 import kotlin.time.ExperimentalTime

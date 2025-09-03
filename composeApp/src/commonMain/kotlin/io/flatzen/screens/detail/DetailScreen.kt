@@ -1,5 +1,6 @@
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
@@ -34,12 +37,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.kmpapp.screens.EmptyScreenContent
+import io.flatzen.screens.map.RoomMarker
+import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.ContactInformationUi
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import ovh.plrapps.mapcompose.api.addMarker
+import ovh.plrapps.mapcompose.api.scroll
+import ovh.plrapps.mapcompose.api.scrollTo
+import ovh.plrapps.mapcompose.api.setScroll
+import ovh.plrapps.mapcompose.api.snapScrollTo
+import ovh.plrapps.mapcompose.ui.MapUI
+import ovh.plrapps.mapcompose.ui.state.MapState
+import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +61,7 @@ fun DetailScreen(
     flatPlatform: FlatPlatform,
     objectId: Long,
     navigateBack: () -> Unit,
+    navigateToMap: (flatId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatDetailViewModel>()
@@ -96,6 +111,7 @@ fun DetailScreen(
             state.flat != null -> {
                 FlatDetailContent(
                     flat = state.flat!!,
+                    mapState = viewModel.mapState,
                     modifier = Modifier.fillMaxSize(),
                     clickOnFavorite = {
                         viewModel.onIntent(
@@ -104,6 +120,9 @@ fun DetailScreen(
                                 state.flat!!.adId
                             )
                         )
+                    },
+                    navigateToMap = {
+                        navigateToMap(state.flat!!.adId)
                     }
                 )
             }
@@ -118,8 +137,10 @@ fun DetailScreen(
 @Composable
 private fun FlatDetailContent(
     flat: UiDetailFlat,
+    mapState: MapState,
     modifier: Modifier = Modifier,
-    clickOnFavorite: () -> Unit
+    clickOnFavorite: () -> Unit,
+    navigateToMap: () -> Unit
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -180,6 +201,33 @@ private fun FlatDetailContent(
                 area = flat.totalArea,
                 condition = flat.condition
             )
+
+            if(flat.coordinates != null) {
+                val coroutineScope = rememberCoroutineScope()
+                mapState.apply {
+                    val mercatorCoordinates =
+                        flat.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) } ?: return
+                    coroutineScope.launch {
+                        snapScrollTo(mercatorCoordinates.first, mercatorCoordinates.second)
+                    }
+                    addMarker(
+                        id = flat.adId.toString(),
+                        x = mercatorCoordinates.first,
+                        y = mercatorCoordinates.second,
+                    ) {
+                        RoomMarker(
+                            flat.numberOfRooms,
+                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Box(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth().height(200.dp).clickable {
+                    navigateToMap()
+                }) {
+                    MapUI(modifier = Modifier.fillMaxSize(), state = mapState)
+                }
+            }
 
             // О квартире
             if (hasApartmentData(flat)) {

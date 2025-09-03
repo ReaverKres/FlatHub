@@ -17,29 +17,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -49,8 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import flatzen.composeapp.generated.resources.Res
-import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -60,22 +55,30 @@ import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
-import org.jetbrains.compose.resources.stringResource
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addClusterer
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.removeAllMarkers
+import ovh.plrapps.mapcompose.api.scale
+import ovh.plrapps.mapcompose.api.scrollTo
+import ovh.plrapps.mapcompose.api.setScroll
+import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
+    ExperimentalComposeUiApi::class
+)
 @Composable
 fun MapScreen(
     mapViewModel: MapViewModel = koinViewModel(),
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
+    navigateBackToDetail: () -> Unit,
+    selectedMarker: Long?,
 ) {
     val listViewModel = koinViewModel<FlatSearchViewModel>()
     val listState by listViewModel.state.collectAsStateWithLifecycle()
@@ -84,37 +87,63 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
     val clusterId = "default"
-    val isMarkersSizeTooBig = listState.flatList.size >= 270
+    val isMarkersSizeTooBig = listState.flatList.size >= 350
+    val detailFlatId by remember { mutableStateOf(selectedMarker) }
+    val detailFlat = detailFlatId?.let { id ->
+        listState.flatList.find { it.adId == id }
+    }
 
-    mapViewModel.mapState.apply {
-        onMarkerClick { id, x, y ->
-            selectedFlatId = id.toLongOrNull()
-        }
-        if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
-            removeAllMarkers()
-            listState.flatList.forEach {
-                val mercatorCoordinates =
-                    it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) } ?: return
-                addMarker(
-                    id = it.adId.toString(),
-                    x = mercatorCoordinates.first,
-                    y = mercatorCoordinates.second,
-                    clickableAreaScale = Offset(1.2f, 1.2f),
-                    renderingStrategy = RenderingStrategy.Clustering(clusterId)
-                ) {
-                    RoomMarker(
-                        it.numberOfRooms.toString(),
-                        textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+    BackHandler(enabled = detailFlatId != null) {
+        navigateBackToDetail()
+    }
+
+    LaunchedEffect(listState.flatList) {
+        mapViewModel.mapState.apply {
+            onMarkerClick { id, x, y ->
+                selectedFlatId = id.toLongOrNull()
+            }
+            if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
+                removeAllMarkers()
+                listState.flatList.forEach {
+                    val mercatorCoordinates =
+                        it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) } ?: return@LaunchedEffect
+                    addMarker(
+                        id = it.adId.toString(),
+                        x = mercatorCoordinates.first,
+                        y = mercatorCoordinates.second,
+                        clickableAreaScale = Offset(1.3f, 1.3f),
+                        renderingStrategy = RenderingStrategy.Clustering(clusterId)
+                    ) {
+                        RoomMarker(
+                            rooms = it.numberOfRooms.toString(),
+                            pinColor = if (detailFlatId == it.adId) Color.Green else Color(0xFFD32F2F),
+                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                addClusterer(
+                    id = clusterId,
+                    clusteringThreshold = 15.dp
+                ) { ids ->
+                    {
+                        Cluster(size = ids.size)
+                    }
                 }
             }
-            addClusterer(
-                id = clusterId,
-                clusteringThreshold = 15.dp
-            ) { ids ->
-                {
-                    Cluster(size = ids.size)
-                }
+        }
+    }
+
+    LaunchedEffect(detailFlat) {
+        mapViewModel.mapState.apply {
+            if (selectedMarker != null) {
+                val mercatorCoordinates = detailFlat?.coordinates?.let {
+                    lonLatToNormalized(it.latitude, it.longitude)
+                } ?: return@LaunchedEffect
+                scrollTo(
+                    x = mercatorCoordinates.first,
+                    y = mercatorCoordinates.second,
+                    destScale = scale * 20 // Adjust this value for desired zoom level
+                )
             }
         }
     }
@@ -189,8 +218,12 @@ fun MapScreen(
                             contentPadding = ButtonDefaults.TextButtonContentPadding,
                             enabled = listState.noFlatsToLoadMore.not() && isMarkersSizeTooBig.not(),
                             colors = ButtonDefaults.buttonColors().copy(
-                                disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(alpha = 0.7f),
-                                disabledContentColor = ButtonDefaults.buttonColors().contentColor.copy(alpha = 0.5f)
+                                disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(
+                                    alpha = 0.7f
+                                ),
+                                disabledContentColor = ButtonDefaults.buttonColors().contentColor.copy(
+                                    alpha = 0.5f
+                                )
                             ),
                             onClick = {
                                 listViewModel.onIntent(
