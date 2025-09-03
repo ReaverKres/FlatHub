@@ -5,7 +5,7 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
-import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -59,7 +59,7 @@ class FlatSearchViewModel(
     private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
     private val connectionMonitor: ConnectionMonitor,
-    private val analyticsManager: AnalyticsManagerInterface
+    private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false

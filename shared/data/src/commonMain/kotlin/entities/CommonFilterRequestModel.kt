@@ -35,11 +35,13 @@ import entities.MetroStationNames.TRAKTORNY_ZAVOD
 import entities.MetroStationNames.URUCHIE
 import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
+import io.flatzen.commoncomponents.commonentities.AdType
 import kotlinx.serialization.Serializable
 import server_request.Currency
 
 @Serializable
 data class CommonFilterRequestModel(
+    val adType: AdType = AdType.RENT,
     val priceFrom: Double? = null,
     val priceTo: Double? = null,
     val currency: Currency = Currency.USD,
@@ -49,6 +51,10 @@ data class CommonFilterRequestModel(
     val location: LocationFilter? = null,
     val fromOwnerOnly: Boolean? = null
 ) {
+
+    val isRentType: Boolean
+        get() = adType == AdType.RENT
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -70,6 +76,7 @@ data class CommonFilterRequestModel(
             else -> this.location == other.location
         }
 
+        if(adType != other.adType) return false
         if (priceFrom != other.priceFrom) return false
         if (priceTo != other.priceTo) return false
         if (fromOwnerOnly != other.fromOwnerOnly) return false
@@ -86,6 +93,7 @@ data class CommonFilterRequestModel(
         var result = priceFrom?.hashCode() ?: 0
         result = 31 * result + (priceTo?.hashCode() ?: 0)
         result = 31 * result + fromOwnerOnly.hashCode()
+        result = 31 * result + adType.hashCode()
         result = 31 * result + currency.hashCode()
         result = 31 * result + addressRequestModel.hashCode()
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)

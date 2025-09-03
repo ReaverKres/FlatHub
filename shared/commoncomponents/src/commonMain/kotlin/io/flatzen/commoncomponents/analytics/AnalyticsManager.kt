@@ -4,7 +4,7 @@ package io.flatzen.commoncomponents.analytics
  * Interface for managing analytics events across the application.
  * This interface provides a unified way to track user events and application behavior.
  */
-interface AnalyticsManagerInterface {
+interface AnalyticsManager {
     
     /**
      * Registers an analytics event for tracking.

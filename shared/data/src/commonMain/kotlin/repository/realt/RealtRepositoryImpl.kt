@@ -61,6 +61,7 @@ class RealtRepositoryImpl(
             }
             else -> RealtCities.MINSK
         }
+        val category = if(filter.isRentType) 2 else 5
         val realtFlatList = api.searchFlats(
             RealtGraphqlRequest(
                 operationName = "searchObjects",
@@ -69,7 +70,7 @@ class RealtRepositoryImpl(
                         //TODO Добавить метро
                         where = Where(
                             addressV2 = listOf(AddressV2(townUUid)),
-                            category = 2,
+                            category = category,
                             rooms = filter.numberOfRooms?.map { it.toString() },
                             seller = onlyOwner.toString(), // Только собственники
                             priceFrom = filter.priceFrom.toNullableString(), // Цена от (можно null если не нужно)

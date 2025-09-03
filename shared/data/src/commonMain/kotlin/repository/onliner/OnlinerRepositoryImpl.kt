@@ -13,8 +13,6 @@ import io.ktor.http.parsing.ParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -71,7 +69,12 @@ class OnlinerRepositoryImpl(
             boundsRtLng = cityBounds.northeast.longitude,
             boundsRtLat = cityBounds.northeast.latitude
         )
-        val onlinerFlatList = api.searchFlats(params).apartments
+        val request = if(filter.isRentType) {
+            api.searchRentFlats(params)
+        } else {
+            api.searchSaleFlats(params)
+        }
+        val onlinerFlatList = request.apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
         emit(onlinerFlatList ?: listOf())
     }

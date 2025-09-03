@@ -8,7 +8,7 @@ import entities.Country
 import entities.LocationFilter
 import entities.MetroStations
 import entities.SavedFilter
-import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.mappers.LocationUiMapper
@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import repository.mergedrepo.MergedRepository
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
@@ -79,9 +78,8 @@ sealed interface FilterScreenEvent : MviEvent {
 }
 
 class FilterViewModel(
-    private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
-    private val analyticsManager: AnalyticsManagerInterface
+    private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
     override fun initialState(): FilterScreenState = FilterScreenState(
@@ -339,6 +337,7 @@ class FilterViewModel(
 
     private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         return FilterState(
+            adType = model.adType,
             priceFrom = model.priceFrom,
             priceTo = model.priceTo,
             currency = model.currency,
@@ -365,6 +364,7 @@ class FilterViewModel(
 
     private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
         return CommonFilterRequestModel(
+            adType = filters.adType,
             priceFrom = filters.priceFrom,
             priceTo = filters.priceTo,
             currency = filters.currency,

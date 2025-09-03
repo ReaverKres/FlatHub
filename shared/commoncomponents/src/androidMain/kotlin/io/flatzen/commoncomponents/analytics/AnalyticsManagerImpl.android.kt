@@ -1,7 +1,5 @@
 package io.flatzen.commoncomponents.analytics
 
-import android.content.Context
-import android.util.Log
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +7,7 @@ import kotlinx.coroutines.withContext
 /**
  * Android implementation of AnalyticsManagerInterface using AppMetrica SDK.
  */
-class AnalyticsManagerImpl : AnalyticsManagerInterface {
+class AnalyticsManagerImpl : AnalyticsManager {
 
     override suspend fun registerEvent(event: AnalyticsEvent) {
         withContext(Dispatchers.IO) {

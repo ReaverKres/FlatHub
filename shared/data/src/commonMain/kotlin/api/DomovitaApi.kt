@@ -9,7 +9,12 @@ import server_response.DomovitaListResponse
 interface DomovitaApi {
 
     @POST("v1/objects/flats-rent/list")
-    suspend fun searchFlats(
+    suspend fun searchRentFlats(
+        @Body request: DomovitaRequest
+    ): DomovitaListResponse
+
+    @POST("v1/objects/flats-sale/list")
+    suspend fun searchSaleFlats(
         @Body request: DomovitaRequest
     ): DomovitaListResponse
 

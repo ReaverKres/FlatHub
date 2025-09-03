@@ -3,7 +3,7 @@ package io.flatzen.viewmodel
 import entities.AppFlat
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.analytics.AnalyticsManagerInterface
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.error_handling.LCE
@@ -89,7 +89,7 @@ sealed interface FlatDetailEvents : MviEvent {
 
 class FlatDetailViewModel(
     private val mergedRepository: MergedRepository,
-    private val analyticsManager: AnalyticsManagerInterface
+    private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
