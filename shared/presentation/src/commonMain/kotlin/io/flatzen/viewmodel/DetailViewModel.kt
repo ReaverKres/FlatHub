@@ -6,6 +6,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -13,6 +14,8 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
+import io.flatzen.utils.lonLatToNormalized
+import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -20,7 +23,16 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import ovh.plrapps.mapcompose.api.addLayer
+import ovh.plrapps.mapcompose.api.disableRotation
+import ovh.plrapps.mapcompose.api.disableScrolling
+import ovh.plrapps.mapcompose.api.disableZooming
+import ovh.plrapps.mapcompose.api.enableRotation
+import ovh.plrapps.mapcompose.core.TileStreamProvider
+import ovh.plrapps.mapcompose.ui.layout.Forced
+import ovh.plrapps.mapcompose.ui.state.MapState
 import repository.mergedrepo.MergedRepository
+import kotlin.math.pow
 
 @Immutable
 data class UiDetailFlat(
@@ -58,7 +70,8 @@ data class UiDetailFlat(
     val parkingInfo: String?,
     val isOwner: Boolean?,
     val publishedAt: String?,
-    val contactInformation: ContactInformationUi
+    val contactInformation: ContactInformationUi,
+    val coordinates: Coordinates?
 )
 
 @Immutable
@@ -89,8 +102,22 @@ sealed interface FlatDetailEvents : MviEvent {
 
 class FlatDetailViewModel(
     private val mergedRepository: MergedRepository,
+    private val tileStreamProvider: TileStreamProvider,
     private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FlatDetailScreenAction, FlatDetailScreenState, FlatDetailEvents, MviEffect>() {
+
+    private val maxLevel = 18
+    private val minLevel = 16
+    private val mapSize = mapSizeAtLevel(maxLevel, tileSize = 256)
+    val mapState = MapState(levelCount = maxLevel + 1, mapSize, mapSize) {
+        minimumScaleMode(Forced(1 / 2.0.pow(maxLevel - minLevel)))
+        scale(0.0) // to zoom out initially
+    }.apply {
+        addLayer(tileStreamProvider)
+        disableRotation()
+        disableZooming()
+        disableScrolling()
+    }
 
     override fun initialState(): FlatDetailScreenState = FlatDetailScreenState(
         isLoading = false,
@@ -205,7 +232,8 @@ class FlatDetailViewModel(
             contactInformation = ContactInformationUi(
                 phones = appFlat.contactInformation?.phones,
                 ownerName = appFlat.contactInformation?.ownerName
-            )
+            ),
+            coordinates = appFlat.coordinates
         )
     }
 

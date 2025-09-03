@@ -1,6 +1,6 @@
 package repository.onliner
 
-import entities.Coordinates
+import io.flatzen.commoncomponents.commonentities.Coordinates
 
 object OnlinerCitiesBounds {
     // Брест

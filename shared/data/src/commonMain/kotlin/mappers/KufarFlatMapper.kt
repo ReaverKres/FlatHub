@@ -2,8 +2,8 @@
 package mappers
 
 import entities.AppFlat
-import entities.Coordinates
 import entities.FlatDevInfo
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant

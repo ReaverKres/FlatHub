@@ -29,25 +29,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.Serializable
 
-// Главные экраны для BottomBar
-@Serializable
-object ListGraph
 
-@Serializable
-object FavoritesGraph
-
-@Serializable
-object SettingsGraph
-
-@Serializable
-object MapGraph
-
-// Вложенные экраны
 @Serializable
 object ListScreenDestination
 
@@ -58,7 +46,7 @@ object FavoritesScreenDestination
 object SettingsScreenDestination
 
 @Serializable
-object MapScreenDestination
+data class MapScreenDestination(val selectedMarker: Long? = null)
 
 @Serializable
 data class DetailScreenDestination(val flatPlatform: FlatPlatform, val objectId: Long)
@@ -75,12 +63,12 @@ object CitySelectScreenDestination
 @Serializable
 object MetroSelectScreenDestination
 
-// Определяем элементы для BottomBar. Теперь маршрут - это сам объект-назначение.
+// Определяем элементы для BottomBar
 val bottomNavItems = listOf(
-    BottomNavItem(ListGraph, "Список", Icons.Default.List),
-    BottomNavItem(FavoritesGraph, "Избранное", Icons.Default.Favorite),
-    BottomNavItem(MapGraph, "Карта", Icons.Default.LocationOn),
-    BottomNavItem(SettingsGraph, "Настройки", Icons.Default.Settings)
+    BottomNavItem(ListScreenDestination, "Список", Icons.Default.List),
+    BottomNavItem(FavoritesScreenDestination, "Избранное", Icons.Default.Favorite),
+    BottomNavItem(MapScreenDestination(), "Карта", Icons.Default.LocationOn),
+    BottomNavItem(SettingsScreenDestination, "Настройки", Icons.Default.Settings)
 )
 data class BottomNavItem(val route: Any, val label: String, val icon: ImageVector)
 
@@ -95,13 +83,13 @@ fun App() {
         val currentDestination = navBackStackEntry?.destination
 
         // Определяем, является ли текущий маршрут одним из главных экранов.
-        // Это более простой и надежный способ.
-        val showBottomBar = currentDestination?.route in listOf(
-            ListScreenDestination::class.qualifiedName,
-            FavoritesScreenDestination::class.qualifiedName,
-            SettingsScreenDestination::class.qualifiedName,
-            MapScreenDestination::class.qualifiedName
-        )
+        val showBottomBar = currentDestination?.route?.let { route ->
+            // Показываем BottomBar только на основных экранах вкладок
+            route == ListScreenDestination::class.qualifiedName ||
+            route == FavoritesScreenDestination::class.qualifiedName ||
+            route == SettingsScreenDestination::class.qualifiedName ||
+            route.startsWith(MapScreenDestination::class.qualifiedName!!)
+        } ?: false
 
         Scaffold(
             contentWindowInsets = WindowInsets.statusBars,
@@ -109,19 +97,54 @@ fun App() {
                 if (showBottomBar) {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
-                            val isSelected = currentDestination?.hierarchy?.any {
-                                it.route == item.route::class.qualifiedName
-                            } == true
+                            val isSelected = when (item.route) {
+                                ListScreenDestination -> currentDestination?.route == ListScreenDestination::class.qualifiedName
+                                FavoritesScreenDestination -> currentDestination?.route == FavoritesScreenDestination::class.qualifiedName
+                                SettingsScreenDestination -> currentDestination?.route == SettingsScreenDestination::class.qualifiedName
+                                is MapScreenDestination -> currentDestination?.route?.startsWith(MapScreenDestination::class.qualifiedName!!) == true
+                                else -> false
+                            }
 
                             NavigationBarItem(
                                 selected = isSelected,
                                 onClick = {
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
+                                    when (item.route) {
+                                        ListScreenDestination -> {
+                                            navController.navigate(ListScreenDestination) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                        FavoritesScreenDestination -> {
+                                            navController.navigate(FavoritesScreenDestination) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
+                                        SettingsScreenDestination -> {
+                                            navController.navigate(SettingsScreenDestination) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
+                                        is MapScreenDestination -> {
+                                            navController.navigate(MapScreenDestination()) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
                                     }
                                 },
                                 icon = { Icon(item.icon, contentDescription = item.label) },
@@ -134,73 +157,79 @@ fun App() {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = ListGraph, // Стартовый граф
+                startDestination = ListScreenDestination, // Начинаем с конкретного экрана
                 modifier = Modifier.padding(innerPadding)
             ) {
-                // Граф для вкладки "Список"
-                navigation<ListGraph>(
-                    startDestination = ListScreenDestination
-                ) {
-                    composable<ListScreenDestination> {
-                        io.flatzen.screens.list.ListScreen(
-                            navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform, id))
-                            },
-                            navigateToFilters = {
-                                navController.navigate(FilterScreenDestination)
+                // Экран списка (основной)
+                composable<ListScreenDestination> {
+                    io.flatzen.screens.list.ListScreen(
+                        navigateToDetails = { platform, id ->
+                            navController.navigate(DetailScreenDestination(platform, id))
+                        },
+                        navigateToFilters = {
+                            navController.navigate(FilterScreenDestination)
+                        }
+                    )
+                }
+                
+                // Экран избранного
+                composable<FavoritesScreenDestination> {
+                    io.flatzen.screens.favorites.FavoritesScreen(
+                        navigateToDetails = { platform, id ->
+                            navController.navigate(DetailScreenDestination(platform, id))
+                        }
+                    )
+                }
+                
+                // Экран настроек
+                composable<SettingsScreenDestination> {
+                    io.flatzen.screens.settings.SettingsScreen()
+                }
+                
+                // Экран карты
+                composable<MapScreenDestination> { backStackEntry ->
+                    val args = backStackEntry.toRoute<MapScreenDestination>()
+                    io.flatzen.screens.map.MapScreen(
+                        selectedMarker = args.selectedMarker,
+                        navigateToDetails = { platform, id ->
+                            navController.navigate(DetailScreenDestination(platform, id))
+                        },
+                        navigateToFilters = {
+                            navController.navigate(FilterScreenDestination)
+                        },
+                        navigateBackToDetail = {
+                            navController.navigate(ListScreenDestination) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                        )
-                    }
+                        }
+                    )
                 }
-
-                // Граф для вкладки "Избранное"
-                navigation<FavoritesGraph>(
-                    startDestination = FavoritesScreenDestination
-                ) {
-                    composable<FavoritesScreenDestination> {
-                        io.flatzen.screens.favorites.FavoritesScreen(
-                            navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform, id))
-                            }
-                        )
-                    }
-                }
-
-                // Граф для вкладки "Настройки"
-                navigation<SettingsGraph>(
-                    startDestination = SettingsScreenDestination
-                ) {
-                    composable<SettingsScreenDestination> {
-                        io.flatzen.screens.settings.SettingsScreen()
-                    }
-                }
-
-                // Граф для вкладки "Карта"
-                navigation<MapGraph>(
-                    startDestination = MapScreenDestination
-                ) {
-                    composable<MapScreenDestination> {
-                        io.flatzen.screens.map.MapScreen(
-                            navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform, id))
-                            },
-                            navigateToFilters = {
-                                navController.navigate(FilterScreenDestination)
-                            }
-                        )
-                    }
-                }
-
-                // Экран Деталей (открывается поверх)
+                
+                // DetailScreen (общий для всех)
                 composable<DetailScreenDestination> { backStackEntry ->
                     val args = backStackEntry.toRoute<DetailScreenDestination>()
-                    DetailScreen( // Укажите полный путь, если необходимо
+                    DetailScreen(
                         flatPlatform = args.flatPlatform,
                         objectId = args.objectId,
-                        navigateBack = { navController.popBackStack() }
+                        navigateBack = { navController.popBackStack() },
+                        navigateToMap = { flatId ->
+                            // Навигация к карте с выбранным маркером
+                            navController.navigate(MapScreenDestination(selectedMarker = flatId)) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
 
+                // Общие экраны (фильтры, локация и т.д.)
                 // Экран Фильтров (открывается поверх)
                 composable<FilterScreenDestination> {
                     io.flatzen.screens.filter.FilterScreen(
