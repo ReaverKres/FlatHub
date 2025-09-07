@@ -47,11 +47,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.viewmodel.filter.FilterDialogState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.Room
+import io.flatzen.viewmodel.filter.SavedFilterState
 import io.flatzen.widgets.FilterSwitch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -69,7 +72,7 @@ fun FilterScreen(
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
     }
-    
+
     LaunchedEffect(Unit) {
         // Track screen view through MviAction
         viewModel.onIntent(
@@ -134,7 +137,11 @@ fun FilterScreen(
                 headlineContent = {
                     Text(state.filters.location?.selectedCity?.displayName.orEmpty())
                 },
-                supportingContent = { Text("Метро") },
+                supportingContent = if (state.filters.metroStationsState.isEmpty()) {
+                    null
+                } else {
+                    { Text("Метро") }
+                },
                 trailingContent = {
                     if (currentFilters.isLocationFilterActive()) {
                         Icon(Icons.Default.CheckCircle, contentDescription = null)
@@ -145,28 +152,52 @@ fun FilterScreen(
                     .clickable { onOpenLocation() }
             )
 
-            // Цена
-            FilterSectionTitle(title = "Цена")
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = currentFilters.priceFrom?.toString() ?: "",
-                    onValueChange = {
-                        currentFilters = currentFilters.copy(priceFrom = it.toDoubleOrNull())
-                    },
-                    label = { Text("От") },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-                OutlinedTextField(
-                    value = currentFilters.priceTo?.toString() ?: "",
-                    onValueChange = {
-                        currentFilters = currentFilters.copy(priceTo = it.toDoubleOrNull())
-                    },
-                    label = { Text("До") },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-            }
+            PriceSection(
+                title = "Цена",
+                priceFrom = currentFilters.priceFull?.priceFrom?.toString().orEmpty(),
+                priceFromOnChange = {
+                    currentFilters = currentFilters.copy(
+                        priceFull = currentFilters.priceFull?.copy(
+                            priceFrom = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceFrom = it.toDoubleOrNull()
+                        )
+                    )
+                },
+                priceTo = currentFilters.priceFull?.priceTo?.toString().orEmpty(),
+                priceToOnChange = {
+                    currentFilters = currentFilters.copy(
+                        priceFull = currentFilters.priceFull?.copy(
+                            priceTo = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceTo = it.toDoubleOrNull()
+                        )
+                    )
+                }
+            )
+            PriceSection(
+                title = "Цена за м2",
+                priceFrom = currentFilters.pricePerSquare?.priceFrom?.toString().orEmpty(),
+                priceFromOnChange = {
+                    currentFilters = currentFilters.copy(
+                        pricePerSquare = currentFilters.pricePerSquare?.copy(
+                            priceFrom = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceFrom = it.toDoubleOrNull()
+                        )
+                    )
+                },
+                priceTo = currentFilters.pricePerSquare?.priceTo?.toString().orEmpty(),
+                priceToOnChange = {
+                    currentFilters = currentFilters.copy(
+                        pricePerSquare = currentFilters.pricePerSquare?.copy(
+                            priceTo = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceTo = it.toDoubleOrNull()
+                        )
+                    )
+                }
+            )
 
             FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
                 currentFilters = currentFilters.copy(fromOwnerOnly = it)
@@ -260,8 +291,8 @@ private fun FilterSectionTitle(
 
 @Composable
 private fun SavedFiltersChips(
-    savedFilters: List<io.flatzen.viewmodel.filter.SavedFilterState>,
-    onFilterClick: (io.flatzen.viewmodel.filter.SavedFilterState) -> Unit,
+    savedFilters: List<SavedFilterState>,
+    onFilterClick: (SavedFilterState) -> Unit,
     onDeleteClick: (Long) -> Unit
 ) {
     FlowRow(
@@ -291,8 +322,40 @@ private fun SavedFiltersChips(
 }
 
 @Composable
+private fun PriceSection(
+    title: String,
+    priceFrom: String,
+    priceFromOnChange: (String) -> Unit,
+    priceTo: String,
+    priceToOnChange: (String) -> Unit,
+) {
+    // Цена
+    FilterSectionTitle(title = title)
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = priceFrom,
+            onValueChange = { newValue -> 
+                priceFromOnChange(newValue)
+            },
+            label = { Text("От") },
+            modifier = Modifier.weight(1f),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        OutlinedTextField(
+            value = priceTo,
+            onValueChange = { newValue -> 
+                priceToOnChange(newValue)
+            },
+            label = { Text("До") },
+            modifier = Modifier.weight(1f),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
+}
+
+@Composable
 private fun SaveFilterDialog(
-    dialogState: io.flatzen.viewmodel.filter.FilterDialogState,
+    dialogState: FilterDialogState,
     onNameChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit

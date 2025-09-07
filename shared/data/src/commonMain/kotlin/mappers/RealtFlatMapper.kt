@@ -3,6 +3,7 @@ package mappers
 import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
@@ -15,13 +16,14 @@ import kotlin.time.ExperimentalTime
 class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
+        val urlPath = if (response.adType == AdType.RENT) "rent-flat-for-long" else "sale-flats"
         return AppFlat(
             flatPlatform = FlatPlatform.REALT,
             flatDevInfo = FlatDevInfo(
                 isDetailData = true,
                 isDetailLoaded = true
             ),
-            flatDetailUrl = "https://realt.by${response.code?.let { "/rent-flat-for-long/object/$it" } ?: ""}",
+            flatDetailUrl = "https://realt.by${response.code?.let { "/$urlPath/object/$it" } ?: ""}",
             adId = response.code?.toLong() ?: 0L,
             publishedAt = DateConverter.stringToInstant(response.updatedAt.orEmpty()),
             publishedAtServer = response.updatedAt,

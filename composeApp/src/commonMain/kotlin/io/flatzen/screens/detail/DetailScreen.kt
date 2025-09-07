@@ -185,7 +185,9 @@ private fun FlatDetailContent(
             // Цены
             PriceSection(
                 priceUsd = flat.priceUsd,
-                priceByn = flat.priceByn
+                priceByn = flat.priceByn,
+                priceUsdSquare = flat.priceUsdSquare,
+                priceBynSquare = flat.priceBynSquare
             )
 
             // Адрес и метро
@@ -349,21 +351,43 @@ private fun SourceLinkSection(
 }
 
 @Composable
-private fun PriceSection(priceUsd: String, priceByn: String) {
+private fun PriceSection(priceUsd: String, priceByn: String, priceUsdSquare: String?, priceBynSquare: String?) {
     Column {
-        Text(
-            text = priceUsd,
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                modifier = Modifier.alignByBaseline(),
+                text = priceUsd,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             )
-        )
-        Text(
-            text = priceByn,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            priceUsdSquare?.let {
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = "($it)",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                )
+            }
+        }
+        Row {
+            Text(
+                text = priceByn,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
-        )
+            priceBynSquare?.let {
+                Text(
+                    text = "($it)",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+        }
     }
 }
 

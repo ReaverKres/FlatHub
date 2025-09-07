@@ -55,7 +55,9 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             description = null, // Отсутствует в Onliner
             yearBuilt = null, // Отсутствует в Onliner
             // Новые поля - отсутствуют в Onliner
-            totalArea = null,
+            totalArea = data.area?.total,
+            livingArea = data.area?.living,
+            kitchenArea = data.area?.kitchen,
             floor = null,
             totalFloors = null,
             sleepingPlaces = null,
@@ -65,8 +67,6 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             windowDirections = null,
             buildingImprovements = null,
             prepaymentType = null,
-            livingArea = null,
-            kitchenArea = null,
             balcony = null,
             condition = null,
             amenities = null,

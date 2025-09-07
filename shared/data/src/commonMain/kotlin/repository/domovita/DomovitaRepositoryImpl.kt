@@ -62,8 +62,8 @@ class DomovitaRepositoryImpl(
             locationSefAlias = city,
             page = currentPage,
             limit = 20,
-            minPrice = filter.priceFrom,
-            maxPrice = filter.priceTo,
+            priceFull = filter.priceFull,
+            pricePerSquare = if(filter.adType == AdType.SALE) filter.pricePerSquare else null,
             rooms = filter.numberOfRooms,
             metroIds = metroIds,
             //TODO Add onlyOwner to request

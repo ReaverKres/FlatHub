@@ -45,6 +45,8 @@ data class UiDetailFlat(
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String,
+    val priceUsdSquare: String?,
+    val priceBynSquare: String?,
     val address: String,
     val district: String?,
     val metroStation: String?,
@@ -202,6 +204,8 @@ class FlatDetailViewModel(
             imageUrls = appFlat.imageUrls.orEmpty(),
             priceUsd = formatPrice(appFlat.priceUsd, "USD"),
             priceByn = formatPrice(appFlat.priceByn, "BYN"),
+            priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
+            priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),
             district = appFlat.district,
             metroStation = appFlat.metroStation,
@@ -245,5 +249,9 @@ class FlatDetailViewModel(
 
     private fun formatArea(area: Double): String {
         return "${area.toInt()} м²"
+    }
+
+    private fun formatPricePerSquare(price: Double, currency: String): String {
+        return "${price.toInt()} $currency/м²"
     }
 }

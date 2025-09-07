@@ -24,8 +24,8 @@ interface OnlinerApi {
         fun createParams(
             page: Int = 1,
             order: String = "created_at:desc",
-            minPrice: Int? = null,
-            maxPrice: Int? = null,
+            minPrice: Double? = null,
+            maxPrice: Double? = null,
             currency: String = "usd",
             boundsLbLat: Double? = null,
             boundsLbLng: Double? = null,

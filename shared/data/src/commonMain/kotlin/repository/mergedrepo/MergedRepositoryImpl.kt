@@ -39,7 +39,22 @@ class MergedRepositoryImpl(
             .mapLatest { networkFlats ->
                 val merged = networkFlats.map { net ->
                     val fromDb = flatsDao.getById(net.adId)
-                    net.copy(flatSavedInFavorites = fromDb?.flatSavedInFavorites == true)
+                    // Calculate price per square meter
+                    val priceUsdSquare = if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
+                        net.priceUsd / net.totalArea
+                    } else {
+                        null
+                    }
+                    val priceBynSquare = if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
+                        net.priceByn / net.totalArea
+                    } else {
+                        null
+                    }
+                    net.copy(
+                        flatSavedInFavorites = fromDb?.flatSavedInFavorites == true,
+                        priceUsdSquare = priceUsdSquare,
+                        priceBynSquare = priceBynSquare
+                    )
                 }
                 flatsDao.upsertAll(merged)
                 val sortedFlatList = applyLocalSortOrFilters(merged)
@@ -74,6 +89,42 @@ class MergedRepositoryImpl(
     private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
         val currentFilter = filterRepository.lastFilter()
         var resultList = flats.sortedByDescending { it.publishedAt }
+
+        // Filter by full price
+        if (currentFilter.priceFull != null) {
+            val priceFrom = currentFilter.priceFull.priceFrom
+            val priceTo = currentFilter.priceFull.priceTo
+            
+            if (priceFrom != null) {
+                resultList = resultList.filter { flat ->
+                    flat.priceUsd != null && flat.priceUsd >= priceFrom
+                }
+            }
+            
+            if (priceTo != null) {
+                resultList = resultList.filter { flat ->
+                    flat.priceUsd != null && flat.priceUsd <= priceTo
+                }
+            }
+        }
+
+        // Filter by price per square meter
+        if (currentFilter.pricePerSquare != null) {
+            val priceFrom = currentFilter.pricePerSquare.priceFrom
+            val priceTo = currentFilter.pricePerSquare.priceTo
+            
+            if (priceFrom != null) {
+                resultList = resultList.filter { flat ->
+                    flat.priceUsdSquare != null && flat.priceUsdSquare >= priceFrom
+                }
+            }
+            
+            if (priceTo != null) {
+                resultList = resultList.filter { flat ->
+                    flat.priceUsdSquare != null && flat.priceUsdSquare <= priceTo
+                }
+            }
+        }
 
         if (currentFilter.addressRequestModel.isNotEmpty()) {
             resultList = resultList.filter { flat ->

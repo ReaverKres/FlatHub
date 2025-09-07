@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.Price
 import server_response.KufarListResponse
 
 interface KufarApi {
@@ -26,8 +27,8 @@ interface KufarApi {
             pageSize: Int = KUFAR_PAGE_SIZE,
             dealType: AdType = AdType.RENT,
             sort: String = "lst.d",
-            minPrice: Double? = null,
-            maxPrice: Double? = null,
+            priceFull: Price? = null,
+            pricePerSquare: Price? = null,
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
             onlyOwner: Boolean? = null
@@ -58,16 +59,28 @@ interface KufarApi {
                 }
             }
 
-            val priceParamName = if(dealType == AdType.RENT) "prc" else "psm"
+            val fullPriceName =  "prc"
+            val squarePriceName = "psm"
+
             when {
-                minPrice != null && maxPrice != null -> {
-                    params[priceParamName] = "r:$minPrice,$maxPrice"
+                priceFull?.priceFrom != null && priceFull.priceTo != null -> {
+                    params[fullPriceName] = "r:${priceFull.priceFrom},${priceFull.priceTo}"
                 }
-                minPrice != null -> {
-                    params[priceParamName] = "r:$minPrice"
+                priceFull?.priceFrom != null -> {
+                    params[fullPriceName] = "r:${priceFull.priceFrom}"
                 }
-                maxPrice != null -> {
-                    params[priceParamName] = "r:0,$maxPrice"
+                priceFull?.priceTo != null -> {
+                    params[fullPriceName] = "r:0,${priceFull.priceTo}"
+                }
+
+                pricePerSquare?.priceFrom != null && pricePerSquare.priceTo != null -> {
+                    params[squarePriceName] = "r:${pricePerSquare.priceFrom},${pricePerSquare.priceTo}"
+                }
+                pricePerSquare?.priceFrom != null -> {
+                    params[squarePriceName] = "r:${pricePerSquare.priceFrom}"
+                }
+                pricePerSquare?.priceTo != null -> {
+                    params[squarePriceName] = "r:0,${pricePerSquare.priceTo}"
                 }
             }
 

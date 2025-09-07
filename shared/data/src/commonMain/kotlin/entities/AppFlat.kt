@@ -24,6 +24,8 @@ data class AppFlat(
     val imageUrls: List<String>?,
     val priceUsd: Double?,
     val priceByn: Double?,
+    val priceUsdSquare: Double? = null,
+    val priceBynSquare: Double? = null,
     val rooms: Int?,
     val district: String?,
     val address: String?,
