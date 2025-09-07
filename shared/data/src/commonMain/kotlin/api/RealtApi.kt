@@ -97,6 +97,7 @@ data class Where(
     val seller: String? = null, // "true" для собственников
     val priceFrom: String? = null,
     val priceTo: String? = null,
+    val priceMeterType: String? = null,
     val priceType: String? = null // код валюты (например "840" для USD)
 )
 

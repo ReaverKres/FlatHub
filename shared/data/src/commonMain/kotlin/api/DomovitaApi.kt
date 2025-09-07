@@ -2,6 +2,7 @@ package api
 
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
+import io.flatzen.commoncomponents.commonentities.Price
 import server_request.Currency
 import server_request.DomovitaRequest
 import server_response.DomovitaListResponse
@@ -23,20 +24,28 @@ interface DomovitaApi {
             locationSefAlias: String = "minsk",
             page: Int = 1,
             limit: Int = 20,
-            minPrice: Double? = null,
-            maxPrice: Double? = null,
+            priceFull: Price? = null,
+            pricePerSquare: Price? = null,
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
             onlyOwner: Boolean? = null
         ): DomovitaRequest {
+            val priceMax = if (priceFull != null) {
+                priceFull.priceTo
+            } else pricePerSquare?.priceTo
+            val priceMin = if (priceFull != null) {
+                priceFull.priceFrom
+            } else pricePerSquare?.priceFrom
+            val priceParamName = if (priceFull != null) "price" else "price_m2"
+
             val offset: Int? = if (page >= 2) (page - 1) * limit else null
             return DomovitaRequest(
                 location = locationSefAlias,
                 offset = offset,
                 limit = limit,
-                priceType = "price",
-                priceMax = maxPrice,
-                priceMin = minPrice,
+                priceType = priceParamName,
+                priceMax = priceMax,
+                priceMin = priceMin,
                 currency = Currency.USD.name,
                 rooms = rooms?.toList(),
                 metroStationIds = metroIds,

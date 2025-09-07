@@ -38,14 +38,16 @@ import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.Price
 import kotlinx.serialization.Serializable
 import server_request.Currency
 
 @Serializable
 data class CommonFilterRequestModel(
     val adType: AdType = AdType.RENT,
-    val priceFrom: Double? = null,
-    val priceTo: Double? = null,
+    val priceFull: Price? = null,
+    val pricePerSquare: Price? = null,
+    val priceType: PriceType = PriceType.FULL,
     val currency: Currency = Currency.USD,
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
@@ -73,15 +75,18 @@ data class CommonFilterRequestModel(
             this.location == null && other.location == null -> true
             this.location == null && other.location != null ->
                 other.location.country == CountryCode.BY && other.location.city == CityCode.MINSK
+
             this.location != null && other.location == null ->
                 this.location.country == CountryCode.BY && this.location.city == CityCode.MINSK
+
             else -> this.location == other.location
         }
 
-        if(adType != other.adType) return false
-        if (priceFrom != other.priceFrom) return false
-        if (priceTo != other.priceTo) return false
+        if (adType != other.adType) return false
+        if (priceFull != other.priceFull) return false
+        if (pricePerSquare != other.pricePerSquare) return false
         if (fromOwnerOnly != other.fromOwnerOnly) return false
+        if (priceType != other.priceType) return false
         if (currency != other.currency) return false
         if (addressRequestModel != other.addressRequestModel) return false
         if (numberOfRooms != other.numberOfRooms) return false
@@ -92,11 +97,12 @@ data class CommonFilterRequestModel(
     }
 
     override fun hashCode(): Int {
-        var result = priceFrom?.hashCode() ?: 0
-        result = 31 * result + (priceTo?.hashCode() ?: 0)
+        var result = priceFull?.hashCode() ?: 0
+        result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + fromOwnerOnly.hashCode()
         result = 31 * result + adType.hashCode()
         result = 31 * result + currency.hashCode()
+        result = 31 * result + priceType.hashCode()
         result = 31 * result + addressRequestModel.hashCode()
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)
         result = 31 * result + metroStations.filter { it.selected }.hashCode()
@@ -112,6 +118,10 @@ data class CommonFilterRequestModel(
     }
 }
 
+enum class PriceType {
+    PER_SQUARE, FULL
+}
+
 @Serializable
 data class AddressRequestModel(
     val address: String
@@ -119,6 +129,7 @@ data class AddressRequestModel(
 
 @Serializable
 data class LocationFilter(val country: CountryCode, val city: CityCode)
+
 @Serializable
 enum class MetroLine {
     GREEN, BLUE, RED,

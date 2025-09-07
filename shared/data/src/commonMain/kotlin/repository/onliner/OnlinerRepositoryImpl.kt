@@ -4,6 +4,7 @@ package repository.onliner
 import api.OnlinerApi
 import database.FlatsDao
 import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
@@ -57,9 +58,20 @@ class OnlinerRepositoryImpl(
             }
             else -> OnlinerCitiesBounds.MINSK
         }
+        val priceMax = if (filter.priceFull != null) {
+            filter.priceFull.priceTo
+        } else if(filter.adType == AdType.SALE) {
+            filter.pricePerSquare?.priceTo
+        } else null
+        val priceMin = if (filter.priceFull != null) {
+            filter.priceFull.priceFrom
+        } else if(filter.adType == AdType.SALE) {
+            filter.pricePerSquare?.priceFrom
+        } else null
+
         val params = OnlinerApi.createParams(
-            minPrice = filter.priceFrom?.toInt(),
-            maxPrice = filter.priceTo?.toInt(),
+            minPrice = priceMin,
+            maxPrice = priceMax,
             metroLines = metroLines,
             rooms = filter.numberOfRooms,
             onlyOwner = filter.fromOwnerOnly,

@@ -331,8 +331,8 @@ class FilterViewModel(
     private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         return FilterState(
             adType = model.adType,
-            priceFrom = model.priceFrom,
-            priceTo = model.priceTo,
+            priceFull = model.priceFull,
+            pricePerSquare = model.pricePerSquare,
             currency = model.currency,
             fromOwnerOnly = model.fromOwnerOnly ?: false,
             rooms = model.numberOfRooms ?: emptySet(),
@@ -355,8 +355,8 @@ class FilterViewModel(
     private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
         return CommonFilterRequestModel(
             adType = filters.adType,
-            priceFrom = filters.priceFrom,
-            priceTo = filters.priceTo,
+            priceFull = filters.priceFull,
+            pricePerSquare = filters.pricePerSquare,
             currency = filters.currency,
             numberOfRooms = filters.rooms,
             fromOwnerOnly = filters.fromOwnerOnly,

@@ -54,8 +54,10 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
         // Разделяем на присутствующие удобства и кухонное оборудование
         val presentAmenities = allAmenities.filter { it.second }.map { it.first }
         val (kitchenEquipment, generalAmenities) = presentAmenities.partition {
-            it in listOf("Плита", "Холодильник", "Микроволновка", "Посудомоечная машина",
-                "Кухонная мебель", "Духовка")
+            it in listOf(
+                "Плита", "Холодильник", "Микроволновка", "Посудомоечная машина",
+                "Кухонная мебель", "Духовка"
+            )
         }
 
         // Парсим дополнительные параметры из таблицы
@@ -83,7 +85,7 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             flatDetailUrl = baseFlat.flatDetailUrl,
             adId = baseFlat.adId,
             publishedAt = baseFlat.publishedAt,
-            publishedAtServer = baseFlat.publishedAtServer ,
+            publishedAtServer = baseFlat.publishedAtServer,
             publishedAtUi = baseFlat.publishedAtUi,
             imageUrls = images,
             priceUsd = priceUsd,
@@ -95,18 +97,25 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             metroStation = tableParams["Метро"],
             description = description,
             yearBuilt = tableParams["Год постройки"]?.toIntOrNull(),
-            totalArea = tableParams["Общая площадь"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
-            livingArea = tableParams["Жилая площадь"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
-            kitchenArea = tableParams["Площадь кухни"]?.replace("м²", "")?.trim()?.toDoubleOrNull(),
+            totalArea = baseFlat.totalArea ?: tableParams["Общая площадь"]?.replace("м²", "")
+                ?.trim()?.toDoubleOrNull(),
+            livingArea = baseFlat.livingArea ?: tableParams["Жилая площадь"]?.replace("м²", "")
+                ?.trim()?.toDoubleOrNull(),
+            kitchenArea = baseFlat.kitchenArea ?: tableParams["Площадь кухни"]?.replace("м²", "")
+                ?.trim()?.toDoubleOrNull(),
             floor = tableParams["Этаж"]?.substringBefore("/")?.toIntOrNull(),
             totalFloors = tableParams["Этаж"]?.substringAfter("/")?.toIntOrNull(),
             sleepingPlaces = tableParams["Спальных мест"]?.toIntOrNull(),
             isStudio = roomsText?.contains("студия", ignoreCase = true),
             bathroomType = tableParams["Санузел"],
-            balcony = if (presentAmenities.any { it.contains("балкон", ignoreCase = true) ||
-                        it.contains("лоджия", ignoreCase = true) })
-                presentAmenities.firstOrNull { it.contains("балкон", ignoreCase = true) ||
-                        it.contains("лоджия", ignoreCase = true) }
+            balcony = if (presentAmenities.any {
+                    it.contains("балкон", ignoreCase = true) ||
+                            it.contains("лоджия", ignoreCase = true)
+                })
+                presentAmenities.firstOrNull {
+                    it.contains("балкон", ignoreCase = true) ||
+                            it.contains("лоджия", ignoreCase = true)
+                }
             else "Нет",
             repairType = tableParams["Ремонт"],
             condition = tableParams["Тип дома"],

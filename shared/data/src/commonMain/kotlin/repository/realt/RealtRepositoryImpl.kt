@@ -11,6 +11,7 @@ import api.Variables
 import api.Where
 import database.FlatsDao
 import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
@@ -33,31 +34,48 @@ class RealtRepositoryImpl(
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.lastFilter()
-        val onlyOwner = if(filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
+        val onlyOwner = if (filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
             true
         } else null
         val townUUid = when {
             filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 RealtCities.MINSK
             }
+
             filter.location.city == CityCode.BREST -> {
                 RealtCities.BREST
             }
+
             filter.location.city == CityCode.GOMEL -> {
                 RealtCities.GOMEL
             }
+
             filter.location.city == CityCode.GRODNO -> {
                 RealtCities.GRODNO
             }
+
             filter.location.city == CityCode.MOGILEV -> {
                 RealtCities.MOGILEV
             }
+
             filter.location.city == CityCode.VITEBSK -> {
                 RealtCities.VITEBSK
             }
+
             else -> RealtCities.MINSK
         }
-        val category = if(filter.isRentType) 2 else 5
+        val category = if (filter.isRentType) 2 else 5
+        val priceMax = if (filter.priceFull != null) {
+            filter.priceFull.priceTo
+        } else if (filter.adType == AdType.SALE) {
+            filter.pricePerSquare?.priceTo
+        } else null
+        val priceMin = if (filter.priceFull != null) {
+            filter.priceFull.priceFrom
+        } else if (filter.adType == AdType.SALE) {
+            filter.pricePerSquare?.priceFrom
+        } else null
+
         val realtFlatList = api.searchFlats(
             RealtGraphqlRequest(
                 operationName = "searchObjects",
@@ -69,8 +87,8 @@ class RealtRepositoryImpl(
                             category = category,
                             rooms = filter.numberOfRooms?.map { it.toString() },
                             seller = onlyOwner.toString(), // Только собственники
-                            priceFrom = filter.priceFrom.toNullableString(), // Цена от (можно null если не нужно)
-                            priceTo = filter.priceTo.toNullableString(), // Цена до (можно null если не нужно)
+                            priceFrom = priceMin.toNullableString(), // Цена от (можно null если не нужно)
+                            priceTo = priceMax.toNullableString(), // Цена до (можно null если не нужно)
                             priceType = "840" // Валюта (840 = USD)
                         ),
                         pagination = PaginationRequestRealt(
@@ -87,8 +105,9 @@ class RealtRepositoryImpl(
                 ),
                 query = RealtGraphqlRequest.QUERY
             )
-        ).data?.searchObjects?.body?.results?.filterNotNull()?.map { realtResponseMapper.map(it) }
-        if(lastEmitList == realtFlatList) {
+        ).data?.searchObjects?.body?.results?.filterNotNull()
+            ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+        if (lastEmitList == realtFlatList) {
             emit(listOf())
         } else {
             lastEmitList = realtFlatList

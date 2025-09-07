@@ -38,12 +38,24 @@ data class OnlinerListResponse(
 
         //Sale
         @SerialName("number_of_rooms")
-        val numberOfRooms: Int?
+        val numberOfRooms: Int?,
+        @SerialName("area")
+        val area: OnlinerArea?
     ) {
         @Serializable
         data class Contact(
             @SerialName("owner")
             val owner: Boolean?
+        )
+
+        @Serializable
+        data class OnlinerArea(
+            @SerialName("total")
+            val total: Double?,
+            @SerialName("living")
+            val living: Double?,
+            @SerialName("kitchen")
+            val kitchen: Double?
         )
 
         @Serializable

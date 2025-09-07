@@ -58,8 +58,8 @@ class KufarRepositoryImpl(
         val dealType = if (filter.isRentType) AdType.RENT else AdType.SALE
         val params = KufarApi.createQueryParams(
             dealType = dealType,
-            minPrice = filter.priceFrom,
-            maxPrice = filter.priceTo,
+            priceFull = filter.priceFull,
+            pricePerSquare = if(filter.adType == AdType.SALE) filter.pricePerSquare else null,
             metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,
