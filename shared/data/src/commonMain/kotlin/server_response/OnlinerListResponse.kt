@@ -34,7 +34,11 @@ data class OnlinerListResponse(
         @SerialName("up_available_in")
         val upAvailableIn: Int?,
         @SerialName("url")
-        val url: String?
+        val url: String?,
+
+        //Sale
+        @SerialName("number_of_rooms")
+        val numberOfRooms: Int?
     ) {
         @Serializable
         data class Contact(

@@ -46,10 +46,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.viewmodel.filter.AddressUiState
-import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.viewmodel.filter.UiCity
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -90,7 +92,7 @@ fun LocationScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ListItem(
-                headlineContent = { Text(state.filters.location?.selectedCity?.name.orEmpty()) },
+                headlineContent = { Text(state.filters.location?.selectedCity?.displayName.orEmpty()) },
                 trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth().clickable { openCity() },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
@@ -154,7 +156,7 @@ fun LocationScreen(
                 }
             }
 
-            if (state.filters.location?.selectedCity?.code == "MINSK") {
+            if (state.filters.location?.selectedCity?.code == CityCode.MINSK) {
                 // Плитки действий (минимум метро)
                 ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
                     Row(modifier = Modifier.padding(16.dp)) {
@@ -202,10 +204,10 @@ fun CitySelectScreen(
                         Checkbox(checked = checked, onCheckedChange = {
                             if (!checked) {
                                 viewModel.onIntent(
-                                    FilterScreenAction.UpdateCityFilter(
+                                    FilterScreenAction.UpdateFilter(
                                         state.filters.copy(
                                             location = state.filters.location?.copy(
-                                                selectedCity = UiCity(city.code)
+                                                selectedCity = LocationUiMapper.findSelectedCity(city.code)
                                             )
                                         )
                                     )
@@ -221,7 +223,7 @@ fun CitySelectScreen(
                                 FilterScreenAction.UpdateFilter(
                                     state.filters.copy(
                                         location = state.filters.location?.copy(
-                                            selectedCity = UiCity(city.code)
+                                            selectedCity = LocationUiMapper.findSelectedCity(city.code)
                                         )
                                     )
                                 )

@@ -50,6 +50,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
 import io.flatzen.viewmodel.MapViewModel
+import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
@@ -93,8 +94,24 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
 
+    val filterViewModel = koinViewModel<FilterViewModel>()
+    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
+
     BackHandler(enabled = detailFlatId != null) {
         navigateBackToDetail()
+    }
+
+    LaunchedEffect(filterState.filters.location) {
+        val location = filterState.filters.location
+        mapViewModel.mapState.apply {
+            val mercatorCoordinates = location?.selectedCity?.coordinates?.let {
+                lonLatToNormalized(it.latitude, it.longitude)
+            } ?: return@LaunchedEffect
+            scrollTo(
+                x = mercatorCoordinates.first,
+                y = mercatorCoordinates.second
+            )
+        }
     }
 
     LaunchedEffect(listState.flatList) {

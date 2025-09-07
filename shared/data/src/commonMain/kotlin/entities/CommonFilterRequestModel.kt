@@ -36,6 +36,8 @@ import entities.MetroStationNames.URUCHIE
 import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CountryCode
 import kotlinx.serialization.Serializable
 import server_request.Currency
 
@@ -70,9 +72,9 @@ data class CommonFilterRequestModel(
         val isLocationEqual = when {
             this.location == null && other.location == null -> true
             this.location == null && other.location != null ->
-                other.location.country == Country.BY && other.location.city == City.MINSK
+                other.location.country == CountryCode.BY && other.location.city == CityCode.MINSK
             this.location != null && other.location == null ->
-                this.location.country == Country.BY && this.location.city == City.MINSK
+                this.location.country == CountryCode.BY && this.location.city == CityCode.MINSK
             else -> this.location == other.location
         }
 
@@ -102,7 +104,7 @@ data class CommonFilterRequestModel(
         //TODO
         // Для hashCode тоже учитываем специальную логику
         val locationForHashCode = location ?: LocationFilter(
-            country = Country.BY, city = City.MINSK
+            country = CountryCode.BY, city = CityCode.MINSK
         )
         result = 31 * result + (locationForHashCode.hashCode())
 
@@ -116,11 +118,7 @@ data class AddressRequestModel(
 )
 
 @Serializable
-enum class Country { BY }
-@Serializable
-enum class City { MINSK, BREST, VITEBSK, GOMEL, GRODNO, MOGILEV }
-@Serializable
-data class LocationFilter(val country: Country, val city: City)
+data class LocationFilter(val country: CountryCode, val city: CityCode)
 @Serializable
 enum class MetroLine {
     GREEN, BLUE, RED,

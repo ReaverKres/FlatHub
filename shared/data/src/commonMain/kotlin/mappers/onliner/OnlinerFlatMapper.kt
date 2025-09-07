@@ -47,7 +47,7 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             priceUsd = priceUsd ?: Double.NaN,
             priceByn = priceByn ?: Double.NaN,
             imageUrls = images,
-            rooms = rooms,
+            rooms = data.numberOfRooms ?: rooms,
             district = null, // Отсутствует в Onliner
             address = data.location?.address,
             coordinates = coordinates,
