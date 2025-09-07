@@ -132,7 +132,7 @@ fun FilterScreen(
             FilterSectionTitle(title = "Расположение")
             ListItem(
                 headlineContent = {
-                    Text(LocationUiMapper.displayName(state.filters.location?.selectedCity?.code.orEmpty()))
+                    Text(state.filters.location?.selectedCity?.displayName.orEmpty())
                 },
                 supportingContent = { Text("Метро") },
                 trailingContent = {

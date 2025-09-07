@@ -2,6 +2,9 @@ package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.Coordinates
+import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
@@ -49,15 +52,19 @@ enum class Room(val displayName: String) {
 }
 
 @Immutable
-data class UiCountry(val code: String, val name: String? = null)
+data class UiCountry(val code: CountryCode, val name: String? = null)
 
 @Immutable
-data class UiCity(val code: String, val name: String? = null)
+data class UiCity(val code: CityCode, val name: String? = null)
 
 @Immutable
 data class LocationUiFilter(
-    val selectedCountry: UiCountry = UiCountry("BY"),
-    val selectedCity: UiCity = UiCity("MINSK"),
+    val selectedCountry: UiCountry = UiCountry(CountryCode.BY),
+    val selectedCity: UiCityItem = UiCityItem(
+        CityCode.MINSK,
+        "Минск",
+        Coordinates(53.902147, 27.561388)
+    ),
     val availableCities: List<UiCityItem> = listOf()
 )
 

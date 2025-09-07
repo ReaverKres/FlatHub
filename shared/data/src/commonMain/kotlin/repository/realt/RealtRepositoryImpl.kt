@@ -1,7 +1,6 @@
 package repository.realt
 
 
-import entities.AppFlat
 import api.AddressV2
 import api.PaginationRequestRealt
 import api.RealtApi
@@ -11,19 +10,16 @@ import api.SortItem
 import api.Variables
 import api.Where
 import database.FlatsDao
-import entities.City
+import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import repository.onliner.OnlinerCitiesBounds
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
 class RealtRepositoryImpl(
@@ -41,22 +37,22 @@ class RealtRepositoryImpl(
             true
         } else null
         val townUUid = when {
-            filter.location?.city == null || filter.location.city == City.MINSK -> {
+            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 RealtCities.MINSK
             }
-            filter.location.city == City.BREST -> {
+            filter.location.city == CityCode.BREST -> {
                 RealtCities.BREST
             }
-            filter.location.city == City.GOMEL -> {
+            filter.location.city == CityCode.GOMEL -> {
                 RealtCities.GOMEL
             }
-            filter.location.city == City.GRODNO -> {
+            filter.location.city == CityCode.GRODNO -> {
                 RealtCities.GRODNO
             }
-            filter.location.city == City.MOGILEV -> {
+            filter.location.city == CityCode.MOGILEV -> {
                 RealtCities.MOGILEV
             }
-            filter.location.city == City.VITEBSK -> {
+            filter.location.city == CityCode.VITEBSK -> {
                 RealtCities.VITEBSK
             }
             else -> RealtCities.MINSK

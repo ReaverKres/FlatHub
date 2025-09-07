@@ -4,7 +4,8 @@ import api.DomovitaApi
 import database.FlatsDao
 import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
-import entities.City
+import io.flatzen.commoncomponents.commonentities.City
+import io.flatzen.commoncomponents.commonentities.CityCode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -36,22 +37,22 @@ class DomovitaRepositoryImpl(
         val metroIds: List<Int>? = null
 //            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
         val city = when {
-            filter.location?.city == null || filter.location.city == City.MINSK -> {
+            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 DomovitaCities.MINSK
             }
-            filter.location.city == City.BREST -> {
+            filter.location.city == CityCode.BREST -> {
                 DomovitaCities.BREST
             }
-            filter.location.city == City.GOMEL -> {
+            filter.location.city == CityCode.GOMEL -> {
                 DomovitaCities.GOMEL
             }
-            filter.location.city == City.GRODNO -> {
+            filter.location.city == CityCode.GRODNO -> {
                 DomovitaCities.GRODNO
             }
-            filter.location.city == City.MOGILEV -> {
+            filter.location.city == CityCode.MOGILEV -> {
                 DomovitaCities.MOGILEV
             }
-            filter.location.city == City.VITEBSK -> {
+            filter.location.city == CityCode.VITEBSK -> {
                 DomovitaCities.VITEBSK
             }
             else -> DomovitaCities.MINSK

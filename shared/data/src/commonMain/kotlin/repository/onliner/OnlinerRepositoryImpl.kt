@@ -1,10 +1,10 @@
 package repository.onliner
 
 
-import entities.AppFlat
 import api.OnlinerApi
 import database.FlatsDao
-import entities.City
+import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -35,24 +35,24 @@ class OnlinerRepositoryImpl(
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.lastFilter()
-        val metroLines = filter.metroStations.map { it.line.name.lowercase() }.distinct()
+        val metroLines = filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
         val cityBounds = when {
-            filter.location?.city == null || filter.location.city == City.MINSK -> {
+            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 OnlinerCitiesBounds.MINSK
             }
-            filter.location.city == City.BREST -> {
+            filter.location.city == CityCode.BREST -> {
                 OnlinerCitiesBounds.BREST
             }
-            filter.location.city == City.GOMEL -> {
+            filter.location.city == CityCode.GOMEL -> {
                 OnlinerCitiesBounds.GOMEL
             }
-            filter.location.city == City.GRODNO -> {
+            filter.location.city == CityCode.GRODNO -> {
                 OnlinerCitiesBounds.GRODNO
             }
-            filter.location.city == City.MOGILEV -> {
+            filter.location.city == CityCode.MOGILEV -> {
                 OnlinerCitiesBounds.MOGILEV
             }
-            filter.location.city == City.VITEBSK -> {
+            filter.location.city == CityCode.VITEBSK -> {
                 OnlinerCitiesBounds.VITEBSK
             }
             else -> OnlinerCitiesBounds.MINSK

@@ -3,13 +3,11 @@ package io.flatzen.viewmodel.filter
 import androidx.compose.runtime.Immutable
 import entities.AddressRequestModel
 import entities.CommonFilterRequestModel
-import entities.City
-import entities.Country
 import entities.LocationFilter
 import entities.MetroStations
 import entities.SavedFilter
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
@@ -32,7 +30,6 @@ import repository.fillter.lastFilter
 sealed interface FilterScreenAction : MviAction {
     data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) :
         FilterScreenAction
-    data class UpdateCityFilter(val newFilterState: FilterState) : FilterScreenAction
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
     data object ClearAllFilters : FilterScreenAction
@@ -126,10 +123,6 @@ class FilterViewModel(
             is FilterScreenAction.UpdateAddressFilter -> {
                 val newState = currentState.filters.copy(address = action.addressUiState)
                 flowOf(FilterScreenEvent.FiltersUpdated(newState))
-            }
-
-            is FilterScreenAction.UpdateCityFilter -> {
-                flowOf(FilterScreenEvent.FiltersUpdated(action.newFilterState))
             }
 
             is FilterScreenAction.UpdateMetroFilter -> {
@@ -349,11 +342,8 @@ class FilterViewModel(
             },
             location = model.location?.let {
                 LocationUiFilter(
-                    selectedCountry = UiCountry(it.country.name),
-                    selectedCity = UiCity(
-                        it.city.name,
-                        LocationUiMapper.displayName(it.city.name)
-                    ),
+                    selectedCountry = UiCountry(it.country),
+                    selectedCity = LocationUiMapper.findSelectedCity(it.city),
                     availableCities = LocationUiMapper.cities()
                 )
             } ?: LocationUiFilter(),
@@ -377,8 +367,8 @@ class FilterViewModel(
             },
             location = filters.location?.let {
                 LocationFilter(
-                    country = Country.valueOf(filters.location.selectedCountry.code),
-                    city = City.valueOf(filters.location.selectedCity.code)
+                    country = filters.location.selectedCountry.code,
+                    city = filters.location.selectedCity.code
                 )
             },
             addressRequestModel = filters.address?.map {

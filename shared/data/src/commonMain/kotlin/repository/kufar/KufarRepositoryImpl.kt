@@ -1,20 +1,18 @@
 package repository.kufar
 
 
-import entities.AppFlat
 import api.KufarApi
 import database.FlatsDao
-import entities.City
+import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CityCode
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import repository.realt.RealtCities
 import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
@@ -36,22 +34,22 @@ class KufarRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
         val city = when {
-            filter.location?.city == null || filter.location.city == City.MINSK -> {
+            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 KufarCities.MINSK
             }
-            filter.location.city == City.BREST -> {
+            filter.location.city == CityCode.BREST -> {
                 KufarCities.BREST
             }
-            filter.location.city == City.GOMEL -> {
+            filter.location.city == CityCode.GOMEL -> {
                 KufarCities.GOMEL
             }
-            filter.location.city == City.GRODNO -> {
+            filter.location.city == CityCode.GRODNO -> {
                 KufarCities.GRODNO
             }
-            filter.location.city == City.MOGILEV -> {
+            filter.location.city == CityCode.MOGILEV -> {
                 KufarCities.MOGILEV
             }
-            filter.location.city == City.VITEBSK -> {
+            filter.location.city == CityCode.VITEBSK -> {
                 KufarCities.VITEBSK
             }
             else -> KufarCities.MINSK
