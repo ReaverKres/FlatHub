@@ -2,11 +2,11 @@ package io.flatzen.viewmodel.list
 
 import entities.AppFlat
 import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
-import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -243,12 +243,13 @@ class FlatSearchViewModel(
             )
 
             is FlatListEvents.FavoritesLoaded -> event.favoriteFlats.process(
-                onLoading = { currentState.copy(isLoading = true) },
-                onError = { _, _ -> currentState.copy(isLoading = false) },
+                onLoading = { currentState },
+                onError = { _, _ ->
+                    currentState
+                },
                 onSuccess = { favFlats ->
                     val favIds = favFlats.map { it.adId }.toHashSet()
                     currentState.copy(
-                        isLoading = false,
                         flatList = currentState.flatList.map { flatOnScreen ->
                             if (flatOnScreen.adId in favIds) {
                                 flatOnScreen.copy(savedInFavorite = true)

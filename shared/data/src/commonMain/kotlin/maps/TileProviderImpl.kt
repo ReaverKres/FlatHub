@@ -3,7 +3,6 @@ package maps
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.http.Url
 import kotlinx.io.Buffer
 import kotlinx.io.RawSource
 import ovh.plrapps.mapcompose.core.TileStreamProvider
@@ -12,7 +11,7 @@ import ovh.plrapps.mapcompose.core.TileStreamProvider
  * Простейший TileStreamProvider для OSM.
  * В бою добавьте кэш и троттлинг запросов.
  */
-class CachedOsmTileProvider(
+class TileProviderImpl(
     private val httpClient: HttpClient,
     private val cacheSize: Int = 1000
 ) : TileStreamProvider {
@@ -30,7 +29,7 @@ class CachedOsmTileProvider(
             }
 
             // Загружаем из сети
-            val url = "https://tile.openstreetmap.org/$zoomLvl/$col/$row.png"
+            val url = "https://basemaps.cartocdn.com/rastertiles/voyager/$zoomLvl/$col/$row.png"
             val bytes: ByteArray = httpClient.get(url).body()
 
 //            // Сохраняем в кэш (с ограничением размера)

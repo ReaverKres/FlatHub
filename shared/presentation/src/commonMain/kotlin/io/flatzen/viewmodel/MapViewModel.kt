@@ -21,7 +21,7 @@ class MapViewModel(
     private val tileStreamProvider: TileStreamProvider
 ) : BaseMviViewModel<MapAction, MapUiState, MapEvent, MapEffect>() {
 
-    private val maxLevel = 16
+    private val maxLevel = 18
     private val minLevel = 12
     private val mapSize = mapSizeAtLevel(maxLevel, tileSize = 256)
     private val minsk = lonLatToNormalized(53.902147, 27.561388) // Minsk
