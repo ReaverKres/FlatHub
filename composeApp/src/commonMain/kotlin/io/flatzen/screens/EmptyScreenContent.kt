@@ -15,18 +15,20 @@ import androidx.compose.ui.unit.dp
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EmptyScreenContent(
     modifier: Modifier = Modifier,
+    stringResource: StringResource = Res.string.no_data_available,
 ) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
-        Text(stringResource(Res.string.no_data_available))
+        Text(stringResource(stringResource))
     }
 }
 

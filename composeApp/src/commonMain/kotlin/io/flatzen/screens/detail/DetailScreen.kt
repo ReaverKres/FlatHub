@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -85,7 +86,8 @@ fun DetailScreen(
         modifier = modifier.fillMaxSize()
     ) {
         TopAppBar(
-            title = { Text("Детали квартиры") },
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            title = {  },
             navigationIcon = {
                 IconButton(onClick = navigateBack) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
@@ -372,7 +374,7 @@ private fun PriceSection(priceUsd: String, priceByn: String, priceUsdSquare: Str
                 )
             }
         }
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
                 text = priceByn,
                 style = MaterialTheme.typography.bodyLarge.copy(

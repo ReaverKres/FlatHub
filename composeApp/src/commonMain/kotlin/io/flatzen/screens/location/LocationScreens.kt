@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -71,6 +72,7 @@ fun LocationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text("Расположение") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
@@ -186,6 +188,7 @@ fun CitySelectScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text("Город") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
@@ -254,6 +257,7 @@ fun MetroSelectScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text("Метро") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }

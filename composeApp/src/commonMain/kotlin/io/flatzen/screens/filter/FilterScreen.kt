@@ -89,6 +89,7 @@ fun FilterScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text("Фильтры") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {

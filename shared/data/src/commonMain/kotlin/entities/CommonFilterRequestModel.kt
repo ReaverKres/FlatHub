@@ -81,11 +81,20 @@ data class CommonFilterRequestModel(
 
             else -> this.location == other.location
         }
+        //TODO
+        // Специальная логика сравнения fromOwnerOnly: null эквивалентен false
+
+        val isFromOwnerOnlyEqual = when {
+            this.fromOwnerOnly == null && other.fromOwnerOnly == null -> true
+            this.fromOwnerOnly == null -> other.fromOwnerOnly == false
+            other.fromOwnerOnly == null -> this.fromOwnerOnly == false
+            else -> this.fromOwnerOnly == other.fromOwnerOnly
+        }
 
         if (adType != other.adType) return false
         if (priceFull != other.priceFull) return false
         if (pricePerSquare != other.pricePerSquare) return false
-        if (fromOwnerOnly != other.fromOwnerOnly) return false
+        if (!isFromOwnerOnlyEqual) return false
         if (priceType != other.priceType) return false
         if (currency != other.currency) return false
         if (addressRequestModel != other.addressRequestModel) return false
@@ -99,7 +108,7 @@ data class CommonFilterRequestModel(
     override fun hashCode(): Int {
         var result = priceFull?.hashCode() ?: 0
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
-        result = 31 * result + fromOwnerOnly.hashCode()
+        result = 31 * result + (fromOwnerOnly ?: false).hashCode()
         result = 31 * result + adType.hashCode()
         result = 31 * result + currency.hashCode()
         result = 31 * result + priceType.hashCode()

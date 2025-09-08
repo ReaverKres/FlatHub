@@ -1,21 +1,13 @@
 package io.flatzen.screens.favorites
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.favorite_is_empty
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.list.FlatGrid
@@ -33,7 +25,10 @@ fun FavoritesScreen(
 
     Scaffold(modifier = modifier) { paddingValues ->
         when {
-            state.flatList.isEmpty() -> EmptyScreenContent()
+            state.flatList.isEmpty() -> EmptyScreenContent(
+                modifier = Modifier.fillMaxSize(),
+                stringResource = Res.string.favorite_is_empty
+            )
             else -> FlatGrid(
                 isLoadingMore = false,
                 noFlatsToLoadMore = false,

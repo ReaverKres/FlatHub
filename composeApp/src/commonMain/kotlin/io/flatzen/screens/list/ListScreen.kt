@@ -52,8 +52,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.viewmodel.list.FlatListScreenAction
@@ -112,7 +114,10 @@ fun ListScreen(
         ) {
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent()
-                state.flatList.isEmpty() -> EmptyScreenContent()
+                state.isLoading.not() && state.flatList.isEmpty() -> EmptyScreenContent(
+                    modifier = Modifier.fillMaxSize(),
+                    stringResource = Res.string.no_data_available
+                )
                 else -> FlatGrid(
                     isLoadingMore = state.isLoadingMore,
                     noFlatsToLoadMore = state.noFlatsToLoadMore,

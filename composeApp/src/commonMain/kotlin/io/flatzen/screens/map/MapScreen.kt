@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -56,7 +56,6 @@ import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -65,12 +64,11 @@ import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.removeAllMarkers
 import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.scrollTo
-import ovh.plrapps.mapcompose.api.setScroll
-import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
     ExperimentalComposeUiApi::class
 )
 @Composable
@@ -88,7 +86,7 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
     val clusterId = "default"
-    val isMarkersSizeTooBig = listState.flatList.size >= 350
+    val isMarkersSizeTooBig = listState.flatList.size >= 270
     val detailFlatId by remember { mutableStateOf(selectedMarker) }
     val detailFlat = detailFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
@@ -97,7 +95,7 @@ fun MapScreen(
     val filterViewModel = koinViewModel<FilterViewModel>()
     val filterState by filterViewModel.state.collectAsStateWithLifecycle()
 
-    BackHandler(enabled = detailFlatId != null) {
+    BackHandler {
         navigateBackToDetail()
     }
 
@@ -123,7 +121,8 @@ fun MapScreen(
                 removeAllMarkers()
                 listState.flatList.forEach {
                     val mercatorCoordinates =
-                        it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) } ?: return@LaunchedEffect
+                        it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
+                            ?: return@LaunchedEffect
                     addMarker(
                         id = it.adId.toString(),
                         x = mercatorCoordinates.first,
@@ -133,14 +132,16 @@ fun MapScreen(
                     ) {
                         RoomMarker(
                             rooms = it.numberOfRooms.toString(),
-                            pinColor = if (detailFlatId == it.adId) Color.Green else Color(0xFFD32F2F),
+                            pinColor = if (detailFlatId == it.adId) Color.Green else Color(
+                                0xFFD32F2F
+                            ),
                             textColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
                 addClusterer(
                     id = clusterId,
-                    clusteringThreshold = 15.dp
+                    clusteringThreshold = 30.dp
                 ) { ids ->
                     {
                         Cluster(size = ids.size)
@@ -187,12 +188,14 @@ fun MapScreen(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(title = {
-                    Text(
-                        "Карта",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                })
+                TopAppBar(
+                    windowInsets = WindowInsets(0, 0, 0, 0),
+                    title = {
+                        Text(
+                            "Карта",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    })
             },
             floatingActionButton = {
                 FilterActionButton(
@@ -322,6 +325,7 @@ fun MapScreenWithFlatModalSheet(
                     FlatBottomSheetContent(
                         flat = flat,
                         onClick = {
+                            onFlatSelected(null)
                             navigateToDetails(flat.flatPlatform, flat.adId)
                         },
                         clickOnFavorite = { clickOnFavorite(flat) },

@@ -11,5 +11,6 @@
 
     <string name="back">Back</string>
 
-    <string name="no_data_available">No data available</string>
+    <string name="no_data_available">Список пуст</string>
+    <string name="favorite_is_empty">Квартир в избранном нет</string>
 </resources>

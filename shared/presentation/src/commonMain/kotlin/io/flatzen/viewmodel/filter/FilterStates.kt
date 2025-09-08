@@ -6,6 +6,7 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
@@ -66,7 +67,7 @@ data class LocationUiFilter(
         "Минск",
         Coordinates(53.902147, 27.561388)
     ),
-    val availableCities: List<UiCityItem> = listOf()
+    val availableCities: List<UiCityItem> = LocationUiMapper.cities()
 )
 
 @Immutable

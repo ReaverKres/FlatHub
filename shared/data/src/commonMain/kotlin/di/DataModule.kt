@@ -17,7 +17,7 @@ import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
-import maps.CachedOsmTileProvider
+import maps.TileProviderImpl
 import org.koin.dsl.module
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import repository.domovita.DomovitaRepository
@@ -112,5 +112,5 @@ val dataModule = module {
         )
     }
 
-    single<TileStreamProvider> { CachedOsmTileProvider(httpClient = get()) }
+    single<TileStreamProvider> { TileProviderImpl(httpClient = get()) }
 }
