@@ -1,12 +1,12 @@
 package io.flatzen.viewmodel
 
-import entities.AppFlat
 import androidx.compose.runtime.Immutable
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
+import entities.AppFlat
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.Coordinates
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -14,7 +14,6 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
-import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.base.BaseMviViewModel
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +26,6 @@ import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.disableRotation
 import ovh.plrapps.mapcompose.api.disableScrolling
 import ovh.plrapps.mapcompose.api.disableZooming
-import ovh.plrapps.mapcompose.api.enableRotation
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
@@ -40,6 +38,7 @@ data class UiDetailFlat(
     val platform: FlatPlatform,
     val isDetailDataLoaded: Boolean?,
     val savedInFavorite: Boolean,
+    val isViewed: Boolean,
     val flatUrl: String,
     val description: String,
     val imageUrls: List<String>,
@@ -197,7 +196,8 @@ class FlatDetailViewModel(
         return UiDetailFlat(
             adId = appFlat.adId,
             isDetailDataLoaded = appFlat.flatDevInfo.isDetailLoaded,
-            savedInFavorite = appFlat.flatSavedInFavorites,
+            isViewed = true,
+            savedInFavorite = appFlat.savedInFavorites,
             platform = appFlat.flatPlatform,
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),

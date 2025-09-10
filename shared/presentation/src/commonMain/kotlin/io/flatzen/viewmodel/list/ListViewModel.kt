@@ -31,7 +31,9 @@ sealed interface FlatListScreenAction : MviAction {
         FlatListScreenAction
 
     class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatListScreenAction
-    class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
+
+    //    class LoadFavorites(val favoritesFlats: LCE<List<AppFlat>>) : FlatListScreenAction
+    class LoadDbFlats(val dbFlats: LCE<List<AppFlat>>) : FlatListScreenAction
     class IsAnyFilterAppliedCheck(val applied: Boolean) : FlatListScreenAction
     data object ScreenVisible : FlatListScreenAction
 
@@ -51,7 +53,7 @@ sealed interface FlatListEvents : MviEvent {
         FlatListEvents
 
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
-    data class FavoritesLoaded(val favoriteFlats: LCE<List<AppFlat>>) : FlatListEvents
+    data class DbFlatsLoaded(val dbFlats: LCE<List<AppFlat>>) : FlatListEvents
     class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
 }
 
@@ -87,9 +89,9 @@ class FlatSearchViewModel(
         }
             .launchIn(viewModelScope)
 
-        mergedRepository.getFavoritesFromLocalDb()
+        mergedRepository.getAllFlatsFromLocalDb()
             .asLCE()
-            .onEach { event -> onIntent(FlatListScreenAction.LoadFavorites(event)) }
+            .onEach { event -> onIntent(FlatListScreenAction.LoadDbFlats(event)) }
             .launchIn(viewModelScope)
     }
 
@@ -161,8 +163,8 @@ class FlatSearchViewModel(
                 }
             }
 
-            is FlatListScreenAction.LoadFavorites -> {
-                flowOf(FlatListEvents.FavoritesLoaded(action.favoritesFlats))
+            is FlatListScreenAction.LoadDbFlats -> {
+                flowOf(FlatListEvents.DbFlatsLoaded(action.dbFlats))
             }
 
             is FlatListScreenAction.TrackScreenView -> {
@@ -232,7 +234,7 @@ class FlatSearchViewModel(
                     val updatedList = currentState.flatList.map { uiFlat ->
                         if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
                             uiFlat.copy(
-                                savedInFavorite = updatedFlat.flatSavedInFavorites
+                                savedInFavorite = updatedFlat.savedInFavorites
                             )
                         } else {
                             uiFlat
@@ -242,19 +244,22 @@ class FlatSearchViewModel(
                 }
             )
 
-            is FlatListEvents.FavoritesLoaded -> event.favoriteFlats.process(
+            is FlatListEvents.DbFlatsLoaded -> event.dbFlats.process(
                 onLoading = { currentState },
                 onError = { _, _ ->
                     currentState
                 },
-                onSuccess = { favFlats ->
-                    val favIds = favFlats.map { it.adId }.toHashSet()
+                onSuccess = { dbFlats ->
                     currentState.copy(
                         flatList = currentState.flatList.map { flatOnScreen ->
-                            if (flatOnScreen.adId in favIds) {
-                                flatOnScreen.copy(savedInFavorite = true)
+                            val flatFromDb = dbFlats.find { it.adId == flatOnScreen.adId }
+                            if (flatFromDb != null) {
+                                flatOnScreen.copy(
+                                    savedInFavorite = flatFromDb.savedInFavorites,
+                                    isViewed = flatFromDb.isViewed
+                                )
                             } else {
-                                flatOnScreen.copy(savedInFavorite = false)
+                                flatOnScreen
                             }
                         })
                 }

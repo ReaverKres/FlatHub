@@ -21,6 +21,7 @@ data class UiFlat(
     val adId: Long,
     val flatPlatform: FlatPlatform,
     val savedInFavorite: Boolean,
+    val isViewed: Boolean,
     val imageUrls: List<String>,
     val priceUsd: UiPrice,
     val priceByn: UiPrice,
@@ -37,7 +38,8 @@ data class UiFlat(
                     adId = it.adId,
                     flatPlatform = it.flatPlatform,
                     imageUrls = it.imageUrls ?: listOf(),
-                    savedInFavorite = it.flatSavedInFavorites,
+                    savedInFavorite = it.savedInFavorites,
+                    isViewed = it.isViewed,
                     priceByn = UiPrice(
                         price = it.priceByn,
                         currency = "BYN"

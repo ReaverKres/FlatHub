@@ -366,7 +366,9 @@ private fun FlatCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
+                flatPlatform = flat.flatPlatform,
                 imageUrls = flat.imageUrls,
+                isViewed = flat.isViewed,
                 savedInFavorite = flat.savedInFavorite,
                 clickOnFavorite = clickOnFavorite
             )

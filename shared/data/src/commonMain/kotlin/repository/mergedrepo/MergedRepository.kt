@@ -10,7 +10,7 @@ interface MergedRepository {
 
     fun searchFlats(): Flow<List<AppFlat>>
 
-    fun getFlatById(
+    suspend fun getFlatById(
         flatPlatform: FlatPlatform,
         flatId: Long
     ): Flow<AppFlat>
