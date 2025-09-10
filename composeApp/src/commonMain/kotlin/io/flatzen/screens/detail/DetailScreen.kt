@@ -27,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
@@ -35,8 +34,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
 import io.flatzen.utils.lonLatToNormalized
@@ -48,13 +47,9 @@ import io.flatzen.widgets.FlatImagePager
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.addMarker
-import ovh.plrapps.mapcompose.api.scroll
-import ovh.plrapps.mapcompose.api.scrollTo
-import ovh.plrapps.mapcompose.api.setScroll
 import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
-import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,6 +145,7 @@ private fun FlatDetailContent(
         // Изображения
         FlatImagePager(
             modifier = Modifier.height(300.dp),
+            flatPlatform = flat.platform,
             imageUrls = flat.imageUrls,
             contentScale = ContentScale.Fit,
             savedInFavorite = flat.savedInFavorite,

@@ -17,7 +17,7 @@ interface FlatsDao {
     @Query("SELECT * FROM AppFlat")
     fun getAllAsFlow(): Flow<List<AppFlat>>
 
-    @Query("SELECT * FROM AppFlat WHERE flatSavedInFavorites = 1")
+    @Query("SELECT * FROM AppFlat WHERE savedInFavorites = 1")
     fun getAllFavoritesAsFlow(): Flow<List<AppFlat>>
 
     @Query("SELECT * FROM AppFlat WHERE adId = :id")

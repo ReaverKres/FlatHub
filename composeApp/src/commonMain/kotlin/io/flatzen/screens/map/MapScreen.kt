@@ -405,7 +405,9 @@ private fun FlatBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp),
+            flatPlatform = flat.flatPlatform,
             imageUrls = flat.imageUrls,
+            isViewed = flat.isViewed,
             savedInFavorite = flat.savedInFavorite,
             clickOnFavorite = clickOnFavorite
         )
