@@ -36,55 +36,66 @@ class OnlinerRepositoryImpl(
 
     override fun searchFlats(): Flow<List<AppFlat>> = flow {
         val filter = filterRepository.lastFilter()
-        val metroLines = filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
+        val metroLines =
+            filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
         val cityBounds = when {
             filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
                 OnlinerCitiesBounds.MINSK
             }
+
             filter.location.city == CityCode.BREST -> {
                 OnlinerCitiesBounds.BREST
             }
+
             filter.location.city == CityCode.GOMEL -> {
                 OnlinerCitiesBounds.GOMEL
             }
+
             filter.location.city == CityCode.GRODNO -> {
                 OnlinerCitiesBounds.GRODNO
             }
+
             filter.location.city == CityCode.MOGILEV -> {
                 OnlinerCitiesBounds.MOGILEV
             }
+
             filter.location.city == CityCode.VITEBSK -> {
                 OnlinerCitiesBounds.VITEBSK
             }
+
             else -> OnlinerCitiesBounds.MINSK
         }
         val priceMax = if (filter.priceFull != null) {
             filter.priceFull.priceTo
-        } else if(filter.adType == AdType.SALE) {
+        } else if (filter.adType == AdType.SALE) {
             filter.pricePerSquare?.priceTo
         } else null
         val priceMin = if (filter.priceFull != null) {
             filter.priceFull.priceFrom
-        } else if(filter.adType == AdType.SALE) {
+        } else if (filter.adType == AdType.SALE) {
             filter.pricePerSquare?.priceFrom
         } else null
 
         val params = OnlinerApi.createParams(
-            minPrice = priceMin,
-            maxPrice = priceMax,
+            minPrice = priceMin?.toInt(),
+            maxPrice = priceMax?.toInt(),
             metroLines = metroLines,
-            rooms = filter.numberOfRooms,
+            // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,
             page = filterRepository.currentAppPage,
             boundsLbLng = cityBounds.southwest.longitude,
             boundsLbLat = cityBounds.southwest.latitude,
             boundsRtLng = cityBounds.northeast.longitude,
-            boundsRtLat = cityBounds.northeast.latitude
+            boundsRtLat = cityBounds.northeast.latitude,
         )
-        val request = if(filter.isRentType) {
-            api.searchRentFlats(params)
+        val request = if (filter.isRentType) {
+            val rentTypes = filter.numberOfRooms?.map {
+                if (it == 1) "${it}_room" else "${it}_rooms"
+            } ?: emptyList()
+            api.searchRentFlats(params, rentTypes)
         } else {
-            api.searchSaleFlats(params)
+            val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
+            api.searchSaleFlats(params, numberOfRooms)
         }
         val onlinerFlatList = request.apartments
             ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }

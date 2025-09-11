@@ -2,6 +2,7 @@ package api
 
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
+import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 import server_response.OnlinerListResponse
 
@@ -11,12 +12,14 @@ interface OnlinerApi {
     @GET("sdapi/ak.api/search/apartments")
     suspend fun searchRentFlats(
         @QueryMap params: Map<String, Any>,
+        @Query("rent_type[]") rentTypes: List<String> = emptyList(),
         @Header("Accept") accept: String = "application/json"
     ): OnlinerListResponse
 
     @GET("sdapi/pk.api/search/apartments")
     suspend fun searchSaleFlats(
         @QueryMap params: Map<String, Any>,
+        @Query("number_of_rooms[]") numberOfRooms: List<Int> = emptyList(),
         @Header("Accept") accept: String = "application/json"
     ): OnlinerListResponse
 
@@ -24,16 +27,15 @@ interface OnlinerApi {
         fun createParams(
             page: Int = 1,
             order: String = "created_at:desc",
-            minPrice: Double? = null,
-            maxPrice: Double? = null,
+            minPrice: Int? = null,
+            maxPrice: Int? = null,
             currency: String = "usd",
             boundsLbLat: Double? = null,
             boundsLbLng: Double? = null,
             boundsRtLat: Double? = null,
             boundsRtLng: Double? = null,
-            rooms: Set<Int>? = null,
             metroLines: List<String>? = null,
-            onlyOwner: Boolean? = null
+            onlyOwner: Boolean? = null,
         ): Map<String, Any> {
             return mutableMapOf<String, Any>().apply {
                 put("page", page)
@@ -51,11 +53,6 @@ interface OnlinerApi {
                 boundsRtLat?.let { put("bounds[rt][lat]", it) }
                 boundsRtLng?.let { put("bounds[rt][long]", it) }
 
-                rooms?.let {
-                    it.forEach { room ->
-                        put("rent_type[]", "${room}_rooms")
-                    }
-                }
                 metroLines?.let {
                     it.forEach { line ->
                         put(
