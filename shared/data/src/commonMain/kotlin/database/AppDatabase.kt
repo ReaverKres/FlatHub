@@ -5,13 +5,15 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import entities.AppFlat
 import entities.SavedFilter
+import entities.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [AppFlat::class, SavedFilter::class], version = 5)
+@Database(entities = [AppFlat::class, SavedFilter::class, UserPreferences::class], version = 6)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): FlatsDao
     abstract fun getSavedFiltersDao(): SavedFiltersDao
+    abstract fun getUserPreferencesDao(): UserPreferencesDao
 }
 
 fun getRoomDatabase(

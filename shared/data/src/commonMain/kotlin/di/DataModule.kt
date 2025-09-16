@@ -32,6 +32,8 @@ import repository.onliner.OnlinerRepository
 import repository.onliner.OnlinerRepositoryImpl
 import repository.realt.RealtRepository
 import repository.realt.RealtRepositoryImpl
+import repository.userpreferences.UserPreferencesRepository
+import repository.userpreferences.UserPreferencesRepositoryImpl
 import server_response.DomovitaListResponse
 import server_response.KufarListResponse
 import server_response.OnlinerListResponse
@@ -39,11 +41,13 @@ import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObject
 
 
 val dataModule = module {
-    single<KufarApi> { get<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT).createKufarApi() }
     single<ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>>(
         qualifier = DataQualifiers.KUFAR_FLAT_MAPPER
     ) { KufarFlatMapper() }
     single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
+    single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
+
+    single<KufarApi> { get<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT).createKufarApi() }
     single<KufarRepository> {
         KufarRepositoryImpl(
             api = get(),

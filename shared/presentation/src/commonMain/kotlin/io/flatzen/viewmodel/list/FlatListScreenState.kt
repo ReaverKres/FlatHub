@@ -13,7 +13,8 @@ data class FlatListScreenState(
     val isLoadingMore: Boolean,
     val noFlatsToLoadMore: Boolean,
     val isAnyFilterApplied: Boolean,
-    val flatList: List<UiFlat>
+    val flatList: List<UiFlat>,
+    val isListView: Boolean = false
 ) : MviState
 
 @Immutable

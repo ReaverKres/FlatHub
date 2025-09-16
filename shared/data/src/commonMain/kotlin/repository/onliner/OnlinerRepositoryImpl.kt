@@ -87,6 +87,7 @@ class OnlinerRepositoryImpl(
             boundsLbLat = cityBounds.southwest.latitude,
             boundsRtLng = cityBounds.northeast.longitude,
             boundsRtLat = cityBounds.northeast.latitude,
+            sortOption = filter.sortOption
         )
         val request = if (filter.isRentType) {
             val rentTypes = filter.numberOfRooms?.map {

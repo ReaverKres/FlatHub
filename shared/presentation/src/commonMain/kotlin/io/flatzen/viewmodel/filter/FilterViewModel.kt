@@ -9,6 +9,7 @@ import entities.SavedFilter
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.mvi.MviAction
@@ -32,6 +33,7 @@ sealed interface FilterScreenAction : MviAction {
         FilterScreenAction
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
+    data class UpdateSortOption(val sortOption: FlatSort) : FilterScreenAction // Added sort option action
     data object ClearAllFilters : FilterScreenAction
     data object ClearLocationFilters : FilterScreenAction
     data object ClearMetroFilters : FilterScreenAction
@@ -136,6 +138,11 @@ class FilterViewModel(
                     }
                 )
                 flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
+            }
+
+            is FilterScreenAction.UpdateSortOption -> {
+                val updatedFilterState = currentState.filters.copy(sortOption = action.sortOption)
+                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState)) // Trigger network call
             }
 
             is FilterScreenAction.ClearAllFilters -> {
@@ -349,6 +356,7 @@ class FilterViewModel(
             } ?: LocationUiFilter(),
             address = model.addressRequestModel.map { AddressUiState(address = it.address) }
                 .toSet(),
+            sortOption = model.sortOption // Added sort option mapping
         )
     }
 
@@ -374,6 +382,7 @@ class FilterViewModel(
             addressRequestModel = filters.address?.map {
                 AddressRequestModel(address = it.address)
             }?.toSet().orEmpty(),
+            sortOption = filters.sortOption // Added sort option mapping
         )
     }
 

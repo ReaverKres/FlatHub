@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +23,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -43,13 +45,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.Price
-import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.viewmodel.filter.FilterDialogState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
@@ -115,7 +119,8 @@ fun FilterScreen(
         ) {
             // Сохраненные фильтры
             if (state.savedFilters.isNotEmpty()) {
-                FilterSectionTitle(title = "Мои фильтры")
+                HorizontalDivider()
+                FilterSectionTitle(title = "Мои фильтры", style = MaterialTheme.typography.titleMedium)
                 SavedFiltersChips(
                     savedFilters = state.savedFilters,
                     onFilterClick = { filter ->
@@ -125,13 +130,19 @@ fun FilterScreen(
                         viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
                     }
                 )
+                HorizontalDivider()
             }
 
             // Продажа или Аренда
             RentSaleSegmentedButtons(state.filters.adType) {
                 currentFilters = currentFilters.copy(adType = it)
             }
-
+            
+            // Сортировка
+            FilterSectionTitle(title = "Сортировка")
+            SortOptionSegmentedButtons(state.filters.sortOption) { sortOption ->
+                viewModel.onIntent(FilterScreenAction.UpdateSortOption(sortOption))
+            }
             // Расположение
             FilterSectionTitle(title = "Расположение")
             ListItem(
@@ -279,13 +290,56 @@ fun RentSaleSegmentedButtons(
 }
 
 @Composable
+fun SortOptionSegmentedButtons(
+    selectedSortOption: FlatSort,
+    onClick: (FlatSort) -> Unit
+) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        SegmentedButton(
+            selected = selectedSortOption == FlatSort.NEWEST_FIRST,
+            onClick = { onClick(FlatSort.NEWEST_FIRST) },
+            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
+        ) {
+            Text(
+                "По новизне",
+                maxLines = 1)
+        }
+        
+        SegmentedButton(
+            selected = selectedSortOption == FlatSort.CHEAPEST_FIRST,
+            onClick = { onClick(FlatSort.CHEAPEST_FIRST) },
+            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
+        ) {
+            Text(
+                "Сначала дешевле",
+                overflow = TextOverflow.StartEllipsis,
+                maxLines = 1
+            )
+        }
+        
+        SegmentedButton(
+            selected = selectedSortOption == FlatSort.MOST_EXPENSIVE_FIRST,
+            onClick = { onClick(FlatSort.MOST_EXPENSIVE_FIRST) },
+            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
+        ) {
+            Text(
+                "Сначала дороже",
+                overflow = TextOverflow.Visible,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+@Composable
 private fun FilterSectionTitle(
     modifier: Modifier = Modifier.padding(vertical = 4.dp),
-    title: String
+    title: String,
+    style: TextStyle = MaterialTheme.typography.titleLarge
 ) {
     Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
+        style = style,
         modifier = modifier
     )
 }

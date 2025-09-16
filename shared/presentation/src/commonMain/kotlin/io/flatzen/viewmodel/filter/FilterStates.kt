@@ -5,6 +5,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
@@ -109,7 +110,8 @@ data class FilterState(
     val floorFrom: Int? = null,
     val floorTo: Int? = null,
     val totalAreaFrom: Double? = null,
-    val totalAreaTo: Double? = null
+    val totalAreaTo: Double? = null,
+    val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }

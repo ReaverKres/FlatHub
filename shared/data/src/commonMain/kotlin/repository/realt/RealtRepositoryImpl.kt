@@ -13,6 +13,7 @@ import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -94,12 +95,20 @@ class RealtRepositoryImpl(
                         pagination = PaginationRequestRealt(
                             page = filterRepository.currentAppPage, pageSize = 30
                         ),
-                        sort = listOf(
-                            SortItem("paymentStatus", "DESC"),
-                            SortItem("priority", "DESC"),
-                            SortItem("raiseDate", "DESC"),
-                            SortItem("updatedAt", "DESC")
-                        ),
+                        sort = when (filter.sortOption) {
+                            FlatSort.NEWEST_FIRST -> listOf(
+                                SortItem("paymentStatus", "DESC"),
+                                SortItem("priority", "DESC"),
+                                SortItem("raiseDate", "DESC"),
+                                SortItem("updatedAt", "DESC")
+                            )
+                            FlatSort.CHEAPEST_FIRST -> listOf(
+                                SortItem("price", "ASC")
+                            )
+                            FlatSort.MOST_EXPENSIVE_FIRST -> listOf(
+                                SortItem("price", "DESC")
+                            )
+                        }, // Updated sort implementation
                         extraFields = listOf("minPriceAggregation")
                     )
                 ),
@@ -125,5 +134,6 @@ class RealtRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
+        lastEmitList = emptyList()
     }
 }

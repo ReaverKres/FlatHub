@@ -10,7 +10,7 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.favorite_is_empty
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
-import io.flatzen.screens.list.FlatGrid
+import io.flatzen.screens.list.FlatList
 import io.flatzen.viewmodel.FavoritesScreenAction
 import io.flatzen.viewmodel.FavoritesViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -29,9 +29,8 @@ fun FavoritesScreen(
                 modifier = Modifier.fillMaxSize(),
                 stringResource = Res.string.favorite_is_empty
             )
-            else -> FlatGrid(
+            else -> FlatList(
                 isLoadingMore = false,
-                noFlatsToLoadMore = false,
                 flats = state.flatList,
                 onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
                 clickOnFavorite = {

@@ -2,6 +2,7 @@ package api
 
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import server_request.Currency
 import server_request.DomovitaRequest
@@ -28,7 +29,8 @@ interface DomovitaApi {
             pricePerSquare: Price? = null,
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
-            onlyOwner: Boolean? = null
+            onlyOwner: Boolean? = null,
+            sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option parameter
         ): DomovitaRequest {
             val priceMax = if (priceFull != null) {
                 priceFull.priceTo
@@ -39,6 +41,14 @@ interface DomovitaApi {
             val priceParamName = if (priceFull != null) "price" else "price_m2"
 
             val offset: Int? = if (page >= 2) (page - 1) * limit else null
+            
+            // Map SortOption to Domovita sort parameter
+            val domovitaSortParam = when (sortOption) {
+                FlatSort.NEWEST_FIRST -> "created_at:desc"
+                FlatSort.CHEAPEST_FIRST -> "price:asc"
+                FlatSort.MOST_EXPENSIVE_FIRST -> "price:desc"
+            }
+            
             return DomovitaRequest(
                 location = locationSefAlias,
                 offset = offset,
@@ -49,6 +59,7 @@ interface DomovitaApi {
                 currency = Currency.USD.name,
                 rooms = rooms?.toList(),
                 metroStationIds = metroIds,
+//                sort = domovitaSortParam, // Added sort parameter
 //                isOwner = if (onlyOwner == true) "yes" else null
             )
         }

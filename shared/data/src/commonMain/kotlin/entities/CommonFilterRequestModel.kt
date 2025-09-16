@@ -38,6 +38,7 @@ import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import kotlinx.serialization.Serializable
 import server_request.Currency
@@ -53,7 +54,8 @@ data class CommonFilterRequestModel(
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
-    val fromOwnerOnly: Boolean? = null
+    val fromOwnerOnly: Boolean? = null,
+    val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
 ) {
 
     val isRentType: Boolean
@@ -101,6 +103,7 @@ data class CommonFilterRequestModel(
         if (numberOfRooms != other.numberOfRooms) return false
         if (thisSelectedMetro != otherSelectedMetro) return false
         if (!isLocationEqual) return false // Используем кастомную проверку location
+        if (sortOption != other.sortOption) return false // Added sort option comparison
 
         return true
     }
@@ -115,6 +118,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + addressRequestModel.hashCode()
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)
         result = 31 * result + metroStations.filter { it.selected }.hashCode()
+        result = 31 * result + sortOption.hashCode() // Added sort option to hash code
 
         //TODO
         // Для hashCode тоже учитываем специальную логику

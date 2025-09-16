@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import server_response.OnlinerListResponse
 
 
@@ -36,12 +37,21 @@ interface OnlinerApi {
             boundsRtLng: Double? = null,
             metroLines: List<String>? = null,
             onlyOwner: Boolean? = null,
+            sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option parameter
         ): Map<String, Any> {
+            // Map SortOption to Onliner order parameter
+            // У онлайнера нет сортировки?
+            val onlinerOrderParam = when (sortOption) {
+                FlatSort.NEWEST_FIRST -> "created_at:desc"
+                FlatSort.CHEAPEST_FIRST -> "price:asc"
+                FlatSort.MOST_EXPENSIVE_FIRST -> "price:desc"
+            }
+
             return mutableMapOf<String, Any>().apply {
                 put("page", page)
-                put("order", order)
+//                put("order", onlinerOrderParam) // Use the mapped sort parameter
                 put("currency", currency)
-                if(onlyOwner != null && onlyOwner == true) {
+                if(onlyOwner != null && onlyOwner) {
                     put("only_owner", onlyOwner)
                 }
 
