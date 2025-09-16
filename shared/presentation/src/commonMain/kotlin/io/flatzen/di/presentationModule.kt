@@ -18,6 +18,7 @@ val flatSearchPresentationModule = module {
     single { FlatSearchViewModel(
         mergedRepository = get(),
         filterRepository = get(),
+        userPreferencesRepository = get(),
         connectionMonitor = get(),
         analyticsManager = get()
     ) }

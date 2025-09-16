@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
@@ -65,7 +66,7 @@ object MetroSelectScreenDestination
 
 // Определяем элементы для BottomBar
 val bottomNavItems = listOf(
-    BottomNavItem(ListScreenDestination, "Список", Icons.Default.List),
+    BottomNavItem(ListScreenDestination, "Главная", Icons.Default.Home),
     BottomNavItem(FavoritesScreenDestination, "Избранное", Icons.Default.Favorite),
     BottomNavItem(MapScreenDestination(), "Карта", Icons.Default.LocationOn),
     BottomNavItem(SettingsScreenDestination, "Настройки", Icons.Default.Settings)

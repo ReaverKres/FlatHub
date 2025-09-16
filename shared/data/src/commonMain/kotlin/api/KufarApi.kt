@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import server_response.KufarListResponse
 
@@ -31,8 +32,16 @@ interface KufarApi {
             pricePerSquare: Price? = null,
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
-            onlyOwner: Boolean? = null
+            onlyOwner: Boolean? = null,
+            sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option parameter
         ): MutableMap<String, String> {
+            // Map SortOption to Kufar sort parameter
+            val kufarSortParam = when (sortOption) {
+                FlatSort.NEWEST_FIRST -> "lst.d"
+                FlatSort.CHEAPEST_FIRST -> "prc.a"
+                FlatSort.MOST_EXPENSIVE_FIRST -> "prc.d"
+            }
+
             val params = mutableMapOf<String, String>().apply {
                 put("cat", categoryId.toString())
                 put("cur", currency)
@@ -47,7 +56,7 @@ interface KufarApi {
                 } else {
                     put("typ", "sell")
                 }
-                put("sort", sort)
+                put("sort", kufarSortParam) // Use the mapped sort parameter
                 if (onlyOwner != null && onlyOwner == true) {
                     put("cmp", "0")
                 }

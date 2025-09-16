@@ -322,16 +322,13 @@ fun MapScreenWithFlatModalSheet(
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
                 selectedFlat?.let { flat ->
-                    FlatBottomSheetContent(
+                    FlatItemContent(
                         flat = flat,
                         onClick = {
                             onFlatSelected(null)
                             navigateToDetails(flat.flatPlatform, flat.adId)
                         },
-                        clickOnFavorite = { clickOnFavorite(flat) },
-                        onClose = {
-                            onFlatSelected(null)
-                        }
+                        clickOnFavorite = { clickOnFavorite(flat) }
                     )
                 }
             }
@@ -388,11 +385,10 @@ fun RoomMarker(
 }
 
 @Composable
-private fun FlatBottomSheetContent(
+fun FlatItemContent(
     flat: UiFlat,
     onClick: () -> Unit,
-    clickOnFavorite: () -> Unit,
-    onClose: () -> Unit
+    clickOnFavorite: () -> Unit
 ) {
     // Вариация FlatCard для BottomSheet: компактная высота изображения, более плотные отступы
     Column(

@@ -3,6 +3,7 @@ package repository.mergedrepo
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -100,7 +101,7 @@ class MergedRepositoryImpl(
 
     private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
         val currentFilter = filterRepository.lastFilter()
-        var resultList = flats.sortedByDescending { it.publishedAt }
+        var resultList = flats
 
         // Filter by full price
         if (currentFilter.priceFull != null) {
@@ -152,6 +153,16 @@ class MergedRepositoryImpl(
                 selectedMetroStation.any { filterMetroStation ->
                     flat.metroStation == filterMetroStation.name
                 }
+            }
+        }
+
+        resultList = when(currentFilter.sortOption) {
+            FlatSort.NEWEST_FIRST -> resultList.sortedByDescending { it.publishedAt }
+            FlatSort.CHEAPEST_FIRST -> {
+                resultList.sortedBy { it.priceUsd ?: Double.MAX_VALUE }
+            }
+            FlatSort.MOST_EXPENSIVE_FIRST -> {
+                resultList.sortedBy { it.priceUsd ?: Double.MIN_VALUE }.reversed()
             }
         }
 

@@ -14,5 +14,7 @@ data class DomovitaRequest(
     @SerialName("price_type") val priceType: String? = null,
     @SerialName("rooms" ) val rooms: List<Int>?,
     @SerialName("metro_station_id" ) val metroStationIds: List<Int>?,
+    // у домовиты нет сортировки ?
+//    @SerialName("sort") val sort: String? = null, // Added sort parameter
 //    @SerialName("individual") val isOwner: String? // "Собственник" for owner only
 )

@@ -67,7 +67,8 @@ class DomovitaRepositoryImpl(
             rooms = filter.numberOfRooms,
             metroIds = metroIds,
             //TODO Add onlyOwner to request
-            onlyOwner = filter.fromOwnerOnly
+            onlyOwner = filter.fromOwnerOnly,
+            sortOption = filter.sortOption // Added sort option
         )
 
         try {

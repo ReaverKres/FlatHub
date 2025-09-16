@@ -64,7 +64,8 @@ class KufarRepositoryImpl(
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,
             cursor = pageCursor,
-            geoTag = city
+            geoTag = city,
+            sortOption = filter.sortOption
         )
         val kufarFlatList = api.searchFlats(
             searchId = generateSearchId(),

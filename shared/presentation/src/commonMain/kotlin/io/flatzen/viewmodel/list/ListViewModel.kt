@@ -25,6 +25,7 @@ import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
+import repository.userpreferences.UserPreferencesRepository
 
 sealed interface FlatListScreenAction : MviAction {
     class SearchFlats(val isLoadMore: Boolean, val isRefreshing: Boolean = false) :
@@ -42,6 +43,10 @@ sealed interface FlatListScreenAction : MviAction {
         val screenName: String,
         val parameters: Map<String, Any> = emptyMap()
     ) : FlatListScreenAction
+
+    // View toggle actions
+    data object ToggleView : FlatListScreenAction
+    class SetListView(val isListView: Boolean) : FlatListScreenAction
 }
 
 sealed interface FlatListEvents : MviEvent {
@@ -55,11 +60,13 @@ sealed interface FlatListEvents : MviEvent {
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
     data class DbFlatsLoaded(val dbFlats: LCE<List<AppFlat>>) : FlatListEvents
     class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
+    class ViewToggled(val isListView: Boolean) : FlatListEvents // Added ViewToggled event
 }
 
 class FlatSearchViewModel(
     private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val connectionMonitor: ConnectionMonitor,
     private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
@@ -118,6 +125,12 @@ class FlatSearchViewModel(
                         }
                     }
                 }
+
+                // Load user preferences for view type
+                userPreferencesRepository.getUserPreferences().first()?.let { preferences ->
+                    return flowOf(FlatListEvents.ViewToggled(preferences.isListView))
+                }
+
                 flowOf()
             }
 
@@ -128,17 +141,17 @@ class FlatSearchViewModel(
             is FlatListScreenAction.SearchFlats -> {
                 // Track search flats user action
                 viewModelScope.launch {
-                        analyticsManager.registerEvent(
-                            AnalyticsEvent(
-                                eventName = "search_flats",
-                                parameters = mapOf(
-                                    "is_load_more" to action.isLoadMore,
-                                    "is_refreshing" to action.isRefreshing,
-                                    "page" to filterRepository.currentAppPage,
-                                    "has_network" to connectionMonitor.isNetworkAvailable.first()
-                                )
+                    analyticsManager.registerEvent(
+                        AnalyticsEvent(
+                            eventName = "search_flats",
+                            parameters = mapOf(
+                                "is_load_more" to action.isLoadMore,
+                                "is_refreshing" to action.isRefreshing,
+                                "page" to filterRepository.currentAppPage,
+                                "has_network" to connectionMonitor.isNetworkAvailable.first()
                             )
                         )
+                    )
                 }
 
                 if (connectionMonitor.isNetworkAvailable.first().not()) {
@@ -181,6 +194,22 @@ class FlatSearchViewModel(
                     )
                 }
                 flowOf()
+            }
+
+            // Handle view toggle actions
+            is FlatListScreenAction.ToggleView -> {
+                val newIsListView = !currentState.isListView
+                viewModelScope.launch {
+                    userPreferencesRepository.saveUserPreferences(newIsListView)
+                }
+                flowOf(FlatListEvents.ViewToggled(newIsListView))
+            }
+
+            is FlatListScreenAction.SetListView -> {
+                viewModelScope.launch {
+                    userPreferencesRepository.saveUserPreferences(action.isListView)
+                }
+                flowOf(FlatListEvents.ViewToggled(action.isListView))
             }
         }
     }
@@ -264,6 +293,11 @@ class FlatSearchViewModel(
                         })
                 }
             )
+
+            // Handle ViewToggled event
+            is FlatListEvents.ViewToggled -> {
+                currentState.copy(isListView = event.isListView)
+            }
         }
     }
 
