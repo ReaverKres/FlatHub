@@ -18,6 +18,7 @@ interface KufarApi {
 
     companion object {
         private const val KUFAR_PAGE_SIZE = 30
+        private const val KUFAR_MAX_PRICE = 1_000_000_000
 
         fun createQueryParams(
             categoryId: Int = 1010,
@@ -57,7 +58,7 @@ interface KufarApi {
                     put("typ", "sell")
                 }
                 put("sort", kufarSortParam) // Use the mapped sort parameter
-                if (onlyOwner != null && onlyOwner == true) {
+                if (onlyOwner != null && onlyOwner) {
                     put("cmp", "0")
                 }
                 if (!rooms.isNullOrEmpty()) {
@@ -76,7 +77,7 @@ interface KufarApi {
                     params[fullPriceName] = "r:${priceFull.priceFrom},${priceFull.priceTo}"
                 }
                 priceFull?.priceFrom != null -> {
-                    params[fullPriceName] = "r:${priceFull.priceFrom}"
+                    params[fullPriceName] = "r:${priceFull.priceFrom},${KUFAR_MAX_PRICE}"
                 }
                 priceFull?.priceTo != null -> {
                     params[fullPriceName] = "r:0,${priceFull.priceTo}"
@@ -86,7 +87,7 @@ interface KufarApi {
                     params[squarePriceName] = "r:${pricePerSquare.priceFrom},${pricePerSquare.priceTo}"
                 }
                 pricePerSquare?.priceFrom != null -> {
-                    params[squarePriceName] = "r:${pricePerSquare.priceFrom}"
+                    params[squarePriceName] = "r:${pricePerSquare.priceFrom},${KUFAR_MAX_PRICE}"
                 }
                 pricePerSquare?.priceTo != null -> {
                     params[squarePriceName] = "r:0,${pricePerSquare.priceTo}"

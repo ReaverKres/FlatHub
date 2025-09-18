@@ -89,18 +89,22 @@ class OnlinerRepositoryImpl(
             boundsRtLat = cityBounds.northeast.latitude,
             sortOption = filter.sortOption
         )
-        val request = if (filter.isRentType) {
-            val rentTypes = filter.numberOfRooms?.map {
-                if (it == 1) "${it}_room" else "${it}_rooms"
-            } ?: emptyList()
-            api.searchRentFlats(params, rentTypes)
-        } else {
-            val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
-            api.searchSaleFlats(params, numberOfRooms)
+        try {
+            val request = if (filter.isRentType) {
+                val rentTypes = filter.numberOfRooms?.map {
+                    if (it == 1) "${it}_room" else "${it}_rooms"
+                } ?: emptyList()
+                api.searchRentFlats(params, rentTypes)
+            } else {
+                val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
+                api.searchSaleFlats(params, numberOfRooms)
+            }
+            val onlinerFlatList = request.apartments
+                ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
+            emit(onlinerFlatList ?: listOf())
+        } catch (e: Exception) {
+            emit(emptyList())
         }
-        val onlinerFlatList = request.apartments
-            ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
-        emit(onlinerFlatList ?: listOf())
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
