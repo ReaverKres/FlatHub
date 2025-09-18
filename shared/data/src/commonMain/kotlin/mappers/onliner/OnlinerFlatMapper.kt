@@ -97,28 +97,4 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             }
         }
     }
-
-//    private fun parseIsoDateTime(dateTimeString: String): kotlinx.datetime.Instant? {
-//        return try {
-//            kotlinx.datetime.Instant.parse(dateTimeString)
-//        } catch (e: Exception) {
-//            null
-//        }
-//    }
-//
-//    private fun calculateTimeAgo(publishedAt: kotlinx.datetime.Instant): String? {
-//        return try {
-//            val now = kotlinx.datetime.Clock.System.now()
-//            val diff = now - publishedAt
-//
-//            when {
-//                diff.inWholeDays > 0 -> "${diff.inWholeDays} дн. назад"
-//                diff.inWholeHours > 0 -> "${diff.inWholeHours} ч. назад"
-//                diff.inWholeMinutes > 0 -> "${diff.inWholeMinutes} мин. назад"
-//                else -> "только что"
-//            }
-//        } catch (e: Exception) {
-//            null
-//        }
-//    }
 }
