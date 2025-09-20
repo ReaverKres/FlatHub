@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.Serializable
+import io.flatzen.CommonApplication
 
 
 @Serializable
@@ -50,7 +51,7 @@ object SettingsScreenDestination
 data class MapScreenDestination(val selectedMarker: Long? = null)
 
 @Serializable
-data class DetailScreenDestination(val flatPlatform: FlatPlatform, val objectId: Long)
+data class DetailScreenDestination(val flatPlatform: String, val objectId: Long)
 
 @Serializable
 object FilterScreenDestination
@@ -165,7 +166,7 @@ fun App() {
                 composable<ListScreenDestination> {
                     io.flatzen.screens.list.ListScreen(
                         navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform, id))
+                            navController.navigate(DetailScreenDestination(platform.name, id))
                         },
                         navigateToFilters = {
                             navController.navigate(FilterScreenDestination)
@@ -177,7 +178,7 @@ fun App() {
                 composable<FavoritesScreenDestination> {
                     io.flatzen.screens.favorites.FavoritesScreen(
                         navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform, id))
+                            navController.navigate(DetailScreenDestination(platform.name, id))
                         }
                     )
                 }
@@ -193,7 +194,7 @@ fun App() {
                     io.flatzen.screens.map.MapScreen(
                         selectedMarker = args.selectedMarker,
                         navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform, id))
+                            navController.navigate(DetailScreenDestination(platform.name, id))
                         },
                         navigateToFilters = {
                             navController.navigate(FilterScreenDestination)
@@ -213,8 +214,10 @@ fun App() {
                 // DetailScreen (общий для всех)
                 composable<DetailScreenDestination> { backStackEntry ->
                     val args = backStackEntry.toRoute<DetailScreenDestination>()
+                    val platform = FlatPlatform.entries.firstOrNull { it.name == args.flatPlatform || it.value == args.flatPlatform }
+                        ?: error("Unknown flatPlatform: ${'$'}{args.flatPlatform}")
                     DetailScreen(
-                        flatPlatform = args.flatPlatform,
+                        flatPlatform = platform,
                         objectId = args.objectId,
                         navigateBack = { navController.popBackStack() },
                         navigateToMap = { flatId ->
@@ -261,4 +264,9 @@ fun App() {
             }
         }
     }
+}
+
+// Expose DI init for Swift (avoids referencing exported classes directly)
+fun initKoinForIos() {
+    CommonApplication.initialize()
 }
