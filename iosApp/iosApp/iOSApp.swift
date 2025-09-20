@@ -4,7 +4,7 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
-        CommonApplication.initKoin()
+        // Koin now initialized in MainViewController before Compose UI starts
     }
 
     var body: some Scene {
