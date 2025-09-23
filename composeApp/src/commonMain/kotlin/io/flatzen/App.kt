@@ -10,8 +10,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +38,7 @@ import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
-import io.flatzen.screens.settings.SettingsScreen
+import io.flatzen.screens.more.SettingsScreen
 
 
 @Serializable
