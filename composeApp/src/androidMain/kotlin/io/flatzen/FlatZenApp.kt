@@ -15,7 +15,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class FlatZenApp : Application(), KoinComponent {
-    private val analyticsManager: AnalyticsManager by inject()
     
     override fun onCreate() {
         super.onCreate()
@@ -29,9 +28,6 @@ class FlatZenApp : Application(), KoinComponent {
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
-        
-        // Send app launch analytics event
-        sendAppLaunchEvent()
     }
     
     private fun initAppmetrica() {
@@ -41,23 +37,5 @@ class FlatZenApp : Application(), KoinComponent {
             .build()
         AppMetrica.activate(this, config)
         AppMetrica.enableActivityAutoTracking(this)
-    }
-    
-    private fun sendAppLaunchEvent() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                analyticsManager.registerEvent(
-                    AnalyticsEvent(
-                        eventName = "app_launch",
-                        parameters = mapOf(
-                            "app_version" to "1.0",
-                            "version_code" to 1
-                        )
-                    )
-                )
-            } catch (e: Exception) {
-                Log.e("FlatZenApp", "Failed to send app launch event", e)
-            }
-        }
     }
 }

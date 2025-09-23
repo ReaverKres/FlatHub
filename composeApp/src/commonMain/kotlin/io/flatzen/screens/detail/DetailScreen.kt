@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
@@ -44,6 +45,7 @@ import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
+import io.flatzen.widgets.OpenInMapButton
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.addMarker
@@ -222,11 +224,16 @@ private fun FlatDetailContent(
                     }
                 }
 
-                Box(modifier = Modifier.padding(vertical = 24.dp).fillMaxWidth().height(200.dp).clickable {
+                Box(modifier = Modifier.padding(top = 24.dp, bottom = 12.dp).fillMaxWidth().height(200.dp).clickable {
                     navigateToMap()
                 }) {
                     MapUI(modifier = Modifier.fillMaxSize(), state = mapState)
                 }
+
+                OpenInMapButton(
+                    coordinates = flat.coordinates!!,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
             }
 
             // О квартире
@@ -402,7 +409,7 @@ private fun AddressSection(address: String, metroStation: String?) {
         }
         metroStation?.takeIf { it.isNotBlank() }?.let {
             Text(
-                text = "🚇 $it",
+                text = it,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

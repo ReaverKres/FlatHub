@@ -208,7 +208,11 @@ class FlatDetailViewModel(
             priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),
             district = appFlat.district,
-            metroStation = appFlat.metroStation,
+            metroStation = if (appFlat.metroStation.isNullOrBlank()) {
+                null
+            } else {
+                "🚇 ${appFlat.metroStation}"
+            },
             numberOfRooms = appFlat.rooms?.let {
                 if (appFlat.isStudio == true) "Студия" else "$it"
             } ?: "Не указано",

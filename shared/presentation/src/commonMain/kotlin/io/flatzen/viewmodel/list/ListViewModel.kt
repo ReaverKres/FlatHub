@@ -14,9 +14,12 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.viewmodel.base.BaseMviViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -72,6 +75,7 @@ class FlatSearchViewModel(
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
+    private var isNetworkAvailable: Boolean = true
 
     override fun initialState(): FlatListScreenState = FlatListScreenState(
         isLoading = true,
@@ -83,6 +87,12 @@ class FlatSearchViewModel(
     )
 
     init {
+        connectionMonitor.isNetworkAvailable.onEach {
+            isNetworkAvailable = it
+        }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
+
         filterRepository.cashedFilterFlow.onEach { newFilters ->
             noFlatsToLoadMore = false
             if (newFilters.doNetworkCall) {
@@ -94,11 +104,13 @@ class FlatSearchViewModel(
                 )
             )
         }
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
 
         mergedRepository.getAllFlatsFromLocalDb()
             .asLCE()
             .onEach { event -> onIntent(FlatListScreenAction.LoadDbFlats(event)) }
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
     }
 
@@ -140,7 +152,7 @@ class FlatSearchViewModel(
 
             is FlatListScreenAction.SearchFlats -> {
                 // Track search flats user action
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     analyticsManager.registerEvent(
                         AnalyticsEvent(
                             eventName = "search_flats",
@@ -182,7 +194,7 @@ class FlatSearchViewModel(
 
             is FlatListScreenAction.TrackScreenView -> {
                 // Handle screen view analytics tracking
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     analyticsManager.registerEvent(
                         AnalyticsEvent(
                             eventName = AppMetrcica.Events.SCREEN_VIEW,
@@ -199,14 +211,14 @@ class FlatSearchViewModel(
             // Handle view toggle actions
             is FlatListScreenAction.ToggleView -> {
                 val newIsListView = !currentState.isListView
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     userPreferencesRepository.saveUserPreferences(newIsListView)
                 }
                 flowOf(FlatListEvents.ViewToggled(newIsListView))
             }
 
             is FlatListScreenAction.SetListView -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     userPreferencesRepository.saveUserPreferences(action.isListView)
                 }
                 flowOf(FlatListEvents.ViewToggled(action.isListView))
@@ -279,18 +291,27 @@ class FlatSearchViewModel(
                     currentState
                 },
                 onSuccess = { dbFlats ->
-                    currentState.copy(
-                        flatList = currentState.flatList.map { flatOnScreen ->
-                            val flatFromDb = dbFlats.find { it.adId == flatOnScreen.adId }
-                            if (flatFromDb != null) {
-                                flatOnScreen.copy(
-                                    savedInFavorite = flatFromDb.savedInFavorites,
-                                    isViewed = flatFromDb.isViewed
-                                )
-                            } else {
-                                flatOnScreen
-                            }
-                        })
+                    if (isNetworkAvailable) {
+                        currentState.copy(
+                            flatList = currentState.flatList.map { flatOnScreen ->
+                                val flatFromDb = dbFlats.find { it.adId == flatOnScreen.adId }
+                                if (flatFromDb != null) {
+                                    flatOnScreen.copy(
+                                        savedInFavorite = flatFromDb.savedInFavorites,
+                                        isViewed = flatFromDb.isViewed
+                                    )
+                                } else {
+                                    flatOnScreen
+                                }
+                            })
+                    } else {
+                        flatsLoaded(
+                            flats = dbFlats,
+                            currentState = currentState,
+                            isLoadMore = false,
+                            isRefreshing = false
+                        )
+                    }
                 }
             )
 

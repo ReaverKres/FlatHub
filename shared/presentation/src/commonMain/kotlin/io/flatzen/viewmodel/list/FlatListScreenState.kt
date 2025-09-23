@@ -28,7 +28,7 @@ data class UiFlat(
     val priceByn: UiPrice,
     val numberOfRooms: Int?,
     val publishedAt: String?,
-    val metroStation: String,
+    val metroStation: String?,
     val address: String,
     val coordinates: Coordinates?
 ) {
@@ -52,7 +52,11 @@ data class UiFlat(
                     numberOfRooms = it.rooms,
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
-                    metroStation = it.metroStation.orEmpty(),
+                    metroStation = if (it.metroStation.isNullOrBlank()) {
+                        null
+                    } else {
+                        "🚇 ${it.metroStation}"
+                    },
                     coordinates = it.coordinates
                 )
             }

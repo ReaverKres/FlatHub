@@ -1,4 +1,4 @@
-package io.flatzen.screens.list
+package io.flatzen.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,28 +15,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -88,6 +81,8 @@ import io.flatzen.widgets.FlatImagePager
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.collections.chunked
+import kotlin.collections.firstOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -154,7 +149,13 @@ fun ListScreen(
             isRefreshing = state.isRefreshing
         ) {
             when {
-                state.isLoading && state.isLoadingMore.not() -> LoadingContent(isListView = state.isListView)
+                state.isLoading && state.isLoadingMore.not() -> LoadingContent(
+                    isListView = state.isListView,
+                    onToggleView = {
+                        viewModel.onIntent(FlatListScreenAction.ToggleView)
+                    }
+                )
+
                 state.isLoading.not() && state.flatList.isEmpty() -> EmptyScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     stringResource = Res.string.no_data_available
@@ -256,35 +257,41 @@ fun ListScreen(
 @Composable
 fun LoadingContent(
     isListView: Boolean,
+    onToggleView: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isListView) {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        topContentHeader(
+            isListView = isListView,
+            filterState = null,
+            updateFilters = {},
+            onToggleView = onToggleView
+        )
+        if (isListView) {
             items(10) {
                 SkeletonFlatListItem()
             }
-        }
-    } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = modifier.fillMaxSize(),
-            contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(10) {
-                SkeletonFlatCard()
+        } else {
+            items(10) { flatPair ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    SkeletonFlatGridItem(modifier = Modifier.weight(1f))
+                    SkeletonFlatGridItem(modifier = Modifier.weight(1f))
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SkeletonFlatCard(
+private fun SkeletonFlatGridItem(
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition()
@@ -369,26 +376,22 @@ private fun SkeletonFlatCard(
 
 private fun LazyListScope.topContentHeader(
     isListView: Boolean,
-    filterState: FilterState,
+    filterState: FilterState?,
     updateFilters: (FilterState) -> Unit,
     onToggleView: () -> Unit,
 ) {
 
-    item {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-        ) {
+    filterState?.let {
+        item {
             RentSaleSegmentedButtons(filterState.adType) {
                 updateFilters(filterState.copy(adType = it))
             }
         }
-    }
 
-    item {
-        SortOptionSegmentedButtons(filterState.sortOption) { sortOption ->
-            updateFilters(filterState.copy(sortOption = sortOption))
+        item {
+            SortOptionSegmentedButtons(filterState.sortOption) { sortOption ->
+                updateFilters(filterState.copy(sortOption = sortOption))
+            }
         }
     }
 
@@ -468,7 +471,7 @@ fun FlatList(
         if (isListView == true) {
             // List view - one item per row
             items(flats, key = { it.adId }) { flat ->
-                FlatItemContent(
+                ListFlatCard(
                     flat = flat,
                     onClick = { onFlatClick(flat) },
                     clickOnFavorite = {
@@ -479,15 +482,16 @@ fun FlatList(
         } else {
             // Grid view - two items per row
             items(
-                flats.chunked(2),
-                key = { it.firstOrNull()?.adId ?: it.hashCode() }) { flatPair ->
+                items = flats.chunked(2),
+                key = { it.firstOrNull()?.adId ?: it.hashCode() }
+            ) { flatPair ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // First item
                     flatPair.getOrNull(0)?.let { flat ->
-                        FlatCard(
+                        GridFlatCard(
                             flat = flat,
                             onClick = { onFlatClick(flat) },
                             clickOnFavorite = {
@@ -499,7 +503,7 @@ fun FlatList(
 
                     // Second item
                     flatPair.getOrNull(1)?.let { flat ->
-                        FlatCard(
+                        GridFlatCard(
                             flat = flat,
                             onClick = { onFlatClick(flat) },
                             clickOnFavorite = {
@@ -521,8 +525,8 @@ fun FlatList(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        SkeletonFlatCard(modifier = Modifier.weight(1f))
-                        SkeletonFlatCard(modifier = Modifier.weight(1f))
+                        SkeletonFlatGridItem(modifier = Modifier.weight(1f))
+                        SkeletonFlatGridItem(modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -531,7 +535,27 @@ fun FlatList(
 }
 
 @Composable
-private fun FlatCard(
+private fun ListFlatCard(
+    modifier: Modifier = Modifier,
+    flat: UiFlat,
+    onClick: () -> Unit,
+    clickOnFavorite: () -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        FlatItemContent(
+            flat = flat,
+            onClick = onClick,
+            clickOnFavorite = clickOnFavorite
+        )
+    }
+}
+
+@Composable
+private fun GridFlatCard(
     modifier: Modifier = Modifier,
     flat: UiFlat,
     onClick: () -> Unit,
@@ -598,14 +622,12 @@ private fun FlatCard(
                 text = "${flat.numberOfRooms}-комн.",
                 style = MaterialTheme.typography.bodyMedium
             )
-
             Text(
-                text = flat.metroStation,
+                text = flat.metroStation.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
             Text(
                 text = flat.address,
                 style = MaterialTheme.typography.bodySmall,

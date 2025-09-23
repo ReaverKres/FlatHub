@@ -56,6 +56,7 @@ import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
+import io.flatzen.widgets.OpenInMapButton
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -321,15 +322,22 @@ fun MapScreenWithFlatModalSheet(
                 onDismissRequest = { onFlatSelected(null) },
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
-                selectedFlat?.let { flat ->
+                Column(modifier = Modifier.fillMaxWidth()) {
                     FlatItemContent(
-                        flat = flat,
+                        flat = selectedFlat,
                         onClick = {
                             onFlatSelected(null)
-                            navigateToDetails(flat.flatPlatform, flat.adId)
+                            navigateToDetails(selectedFlat.flatPlatform, selectedFlat.adId)
                         },
-                        clickOnFavorite = { clickOnFavorite(flat) }
+                        clickOnFavorite = { clickOnFavorite(selectedFlat) }
                     )
+                    selectedFlat.coordinates?.let {
+                        OpenInMapButton(
+                            coordinates = it,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                        )
+                        Spacer(Modifier.height(16.dp))
+                    }
                 }
             }
         }
@@ -455,9 +463,9 @@ fun FlatItemContent(
         )
 
         // Метро
-        if (flat.metroStation.isNotBlank()) {
+        if (flat.metroStation?.isNotBlank() == true) {
             Text(
-                text = flat.metroStation,
+                text = flat.metroStation!!,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

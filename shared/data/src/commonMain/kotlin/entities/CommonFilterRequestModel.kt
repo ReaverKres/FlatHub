@@ -39,6 +39,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import kotlinx.serialization.Serializable
 import server_request.Currency
@@ -48,6 +49,7 @@ data class CommonFilterRequestModel(
     val adType: AdType = AdType.RENT,
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
+    val totalArea: FromToRange? = null,
     val priceType: PriceType = PriceType.FULL,
     val currency: Currency = Currency.USD,
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
@@ -94,6 +96,7 @@ data class CommonFilterRequestModel(
         }
 
         if (adType != other.adType) return false
+        if(totalArea != other.totalArea) return false
         if (priceFull != other.priceFull) return false
         if (pricePerSquare != other.pricePerSquare) return false
         if (!isFromOwnerOnlyEqual) return false
@@ -110,6 +113,7 @@ data class CommonFilterRequestModel(
 
     override fun hashCode(): Int {
         var result = priceFull?.hashCode() ?: 0
+        result = 31 * result + (totalArea?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
         result = 31 * result + adType.hashCode()

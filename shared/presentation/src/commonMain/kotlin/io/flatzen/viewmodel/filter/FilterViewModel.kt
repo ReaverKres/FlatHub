@@ -184,10 +184,10 @@ class FilterViewModel(
             }
 
             is FilterScreenAction.UpdateFilterName -> {
-                val isNameValid = action.name.length <= 15 && action.name.isNotBlank()
+                val isNameValid = action.name.length <= 25 && action.name.isNotBlank()
                 val errorMessage = when {
                     action.name.isBlank() -> "Название фильтра не может быть пустым"
-                    action.name.length > 15 -> "Название фильтра не должно превышать 15 символов"
+                    action.name.length > 25 -> "Название фильтра не должно превышать 25 символов"
                     else -> null
                 }
                 flowOf(FilterScreenEvent.DialogStateUpdated(
@@ -340,6 +340,7 @@ class FilterViewModel(
             adType = model.adType,
             priceFull = model.priceFull,
             pricePerSquare = model.pricePerSquare,
+            totalArea = model.totalArea,
             currency = model.currency,
             fromOwnerOnly = model.fromOwnerOnly ?: false,
             rooms = model.numberOfRooms ?: emptySet(),
@@ -365,6 +366,7 @@ class FilterViewModel(
             adType = filters.adType,
             priceFull = filters.priceFull,
             pricePerSquare = filters.pricePerSquare,
+            totalArea = filters.totalArea,
             currency = filters.currency,
             numberOfRooms = filters.rooms,
             fromOwnerOnly = filters.fromOwnerOnly,
