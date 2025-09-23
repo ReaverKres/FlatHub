@@ -1,4 +1,4 @@
-package io.flatzen.screens.settings
+package io.flatzen.screens.more
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
