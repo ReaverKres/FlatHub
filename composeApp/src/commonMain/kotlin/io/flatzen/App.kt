@@ -38,7 +38,7 @@ import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
-import io.flatzen.screens.more.SettingsScreen
+import io.flatzen.screens.more.MoreScreen
 
 
 @Serializable
@@ -187,7 +187,7 @@ fun App() {
                 
                 // Экран настроек
                 composable<SettingsScreenDestination> {
-                    SettingsScreen()
+                    MoreScreen()
                 }
                 
                 // Экран карты
