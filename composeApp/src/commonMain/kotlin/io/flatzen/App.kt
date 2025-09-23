@@ -1,4 +1,4 @@
-package io.flatzen.kmpapp
+package io.flatzen
 
 import DetailScreen
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,18 +25,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.Serializable
-import io.flatzen.CommonApplication
+import io.flatzen.screens.favorites.FavoritesScreen
+import io.flatzen.screens.filter.FilterScreen
+import io.flatzen.screens.home.ListScreen
+import io.flatzen.screens.location.CitySelectScreen
+import io.flatzen.screens.location.LocationScreen
+import io.flatzen.screens.location.MetroSelectScreen
+import io.flatzen.screens.map.MapScreen
+import io.flatzen.screens.settings.SettingsScreen
 
 
 @Serializable
@@ -70,7 +75,7 @@ val bottomNavItems = listOf(
     BottomNavItem(ListScreenDestination, "Главная", Icons.Default.Home),
     BottomNavItem(FavoritesScreenDestination, "Избранное", Icons.Default.Favorite),
     BottomNavItem(MapScreenDestination(), "Карта", Icons.Default.LocationOn),
-    BottomNavItem(SettingsScreenDestination, "Настройки", Icons.Default.Settings)
+    BottomNavItem(SettingsScreenDestination, "Ещё", Icons.Default.Menu)
 )
 data class BottomNavItem(val route: Any, val label: String, val icon: ImageVector)
 
@@ -100,10 +105,10 @@ fun App() {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
                             val isSelected = when (item.route) {
-                                ListScreenDestination -> currentDestination?.route == ListScreenDestination::class.qualifiedName
-                                FavoritesScreenDestination -> currentDestination?.route == FavoritesScreenDestination::class.qualifiedName
-                                SettingsScreenDestination -> currentDestination?.route == SettingsScreenDestination::class.qualifiedName
-                                is MapScreenDestination -> currentDestination?.route?.startsWith(MapScreenDestination::class.qualifiedName!!) == true
+                                ListScreenDestination -> currentDestination.route == ListScreenDestination::class.qualifiedName
+                                FavoritesScreenDestination -> currentDestination.route == FavoritesScreenDestination::class.qualifiedName
+                                SettingsScreenDestination -> currentDestination.route == SettingsScreenDestination::class.qualifiedName
+                                is MapScreenDestination -> currentDestination.route?.startsWith(MapScreenDestination::class.qualifiedName!!) == true
                                 else -> false
                             }
 
@@ -144,7 +149,6 @@ fun App() {
                                                     saveState = true
                                                 }
                                                 launchSingleTop = true
-                                                restoreState = true
                                             }
                                         }
                                     }
@@ -164,7 +168,7 @@ fun App() {
             ) {
                 // Экран списка (основной)
                 composable<ListScreenDestination> {
-                    io.flatzen.screens.list.ListScreen(
+                    ListScreen(
                         navigateToDetails = { platform, id ->
                             navController.navigate(DetailScreenDestination(platform.name, id))
                         },
@@ -176,7 +180,7 @@ fun App() {
                 
                 // Экран избранного
                 composable<FavoritesScreenDestination> {
-                    io.flatzen.screens.favorites.FavoritesScreen(
+                    FavoritesScreen(
                         navigateToDetails = { platform, id ->
                             navController.navigate(DetailScreenDestination(platform.name, id))
                         }
@@ -185,13 +189,13 @@ fun App() {
                 
                 // Экран настроек
                 composable<SettingsScreenDestination> {
-                    io.flatzen.screens.settings.SettingsScreen()
+                    SettingsScreen()
                 }
                 
                 // Экран карты
                 composable<MapScreenDestination> { backStackEntry ->
                     val args = backStackEntry.toRoute<MapScreenDestination>()
-                    io.flatzen.screens.map.MapScreen(
+                    MapScreen(
                         selectedMarker = args.selectedMarker,
                         navigateToDetails = { platform, id ->
                             navController.navigate(DetailScreenDestination(platform.name, id))
@@ -205,7 +209,6 @@ fun App() {
                                     saveState = true
                                 }
                                 launchSingleTop = true
-                                restoreState = true
                             }
                         }
                     )
@@ -227,7 +230,6 @@ fun App() {
                                     saveState = true
                                 }
                                 launchSingleTop = true
-                                restoreState = true
                             }
                         }
                     )
@@ -236,14 +238,14 @@ fun App() {
                 // Общие экраны (фильтры, локация и т.д.)
                 // Экран Фильтров (открывается поверх)
                 composable<FilterScreenDestination> {
-                    io.flatzen.screens.filter.FilterScreen(
+                    FilterScreen(
                         navigateBack = { navController.popBackStack() },
                         onOpenLocation = { navController.navigate(LocationScreenDestination) }
                     )
                 }
 
                 composable<LocationScreenDestination> {
-                    io.flatzen.screens.location.LocationScreen(
+                    LocationScreen(
                         navigateBack = { navController.popBackStack() },
                         openCity = { navController.navigate(CitySelectScreenDestination) },
                         openMetro = { navController.navigate(MetroSelectScreenDestination) }
@@ -251,22 +253,17 @@ fun App() {
                 }
 
                 composable<CitySelectScreenDestination> {
-                    io.flatzen.screens.location.CitySelectScreen(
+                    CitySelectScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
 
                 composable<MetroSelectScreenDestination> {
-                    io.flatzen.screens.location.MetroSelectScreen(
+                    MetroSelectScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
             }
         }
     }
-}
-
-// Expose DI init for Swift (avoids referencing exported classes directly)
-fun initKoinForIos() {
-    CommonApplication.initialize()
 }

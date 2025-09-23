@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -53,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.viewmodel.filter.FilterDialogState
 import io.flatzen.viewmodel.filter.FilterScreenAction
@@ -164,53 +164,6 @@ fun FilterScreen(
                     .clickable { onOpenLocation() }
             )
 
-            PriceSection(
-                title = "Цена",
-                priceFrom = currentFilters.priceFull?.priceFrom?.toString().orEmpty(),
-                priceFromOnChange = {
-                    currentFilters = currentFilters.copy(
-                        priceFull = currentFilters.priceFull?.copy(
-                            priceFrom = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceFrom = it.toDoubleOrNull()
-                        )
-                    )
-                },
-                priceTo = currentFilters.priceFull?.priceTo?.toString().orEmpty(),
-                priceToOnChange = {
-                    currentFilters = currentFilters.copy(
-                        priceFull = currentFilters.priceFull?.copy(
-                            priceTo = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceTo = it.toDoubleOrNull()
-                        )
-                    )
-                }
-            )
-            PriceSection(
-                title = "Цена за м2",
-                priceFrom = currentFilters.pricePerSquare?.priceFrom?.toString().orEmpty(),
-                priceFromOnChange = {
-                    currentFilters = currentFilters.copy(
-                        pricePerSquare = currentFilters.pricePerSquare?.copy(
-                            priceFrom = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceFrom = it.toDoubleOrNull()
-                        )
-                    )
-                },
-                priceTo = currentFilters.pricePerSquare?.priceTo?.toString().orEmpty(),
-                priceToOnChange = {
-                    currentFilters = currentFilters.copy(
-                        pricePerSquare = currentFilters.pricePerSquare?.copy(
-                            priceTo = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceTo = it.toDoubleOrNull()
-                        )
-                    )
-                }
-            )
-
             FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
                 currentFilters = currentFilters.copy(fromOwnerOnly = it)
             }
@@ -232,6 +185,77 @@ fun FilterScreen(
                     )
                 }
             }
+
+            NumberRange(
+                title = "Цена",
+                rangeFrom = currentFilters.priceFull?.priceFrom?.toString().orEmpty(),
+                fromOnChange = {
+                    currentFilters = currentFilters.copy(
+                        priceFull = currentFilters.priceFull?.copy(
+                            priceFrom = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceFrom = it.toDoubleOrNull()
+                        )
+                    )
+                },
+                rangeTo = currentFilters.priceFull?.priceTo?.toString().orEmpty(),
+                toOnChange = {
+                    currentFilters = currentFilters.copy(
+                        priceFull = currentFilters.priceFull?.copy(
+                            priceTo = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceTo = it.toDoubleOrNull()
+                        )
+                    )
+                }
+            )
+            NumberRange(
+                title = "Цена за м2",
+                rangeFrom = currentFilters.pricePerSquare?.priceFrom?.toString().orEmpty(),
+                fromOnChange = {
+                    currentFilters = currentFilters.copy(
+                        pricePerSquare = currentFilters.pricePerSquare?.copy(
+                            priceFrom = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceFrom = it.toDoubleOrNull()
+                        )
+                    )
+                },
+                rangeTo = currentFilters.pricePerSquare?.priceTo?.toString().orEmpty(),
+                toOnChange = {
+                    currentFilters = currentFilters.copy(
+                        pricePerSquare = currentFilters.pricePerSquare?.copy(
+                            priceTo = it.toDoubleOrNull()
+                        ) ?: Price(
+                            priceTo = it.toDoubleOrNull()
+                        )
+                    )
+                }
+            )
+
+            NumberRange(
+                title = "Площадь",
+                rangeFrom = currentFilters.totalArea?.fromRange?.toString().orEmpty(),
+                fromOnChange = {
+                    currentFilters = currentFilters.copy(
+                        totalArea = currentFilters.totalArea?.copy(
+                            fromRange = it.toDoubleOrNull()
+                        ) ?: FromToRange(
+                            fromRange = it.toDoubleOrNull()
+                        )
+                    )
+                },
+                rangeTo = currentFilters.totalArea?.toRange?.toString().orEmpty(),
+                toOnChange = {
+                    currentFilters = currentFilters.copy(
+                        totalArea = currentFilters.totalArea?.copy(
+                            toRange = it.toDoubleOrNull()
+                        ) ?: FromToRange(
+                            toRange = it.toDoubleOrNull()
+                        )
+                    )
+                }
+            )
 
             TextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -377,29 +401,29 @@ private fun SavedFiltersChips(
 }
 
 @Composable
-private fun PriceSection(
+private fun NumberRange(
     title: String,
-    priceFrom: String,
-    priceFromOnChange: (String) -> Unit,
-    priceTo: String,
-    priceToOnChange: (String) -> Unit,
+    rangeFrom: String,
+    fromOnChange: (String) -> Unit,
+    rangeTo: String,
+    toOnChange: (String) -> Unit,
 ) {
     // Цена
     FilterSectionTitle(title = title)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
-            value = priceFrom,
+            value = rangeFrom,
             onValueChange = { newValue -> 
-                priceFromOnChange(newValue)
+                fromOnChange(newValue)
             },
             label = { Text("От") },
             modifier = Modifier.weight(1f),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         OutlinedTextField(
-            value = priceTo,
+            value = rangeTo,
             onValueChange = { newValue -> 
-                priceToOnChange(newValue)
+                toOnChange(newValue)
             },
             label = { Text("До") },
             modifier = Modifier.weight(1f),

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -67,6 +68,7 @@ class MergedRepositoryImpl(
                 lastEmittedFlats.emit(sortedFlatList)
                 sortedFlatList
             }
+            .flowOn(Dispatchers.IO)
         return loadedFromNetworkFlats
     }
 
@@ -135,6 +137,24 @@ class MergedRepositoryImpl(
             if (priceTo != null) {
                 resultList = resultList.filter { flat ->
                     flat.priceUsdSquare != null && flat.priceUsdSquare <= priceTo
+                }
+            }
+        }
+
+        //total area
+        if (currentFilter.totalArea != null) {
+            val from = currentFilter.totalArea.fromRange
+            val to = currentFilter.totalArea.toRange
+
+            if (from != null) {
+                resultList = resultList.filter { flat ->
+                    flat.totalArea != null && flat.totalArea >= from
+                }
+            }
+
+            if (to != null) {
+                resultList = resultList.filter { flat ->
+                    flat.totalArea != null && flat.totalArea <= to
                 }
             }
         }

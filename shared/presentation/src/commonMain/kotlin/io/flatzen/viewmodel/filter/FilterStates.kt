@@ -6,6 +6,7 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
@@ -97,6 +98,7 @@ data class FilterState(
     val adType: AdType = AdType.RENT,
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
+    val totalArea: FromToRange? = null,
     val currency: Currency = Currency.USD,
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
