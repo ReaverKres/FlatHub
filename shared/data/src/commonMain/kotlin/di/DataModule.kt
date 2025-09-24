@@ -11,13 +11,15 @@ import api.createRealtApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
 import mappers.DomovitaFlatMapper
-import mappers.KufarFlatMapper
+import mappers.kufar.KufarFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
+import mappers.kufar.KufarDetailHtmlMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
 import maps.TileProviderImpl
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import repository.domovita.DomovitaRepository
@@ -51,6 +53,9 @@ val dataModule = module {
     single<KufarRepository> {
         KufarRepositoryImpl(
             api = get(),
+            ktorClient = get(),
+            connectionMonitor = get(),
+            kufarDetailHtmlMapper = get(qualifier = DataQualifiers.KUFAR_DETAIL_FLAT_MAPPER),
             kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
             filterRepository = get(),
             flatsDao = get()
@@ -72,14 +77,15 @@ val dataModule = module {
     single<ResponseToEntitiesFlatMapper<OnlinerListResponse.Apartment, AppFlat>>(
         qualifier = DataQualifiers.ONLINER_FLAT_MAPPER
     ) { OnlinerFlatMapper() }
-    single<AdditionalParamMapper<String, AppFlat>> { OnlinerDetailHtmlMapper() }
+    single<AdditionalParamMapper<String, AppFlat>>(qualifier = DataQualifiers.ONLINER_DETAIL_FLAT_MAPPER) { OnlinerDetailHtmlMapper() }
+    single<AdditionalParamMapper<String, AppFlat>>(qualifier = DataQualifiers.KUFAR_DETAIL_FLAT_MAPPER) { KufarDetailHtmlMapper() }
 
     single<OnlinerRepository> {
         OnlinerRepositoryImpl(
             api = get(),
             ktorClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
             onlinerResponseMapper = get(qualifier = DataQualifiers.ONLINER_FLAT_MAPPER),
-            onlinerDetailHtmlMapper = get(),
+            onlinerDetailHtmlMapper = get(qualifier = DataQualifiers.ONLINER_DETAIL_FLAT_MAPPER),
             filterRepository = get(),
             flatsDao = get(),
             connectionMonitor = get()
