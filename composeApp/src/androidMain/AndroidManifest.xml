@@ -22,7 +22,8 @@
         <activity
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
-            android:name="io.flatzen.MainActivity">
+            android:name="io.flatzen.MainActivity"
+            android:theme="@style/Theme.App.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
