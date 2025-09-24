@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +41,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
 import io.flatzen.utils.lonLatToNormalized
+import io.flatzen.utils.shareLauncher
 import io.flatzen.viewmodel.ContactInformationUi
 import io.flatzen.viewmodel.FlatDetailScreenAction
 import io.flatzen.viewmodel.FlatDetailViewModel
@@ -340,19 +342,41 @@ private fun SourceLinkSection(
     modifier: Modifier = Modifier
 ) {
     val uriHandler = LocalUriHandler.current
+    val shareLauncher = shareLauncher()
 
-    Text(
-        text = "Посмотреть объявление на ${platform.value.capitalize()}",
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable {
-                uriHandler.openUri(url)
-            }
             .padding(vertical = 8.dp),
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Bold,
-        textDecoration = TextDecoration.Underline
-    )
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Посмотреть объявление на ${platform.value.capitalize()}",
+            modifier = Modifier
+                .weight(1f)
+                .clickable {
+                    uriHandler.openUri(url)
+                },
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold,
+            textDecoration = TextDecoration.Underline
+        )
+        
+        IconButton(
+            onClick = {
+                shareLauncher.shareText(
+                    text = url,
+                    subject = "Квартира была найдена на Locus"
+                )
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Поделиться"
+            )
+        }
+    }
 }
 
 @Composable
