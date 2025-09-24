@@ -6,10 +6,16 @@ import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.parsing.ParseException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.take
+import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
@@ -17,6 +23,9 @@ import server_response.KufarListResponse
 
 class KufarRepositoryImpl(
     private val api: KufarApi,
+    private val ktorClient: HttpClient,
+    private val connectionMonitor: ConnectionMonitor,
+    private val kufarDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>,
     private val kufarResponseMapper: ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>,
     private val flatsDao: FlatsDao,
     private val filterRepository: FilterRepository
@@ -77,18 +86,32 @@ class KufarRepositoryImpl(
         emit(kufarFlatList ?: listOf())
     }
 
-    override fun getFlatById(flatId: Long): Flow<AppFlat> {
-        return flatsDao.getAllAsFlow()
+    override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
+        val flatFromList =  flatsDao.getAllAsFlow()
             .map { flats ->
                 flats.find { it.adId == flatId }
                     ?: throw NoSuchElementException("Flat with id $flatId not found")
-            }
-            .take(1)
+            }.first()
+        emit(flatFromList)
+        if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
+            val kufarDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
+            val kufarDetailFlat = kufarDetailHtmlMapper.map(flatFromList, kufarDetailFlatHtml)
+            emit(kufarDetailFlat)
+        }
     }
 
     private fun generateSearchId(): String {
         val chars = "0123456789abcdef"
         return (1..32).map { chars.random() }.joinToString("")
+    }
+
+
+    private suspend fun getApartmentHtml(url: String): String {
+        return try {
+            ktorClient.get(url).bodyAsText()
+        } catch (e: Exception) {
+            throw ParseException("Error fetching HTML for $url: ${e.message}")
+        }
     }
 
     override fun clearCashedFlats() {

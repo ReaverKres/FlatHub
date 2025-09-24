@@ -78,7 +78,7 @@ class MergedRepositoryImpl(
             FlatPlatform.ONLINER -> onlinerRepository.getFlatById(flatId)
             FlatPlatform.REALT -> realtRepository.getFlatById(flatId)
             FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(flatId)
-        }
+        }.flowOn(Dispatchers.IO)
         return detailFlat.map {
             it.copy(isViewed = true)
         }.onEach { updatedFlat ->

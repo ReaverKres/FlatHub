@@ -1,14 +1,18 @@
-// KufarFlatMapper.kt
-package mappers
+package mappers.kufar
 
 import entities.AppFlat
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
-import io.flatzen.commoncomponents.date.DateConverter.formatInstant
 import kotlinx.datetime.TimeZone
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.intOrNull
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.KufarListResponse
 
@@ -152,13 +156,14 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         }
 
         val flatDateInstant = DateConverter.stringToInstant(data.listTime.orEmpty())
-        val publishedAtUi = formatInstant(flatDateInstant, TimeZone.currentSystemDefault())
+        val publishedAtUi =
+            DateConverter.formatInstant(flatDateInstant, TimeZone.Companion.currentSystemDefault())
 
         return AppFlat(
             flatPlatform = FlatPlatform.KUFAR,
             flatDevInfo = FlatDevInfo(
-                isDetailData = true,
-                isDetailLoaded = true
+                isDetailData = false,
+                isDetailLoaded = false
             ),
             flatDetailUrl = data.adLink.orEmpty(),
             adId = data.adId ?: -1,
