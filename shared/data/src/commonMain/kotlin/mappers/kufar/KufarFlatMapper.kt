@@ -91,8 +91,7 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             ?.let { Coordinates(latitude = it[1], longitude = it[0]) }
 
         val metroStation = adParams.findParamStringValue("metro")
-            ?.safeStringList()
-            ?.firstOrNull()
+            ?.safeStringList()?.joinToString(", ")
 
         val yearBuilt = adParams.findParamValue("year_built")?.safeInt()
         val totalArea = adParams.findParamValue("size")?.safeDouble()
