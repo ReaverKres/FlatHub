@@ -61,6 +61,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
+import io.flatzen.ForceUpdateDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
@@ -73,6 +74,7 @@ import io.flatzen.uiExtensions.thenIf
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.list.DialogType
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
@@ -148,6 +150,10 @@ fun ListScreen(
             },
             isRefreshing = state.isRefreshing
         ) {
+            if (state.infoDialogState?.isVisible == true && state.infoDialogState?.dialogType == DialogType.ForceUpdate) {
+                ForceUpdateDialog(state.infoDialogState!!)
+            }
+
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
                     isListView = state.isListView,

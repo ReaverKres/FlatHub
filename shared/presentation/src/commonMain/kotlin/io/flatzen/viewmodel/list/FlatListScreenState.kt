@@ -14,7 +14,8 @@ data class FlatListScreenState(
     val noFlatsToLoadMore: Boolean,
     val isAnyFilterApplied: Boolean,
     val flatList: List<UiFlat>,
-    val isListView: Boolean = false
+    val isListView: Boolean = false,
+    val infoDialogState: InfoDialogState? = null
 ) : MviState
 
 @Immutable
@@ -63,6 +64,18 @@ data class UiFlat(
         }
     }
 }
+
+sealed class DialogType() {
+    object ForceUpdate: DialogType()
+}
+
+@Immutable
+data class InfoDialogState(
+    val isVisible: Boolean,
+    val dialogType: DialogType,
+    val title: String,
+    val description: String,
+)
 
 @Immutable
 data class UiPrice(

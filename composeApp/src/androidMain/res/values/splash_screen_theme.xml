@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- themes.xml - Splash application light theme. -->
+    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#edece8</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_insets</item>
+        <item name="postSplashScreenTheme">@style/Theme.LocusCompose</item>
+    </style>
+
+    <style name="Theme.LocusCompose" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- You can customize your app theme here -->
+    </style>
+</resources>

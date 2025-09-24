@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.SaveFilterDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -430,55 +431,4 @@ private fun NumberRange(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
-}
-
-@Composable
-private fun SaveFilterDialog(
-    dialogState: FilterDialogState,
-    onNameChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onCancel: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text("Сохранить фильтр") },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = dialogState.filterName,
-                    onValueChange = onNameChange,
-                    label = { Text("Название фильтра") },
-                    isError = !dialogState.isNameValid,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if (dialogState.errorMessage != null) {
-                    Text(
-                        text = dialogState.errorMessage.orEmpty(),
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-                Text(
-                    text = "Название фильтра не должно превышать 15 символов",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = onSave,
-                enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
-            ) {
-                Text("Сохранить")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onCancel) {
-                Text("Отменить")
-            }
-        }
-    )
 }

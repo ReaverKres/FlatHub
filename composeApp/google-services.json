@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "602261555512",
+    "project_id": "locus-9c9f0",
+    "storage_bucket": "locus-9c9f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602261555512:android:385990fa29ab19c919d9cd",
+        "android_client_info": {
+          "package_name": "io.flatzen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhqFLBUfaSrQQchRVDaJKiJbBGOje-VaY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

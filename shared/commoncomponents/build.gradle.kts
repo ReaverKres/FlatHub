@@ -47,6 +47,11 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.appmetrica.analytics)
+                implementation(project.dependencies.platform(libs.firebase.bom))
+                // Add the dependencies for the Remote Config and Analytics libraries
+                // When using the BoM, you don't specify versions in Firebase library dependencies
+                implementation(libs.firebase.config)
+                implementation(libs.firebase.analytics)
             }
         }
 
