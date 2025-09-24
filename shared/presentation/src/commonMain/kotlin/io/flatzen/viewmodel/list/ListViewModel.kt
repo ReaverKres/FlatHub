@@ -10,6 +10,8 @@ import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
+import io.flatzen.firebase.ConfigFields
+import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
@@ -63,7 +65,8 @@ sealed interface FlatListEvents : MviEvent {
     data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
     data class DbFlatsLoaded(val dbFlats: LCE<List<AppFlat>>) : FlatListEvents
     class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
-    class ViewToggled(val isListView: Boolean) : FlatListEvents // Added ViewToggled event
+    class ViewToggled(val isListView: Boolean) : FlatListEvents
+    class InfoDialogShowed(val dialogType: DialogType, val title: String, val description: String) : FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -71,7 +74,8 @@ class FlatSearchViewModel(
     private val filterRepository: FilterRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val connectionMonitor: ConnectionMonitor,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val configFieldsChecker: ConfigFieldsChecker
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -169,6 +173,15 @@ class FlatSearchViewModel(
                 if (connectionMonitor.isNetworkAvailable.first().not()) {
                     return flowOf()
                 }
+
+                if(configFieldsChecker.checkBoolean(ConfigFields.FreeVersionAvailable)?.not() == true) {
+                    return flowOf(FlatListEvents.InfoDialogShowed(
+                        dialogType = DialogType.ForceUpdate,
+                        title = "Доступна новая версия",
+                        description = "Текущая версия неработоспособна, пожалуйста обновите приложение"
+                    ))
+                }
+
                 if (noFlatsToLoadMore && action.isRefreshing.not()) {
                     return flowOf()
                 }
@@ -315,9 +328,17 @@ class FlatSearchViewModel(
                 }
             )
 
-            // Handle ViewToggled event
             is FlatListEvents.ViewToggled -> {
                 currentState.copy(isListView = event.isListView)
+            }
+
+            is FlatListEvents.InfoDialogShowed -> {
+                currentState.copy(infoDialogState = InfoDialogState(
+                    isVisible = true,
+                    dialogType = event.dialogType,
+                    title = event.title,
+                    description = event.description
+                ))
             }
         }
     }
