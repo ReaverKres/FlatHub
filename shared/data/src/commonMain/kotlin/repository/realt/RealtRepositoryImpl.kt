@@ -77,45 +77,50 @@ class RealtRepositoryImpl(
             filter.pricePerSquare?.priceFrom
         } else null
 
-        val realtFlatList = api.searchFlats(
-            RealtGraphqlRequest(
-                operationName = "searchObjects",
-                variables = Variables(
-                    data = SearchData(
-                        //TODO Добавить метро
-                        where = Where(
-                            addressV2 = listOf(AddressV2(townUUid)),
-                            category = category,
-                            rooms = filter.numberOfRooms?.map { it.toString() },
-                            seller = onlyOwner.toString(), // Только собственники
-                            priceFrom = priceMin.toNullableString(), // Цена от (можно null если не нужно)
-                            priceTo = priceMax.toNullableString(), // Цена до (можно null если не нужно)
-                            priceType = "840" // Валюта (840 = USD)
-                        ),
-                        pagination = PaginationRequestRealt(
-                            page = filterRepository.currentAppPage, pageSize = 30
-                        ),
-                        sort = when (filter.sortOption) {
-                            FlatSort.NEWEST_FIRST -> listOf(
-                                SortItem("paymentStatus", "DESC"),
-                                SortItem("priority", "DESC"),
-                                SortItem("raiseDate", "DESC"),
-                                SortItem("updatedAt", "DESC")
-                            )
-                            FlatSort.CHEAPEST_FIRST -> listOf(
-                                SortItem("price", "ASC")
-                            )
-                            FlatSort.MOST_EXPENSIVE_FIRST -> listOf(
-                                SortItem("price", "DESC")
-                            )
-                        }, // Updated sort implementation
-                        extraFields = listOf("minPriceAggregation")
-                    )
-                ),
-                query = RealtGraphqlRequest.QUERY
-            )
-        ).data?.searchObjects?.body?.results?.filterNotNull()
-            ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+        var realtFlatList: List<AppFlat>? = emptyList()
+        try {
+            realtFlatList = api.searchFlats(
+                RealtGraphqlRequest(
+                    operationName = "searchObjects",
+                    variables = Variables(
+                        data = SearchData(
+                            //TODO Добавить метро
+                            where = Where(
+                                addressV2 = listOf(AddressV2(townUUid)),
+                                category = category,
+                                rooms = filter.numberOfRooms?.map { it.toString() },
+                                seller = onlyOwner.toString(), // Только собственники
+                                priceFrom = priceMin.toNullableString(), // Цена от (можно null если не нужно)
+                                priceTo = priceMax.toNullableString(), // Цена до (можно null если не нужно)
+                                priceType = "840" // Валюта (840 = USD)
+                            ),
+                            pagination = PaginationRequestRealt(
+                                page = filterRepository.currentAppPage, pageSize = 30
+                            ),
+                            sort = when (filter.sortOption) {
+                                FlatSort.NEWEST_FIRST -> listOf(
+                                    SortItem("paymentStatus", "DESC"),
+                                    SortItem("priority", "DESC"),
+                                    SortItem("raiseDate", "DESC"),
+                                    SortItem("updatedAt", "DESC")
+                                )
+                                FlatSort.CHEAPEST_FIRST -> listOf(
+                                    SortItem("price", "ASC")
+                                )
+                                FlatSort.MOST_EXPENSIVE_FIRST -> listOf(
+                                    SortItem("price", "DESC")
+                                )
+                            }, // Updated sort implementation
+                            extraFields = listOf("minPriceAggregation")
+                        )
+                    ),
+                    query = RealtGraphqlRequest.QUERY
+                )
+            ).data?.searchObjects?.body?.results?.filterNotNull()
+                ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
         if (lastEmitList == realtFlatList) {
             emit(listOf())
         } else {

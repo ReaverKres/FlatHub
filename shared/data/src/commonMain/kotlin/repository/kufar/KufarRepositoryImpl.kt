@@ -76,14 +76,18 @@ class KufarRepositoryImpl(
             geoTag = city,
             sortOption = filter.sortOption
         )
-        val kufarFlatList = api.searchFlats(
-            searchId = generateSearchId(),
-            queryParams = params
-        ).also {
-            pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
-        }.ads
-            ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
-        emit(kufarFlatList ?: listOf())
+        try {
+            val kufarFlatList = api.searchFlats(
+                searchId = generateSearchId(),
+                queryParams = params
+            ).also {
+                pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
+            }.ads
+                ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
+            emit(kufarFlatList ?: listOf())
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
