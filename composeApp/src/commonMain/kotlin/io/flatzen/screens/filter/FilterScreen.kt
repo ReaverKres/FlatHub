@@ -12,14 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -27,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -43,9 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,11 +49,12 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
-import io.flatzen.viewmodel.filter.FilterDialogState
+import io.flatzen.utils.onlyDoublePredicate
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
+import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.FilterSwitch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -73,6 +68,7 @@ fun FilterScreen(
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
+    var clearAllEffectKey by remember { mutableStateOf(0) }
 
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
@@ -103,6 +99,7 @@ fun FilterScreen(
                 },
                 actions = {
                     TextButton(onClick = {
+                        clearAllEffectKey = clearAllEffectKey + 1
                         viewModel.onIntent(FilterScreenAction.ClearAllFilters)
                     }) {
                         Text("Сбросить")
@@ -121,7 +118,10 @@ fun FilterScreen(
             // Сохраненные фильтры
             if (state.savedFilters.isNotEmpty()) {
                 HorizontalDivider()
-                FilterSectionTitle(title = "Мои фильтры", style = MaterialTheme.typography.titleMedium)
+                FilterSectionTitle(
+                    title = "Мои фильтры",
+                    style = MaterialTheme.typography.titleMedium
+                )
                 SavedFiltersChips(
                     savedFilters = state.savedFilters,
                     onFilterClick = { filter ->
@@ -138,14 +138,14 @@ fun FilterScreen(
             RentSaleSegmentedButtons(state.filters.adType) {
                 currentFilters = currentFilters.copy(adType = it)
             }
-            
+
             // Сортировка
             FilterSectionTitle(title = "Сортировка")
             SortOptionSegmentedButtons(state.filters.sortOption) { sortOption ->
                 viewModel.onIntent(FilterScreenAction.UpdateSortOption(sortOption))
             }
             // Расположение
-            FilterSectionTitle(title = "Расположение")
+            FilterSectionTitle(title = "Расположение", modifier = Modifier.padding(top = 4.dp))
             ListItem(
                 headlineContent = {
                     Text(state.filters.location?.selectedCity?.displayName.orEmpty())
@@ -189,6 +189,7 @@ fun FilterScreen(
 
             NumberRange(
                 title = "Цена",
+                launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.priceFull?.priceFrom?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -212,6 +213,7 @@ fun FilterScreen(
             )
             NumberRange(
                 title = "Цена за м2",
+                launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.pricePerSquare?.priceFrom?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -236,6 +238,7 @@ fun FilterScreen(
 
             NumberRange(
                 title = "Площадь",
+                launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.totalArea?.fromRange?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -327,9 +330,10 @@ fun SortOptionSegmentedButtons(
         ) {
             Text(
                 "По новизне",
-                maxLines = 1)
+                maxLines = 1
+            )
         }
-        
+
         SegmentedButton(
             selected = selectedSortOption == FlatSort.CHEAPEST_FIRST,
             onClick = { onClick(FlatSort.CHEAPEST_FIRST) },
@@ -341,7 +345,7 @@ fun SortOptionSegmentedButtons(
                 maxLines = 1
             )
         }
-        
+
         SegmentedButton(
             selected = selectedSortOption == FlatSort.MOST_EXPENSIVE_FIRST,
             onClick = { onClick(FlatSort.MOST_EXPENSIVE_FIRST) },
@@ -404,31 +408,30 @@ private fun SavedFiltersChips(
 @Composable
 private fun NumberRange(
     title: String,
+    launchedKey: Any = Unit,
     rangeFrom: String,
     fromOnChange: (String) -> Unit,
     rangeTo: String,
     toOnChange: (String) -> Unit,
 ) {
-    // Цена
-    FilterSectionTitle(title = title)
+
+    FilterSectionTitle(title = title, modifier = Modifier)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(
-            value = rangeFrom,
-            onValueChange = { newValue -> 
-                fromOnChange(newValue)
-            },
-            label = { Text("От") },
+        AppTextField(
             modifier = Modifier.weight(1f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            launchedKey = launchedKey,
+            text = rangeFrom,
+            label = "От",
+            onChangePredicate = onlyDoublePredicate,
+            onChange = fromOnChange
         )
-        OutlinedTextField(
-            value = rangeTo,
-            onValueChange = { newValue -> 
-                toOnChange(newValue)
-            },
-            label = { Text("До") },
+        AppTextField(
             modifier = Modifier.weight(1f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            launchedKey = launchedKey,
+            text = rangeTo,
+            label = "До",
+            onChangePredicate = onlyDoublePredicate,
+            onChange = toOnChange
         )
     }
 }
