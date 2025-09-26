@@ -1,5 +1,6 @@
 package di
 
+import core.KtorConverterFactory
 import de.jensklingenberg.ktorfit.Ktorfit
 
 import io.ktor.client.HttpClient
@@ -38,6 +39,7 @@ val networkModule = module {
 
     single<HttpClient> {
         HttpClient {
+            expectSuccess = true
             install(HttpTimeout) {
                 requestTimeoutMillis = HTTP_TIMEOUT
             }
@@ -56,21 +58,6 @@ val networkModule = module {
             }
 
             install(DefaultRequest) {
-//                // Критически важные заголовки для API Kufar
-//                header("Referer", "https://re.kufar.by/")
-//                header("Origin", "https://re.kufar.by")
-//                header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
-//
-//                // Дополнительные заголовки для более естественного вида
-//                header("Accept", "*/*")
-//                header("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
-//                header("Sec-Fetch-Dest", "empty")
-//                header("Sec-Fetch-Mode", "cors")
-//                header("Sec-Fetch-Site", "same-site")
-//
-//                // Возможно понадобятся эти заголовки
-//                header("x-segmentation", "routing=web_re;platform=web;application=ad_view")
-
                 contentType(ContentType.Application.Json)
             }
         }
@@ -97,6 +84,7 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(KUFAR_BASE_URL)
+            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -106,6 +94,7 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(ONLINER_BASE_URL)
+            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -115,6 +104,7 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(REALT_BASE_URL)
+            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -124,6 +114,7 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(DOMOVITA_BASE_URL)
+            .converterFactories(KtorConverterFactory())
             .build()
     }
 }

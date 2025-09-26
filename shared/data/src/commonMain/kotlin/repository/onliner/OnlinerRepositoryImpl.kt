@@ -2,12 +2,17 @@ package repository.onliner
 
 
 import api.OnlinerApi
+import core.NetworkErrorInfo
+import core.NetworkResponseWrapper
+import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.parsing.ParseException
@@ -18,10 +23,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import server_response.OnlinerErrorResponse
 import server_response.OnlinerListResponse
 
 class OnlinerRepositoryImpl(
@@ -34,7 +41,7 @@ class OnlinerRepositoryImpl(
     private val connectionMonitor: ConnectionMonitor
 ) : OnlinerRepository {
 
-    override fun searchFlats(): Flow<List<AppFlat>> = flow {
+    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val filter = filterRepository.lastFilter()
         val metroLines =
             filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
@@ -77,8 +84,8 @@ class OnlinerRepositoryImpl(
         } else null
 
         val params = OnlinerApi.createParams(
-            minPrice = priceMin?.toInt(),
-            maxPrice = priceMax?.toInt(),
+            minPrice = 380.45,
+            maxPrice = 394.11,
             metroLines = metroLines,
             // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,
@@ -99,11 +106,42 @@ class OnlinerRepositoryImpl(
                 val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
                 api.searchSaleFlats(params, numberOfRooms)
             }
-            val onlinerFlatList = request.apartments
-                ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
-            emit(onlinerFlatList ?: listOf())
+            when (request) {
+                is NetworkResponseWrapper.Success -> {
+                    val onlinerFlatList = request.data.apartments
+                        ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
+                    onlinerFlatList?.let {
+                        emit(NetworkResponseWrapper.success(it))
+                    } ?: run {
+                        emit(networkEmptyList)
+                    }
+                }
+
+                is NetworkResponseWrapper.Error -> {
+                    var parsedError: OnlinerErrorResponse? = null
+
+                    if (request.ex is ClientRequestException) {
+                        val text = request.ex.response.bodyAsText()
+                        try {
+                            parsedError = Json.decodeFromString(
+                                OnlinerErrorResponse.serializer(), text
+                            )
+                        } catch (_: Exception) {
+                            emit(networkEmptyList)
+                        }
+                    }
+                    emit(
+                        NetworkResponseWrapper.error(
+                            request.ex, NetworkErrorInfo(
+                                platform = FlatPlatform.ONLINER,
+                                errorMessages = parsedError?.errorMessages() ?: listOf()
+                            )
+                        )
+                    )
+                }
+            }
         } catch (e: Exception) {
-            emit(emptyList())
+            emit(networkEmptyList)
         }
     }
 
@@ -131,5 +169,11 @@ class OnlinerRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
+    }
+
+    private fun OnlinerErrorResponse.errorMessages(): List<String> {
+        return errors.flatMap { (field, messages) ->
+            messages.map { msg -> "$field: $msg" }
+        }
     }
 }

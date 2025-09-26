@@ -9,6 +9,8 @@ import api.SearchData
 import api.SortItem
 import api.Variables
 import api.Where
+import core.NetworkResponseWrapper
+import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -33,7 +35,7 @@ class RealtRepositoryImpl(
 
     private var lastEmitList: List<AppFlat>? = emptyList()
 
-    override fun searchFlats(): Flow<List<AppFlat>> = flow {
+    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val filter = filterRepository.lastFilter()
         val onlyOwner = if (filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
             true
@@ -119,13 +121,17 @@ class RealtRepositoryImpl(
             ).data?.searchObjects?.body?.results?.filterNotNull()
                 ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
         } catch (e: Exception) {
-            emit(emptyList())
+            emit(networkEmptyList)
         }
         if (lastEmitList == realtFlatList) {
-            emit(listOf())
+            emit(networkEmptyList)
         } else {
             lastEmitList = realtFlatList
-            emit(realtFlatList ?: listOf())
+            realtFlatList?.let {
+                emit(NetworkResponseWrapper.success(it))
+            } ?: run {
+                emit(networkEmptyList)
+            }
         }
     }
 

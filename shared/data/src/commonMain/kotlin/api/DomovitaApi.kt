@@ -54,7 +54,7 @@ interface DomovitaApi {
                 offset = offset,
                 limit = limit,
                 priceType = priceParamName,
-                priceMax = priceMax,
+                priceMax = -1.0,
                 priceMin = priceMin,
                 currency = Currency.USD.name,
                 rooms = rooms?.toList(),

@@ -5,6 +5,8 @@ import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.mvi.MviState
+import io.flatzen.viewmodel.sharedstates.InfoDialogState
+import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 
 @Immutable
 data class FlatListScreenState(
@@ -15,7 +17,8 @@ data class FlatListScreenState(
     val isAnyFilterApplied: Boolean,
     val flatList: List<UiFlat>,
     val isListView: Boolean = false,
-    val infoDialogState: InfoDialogState? = null
+    val infoDialogState: InfoDialogState? = null,
+    val errorDialogState: SearchErrorDialogState? = null
 ) : MviState
 
 @Immutable
@@ -64,18 +67,6 @@ data class UiFlat(
         }
     }
 }
-
-sealed class DialogType() {
-    object ForceUpdate: DialogType()
-}
-
-@Immutable
-data class InfoDialogState(
-    val isVisible: Boolean,
-    val dialogType: DialogType,
-    val title: String,
-    val description: String,
-)
 
 @Immutable
 data class UiPrice(
