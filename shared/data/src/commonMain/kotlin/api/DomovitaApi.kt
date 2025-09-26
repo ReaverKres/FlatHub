@@ -1,5 +1,6 @@
 package api
 
+import core.NetworkResponseWrapper
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -13,12 +14,12 @@ interface DomovitaApi {
     @POST("v1/objects/flats-rent/list")
     suspend fun searchRentFlats(
         @Body request: DomovitaRequest
-    ): DomovitaListResponse
+    ): NetworkResponseWrapper<DomovitaListResponse>
 
     @POST("v1/objects/flats-sale/list")
     suspend fun searchSaleFlats(
         @Body request: DomovitaRequest
-    ): DomovitaListResponse
+    ): NetworkResponseWrapper<DomovitaListResponse>
 
     companion object {
         fun createRequestParams(
