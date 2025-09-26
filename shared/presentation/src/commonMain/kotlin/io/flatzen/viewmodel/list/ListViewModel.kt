@@ -1,5 +1,6 @@
 package io.flatzen.viewmodel.list
 
+import core.NetworkErrorInfo
 import entities.AppFlat
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
@@ -16,10 +17,16 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.viewmodel.base.BaseMviViewModel
+import io.flatzen.viewmodel.list.FlatListEvents.*
+import io.flatzen.viewmodel.sharedstates.DialogType
+import io.flatzen.viewmodel.sharedstates.InfoDialogState
+import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -52,6 +59,7 @@ sealed interface FlatListScreenAction : MviAction {
     // View toggle actions
     data object ToggleView : FlatListScreenAction
     class SetListView(val isListView: Boolean) : FlatListScreenAction
+    object HideNetworkErrorDialog: FlatListScreenAction
 }
 
 sealed interface FlatListEvents : MviEvent {
@@ -66,7 +74,16 @@ sealed interface FlatListEvents : MviEvent {
     data class DbFlatsLoaded(val dbFlats: LCE<List<AppFlat>>) : FlatListEvents
     class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
     class ViewToggled(val isListView: Boolean) : FlatListEvents
-    class InfoDialogShowed(val dialogType: DialogType, val title: String, val description: String) : FlatListEvents
+    class InfoDialogShowed(val dialogType: DialogType, val title: String, val description: String) :
+        FlatListEvents
+
+    class ErrorDialogShowed(
+        val dialogType: DialogType,
+        val title: String,
+        val networkErrorInfo: List<NetworkErrorInfo>
+    ) : FlatListEvents
+
+    class ErrorDialogHidden() : FlatListEvents
 }
 
 class FlatSearchViewModel(
@@ -144,14 +161,14 @@ class FlatSearchViewModel(
 
                 // Load user preferences for view type
                 userPreferencesRepository.getUserPreferences().first()?.let { preferences ->
-                    return flowOf(FlatListEvents.ViewToggled(preferences.isListView))
+                    return flowOf(ViewToggled(preferences.isListView))
                 }
 
                 flowOf()
             }
 
             is FlatListScreenAction.IsAnyFilterAppliedCheck -> {
-                flowOf(FlatListEvents.IsAnyFilterApplied(action.applied))
+                flowOf(IsAnyFilterApplied(action.applied))
             }
 
             is FlatListScreenAction.SearchFlats -> {
@@ -163,8 +180,7 @@ class FlatSearchViewModel(
                             parameters = mapOf(
                                 "is_load_more" to action.isLoadMore,
                                 "is_refreshing" to action.isRefreshing,
-                                "page" to filterRepository.currentAppPage,
-                                "has_network" to connectionMonitor.isNetworkAvailable.first()
+                                "page" to filterRepository.currentAppPage
                             )
                         )
                     )
@@ -174,12 +190,16 @@ class FlatSearchViewModel(
                     return flowOf()
                 }
 
-                if(configFieldsChecker.checkBoolean(ConfigFields.FreeVersionAvailable)?.not() == true) {
-                    return flowOf(FlatListEvents.InfoDialogShowed(
-                        dialogType = DialogType.ForceUpdate,
-                        title = "Доступна новая версия",
-                        description = "Текущая версия неработоспособна, пожалуйста обновите приложение"
-                    ))
+                if (configFieldsChecker.checkBoolean(ConfigFields.FreeVersionAvailable)
+                        ?.not() == true
+                ) {
+                    return flowOf(
+                        InfoDialogShowed(
+                            dialogType = DialogType.ForceUpdate,
+                            title = "Доступна новая версия",
+                            description = "Текущая версия неработоспособна, пожалуйста обновите приложение"
+                        )
+                    )
                 }
 
                 if (noFlatsToLoadMore && action.isRefreshing.not()) {
@@ -197,12 +217,12 @@ class FlatSearchViewModel(
 
             is FlatListScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).asLCE().map {
-                    FlatListEvents.FlatUpdateInFavorite(it)
+                    FlatUpdateInFavorite(it)
                 }
             }
 
             is FlatListScreenAction.LoadDbFlats -> {
-                flowOf(FlatListEvents.DbFlatsLoaded(action.dbFlats))
+                flowOf(DbFlatsLoaded(action.dbFlats))
             }
 
             is FlatListScreenAction.TrackScreenView -> {
@@ -227,14 +247,18 @@ class FlatSearchViewModel(
                 viewModelScope.launch(Dispatchers.IO) {
                     userPreferencesRepository.saveUserPreferences(newIsListView)
                 }
-                flowOf(FlatListEvents.ViewToggled(newIsListView))
+                flowOf(ViewToggled(newIsListView))
             }
 
             is FlatListScreenAction.SetListView -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     userPreferencesRepository.saveUserPreferences(action.isListView)
                 }
-                flowOf(FlatListEvents.ViewToggled(action.isListView))
+                flowOf(ViewToggled(action.isListView))
+            }
+
+            is FlatListScreenAction.HideNetworkErrorDialog -> {
+                flowOf(ErrorDialogHidden())
             }
         }
     }
@@ -247,13 +271,26 @@ class FlatSearchViewModel(
             connectionMonitor.isNetworkAvailable.first().not() -> {
                 mergedRepository.getAllFlatsFromLocalDb()
                     .asLCE()
-                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore, isRefreshing) }
+                    .map { AllFlatsLoaded(it, isLoadMore, isRefreshing) }
             }
 
             else -> {
                 mergedRepository.searchFlats()
-                    .asLCE()
-                    .map { FlatListEvents.AllFlatsLoaded(it, isLoadMore, isRefreshing) }
+                    .flatMapConcat { response ->
+                        val flats = LCE.Content(response.flats) as LCE<List<AppFlat>>
+                        val errors = response.errors
+
+                        // Create both events
+                        val contentEvent = AllFlatsLoaded(flats, isLoadMore, isRefreshing)
+                        val dialogEvent = ErrorDialogShowed(
+                            dialogType = DialogType.NetworkError,
+                            title = "Произошла ошибка",
+                            networkErrorInfo = errors
+                        )
+
+                        // Emit both events sequentially
+                        flowOf(contentEvent, dialogEvent)
+                    }
             }
         }
     }
@@ -263,7 +300,7 @@ class FlatSearchViewModel(
         currentState: FlatListScreenState
     ): FlatListScreenState {
         return when (event) {
-            is FlatListEvents.AllFlatsLoaded -> event.allFlats.process(
+            is AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
                     currentState.copy(
                         isLoading = true,
@@ -277,11 +314,11 @@ class FlatSearchViewModel(
                 onSuccess = { flatsLoaded(it, currentState, event.isLoadMore, event.isRefreshing) }
             )
 
-            is FlatListEvents.IsAnyFilterApplied -> {
+            is IsAnyFilterApplied -> {
                 currentState.copy(isAnyFilterApplied = event.applied)
             }
 
-            is FlatListEvents.FlatUpdateInFavorite -> event.flat.process(
+            is FlatUpdateInFavorite -> event.flat.process(
                 onLoading = { currentState },
                 onError = { _, _ -> currentState },
                 onSuccess = { updatedFlat ->
@@ -298,7 +335,7 @@ class FlatSearchViewModel(
                 }
             )
 
-            is FlatListEvents.DbFlatsLoaded -> event.dbFlats.process(
+            is DbFlatsLoaded -> event.dbFlats.process(
                 onLoading = { currentState },
                 onError = { _, _ ->
                     currentState
@@ -328,17 +365,40 @@ class FlatSearchViewModel(
                 }
             )
 
-            is FlatListEvents.ViewToggled -> {
+            is ViewToggled -> {
                 currentState.copy(isListView = event.isListView)
             }
 
-            is FlatListEvents.InfoDialogShowed -> {
-                currentState.copy(infoDialogState = InfoDialogState(
-                    isVisible = true,
-                    dialogType = event.dialogType,
-                    title = event.title,
-                    description = event.description
-                ))
+            is InfoDialogShowed -> {
+                currentState.copy(
+                    infoDialogState = InfoDialogState(
+                        isVisible = true,
+                        dialogType = event.dialogType,
+                        title = event.title,
+                        description = event.description
+                    )
+                )
+            }
+
+            is ErrorDialogShowed -> {
+                currentState.copy(
+                    errorDialogState = SearchErrorDialogState(
+                        isVisible = true,
+                        dialogType = DialogType.NetworkError,
+                        title = event.title,
+                        errorInfo = event.networkErrorInfo.map {
+                            SearchErrorDialogState.ErrorInfo(
+                                platform = it.platform,
+                                errorMessages = it.errorMessages
+                            )
+                        }
+                    )
+                )
+            }
+            is ErrorDialogHidden -> {
+                currentState.copy(
+                    errorDialogState = null
+                )
             }
         }
     }

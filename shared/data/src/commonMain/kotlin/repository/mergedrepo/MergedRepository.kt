@@ -1,5 +1,6 @@
 package repository.mergedrepo
 
+import core.NetworkResponseWrapper
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
@@ -8,7 +9,7 @@ interface MergedRepository {
 
     val lastEmittedFlats: Flow<List<AppFlat>>
 
-    fun searchFlats(): Flow<List<AppFlat>>
+    fun searchFlats(): Flow<MergedFlatResponse>
 
     suspend fun getFlatById(
         flatPlatform: FlatPlatform,

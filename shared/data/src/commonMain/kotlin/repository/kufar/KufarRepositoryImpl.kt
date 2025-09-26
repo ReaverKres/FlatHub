@@ -2,6 +2,8 @@ package repository.kufar
 
 
 import api.KufarApi
+import core.NetworkResponseWrapper
+import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -35,8 +37,8 @@ class KufarRepositoryImpl(
 
     private var pageCursor: String? = null
 
-    override fun searchFlats(): Flow<List<AppFlat>> = flow {
-        if (pageCursor == null && filterRepository.currentAppPage > 1 ) emit(emptyList())
+    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
+        if (pageCursor == null && filterRepository.currentAppPage > 1 ) emit(networkEmptyList)
         if(filterRepository.currentAppPage == 1) {
             pageCursor = null
         }
@@ -84,9 +86,13 @@ class KufarRepositoryImpl(
                 pageCursor = it.pagination?.pages?.getOrNull(filterRepository.currentAppPage)?.token
             }.ads
                 ?.filterNotNull()?.map { kufarResponseMapper.map(it) }
-            emit(kufarFlatList ?: listOf())
+            kufarFlatList?.let {
+                emit(NetworkResponseWrapper.success(it))
+            } ?: run {
+                emit(networkEmptyList)
+            }
         } catch (e: Exception) {
-            emit(emptyList())
+            emit(networkEmptyList)
         }
     }
 

@@ -1,6 +1,8 @@
 package repository.domovita
 
 import api.DomovitaApi
+import core.NetworkResponseWrapper
+import core.networkEmptyList
 import database.FlatsDao
 import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
@@ -24,12 +26,12 @@ class DomovitaRepositoryImpl(
 
     private var lastEmitList: List<AppFlat>? = emptyList()
 
-    override fun searchFlats(): Flow<List<AppFlat>> = flow {
+    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val currentPage = filterRepository.currentAppPage
 
         // Если не первая страница и нет данных для загрузки, отправляем пустой список
         if (currentPage > 1 && lastEmitList.isNullOrEmpty()) {
-            emit(emptyList())
+            emit(networkEmptyList)
             return@flow
         }
 
@@ -84,14 +86,14 @@ class DomovitaRepositoryImpl(
             }
 
             if(lastEmitList == domovitaFlatList) {
-                emit(listOf())
+                emit(networkEmptyList)
             } else {
                 lastEmitList = domovitaFlatList
-                emit(domovitaFlatList ?: listOf())
+                emit(NetworkResponseWrapper.success(domovitaFlatList))
             }
         } catch (e: Exception) {
             // В случае ошибки отправляем пустой список
-            emit(emptyList())
+            emit(networkEmptyList)
         }
     }
 

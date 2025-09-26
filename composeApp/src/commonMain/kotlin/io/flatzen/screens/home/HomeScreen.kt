@@ -62,6 +62,7 @@ import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.ForceUpdateDialog
+import io.flatzen.SearchErrorDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
@@ -74,17 +75,15 @@ import io.flatzen.uiExtensions.thenIf
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
-import io.flatzen.viewmodel.list.DialogType
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.collections.chunked
-import kotlin.collections.firstOrNull
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,6 +151,15 @@ fun ListScreen(
         ) {
             if (state.infoDialogState?.isVisible == true && state.infoDialogState?.dialogType == DialogType.ForceUpdate) {
                 ForceUpdateDialog(state.infoDialogState!!)
+            }
+
+            if (state.errorDialogState?.isVisible == true) {
+                SearchErrorDialog(
+                    dialogState = state.errorDialogState!!,
+                    onDismiss = {
+                        viewModel.onIntent(FlatListScreenAction.HideNetworkErrorDialog)
+                    }
+                )
             }
 
             when {

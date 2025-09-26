@@ -1,5 +1,7 @@
 package repository.mergedrepo
 
+import core.NetworkErrorInfo
+import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -35,41 +38,60 @@ class MergedRepositoryImpl(
 
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
 
-    override fun searchFlats(): Flow<List<AppFlat>> {
-        val loadedFromNetworkFlats = kufarRepository.searchFlats()
-            .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList -> kufarList + onlinerList }
+    override fun searchFlats(): Flow<MergedFlatResponse> {
+        return kufarRepository.searchFlats()
+            .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
+                listOf(kufarList, onlinerList)
+            }
             .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
             .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
             .mapLatest { networkFlats ->
-                val merged = networkFlats.map { net ->
-                    val fromDb = flatsDao.getById(net.adId)
-                    // Calculate price per square meter
-                    val priceUsdSquare =
-                        if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
-                            net.priceUsd / net.totalArea
-                        } else {
-                            null
+                val appFlats: MutableList<AppFlat> = mutableListOf()
+                val errors: MutableList<NetworkErrorInfo> = mutableListOf()
+
+                networkFlats.forEach { nett ->
+                    when (nett) {
+                        is NetworkResponseWrapper.Success<List<AppFlat>> -> {
+                            nett.data.forEach { net ->
+                                val fromDb = flatsDao.getById(net.adId)
+
+                                val priceUsdSquare = if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
+                                    net.priceUsd / net.totalArea
+                                } else null
+
+                                val priceBynSquare = if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
+                                    net.priceByn / net.totalArea
+                                } else null
+
+                                val updated = net.copy(
+                                    savedInFavorites = fromDb?.savedInFavorites == true,
+                                    isViewed = fromDb?.isViewed == true,
+                                    priceUsdSquare = priceUsdSquare,
+                                    priceBynSquare = priceBynSquare
+                                )
+
+                                appFlats.add(updated)
+                            }
                         }
-                    val priceBynSquare =
-                        if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
-                            net.priceByn / net.totalArea
-                        } else {
-                            null
+                        is NetworkResponseWrapper.Error -> {
+                            nett.error?.let { err ->
+                                errors.add(err)
+                            }
                         }
-                    net.copy(
-                        savedInFavorites = fromDb?.savedInFavorites == true,
-                        isViewed = fromDb?.isViewed == true,
-                        priceUsdSquare = priceUsdSquare,
-                        priceBynSquare = priceBynSquare
-                    )
+                    }
                 }
-                flatsDao.upsertAll(merged)
-                val sortedFlatList = applyLocalSortOrFilters(merged)
+
+                flatsDao.upsertAll(appFlats)
+
+                val sortedFlatList = applyLocalSortOrFilters(appFlats)
                 lastEmittedFlats.emit(sortedFlatList)
-                sortedFlatList
+
+                MergedFlatResponse(
+                    flats = sortedFlatList,
+                    errors = errors
+                )
             }
             .flowOn(Dispatchers.IO)
-        return loadedFromNetworkFlats
     }
 
     override suspend fun getFlatById(flatPlatform: FlatPlatform, flatId: Long): Flow<AppFlat> {
@@ -176,11 +198,12 @@ class MergedRepositoryImpl(
             }
         }
 
-        resultList = when(currentFilter.sortOption) {
+        resultList = when (currentFilter.sortOption) {
             FlatSort.NEWEST_FIRST -> resultList.sortedByDescending { it.publishedAt }
             FlatSort.CHEAPEST_FIRST -> {
                 resultList.sortedBy { it.priceUsd ?: Double.MAX_VALUE }
             }
+
             FlatSort.MOST_EXPENSIVE_FIRST -> {
                 resultList.sortedBy { it.priceUsd ?: Double.MIN_VALUE }.reversed()
             }
