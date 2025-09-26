@@ -1,5 +1,6 @@
 package api
 
+import core.NetworkResponseWrapper
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
@@ -14,7 +15,7 @@ interface KufarApi {
     suspend fun searchFlats(
         @QueryMap queryParams: Map<String, String>,
         @Header("X-SearchID") searchId: String
-    ): KufarListResponse
+    ): NetworkResponseWrapper<KufarListResponse>
 
     companion object {
         private const val KUFAR_PAGE_SIZE = 30
