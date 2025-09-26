@@ -28,7 +28,7 @@ import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import server_response.OnlinerErrorResponse
+import server_response.OnlinerSearchErrorResponses
 import server_response.OnlinerListResponse
 
 class OnlinerRepositoryImpl(
@@ -118,13 +118,13 @@ class OnlinerRepositoryImpl(
                 }
 
                 is NetworkResponseWrapper.Error -> {
-                    var parsedError: OnlinerErrorResponse? = null
+                    var parsedError: OnlinerSearchErrorResponses? = null
 
                     if (request.ex is ClientRequestException) {
                         val text = request.ex.response.bodyAsText()
                         try {
                             parsedError = Json.decodeFromString(
-                                OnlinerErrorResponse.serializer(), text
+                                OnlinerSearchErrorResponses.serializer(), text
                             )
                         } catch (_: Exception) {
                             emit(networkEmptyList)
@@ -171,7 +171,7 @@ class OnlinerRepositoryImpl(
     override fun clearCashedFlats() {
     }
 
-    private fun OnlinerErrorResponse.errorMessages(): List<String> {
+    private fun OnlinerSearchErrorResponses.errorMessages(): List<String> {
         return errors.flatMap { (field, messages) ->
             messages.map { msg -> "$field: $msg" }
         }

@@ -1,6 +1,7 @@
 package repository.domovita
 
 import api.DomovitaApi
+import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
@@ -8,13 +9,17 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.City
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.serialization.json.Json
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import server_response.DomovitaErrorResponse
 import server_response.DomovitaListResponse.DomovitaFlat
 
 class DomovitaRepositoryImpl(
@@ -30,10 +35,10 @@ class DomovitaRepositoryImpl(
         val currentPage = filterRepository.currentAppPage
 
         // Если не первая страница и нет данных для загрузки, отправляем пустой список
-        if (currentPage > 1 && lastEmitList.isNullOrEmpty()) {
-            emit(networkEmptyList)
-            return@flow
-        }
+//        if (currentPage > 1 && lastEmitList.isNullOrEmpty()) {
+//            emit(networkEmptyList)
+//            return@flow
+//        }
 
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = null
@@ -74,22 +79,56 @@ class DomovitaRepositoryImpl(
         )
 
         try {
-            val response = if(filter.adType == AdType.RENT) {
+            val request = if (filter.adType == AdType.RENT) {
                 api.searchRentFlats(request)
             } else {
                 api.searchSaleFlats(request)
             }
-            var domovitaFlatList =
-                response.items.filterNotNull().map { domovitaResponseMapper.map(it) }
-            if (filter.fromOwnerOnly == true) {
-                domovitaFlatList = domovitaFlatList.filter { it.owner == filter.fromOwnerOnly }
-            }
 
-            if(lastEmitList == domovitaFlatList) {
-                emit(networkEmptyList)
-            } else {
-                lastEmitList = domovitaFlatList
-                emit(NetworkResponseWrapper.success(domovitaFlatList))
+            when (request) {
+                is NetworkResponseWrapper.Success -> {
+                    var domovitaFlatList =
+                        request.data.items.filterNotNull().map { domovitaResponseMapper.map(it) }
+
+                    if (filter.fromOwnerOnly == true) {
+                        domovitaFlatList =
+                            domovitaFlatList.filter { it.owner == filter.fromOwnerOnly }
+                    }
+
+                    if (lastEmitList == domovitaFlatList) {
+                        emit(networkEmptyList)
+                    } else {
+                        lastEmitList = domovitaFlatList
+                        emit(NetworkResponseWrapper.success(domovitaFlatList))
+                    }
+                }
+
+                is NetworkResponseWrapper.Error -> {
+                    var parsedError: DomovitaErrorResponse? = null
+
+                    if (request.ex is io.ktor.client.plugins.ClientRequestException ||
+                        request.ex is io.ktor.client.plugins.ServerResponseException
+                    ) {
+                        val text = request.ex.response.bodyAsText()
+                        try {
+                            parsedError = Json.decodeFromString(
+                                DomovitaErrorResponse.serializer(),
+                                text
+                            )
+                        } catch (_: Exception) {
+                            emit(networkEmptyList)
+                        }
+                    }
+
+                    emit(
+                        NetworkResponseWrapper.error(
+                            request.ex, NetworkErrorInfo(
+                                platform = FlatPlatform.DOMOVITA,
+                                errorMessages = parsedError?.errorMessages() ?: listOf()
+                            )
+                        )
+                    )
+                }
             }
         } catch (e: Exception) {
             // В случае ошибки отправляем пустой список
