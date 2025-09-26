@@ -1,5 +1,6 @@
 package api
 
+import core.NetworkResponseWrapper
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.POST
 import server_response.RealtListResponse
@@ -8,7 +9,7 @@ interface RealtApi {
     @POST("bff/graphql")
     suspend fun searchFlats(
         @Body body: RealtGraphqlRequest
-    ): RealtListResponse.RealtListResponseItem
+    ): NetworkResponseWrapper<RealtListResponse.RealtListResponseItem>
 }
 
 @kotlinx.serialization.Serializable

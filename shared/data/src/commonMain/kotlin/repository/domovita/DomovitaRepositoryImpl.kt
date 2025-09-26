@@ -43,25 +43,13 @@ class DomovitaRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = null
 //            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
-        val city = when {
-            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
-                DomovitaCities.MINSK
-            }
-            filter.location.city == CityCode.BREST -> {
-                DomovitaCities.BREST
-            }
-            filter.location.city == CityCode.GOMEL -> {
-                DomovitaCities.GOMEL
-            }
-            filter.location.city == CityCode.GRODNO -> {
-                DomovitaCities.GRODNO
-            }
-            filter.location.city == CityCode.MOGILEV -> {
-                DomovitaCities.MOGILEV
-            }
-            filter.location.city == CityCode.VITEBSK -> {
-                DomovitaCities.VITEBSK
-            }
+        val city = when(filter.location?.city) {
+            null, CityCode.MINSK -> DomovitaCities.MINSK
+            CityCode.BREST -> DomovitaCities.BREST
+            CityCode.GOMEL -> DomovitaCities.GOMEL
+            CityCode.GRODNO -> DomovitaCities.GRODNO
+            CityCode.MOGILEV -> DomovitaCities.MOGILEV
+            CityCode.VITEBSK -> DomovitaCities.VITEBSK
             else -> DomovitaCities.MINSK
         }
 
