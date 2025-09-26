@@ -9,12 +9,14 @@ import api.SearchData
 import api.SortItem
 import api.Variables
 import api.Where
+import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.extensions.toNullableString
 import kotlinx.coroutines.flow.Flow
@@ -37,51 +39,32 @@ class RealtRepositoryImpl(
 
     override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val filter = filterRepository.lastFilter()
-        val onlyOwner = if (filter.fromOwnerOnly != null && filter.fromOwnerOnly) {
-            true
-        } else null
-        val townUUid = when {
-            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
-                RealtCities.MINSK
-            }
+        val onlyOwner = if (filter.fromOwnerOnly == true) true else null
 
-            filter.location.city == CityCode.BREST -> {
-                RealtCities.BREST
-            }
-
-            filter.location.city == CityCode.GOMEL -> {
-                RealtCities.GOMEL
-            }
-
-            filter.location.city == CityCode.GRODNO -> {
-                RealtCities.GRODNO
-            }
-
-            filter.location.city == CityCode.MOGILEV -> {
-                RealtCities.MOGILEV
-            }
-
-            filter.location.city == CityCode.VITEBSK -> {
-                RealtCities.VITEBSK
-            }
-
+        val townUUid = when (filter.location?.city) {
+            null, CityCode.MINSK -> RealtCities.MINSK
+            CityCode.BREST -> RealtCities.BREST
+            CityCode.GOMEL -> RealtCities.GOMEL
+            CityCode.GRODNO -> RealtCities.GRODNO
+            CityCode.MOGILEV -> RealtCities.MOGILEV
+            CityCode.VITEBSK -> RealtCities.VITEBSK
             else -> RealtCities.MINSK
         }
-        val category = if (filter.isRentType) 2 else 5
-        val priceMax = if (filter.priceFull != null) {
-            filter.priceFull.priceTo
-        } else if (filter.adType == AdType.SALE) {
-            filter.pricePerSquare?.priceTo
-        } else null
-        val priceMin = if (filter.priceFull != null) {
-            filter.priceFull.priceFrom
-        } else if (filter.adType == AdType.SALE) {
-            filter.pricePerSquare?.priceFrom
-        } else null
 
-        var realtFlatList: List<AppFlat>? = emptyList()
+        val category = if (filter.isRentType) 2 else 5
+        val priceMax = when {
+            filter.priceFull != null -> filter.priceFull.priceTo
+            filter.adType == AdType.SALE -> filter.pricePerSquare?.priceTo
+            else -> null
+        }
+        val priceMin = when {
+            filter.priceFull != null -> filter.priceFull.priceFrom
+            filter.adType == AdType.SALE -> filter.pricePerSquare?.priceFrom
+            else -> null
+        }
+
         try {
-            realtFlatList = api.searchFlats(
+            val request = api.searchFlats(
                 RealtGraphqlRequest(
                     operationName = "searchObjects",
                     variables = Variables(
@@ -118,20 +101,37 @@ class RealtRepositoryImpl(
                     ),
                     query = RealtGraphqlRequest.QUERY
                 )
-            ).data?.searchObjects?.body?.results?.filterNotNull()
-                ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+            )
+
+            val result: NetworkResponseWrapper<List<AppFlat>> = when (request) {
+                is NetworkResponseWrapper.Success -> {
+                    val flats = request.data.data?.searchObjects?.body?.results
+                        ?.filterNotNull()
+                        ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+                        .orEmpty()
+
+                    if (lastEmitList == flats) {
+                        networkEmptyList
+                    } else {
+                        lastEmitList = flats
+                        NetworkResponseWrapper.success(flats)
+                    }
+                }
+
+                is NetworkResponseWrapper.Error -> {
+                    NetworkResponseWrapper.error(
+                        IllegalStateException(),
+                        NetworkErrorInfo(
+                            platform = FlatPlatform.REALT,
+                            errorMessages = listOf("Что-то пошло не так")
+                        )
+                    )
+                }
+            }
+
+            emit(result)
         } catch (e: Exception) {
             emit(networkEmptyList)
-        }
-        if (lastEmitList == realtFlatList) {
-            emit(networkEmptyList)
-        } else {
-            lastEmitList = realtFlatList
-            realtFlatList?.let {
-                emit(NetworkResponseWrapper.success(it))
-            } ?: run {
-                emit(networkEmptyList)
-            }
         }
     }
 

@@ -45,31 +45,13 @@ class OnlinerRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroLines =
             filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
-        val cityBounds = when {
-            filter.location?.city == null || filter.location.city == CityCode.MINSK -> {
-                OnlinerCitiesBounds.MINSK
-            }
-
-            filter.location.city == CityCode.BREST -> {
-                OnlinerCitiesBounds.BREST
-            }
-
-            filter.location.city == CityCode.GOMEL -> {
-                OnlinerCitiesBounds.GOMEL
-            }
-
-            filter.location.city == CityCode.GRODNO -> {
-                OnlinerCitiesBounds.GRODNO
-            }
-
-            filter.location.city == CityCode.MOGILEV -> {
-                OnlinerCitiesBounds.MOGILEV
-            }
-
-            filter.location.city == CityCode.VITEBSK -> {
-                OnlinerCitiesBounds.VITEBSK
-            }
-
+        val cityBounds = when(filter.location?.city) {
+            null,  CityCode.MINSK -> OnlinerCitiesBounds.MINSK
+            CityCode.BREST -> OnlinerCitiesBounds.BREST
+            CityCode.GOMEL -> OnlinerCitiesBounds.GOMEL
+            CityCode.GRODNO -> OnlinerCitiesBounds.GRODNO
+            CityCode.MOGILEV -> OnlinerCitiesBounds.MOGILEV
+            CityCode.VITEBSK -> OnlinerCitiesBounds.VITEBSK
             else -> OnlinerCitiesBounds.MINSK
         }
         val priceMax = if (filter.priceFull != null) {
@@ -84,8 +66,8 @@ class OnlinerRepositoryImpl(
         } else null
 
         val params = OnlinerApi.createParams(
-            minPrice = 380.45,
-            maxPrice = 394.11,
+            minPrice = priceMin,
+            maxPrice = priceMax,
             metroLines = metroLines,
             // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,

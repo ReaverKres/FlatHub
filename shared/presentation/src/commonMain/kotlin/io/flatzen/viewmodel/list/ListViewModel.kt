@@ -381,9 +381,10 @@ class FlatSearchViewModel(
             }
 
             is ErrorDialogShowed -> {
+                val hasError = event.networkErrorInfo.flatMap { it.errorMessages }.isNotEmpty()
                 currentState.copy(
                     errorDialogState = SearchErrorDialogState(
-                        isVisible = true,
+                        isVisible = hasError,
                         dialogType = DialogType.NetworkError,
                         title = event.title,
                         errorInfo = event.networkErrorInfo.map {
