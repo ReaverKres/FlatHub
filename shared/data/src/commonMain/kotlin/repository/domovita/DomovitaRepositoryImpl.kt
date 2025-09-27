@@ -119,8 +119,8 @@ class DomovitaRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            // В случае ошибки отправляем пустой список
-            emit(networkEmptyList)
+//            // В случае ошибки отправляем пустой список
+//            emit(networkEmptyList)
         }
     }
 
