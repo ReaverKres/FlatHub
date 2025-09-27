@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
@@ -276,20 +277,36 @@ class FlatSearchViewModel(
 
             else -> {
                 mergedRepository.searchFlats()
-                    .flatMapConcat { response ->
-                        val flats = LCE.Content(response.flats) as LCE<List<AppFlat>>
-                        val errors = response.errors
+                    .asLCE()  // Convert Flow<MergedFlatResponse> to LCE<MergedFlatResponse>
+                    .flatMapConcat { lceResult ->
+                        when (lceResult) {
+                            is LCE.Content -> {
+                                val response = lceResult.value
+                                val flatsLce = LCE.Content(response.flats) as LCE<List<AppFlat>>
+                                val contentEvent = AllFlatsLoaded(flatsLce, isLoadMore, isRefreshing)
 
-                        // Create both events
-                        val contentEvent = AllFlatsLoaded(flats, isLoadMore, isRefreshing)
-                        val dialogEvent = ErrorDialogShowed(
-                            dialogType = DialogType.NetworkError,
-                            title = "Произошла ошибка",
-                            networkErrorInfo = errors
-                        )
-
-                        // Emit both events sequentially
-                        flowOf(contentEvent, dialogEvent)
+                                // Check if there are errors to display
+                                if (response.errors.isNotEmpty() &&
+                                    response.errors.any { it.errorMessages.isNotEmpty() }) {
+                                    val dialogEvent = ErrorDialogShowed(
+                                        dialogType = DialogType.NetworkError,
+                                        title = "Произошла ошибка",
+                                        networkErrorInfo = response.errors
+                                    )
+                                    flowOf(contentEvent, dialogEvent)
+                                } else {
+                                    flowOf(contentEvent)
+                                }
+                            }
+                            is LCE.Error -> {
+                                val errorLce = LCE.Error<List<AppFlat>>(lceResult.message, lceResult.throwable)
+                                flowOf(AllFlatsLoaded(errorLce, isLoadMore, isRefreshing))
+                            }
+                            is LCE.Loading -> {
+                                val loadingLce = LCE.Loading<List<AppFlat>>()
+                                flowOf(AllFlatsLoaded(loadingLce, isLoadMore, isRefreshing))
+                            }
+                        }
                     }
             }
         }
@@ -412,31 +429,36 @@ class FlatSearchViewModel(
     ): FlatListScreenState {
         val uiFlatList = UiFlat.appFlatListToUiFlatList(flats)
 
-        return if (currentState.flatList.isNotEmpty() && uiFlatList.isEmpty()) {
-            noFlatsToLoadMore = true
-            currentState.copy(
-                isLoading = false,
-                isRefreshing = false,
-                isLoadingMore = false,
-                flatList = currentState.flatList,
+        return when {
+            isLoadMore -> {
+                if(uiFlatList.isEmpty()) noFlatsToLoadMore = true
+                currentState.copy(
+                    noFlatsToLoadMore = noFlatsToLoadMore,
+                    isRefreshing = false,
+                    isLoading = false,
+                    isLoadingMore = false,
+                    flatList = currentState.flatList + uiFlatList
+                )
+            }
+            uiFlatList.isEmpty() -> {
                 noFlatsToLoadMore = true
-            )
-        } else if (isLoadMore) {
-            currentState.copy(
-                noFlatsToLoadMore = false,
-                isRefreshing = false,
-                isLoading = false,
-                isLoadingMore = false,
-                flatList = currentState.flatList + uiFlatList
-            )
-        } else {
-            currentState.copy(
-                noFlatsToLoadMore = false,
-                isRefreshing = false,
-                isLoading = false,
-                isLoadingMore = false,
-                flatList = uiFlatList
-            )
+                currentState.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    isLoadingMore = false,
+                    flatList = uiFlatList,
+                    noFlatsToLoadMore = noFlatsToLoadMore
+                )
+            }
+            else -> {
+                currentState.copy(
+                    noFlatsToLoadMore = false,
+                    isRefreshing = false,
+                    isLoading = false,
+                    isLoadingMore = false,
+                    flatList = uiFlatList
+                )
+            }
         }
     }
 }

@@ -131,7 +131,7 @@ class RealtRepositoryImpl(
 
             emit(result)
         } catch (e: Exception) {
-            emit(networkEmptyList)
+//            emit(networkEmptyList)
         }
     }
 

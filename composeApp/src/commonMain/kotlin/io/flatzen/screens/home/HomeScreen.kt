@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -39,6 +40,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +55,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
@@ -112,7 +116,7 @@ fun ListScreen(
 
     val showScrollToTopBtn by remember {
         val count = if (state.isListView) 6 else 8
-        derivedStateOf { firstVisibleItemIndex >= count }
+        derivedStateOf { firstVisibleItemIndex >= count && state.flatList.isNotEmpty() }
     }
 
     LaunchedEffect(Unit) {
@@ -162,21 +166,54 @@ fun ListScreen(
                 )
             }
 
+            TextButton(
+                modifier = Modifier
+                    .padding(6.dp)
+                    .align(Alignment.TopEnd),
+                onClick = {
+                currentFilters = FilterState()
+            }) {
+                Text("Сбросить фильтр")
+            }
+
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
+                    modifier = Modifier.padding(top = 54.dp),
                     isListView = state.isListView,
                     onToggleView = {
                         viewModel.onIntent(FlatListScreenAction.ToggleView)
                     }
                 )
 
-                state.isLoading.not() && state.flatList.isEmpty() -> EmptyScreenContent(
-                    modifier = Modifier.fillMaxSize(),
-                    stringResource = Res.string.no_data_available
-                )
+                state.isLoading.not() && state.flatList.isEmpty() -> {
+                    LazyColumn(
+                        modifier = modifier.fillMaxSize().padding(top = 54.dp),
+                        contentPadding = PaddingValues(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        topContentHeader(
+                            isListView = state.isListView,
+                            filterState = filterScreenState.filters,
+                            updateFilters = {
+                                currentFilters = it
+                            },
+                            onToggleView = {
+                                viewModel.onIntent(FlatListScreenAction.ToggleView)
+                            }
+                        )
+                        item {
+                            Spacer(Modifier.height(32.dp))
+                            EmptyScreenContent(
+                                modifier = Modifier.fillMaxSize(),
+                                stringResource = Res.string.no_data_available
+                            )
+                        }
+                    }
+                }
 
                 else -> {
                     FlatList(
+                        modifier = Modifier.padding(top = 54.dp),
                         lazyListState = lazyListState,
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,

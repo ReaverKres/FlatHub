@@ -30,6 +30,7 @@ import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import server_response.OnlinerSearchErrorResponses
 import server_response.OnlinerListResponse
+import kotlin.math.roundToInt
 
 class OnlinerRepositoryImpl(
     private val api: OnlinerApi,
@@ -66,8 +67,8 @@ class OnlinerRepositoryImpl(
         } else null
 
         val params = OnlinerApi.createParams(
-            minPrice = priceMin,
-            maxPrice = priceMax,
+            minPrice = priceMin?.roundToInt(),
+            maxPrice = priceMax?.roundToInt(),
             metroLines = metroLines,
             // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,
@@ -123,7 +124,7 @@ class OnlinerRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            emit(networkEmptyList)
+//            emit(networkEmptyList)
         }
     }
 

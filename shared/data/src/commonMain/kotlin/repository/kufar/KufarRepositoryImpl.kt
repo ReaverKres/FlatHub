@@ -128,7 +128,7 @@ class KufarRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-            emit(networkEmptyList)
+//            emit(networkEmptyList)
         }
     }
 

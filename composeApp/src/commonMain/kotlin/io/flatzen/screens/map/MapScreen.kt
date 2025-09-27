@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.SearchErrorDialog
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -216,6 +217,16 @@ fun MapScreen(
                             .padding(4.dp)
                     )
                 }
+
+                if (listState.errorDialogState?.isVisible == true) {
+                    SearchErrorDialog(
+                        dialogState = listState.errorDialogState!!,
+                        onDismiss = {
+                            listViewModel.onIntent(FlatListScreenAction.HideNetworkErrorDialog)
+                        }
+                    )
+                }
+
                 Column(Modifier.fillMaxWidth().wrapContentHeight()) {
                     Spacer(Modifier.height(12.dp))
                     Row(
