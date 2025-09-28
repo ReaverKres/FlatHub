@@ -56,6 +56,8 @@ import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
 import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.FilterSwitch
+import io.flatzen.widgets.RentSaleButtons
+import io.flatzen.widgets.SortOptionRadioButtons
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -113,7 +115,6 @@ fun FilterScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Сохраненные фильтры
             if (state.savedFilters.isNotEmpty()) {
@@ -135,13 +136,13 @@ fun FilterScreen(
             }
 
             // Продажа или Аренда
-            RentSaleSegmentedButtons(state.filters.adType) {
+            RentSaleButtons(state.filters.adType) {
                 currentFilters = currentFilters.copy(adType = it)
             }
 
             // Сортировка
             FilterSectionTitle(title = "Сортировка")
-            SortOptionSegmentedButtons(state.filters.sortOption) { sortOption ->
+            SortOptionRadioButtons(state.filters.sortOption) { sortOption ->
                 viewModel.onIntent(FilterScreenAction.UpdateSortOption(sortOption))
             }
             // Расположение
@@ -170,6 +171,7 @@ fun FilterScreen(
             }
 
             FilterSectionTitle(title = "Комнат в квартире")
+            Spacer(Modifier.height(6.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Room.values().forEach {
                     val room = it.displayName.toInt()
@@ -186,6 +188,8 @@ fun FilterScreen(
                     )
                 }
             }
+
+            Spacer(Modifier.height(10.dp))
 
             NumberRange(
                 title = "Цена",
@@ -211,6 +215,7 @@ fun FilterScreen(
                     )
                 }
             )
+            Spacer(Modifier.height(10.dp))
             NumberRange(
                 title = "Цена за м2",
                 launchedKey = clearAllEffectKey,
@@ -236,6 +241,8 @@ fun FilterScreen(
                 }
             )
 
+            Spacer(Modifier.height(10.dp))
+
             NumberRange(
                 title = "Площадь",
                 launchedKey = clearAllEffectKey,
@@ -260,6 +267,8 @@ fun FilterScreen(
                     )
                 }
             )
+
+            Spacer(Modifier.height(16.dp))
 
             TextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -287,76 +296,6 @@ fun FilterScreen(
                 viewModel.onIntent(FilterScreenAction.HideSaveFilterDialog)
             }
         )
-    }
-}
-
-@Composable
-fun RentSaleSegmentedButtons(
-    selectedAdType: AdType,
-    onClick: (AdType) -> Unit
-) {
-
-    SingleChoiceSegmentedButtonRow {
-        SegmentedButton(
-            selected = selectedAdType == AdType.RENT,
-            onClick = { onClick(AdType.RENT) },
-            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-            colors = SegmentedButtonDefaults.colors()
-        ) {
-            Text("Аренда")
-        }
-
-        SegmentedButton(
-            selected = selectedAdType == AdType.SALE,
-            onClick = { onClick(AdType.SALE) },
-            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-            colors = SegmentedButtonDefaults.colors()
-        ) {
-            Text("Продажа")
-        }
-    }
-}
-
-@Composable
-fun SortOptionSegmentedButtons(
-    selectedSortOption: FlatSort,
-    onClick: (FlatSort) -> Unit
-) {
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-        SegmentedButton(
-            selected = selectedSortOption == FlatSort.NEWEST_FIRST,
-            onClick = { onClick(FlatSort.NEWEST_FIRST) },
-            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
-        ) {
-            Text(
-                "По новизне",
-                maxLines = 1
-            )
-        }
-
-        SegmentedButton(
-            selected = selectedSortOption == FlatSort.CHEAPEST_FIRST,
-            onClick = { onClick(FlatSort.CHEAPEST_FIRST) },
-            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
-        ) {
-            Text(
-                "Сначала дешевле",
-                overflow = TextOverflow.StartEllipsis,
-                maxLines = 1
-            )
-        }
-
-        SegmentedButton(
-            selected = selectedSortOption == FlatSort.MOST_EXPENSIVE_FIRST,
-            onClick = { onClick(FlatSort.MOST_EXPENSIVE_FIRST) },
-            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3)
-        ) {
-            Text(
-                "Сначала дороже",
-                overflow = TextOverflow.Visible,
-                maxLines = 1
-            )
-        }
     }
 }
 
@@ -416,6 +355,7 @@ private fun NumberRange(
 ) {
 
     FilterSectionTitle(title = title, modifier = Modifier)
+    Spacer(Modifier.height(6.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         AppTextField(
             modifier = Modifier.weight(1f),
