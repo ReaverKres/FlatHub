@@ -22,16 +22,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,11 +55,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -71,12 +74,12 @@ import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
-import io.flatzen.screens.filter.RentSaleSegmentedButtons
-import io.flatzen.screens.filter.SortOptionSegmentedButtons
 import io.flatzen.screens.map.FlatItemContent
 import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
+import io.flatzen.utils.text
 import io.flatzen.viewmodel.filter.FilterScreenAction
+import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
@@ -85,6 +88,8 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
+import io.flatzen.widgets.RentSaleButtons
+import io.flatzen.widgets.SortBottomSheet
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -102,6 +107,14 @@ fun ListScreen(
     val filterViewModel = koinViewModel<FilterViewModel>()
     val filterScreenState by filterViewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(filterScreenState.filters) { mutableStateOf(filterScreenState.filters) }
+
+    val localDensity = LocalDensity.current
+    var resetFilterButtonSize by remember { mutableStateOf(DpSize.Zero) }
+    val resetFilterButtonHeight: Dp = remember(resetFilterButtonSize) {
+        resetFilterButtonSize.height
+    }
+
+    var showSortSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
         filterViewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -168,17 +181,27 @@ fun ListScreen(
 
             TextButton(
                 modifier = Modifier
+                    .wrapContentHeight()
                     .padding(6.dp)
-                    .align(Alignment.TopEnd),
+                    .align(Alignment.TopEnd)
+                    .onSizeChanged { size ->
+                        resetFilterButtonSize = localDensity.run {
+                            DpSize(
+                                size.width.toDp(),
+                                size.height.toDp()
+                            )
+                        }
+                        resetFilterButtonSize
+                    },
                 onClick = {
-                currentFilters = FilterState()
-            }) {
+                    currentFilters = FilterState()
+                }) {
                 Text("Сбросить фильтр")
             }
 
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
-                    modifier = Modifier.padding(top = 54.dp),
+                    modifier = Modifier.padding(top = resetFilterButtonHeight),
                     isListView = state.isListView,
                     onToggleView = {
                         viewModel.onIntent(FlatListScreenAction.ToggleView)
@@ -187,7 +210,7 @@ fun ListScreen(
 
                 state.isLoading.not() && state.flatList.isEmpty() -> {
                     LazyColumn(
-                        modifier = modifier.fillMaxSize().padding(top = 54.dp),
+                        modifier = modifier.fillMaxSize().padding(top = resetFilterButtonHeight),
                         contentPadding = PaddingValues(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
@@ -213,7 +236,7 @@ fun ListScreen(
 
                 else -> {
                     FlatList(
-                        modifier = Modifier.padding(top = 54.dp),
+                        modifier = Modifier.padding(top = resetFilterButtonHeight),
                         lazyListState = lazyListState,
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
@@ -239,6 +262,9 @@ fun ListScreen(
                                 },
                                 onToggleView = {
                                     viewModel.onIntent(FlatListScreenAction.ToggleView)
+                                },
+                                showSortSheet = {
+                                    showSortSheet = true
                                 }
                             )
                         }
@@ -246,7 +272,6 @@ fun ListScreen(
                 }
             }
 
-            // Кнопка прокрутки наверх - ВНЕ PullToRefreshBox
             AnimatedVisibility(
                 visible = showScrollToTopBtn,
                 modifier = Modifier
@@ -299,6 +324,16 @@ fun ListScreen(
                     )
                 }
 
+            }
+
+            if (showSortSheet) {
+                SortBottomSheet(
+                    selectedSortOption = currentFilters.sortOption,
+                    onOptionSelected = { sortOption: FlatSort ->
+                        currentFilters = currentFilters.copy(sortOption = sortOption)
+                    },
+                    onDismiss = { showSortSheet = false }
+                )
             }
 
         }
@@ -430,18 +465,13 @@ private fun LazyListScope.topContentHeader(
     filterState: FilterState?,
     updateFilters: (FilterState) -> Unit,
     onToggleView: () -> Unit,
+    showSortSheet: () -> Unit = {}
 ) {
 
     filterState?.let {
         item {
-            RentSaleSegmentedButtons(filterState.adType) {
+            RentSaleButtons(filterState.adType) {
                 updateFilters(filterState.copy(adType = it))
-            }
-        }
-
-        item {
-            SortOptionSegmentedButtons(filterState.sortOption) { sortOption ->
-                updateFilters(filterState.copy(sortOption = sortOption))
             }
         }
     }
@@ -455,6 +485,7 @@ private fun LazyListScope.topContentHeader(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
                 model = Res.getUri("drawable/grid.svg"),
@@ -473,6 +504,23 @@ private fun LazyListScope.topContentHeader(
                 },
                 colorFilter = ColorFilter.tint(if (isListView) activeColor else unSelectedColor)
             )
+
+            filterState?.let {
+                Spacer(Modifier.width(12.dp))
+                AssistChip(
+                    modifier = Modifier.wrapContentSize(),
+                    onClick = showSortSheet,
+                    label = { Text(text = filterState.sortOption.text) },
+                    trailingIcon = {
+                        AsyncImage(
+                            model = Res.getUri("drawable/sort.svg"),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            colorFilter = ColorFilter.tint(unSelectedColor)
+                        )
+                    }
+                )
+            }
         }
     }
 }

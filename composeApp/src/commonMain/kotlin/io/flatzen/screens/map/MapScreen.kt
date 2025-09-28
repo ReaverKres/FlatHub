@@ -57,6 +57,7 @@ import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
+import io.flatzen.widgets.MapScreenWithFlatModalSheet
 import io.flatzen.widgets.OpenInMapButton
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
@@ -312,46 +313,6 @@ private fun Cluster(size: Int) {
             text = size.toString(),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MapScreenWithFlatModalSheet(
-    selectedFlat: UiFlat?,
-    onFlatSelected: (UiFlat?) -> Unit,
-    clickOnFavorite: (UiFlat) -> Unit,
-    navigateToDetails: (FlatPlatform, Long) -> Unit,
-    mapContent: @Composable () -> Unit
-) {
-    val open = selectedFlat != null
-    Box(Modifier.fillMaxSize()) {
-        mapContent()
-
-        if (open) {
-            ModalBottomSheet(
-                onDismissRequest = { onFlatSelected(null) },
-                containerColor = MaterialTheme.colorScheme.surface
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    FlatItemContent(
-                        flat = selectedFlat,
-                        onClick = {
-                            onFlatSelected(null)
-                            navigateToDetails(selectedFlat.flatPlatform, selectedFlat.adId)
-                        },
-                        clickOnFavorite = { clickOnFavorite(selectedFlat) }
-                    )
-                    selectedFlat.coordinates?.let {
-                        OpenInMapButton(
-                            coordinates = it,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                        )
-                        Spacer(Modifier.height(16.dp))
-                    }
-                }
-            }
-        }
     }
 }
 
