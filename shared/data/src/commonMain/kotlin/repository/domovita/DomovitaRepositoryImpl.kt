@@ -75,13 +75,8 @@ class DomovitaRepositoryImpl(
 
             when (request) {
                 is NetworkResponseWrapper.Success -> {
-                    var domovitaFlatList =
+                    val domovitaFlatList =
                         request.data.items.filterNotNull().map { domovitaResponseMapper.map(it) }
-
-                    if (filter.fromOwnerOnly == true) {
-                        domovitaFlatList =
-                            domovitaFlatList.filter { it.owner == filter.fromOwnerOnly }
-                    }
 
                     if (lastEmitList == domovitaFlatList) {
                         emit(networkEmptyList)

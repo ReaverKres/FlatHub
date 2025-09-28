@@ -209,6 +209,14 @@ class MergedRepositoryImpl(
             }
         }
 
+        if (currentFilter.fromOwnerOnly == true) {
+            resultList = resultList.filter { it.owner == currentFilter.fromOwnerOnly }
+        }
+
+        if (currentFilter.withPhotoOnly) {
+            resultList = resultList.filter { it.imageUrls?.isNotEmpty() == true}
+        }
+
         return resultList
     }
 

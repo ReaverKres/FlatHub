@@ -105,6 +105,7 @@ data class FilterState(
     val location: LocationUiFilter? = null,
     val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
+    val withPhotoOnly: Boolean = false,
     val kidsAllowed: Boolean = false,
     val petsAllowed: Boolean = false,
     val amenities: Set<Amenity> = emptySet(),
