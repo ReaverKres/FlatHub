@@ -343,6 +343,7 @@ class FilterViewModel(
             totalArea = model.totalArea,
             currency = model.currency,
             fromOwnerOnly = model.fromOwnerOnly ?: false,
+            withPhotoOnly = model.withPhotoOnly,
             rooms = model.numberOfRooms ?: emptySet(),
             metroStationsState = MetroStationsMapper.allStationsOrderedForUi().map { uiStation ->
                 val sameStationFromRequest = model.metroStations.find { it.name == uiStation.name }
@@ -370,6 +371,7 @@ class FilterViewModel(
             currency = filters.currency,
             numberOfRooms = filters.rooms,
             fromOwnerOnly = filters.fromOwnerOnly,
+            withPhotoOnly= filters.withPhotoOnly,
             metroStations = MetroStations.allStationsRequest().map { requestStation ->
                 val sameStationFromUi =
                     filters.metroStationsState.find { it.name == requestStation.name }

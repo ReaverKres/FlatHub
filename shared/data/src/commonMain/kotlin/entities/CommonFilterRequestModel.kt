@@ -57,6 +57,7 @@ data class CommonFilterRequestModel(
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
     val fromOwnerOnly: Boolean? = null,
+    val withPhotoOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
 ) {
 
@@ -95,6 +96,7 @@ data class CommonFilterRequestModel(
             else -> this.fromOwnerOnly == other.fromOwnerOnly
         }
 
+        if(withPhotoOnly != other.withPhotoOnly) return false
         if (adType != other.adType) return false
         if(totalArea != other.totalArea) return false
         if (priceFull != other.priceFull) return false
@@ -116,6 +118,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + (totalArea?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
+        result = 31 * result + withPhotoOnly.hashCode()
         result = 31 * result + adType.hashCode()
         result = 31 * result + currency.hashCode()
         result = 31 * result + priceType.hashCode()

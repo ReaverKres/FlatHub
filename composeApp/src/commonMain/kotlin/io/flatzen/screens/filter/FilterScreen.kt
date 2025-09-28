@@ -169,6 +169,10 @@ fun FilterScreen(
             FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
                 currentFilters = currentFilters.copy(fromOwnerOnly = it)
             }
+            Spacer(Modifier.height(6.dp))
+            FilterSwitch("Только с фото", currentFilters.withPhotoOnly) {
+                currentFilters = currentFilters.copy(withPhotoOnly = it)
+            }
 
             FilterSectionTitle(title = "Комнат в квартире")
             Spacer(Modifier.height(6.dp))
