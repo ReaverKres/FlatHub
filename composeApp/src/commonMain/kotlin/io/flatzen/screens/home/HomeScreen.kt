@@ -202,6 +202,7 @@ fun ListScreen(
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
                     modifier = Modifier.padding(top = resetFilterButtonHeight),
+                    filterState = currentFilters,
                     isListView = state.isListView,
                     onToggleView = {
                         viewModel.onIntent(FlatListScreenAction.ToggleView)
@@ -343,6 +344,7 @@ fun ListScreen(
 @Composable
 fun LoadingContent(
     isListView: Boolean,
+    filterState: FilterState,
     onToggleView: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -354,7 +356,7 @@ fun LoadingContent(
     ) {
         topContentHeader(
             isListView = isListView,
-            filterState = null,
+            filterState = filterState,
             updateFilters = {},
             onToggleView = onToggleView
         )
