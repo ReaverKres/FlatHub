@@ -73,7 +73,7 @@ object DateConverter {
         dateRevision: Instant,
         timeZone: TimeZone
     ): String {
-        val baseDate = formatInstant(dateRevision, timeZone)
+        val baseDate = formatInstant(dateRevision, timeZone).substringAfter( " ")
 
         if (dateReception == null) {
             return baseDate
@@ -91,7 +91,8 @@ object DateConverter {
             fun Int.pad(): String = this.toString().padStart(2, '0')
             val hour = receptionLocal.hour.pad()
             val minute = receptionLocal.minute.pad()
-            return "$hour:$minute $baseDate"
+//            return "$hour:$minute $baseDate"
+            return baseDate
         }
 
         return baseDate
