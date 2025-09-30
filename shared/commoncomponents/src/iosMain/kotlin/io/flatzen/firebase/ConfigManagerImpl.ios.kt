@@ -30,6 +30,11 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
         // iOS stub implementation
         return when(configField) {
             ConfigFields.FreeVersionAvailable -> true
+            else -> true
         }
+    }
+
+    override fun <T> checkJson(configField: ConfigFields): T? {
+        return null
     }
 }

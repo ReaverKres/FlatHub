@@ -201,12 +201,13 @@ fun App() {
                         navigateToFilters = {
                             navController.navigate(FilterScreenDestination)
                         },
-                        navigateBackToDetail = {
+                        navigateBack = {
                             navController.navigate(ListScreenDestination) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )

@@ -23,7 +23,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -58,7 +57,6 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
-import io.flatzen.widgets.OpenInMapButton
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -79,7 +77,7 @@ fun MapScreen(
     mapViewModel: MapViewModel = koinViewModel(),
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
-    navigateBackToDetail: () -> Unit,
+    navigateBack: () -> Unit,
     selectedMarker: Long?,
 ) {
     val listViewModel = koinViewModel<FlatSearchViewModel>()
@@ -99,7 +97,7 @@ fun MapScreen(
     val filterState by filterViewModel.state.collectAsStateWithLifecycle()
 
     BackHandler {
-        navigateBackToDetail()
+        navigateBack()
     }
 
     LaunchedEffect(filterState.filters.location) {

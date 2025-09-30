@@ -6,9 +6,11 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_L
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import io.flatzen.commoncomponents.commonentities.MoreConfigData
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.serialization.json.Json
 
 class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
     override var connectionTimeout: Long = 3
@@ -78,5 +80,20 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
         return if (isRemoteConfigLoaded()) {
             FirebaseRemoteConfig.getInstance().getBoolean(configField.param)
         } else null
+    }
+
+    override fun <T> checkJson(configField: ConfigFields): T? {
+        val jsonString = FirebaseRemoteConfig.getInstance().getString(configField.param)
+        return when (configField) {
+            ConfigFields.MoreConfigData -> {
+                try {
+                    Json.decodeFromString<MoreConfigData>(jsonString) as T
+                } catch (e: Exception) {
+                    print("MoreConfigData parsing exception\n ${e.localizedMessage}")
+                    null
+                }
+            }
+            else -> null
+        }
     }
 }
