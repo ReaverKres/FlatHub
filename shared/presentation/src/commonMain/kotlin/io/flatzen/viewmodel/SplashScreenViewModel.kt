@@ -2,15 +2,10 @@ package io.flatzen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.flatzen.firebase.ConfigFields
-import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.firebase.ConfigManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SplashScreenViewModel(

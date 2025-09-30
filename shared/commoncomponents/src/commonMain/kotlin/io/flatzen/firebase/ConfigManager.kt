@@ -14,4 +14,5 @@ interface ConfigFieldsChecker {
     fun checkLong(configField: ConfigFields): Long?
     fun checkString(configField: ConfigFields): String?
     fun checkBoolean(configField: ConfigFields): Boolean?
+    fun <T> checkJson(configField: ConfigFields): T?
 }
