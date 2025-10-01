@@ -38,7 +38,9 @@ import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
+
 import io.flatzen.screens.more.MoreScreen
+import io.flatzen.screens.more.FaqScreen
 
 
 @Serializable
@@ -68,6 +70,9 @@ object CitySelectScreenDestination
 @Serializable
 object MetroSelectScreenDestination
 
+@Serializable
+object FaqScreenDestination
+
 // Определяем элементы для BottomBar
 val bottomNavItems = listOf(
     BottomNavItem(ListScreenDestination, "Главная", Icons.Default.Home),
@@ -87,6 +92,11 @@ fun App() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
+        // Helper function to safely compare routes
+        fun isRouteSelected(routeName: String?): Boolean {
+            return currentDestination?.route == routeName
+        }
+
         // Определяем, является ли текущий маршрут одним из главных экранов.
         val showBottomBar = currentDestination?.route?.let { route ->
             // Показываем BottomBar только на основных экранах вкладок
@@ -103,10 +113,10 @@ fun App() {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
                             val isSelected = when (item.route) {
-                                ListScreenDestination -> currentDestination.route == ListScreenDestination::class.qualifiedName
-                                FavoritesScreenDestination -> currentDestination.route == FavoritesScreenDestination::class.qualifiedName
-                                SettingsScreenDestination -> currentDestination.route == SettingsScreenDestination::class.qualifiedName
-                                is MapScreenDestination -> currentDestination.route?.startsWith(MapScreenDestination::class.qualifiedName!!) == true
+                                ListScreenDestination -> isRouteSelected(ListScreenDestination::class.qualifiedName)
+                                FavoritesScreenDestination -> isRouteSelected(FavoritesScreenDestination::class.qualifiedName)
+                                SettingsScreenDestination -> isRouteSelected(SettingsScreenDestination::class.qualifiedName)
+                                is MapScreenDestination -> currentDestination?.route?.startsWith(MapScreenDestination::class.qualifiedName!!) ?: false
                                 else -> false
                             }
 
@@ -187,7 +197,11 @@ fun App() {
                 
                 // Экран настроек
                 composable<SettingsScreenDestination> {
-                    MoreScreen()
+                    MoreScreen(
+                        navigateToFaq = {
+                            navController.navigate(FaqScreenDestination)
+                        }
+                    )
                 }
                 
                 // Экран карты
@@ -259,6 +273,12 @@ fun App() {
 
                 composable<MetroSelectScreenDestination> {
                     MetroSelectScreen(
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable<FaqScreenDestination> {
+                    FaqScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }

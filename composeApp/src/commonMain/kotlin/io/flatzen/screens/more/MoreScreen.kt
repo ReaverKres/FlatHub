@@ -17,9 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
-import io.flatzen.commoncomponents.commonentities.MoreConfigData
-import io.flatzen.commoncomponents.commonentities.MoreConfigData.MoreConfigType
+import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
+import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.utils.shareLauncher
+import io.flatzen.viewmodel.more.FaqUiState
+import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
 import io.flatzen.viewmodel.more.MoreUiState
 import io.flatzen.widgets.AppTextButton
@@ -27,10 +29,17 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreScreen(modifier: Modifier = Modifier) {
+fun MoreScreen(
+    modifier: Modifier = Modifier,
+    navigateToFaq: () -> Unit = {}
+) {
 
     val viewModel: MoreScreenViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val faqViewModel: FaqViewModel = koinViewModel()
+    val faqState by faqViewModel.uiState.collectAsStateWithLifecycle()
+
     val telegramSupportDescription: String = remember {
         "Здесь вы можете:\n" +
                 "• 🐞 Сообщить об ошибке или проблеме \n" +
@@ -57,6 +66,16 @@ fun MoreScreen(modifier: Modifier = Modifier) {
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
             ) {
+            // FAQ Button at the top
+            if(faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()){
+                Spacer(modifier = Modifier.height(24.dp))
+                AppTextButton(
+                    image = null,
+                    text = "Часто задаваемые вопросы (FAQ)",
+                    onClick = navigateToFaq
+                )
+            }
+            
             if (state is MoreUiState.Success && (state as MoreUiState.Success).moreConfigData.isVisible == true) {
                 val moreConfigData = (state as MoreUiState.Success).moreConfigData
                 moreConfigData.telegramSupport?.let { telegram ->

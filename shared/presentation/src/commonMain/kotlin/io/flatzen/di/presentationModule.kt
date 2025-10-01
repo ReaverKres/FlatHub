@@ -10,6 +10,7 @@ import io.flatzen.viewmodel.MapViewModel
 import io.flatzen.viewmodel.SplashScreenViewModel
 import org.koin.core.context.startKoin
 import io.flatzen.viewmodel.list.FlatSearchViewModel
+import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.module.dsl.viewModel
@@ -54,6 +55,10 @@ val flatSearchPresentationModule = module {
 
     viewModel {
         MoreScreenViewModel(configFieldsChecker = get())
+    }
+
+    viewModel {
+        FaqViewModel(configFieldsChecker = get())
     }
 }
 

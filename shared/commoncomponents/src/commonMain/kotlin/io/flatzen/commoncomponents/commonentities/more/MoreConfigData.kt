@@ -1,5 +1,6 @@
-package io.flatzen.commoncomponents.commonentities
+package io.flatzen.commoncomponents.commonentities.more
 
+import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.DonateConfigDataItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

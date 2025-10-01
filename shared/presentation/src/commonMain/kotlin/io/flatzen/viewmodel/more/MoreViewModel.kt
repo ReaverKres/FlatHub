@@ -2,7 +2,7 @@ package io.flatzen.viewmodel.more
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.flatzen.commoncomponents.commonentities.MoreConfigData
+import io.flatzen.commoncomponents.commonentities.more.MoreConfigData
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
 import kotlinx.coroutines.Dispatchers
