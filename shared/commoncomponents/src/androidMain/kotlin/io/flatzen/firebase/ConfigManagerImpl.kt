@@ -6,7 +6,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_L
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import io.flatzen.commoncomponents.commonentities.MoreConfigData
+import io.flatzen.commoncomponents.commonentities.more.FaqConfigData
+import io.flatzen.commoncomponents.commonentities.more.MoreConfigData
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -90,6 +91,14 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                     Json.decodeFromString<MoreConfigData>(jsonString) as T
                 } catch (e: Exception) {
                     print("MoreConfigData parsing exception\n ${e.localizedMessage}")
+                    null
+                }
+            }
+            ConfigFields.FaqConfigData -> {
+                try {
+                    Json.decodeFromString<FaqConfigData>(jsonString) as T
+                } catch (e: Exception) {
+                    print("FaqConfigData parsing exception\n ${e.localizedMessage}")
                     null
                 }
             }
