@@ -2,7 +2,9 @@ package io.flatzen
 
 import DetailScreen
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
@@ -20,7 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,6 +36,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.network.ConnectionMonitor
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
@@ -41,6 +49,15 @@ import io.flatzen.screens.map.MapScreen
 
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.FaqScreen
+import org.koin.compose.koinInject
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import io.flatzen.widgets.ErrorSnackbar
 
 
 @Serializable
@@ -80,11 +97,24 @@ val bottomNavItems = listOf(
     BottomNavItem(MapScreenDestination(), "Карта", Icons.Default.LocationOn),
     BottomNavItem(SettingsScreenDestination, "Ещё", Icons.Default.Menu)
 )
+
 data class BottomNavItem(val route: Any, val label: String, val icon: ImageVector)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
+    val connectionMonitor: ConnectionMonitor = koinInject()
+    var isConnected by remember { mutableStateOf(true) }
+
+    // Monitor network connectivity
+    LaunchedEffect(connectionMonitor) {
+        connectionMonitor.isNetworkAvailable.distinctUntilChanged().collect { connected ->
+            isConnected = connected
+        }
+    }
+
+    val density = LocalDensity.current
+
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
     ) {
@@ -133,6 +163,7 @@ fun App() {
                                                 restoreState = true
                                             }
                                         }
+
                                         FavoritesScreenDestination -> {
                                             navController.navigate(FavoritesScreenDestination) {
                                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -142,6 +173,7 @@ fun App() {
                                                 restoreState = true
                                             }
                                         }
+
                                         SettingsScreenDestination -> {
                                             navController.navigate(SettingsScreenDestination) {
                                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -151,6 +183,7 @@ fun App() {
                                                 restoreState = true
                                             }
                                         }
+
                                         is MapScreenDestination -> {
                                             navController.navigate(MapScreenDestination()) {
                                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -169,118 +202,142 @@ fun App() {
                 }
             }
         ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = ListScreenDestination, // Начинаем с конкретного экрана
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                // Экран списка (основной)
-                composable<ListScreenDestination> {
-                    ListScreen(
-                        navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform.name, id))
-                        },
-                        navigateToFilters = {
-                            navController.navigate(FilterScreenDestination)
-                        }
-                    )
-                }
-                
-                // Экран избранного
-                composable<FavoritesScreenDestination> {
-                    FavoritesScreen(
-                        navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform.name, id))
-                        }
-                    )
-                }
-                
-                // Экран настроек
-                composable<SettingsScreenDestination> {
-                    MoreScreen(
-                        navigateToFaq = {
-                            navController.navigate(FaqScreenDestination)
-                        }
-                    )
-                }
-                
-                // Экран карты
-                composable<MapScreenDestination> { backStackEntry ->
-                    val args = backStackEntry.toRoute<MapScreenDestination>()
-                    MapScreen(
-                        selectedMarker = args.selectedMarker,
-                        navigateToDetails = { platform, id ->
-                            navController.navigate(DetailScreenDestination(platform.name, id))
-                        },
-                        navigateToFilters = {
-                            navController.navigate(FilterScreenDestination)
-                        },
-                        navigateBack = {
-                            navController.navigate(ListScreenDestination) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
+            Box {
+                var snackbarHeight by remember { mutableStateOf(0.dp) }
+                val additionalTopPadding = if (!isConnected) snackbarHeight else 0.dp
+
+                NavHost(
+                    navController = navController,
+                    startDestination = ListScreenDestination, // Начинаем с конкретного экрана
+                    modifier = Modifier.padding(innerPadding).padding(top = additionalTopPadding)
+                ) {
+                    // Экран списка (основной)
+                    composable<ListScreenDestination> {
+                        ListScreen(
+                            navigateToDetails = { platform, id ->
+                                navController.navigate(DetailScreenDestination(platform.name, id))
+                            },
+                            navigateToFilters = {
+                                navController.navigate(FilterScreenDestination)
                             }
-                        }
-                    )
-                }
-                
-                // DetailScreen (общий для всех)
-                composable<DetailScreenDestination> { backStackEntry ->
-                    val args = backStackEntry.toRoute<DetailScreenDestination>()
-                    val platform = FlatPlatform.entries.firstOrNull { it.name == args.flatPlatform || it.value == args.flatPlatform }
-                        ?: error("Unknown flatPlatform: ${'$'}{args.flatPlatform}")
-                    DetailScreen(
-                        flatPlatform = platform,
-                        objectId = args.objectId,
-                        navigateBack = { navController.popBackStack() },
-                        navigateToMap = { flatId ->
-                            // Навигация к карте с выбранным маркером
-                            navController.navigate(MapScreenDestination(selectedMarker = flatId)) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
+                        )
+                    }
+
+                    // Экран избранного
+                    composable<FavoritesScreenDestination> {
+                        FavoritesScreen(
+                            navigateToDetails = { platform, id ->
+                                navController.navigate(DetailScreenDestination(platform.name, id))
                             }
-                        }
-                    )
+                        )
+                    }
+
+                    // Экран настроек
+                    composable<SettingsScreenDestination> {
+                        MoreScreen(
+                            navigateToFaq = {
+                                navController.navigate(FaqScreenDestination)
+                            }
+                        )
+                    }
+
+                    // Экран карты
+                    composable<MapScreenDestination> { backStackEntry ->
+                        val args = backStackEntry.toRoute<MapScreenDestination>()
+                        MapScreen(
+                            selectedMarker = args.selectedMarker,
+                            navigateToDetails = { platform, id ->
+                                navController.navigate(DetailScreenDestination(platform.name, id))
+                            },
+                            navigateToFilters = {
+                                navController.navigate(FilterScreenDestination)
+                            },
+                            navigateBack = {
+                                navController.navigate(ListScreenDestination) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
+
+                    // DetailScreen (общий для всех)
+                    composable<DetailScreenDestination> { backStackEntry ->
+                        val args = backStackEntry.toRoute<DetailScreenDestination>()
+                        val platform =
+                            FlatPlatform.entries.firstOrNull { it.name == args.flatPlatform || it.value == args.flatPlatform }
+                                ?: error("Unknown flatPlatform: ${'$'}{args.flatPlatform}")
+                        DetailScreen(
+                            flatPlatform = platform,
+                            objectId = args.objectId,
+                            navigateBack = { navController.popBackStack() },
+                            navigateToMap = { flatId ->
+                                // Навигация к карте с выбранным маркером
+                                navController.navigate(MapScreenDestination(selectedMarker = flatId)) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
+                    }
+
+                    // Общие экраны (фильтры, локация и т.д.)
+                    // Экран Фильтров (открывается поверх)
+                    composable<FilterScreenDestination> {
+                        FilterScreen(
+                            navigateBack = { navController.popBackStack() },
+                            onOpenLocation = { navController.navigate(LocationScreenDestination) }
+                        )
+                    }
+
+                    composable<LocationScreenDestination> {
+                        LocationScreen(
+                            navigateBack = { navController.popBackStack() },
+                            openCity = { navController.navigate(CitySelectScreenDestination) },
+                            openMetro = { navController.navigate(MetroSelectScreenDestination) }
+                        )
+                    }
+
+                    composable<CitySelectScreenDestination> {
+                        CitySelectScreen(
+                            navigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable<MetroSelectScreenDestination> {
+                        MetroSelectScreen(
+                            navigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable<FaqScreenDestination> {
+                        FaqScreen(
+                            navigateBack = { navController.popBackStack() }
+                        )
+                    }
                 }
 
-                // Общие экраны (фильтры, локация и т.д.)
-                // Экран Фильтров (открывается поверх)
-                composable<FilterScreenDestination> {
-                    FilterScreen(
-                        navigateBack = { navController.popBackStack() },
-                        onOpenLocation = { navController.navigate(LocationScreenDestination) }
-                    )
-                }
-
-                composable<LocationScreenDestination> {
-                    LocationScreen(
-                        navigateBack = { navController.popBackStack() },
-                        openCity = { navController.navigate(CitySelectScreenDestination) },
-                        openMetro = { navController.navigate(MetroSelectScreenDestination) }
-                    )
-                }
-
-                composable<CitySelectScreenDestination> {
-                    CitySelectScreen(
-                        navigateBack = { navController.popBackStack() }
-                    )
-                }
-
-                composable<MetroSelectScreenDestination> {
-                    MetroSelectScreen(
-                        navigateBack = { navController.popBackStack() }
-                    )
-                }
-
-                composable<FaqScreenDestination> {
-                    FaqScreen(
-                        navigateBack = { navController.popBackStack() }
-                    )
+                // Снэкбар поверх всего
+                AnimatedVisibility(
+                    visible = !isConnected,
+                    enter = slideInVertically(initialOffsetY = { -it }),
+                    exit = slideOutVertically(targetOffsetY = { -it }),
+                    modifier = Modifier.statusBarsPadding()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { layout ->
+                                snackbarHeight = with(density) { layout.height.toDp() }
+                            }
+                    ) {
+                        ErrorSnackbar(message = "Нет подключения к интернету")
+                    }
                 }
             }
         }
