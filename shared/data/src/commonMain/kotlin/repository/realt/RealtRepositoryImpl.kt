@@ -19,13 +19,17 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.extensions.toNullableString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.getFlatByIdFromDb
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
 class RealtRepositoryImpl(
@@ -135,13 +139,13 @@ class RealtRepositoryImpl(
         }
     }
 
-    override fun getFlatById(flatId: Long): Flow<AppFlat> {
-        return flatsDao.getAllAsFlow()
-            .map { flats ->
-                flats.find { it.adId == flatId }
-                    ?: throw NoSuchElementException("Flat with id $flatId not found")
-            }
-            .take(1)
+    override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
+        getFlatByIdFromDb(flatId, flatsDao)
+    }.take(1).flowOn(Dispatchers.IO)
+
+
+    override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat> {
+        return getFlatById(flatId)
     }
 
     override fun clearCashedFlats() {

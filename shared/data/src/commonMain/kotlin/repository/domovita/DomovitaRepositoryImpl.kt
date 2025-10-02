@@ -11,14 +11,18 @@ import io.flatzen.commoncomponents.commonentities.City
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.ktor.client.statement.bodyAsText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.serialization.json.Json
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.getFlatByIdFromDb
 import server_response.DomovitaErrorResponse
 import server_response.DomovitaListResponse.DomovitaFlat
 
@@ -119,13 +123,12 @@ class DomovitaRepositoryImpl(
         }
     }
 
-    override fun getFlatById(flatId: Long): Flow<AppFlat> {
-        return flatsDao.getAllAsFlow()
-            .map { flats ->
-                flats.find { it.adId == flatId }
-                    ?: throw NoSuchElementException("Flat with id $flatId not found in Domovita")
-            }
-            .take(1)
+    override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
+        getFlatByIdFromDb(flatId, flatsDao)
+    }.take(1).flowOn(Dispatchers.IO)
+
+    override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat> {
+        return getFlatById(flatId)
     }
 
     override fun clearCashedFlats() {

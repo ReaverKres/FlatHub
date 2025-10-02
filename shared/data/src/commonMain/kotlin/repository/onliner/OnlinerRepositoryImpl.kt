@@ -28,6 +28,7 @@ import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.getFlatByIdFromDb
 import server_response.OnlinerSearchErrorResponses
 import server_response.OnlinerListResponse
 import kotlin.math.roundToInt
@@ -129,16 +130,17 @@ class OnlinerRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        val flatFromList = flatsDao.getAllAsFlow()
-            .map { flats ->
-                flats.find { it.adId == flatId }
-                    ?: throw NoSuchElementException("Flat with id $flatId not found")
-            }.first()
-        emit(flatFromList)
+        getFlatByIdFromDb(flatId, flatsDao)
+    }.flowOn(Dispatchers.IO)
+
+    override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
+        val flatFromList = getFlatByIdFromDb(flatId, flatsDao)
         if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
             val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
             val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)
             emit(onlinerDetailFlat)
+        } else {
+            emit(null)
         }
 
     }.flowOn(Dispatchers.IO)

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -232,10 +231,21 @@ class MergedRepositoryImpl(
             FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(adId)
         }
         return flow {
-            val finalFlat = source.last()
-            val flatFromDb = flatsDao.getById(adId)
-            val updated = finalFlat.copy(
-                savedInFavorites = flatFromDb?.savedInFavorites?.not() ?: false
+            var flatFromDb = source.last()
+            if(flatFromDb.savedInFavorites.not()) {
+                val flatFromDbWithDetailFlow = when(flatPlatform) {
+                    FlatPlatform.KUFAR -> kufarRepository.getFlatByIdWithDetails(adId)
+                    FlatPlatform.ONLINER -> onlinerRepository.getFlatByIdWithDetails(adId)
+                    FlatPlatform.REALT -> realtRepository.getFlatByIdWithDetails(adId)
+                    FlatPlatform.DOMOVITA -> domovitaRepository.getFlatByIdWithDetails(adId)
+                }
+                val flatFromDbWithDetail = flatFromDbWithDetailFlow.last()
+                if (flatFromDbWithDetail != null) {
+                    flatFromDb = flatFromDbWithDetail
+                }
+            }
+            val updated = flatFromDb.copy(
+                savedInFavorites = flatFromDb.savedInFavorites.not()
             )
             flatsDao.upsert(updated)
             emit(flatsDao.getById(adId))

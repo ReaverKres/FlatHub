@@ -16,15 +16,18 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.parsing.ParseException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.getFlatByIdFromDb
 import server_response.KufarErrorResponse
 import server_response.KufarListResponse
 
@@ -133,18 +136,19 @@ class KufarRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        val flatFromList =  flatsDao.getAllAsFlow()
-            .map { flats ->
-                flats.find { it.adId == flatId }
-                    ?: throw NoSuchElementException("Flat with id $flatId not found")
-            }.first()
-        emit(flatFromList)
-        if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
-            val kufarDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
-            val kufarDetailFlat = kufarDetailHtmlMapper.map(flatFromList, kufarDetailFlatHtml)
+        getFlatByIdFromDb(flatId, flatsDao)
+    }.flowOn(Dispatchers.IO)
+
+    override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
+        val flatFromDb = getFlatByIdFromDb(flatId, flatsDao)
+        if (connectionMonitor.isNetworkAvailable.first() && flatFromDb.flatDevInfo.isDetailData.not()) {
+            val kufarDetailFlatHtml = getApartmentHtml(flatFromDb.flatDetailUrl)
+            val kufarDetailFlat = kufarDetailHtmlMapper.map(flatFromDb, kufarDetailFlatHtml)
             emit(kufarDetailFlat)
+        } else {
+            emit(null)
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     private fun generateSearchId(): String {
         val chars = "0123456789abcdef"
