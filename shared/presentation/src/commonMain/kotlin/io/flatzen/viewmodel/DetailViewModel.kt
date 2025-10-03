@@ -159,7 +159,7 @@ class FlatDetailViewModel(
     }
 
     private suspend fun loadFlatDetails(flatPlatform: FlatPlatform, flatId: Long): Flow<FlatDetailEvents> {
-        return mergedRepository.getFlatById(flatPlatform, flatId).asLCE().map {
+        return mergedRepository.getFlatByIdWithDetails(flatPlatform, flatId).asLCE().map {
             FlatDetailEvents.FlatLoaded(it)
         }
     }

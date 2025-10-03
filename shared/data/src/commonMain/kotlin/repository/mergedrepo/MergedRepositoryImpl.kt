@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.withContext
@@ -93,15 +94,15 @@ class MergedRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getFlatById(flatPlatform: FlatPlatform, flatId: Long): Flow<AppFlat> {
+    override suspend fun getFlatByIdWithDetails(flatPlatform: FlatPlatform, flatId: Long): Flow<AppFlat> {
         val detailFlat = when (flatPlatform) {
-            FlatPlatform.KUFAR -> kufarRepository.getFlatById(flatId)
-            FlatPlatform.ONLINER -> onlinerRepository.getFlatById(flatId)
-            FlatPlatform.REALT -> realtRepository.getFlatById(flatId)
-            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(flatId)
+            FlatPlatform.KUFAR -> kufarRepository.getFlatByIdWithDetails(flatId)
+            FlatPlatform.ONLINER -> onlinerRepository.getFlatByIdWithDetails(flatId)
+            FlatPlatform.REALT -> realtRepository.getFlatByIdWithDetails(flatId)
+            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatByIdWithDetails(flatId)
         }.flowOn(Dispatchers.IO)
-        return detailFlat.map {
-            it.copy(isViewed = true)
+        return detailFlat.mapNotNull {
+            it?.copy(isViewed = true)
         }.onEach { updatedFlat ->
             withContext(Dispatchers.IO) { flatsDao.upsert(updatedFlat) }
         }.catch {
