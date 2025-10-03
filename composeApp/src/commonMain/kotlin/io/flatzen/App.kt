@@ -51,6 +51,7 @@ import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.FaqScreen
 import org.koin.compose.koinInject
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -107,7 +108,7 @@ fun App() {
     var isConnected by remember { mutableStateOf(true) }
 
     // Monitor network connectivity
-    LaunchedEffect(connectionMonitor) {
+    LaunchedEffect(Unit) {
         connectionMonitor.isNetworkAvailable.distinctUntilChanged().collect { connected ->
             isConnected = connected
         }
@@ -322,16 +323,12 @@ fun App() {
                     }
                 }
 
-                // Снэкбар поверх всего
-                AnimatedVisibility(
-                    visible = !isConnected,
-                    enter = slideInVertically(initialOffsetY = { -it }),
-                    exit = slideOutVertically(targetOffsetY = { -it }),
-                    modifier = Modifier.statusBarsPadding()
-                ) {
+                if(isConnected.not()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .statusBarsPadding()
+                            .animateContentSize()
                             .onSizeChanged { layout ->
                                 snackbarHeight = with(density) { layout.height.toDp() }
                             }
