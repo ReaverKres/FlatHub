@@ -26,13 +26,11 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
@@ -41,7 +39,11 @@ import repository.mergedrepo.MergedRepository
 import repository.userpreferences.UserPreferencesRepository
 
 sealed interface FlatListScreenAction : MviAction {
-    class SearchFlats(val isLoadMore: Boolean, val isRefreshing: Boolean = false) :
+    class SearchFlats(
+        val isLoadMoreByScroll: Boolean,
+        val isLoadMoreForce: Boolean = false,
+        val isRefreshing: Boolean = false
+    ) :
         FlatListScreenAction
 
     class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatListScreenAction
@@ -60,7 +62,7 @@ sealed interface FlatListScreenAction : MviAction {
     // View toggle actions
     data object ToggleView : FlatListScreenAction
     class SetListView(val isListView: Boolean) : FlatListScreenAction
-    object HideNetworkErrorDialog: FlatListScreenAction
+    object HideNetworkErrorDialog : FlatListScreenAction
 }
 
 sealed interface FlatListEvents : MviEvent {
@@ -105,7 +107,8 @@ class FlatSearchViewModel(
         isLoadingMore = false,
         flatList = emptyList(),
         noFlatsToLoadMore = false,
-        isAnyFilterApplied = false
+        isAnyFilterApplied = false,
+        currentSearchPage = 1
     )
 
     init {
@@ -179,7 +182,7 @@ class FlatSearchViewModel(
                         AnalyticsEvent(
                             eventName = "search_flats",
                             parameters = mapOf(
-                                "is_load_more" to action.isLoadMore,
+                                "is_load_more" to action.isLoadMoreByScroll,
                                 "is_refreshing" to action.isRefreshing,
                                 "page" to filterRepository.currentAppPage
                             )
@@ -203,17 +206,17 @@ class FlatSearchViewModel(
                     )
                 }
 
-                if (noFlatsToLoadMore && action.isRefreshing.not()) {
+                if (action.isLoadMoreForce.not() && noFlatsToLoadMore && action.isRefreshing.not()) {
                     return flowOf()
                 }
-                if (action.isRefreshing || action.isLoadMore.not()) {
+                if (action.isRefreshing || action.isLoadMoreByScroll.not()) {
                     filterRepository.currentAppPage = 1
                     mergedRepository.clearCashedFlats()
                 }
-                if (action.isLoadMore) {
+                if (action.isLoadMoreByScroll) {
                     filterRepository.currentAppPage++
                 }
-                loadAllFlats(action.isLoadMore, action.isRefreshing)
+                loadAllFlats(action.isLoadMoreByScroll, action.isRefreshing)
             }
 
             is FlatListScreenAction.ClickOnFavorite -> {
@@ -283,11 +286,13 @@ class FlatSearchViewModel(
                             is LCE.Content -> {
                                 val response = lceResult.value
                                 val flatsLce = LCE.Content(response.flats) as LCE<List<AppFlat>>
-                                val contentEvent = AllFlatsLoaded(flatsLce, isLoadMore, isRefreshing)
+                                val contentEvent =
+                                    AllFlatsLoaded(flatsLce, isLoadMore, isRefreshing)
 
                                 // Check if there are errors to display
                                 if (response.errors.isNotEmpty() &&
-                                    response.errors.any { it.errorMessages.isNotEmpty() }) {
+                                    response.errors.any { it.errorMessages.isNotEmpty() }
+                                ) {
                                     val dialogEvent = ErrorDialogShowed(
                                         dialogType = DialogType.NetworkError,
                                         title = "Произошла ошибка",
@@ -298,10 +303,13 @@ class FlatSearchViewModel(
                                     flowOf(contentEvent)
                                 }
                             }
+
                             is LCE.Error -> {
-                                val errorLce = LCE.Error<List<AppFlat>>(lceResult.message, lceResult.throwable)
+                                val errorLce =
+                                    LCE.Error<List<AppFlat>>(lceResult.message, lceResult.throwable)
                                 flowOf(AllFlatsLoaded(errorLce, isLoadMore, isRefreshing))
                             }
+
                             is LCE.Loading -> {
                                 val loadingLce = LCE.Loading<List<AppFlat>>()
                                 flowOf(AllFlatsLoaded(loadingLce, isLoadMore, isRefreshing))
@@ -413,6 +421,7 @@ class FlatSearchViewModel(
                     )
                 )
             }
+
             is ErrorDialogHidden -> {
                 currentState.copy(
                     errorDialogState = null
@@ -431,15 +440,17 @@ class FlatSearchViewModel(
 
         return when {
             isLoadMore -> {
-                if(uiFlatList.isEmpty()) noFlatsToLoadMore = true
+                if (uiFlatList.isEmpty()) noFlatsToLoadMore = true
                 currentState.copy(
                     noFlatsToLoadMore = noFlatsToLoadMore,
                     isRefreshing = false,
                     isLoading = false,
                     isLoadingMore = false,
-                    flatList = currentState.flatList + uiFlatList
+                    flatList = currentState.flatList + uiFlatList,
+                    currentSearchPage = filterRepository.currentAppPage
                 )
             }
+
             uiFlatList.isEmpty() -> {
                 noFlatsToLoadMore = true
                 currentState.copy(
@@ -447,16 +458,19 @@ class FlatSearchViewModel(
                     isRefreshing = false,
                     isLoadingMore = false,
                     flatList = uiFlatList,
-                    noFlatsToLoadMore = noFlatsToLoadMore
+                    noFlatsToLoadMore = noFlatsToLoadMore,
+                    currentSearchPage = filterRepository.currentAppPage
                 )
             }
+
             else -> {
                 currentState.copy(
                     noFlatsToLoadMore = false,
                     isRefreshing = false,
                     isLoading = false,
                     isLoadingMore = false,
-                    flatList = uiFlatList
+                    flatList = uiFlatList,
+                    currentSearchPage = filterRepository.currentAppPage
                 )
             }
         }

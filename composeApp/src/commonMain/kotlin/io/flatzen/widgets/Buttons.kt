@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
@@ -190,6 +192,7 @@ fun AppTextButton(
     modifier: Modifier = Modifier.fillMaxWidth(),
     image: Any?,
     text: String,
+    style: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit
 ) {
     TextButton(
@@ -213,7 +216,7 @@ fun AppTextButton(
             }
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge
+                style = style
             )
         }
     }

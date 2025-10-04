@@ -83,6 +83,7 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
+import io.flatzen.viewmodel.list.FlatListScreenState
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
@@ -113,6 +114,7 @@ fun HomeScreen(
     val resetFilterButtonHeight: Dp = remember(resetFilterButtonSize) {
         resetFilterButtonSize.height
     }
+    var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
 
     var showSortSheet by remember { mutableStateOf(false) }
 
@@ -158,7 +160,7 @@ fun HomeScreen(
                 if (state.isLoading.not()) {
                     viewModel.onIntent(
                         FlatListScreenAction.SearchFlats(
-                            isLoadMore = false,
+                            isLoadMoreByScroll = false,
                             isRefreshing = true
                         )
                     )
@@ -228,7 +230,7 @@ fun HomeScreen(
                         item {
                             Spacer(Modifier.height(32.dp))
                             EmptyScreenContent(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxWidth(),
                                 stringResource = Res.string.no_data_available
                             )
                             Spacer(Modifier.height(16.dp))
@@ -237,6 +239,7 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            LoadMoreForce(state.currentSearchPage, viewModel)
                         }
                     }
                 }
@@ -274,6 +277,15 @@ fun HomeScreen(
                                     showSortSheet = true
                                 }
                             )
+                        },
+                        bottomContent = {
+                            if (state.noFlatsToLoadMore) {
+                                item {
+                                    LoadMoreForce(state.currentSearchPage, viewModel)
+                                    Spacer(Modifier.height(noFlatsBoxHeight))
+                                    Spacer(Modifier.height(16.dp))
+                                }
+                            }
                         }
                     )
                 }
@@ -309,7 +321,6 @@ fun HomeScreen(
                 }
             }
 
-            // Сообщение о конце списка - ВНЕ PullToRefreshBox
             if (state.noFlatsToLoadMore) {
                 Box(
                     modifier = Modifier
@@ -322,6 +333,11 @@ fun HomeScreen(
                         }
                         .background(Color(0xFFbf4f1f), RoundedCornerShape(20.dp))
                         .padding(vertical = 4.dp)
+                        .onSizeChanged { size ->
+                            noFlatsBoxHeight = with(localDensity) {
+                                size.height.toDp()
+                            }
+                        }
                 ) {
                     Text(
                         text = "Квартиры с текущими фильтрами закончились",
@@ -330,7 +346,6 @@ fun HomeScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-
             }
 
             if (showSortSheet) {
@@ -343,6 +358,34 @@ fun HomeScreen(
                 )
             }
 
+        }
+    }
+}
+
+@Composable
+private fun LoadMoreForce(
+    currentSearchPage: Int,
+    viewModel: FlatSearchViewModel
+) {
+    Spacer(Modifier.height(8.dp))
+    Column(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Страница: $currentSearchPage")
+        TextButton(
+            modifier = Modifier
+                .wrapContentHeight()
+                .padding(6.dp),
+            onClick = {
+                viewModel.onIntent(
+                    FlatListScreenAction.SearchFlats(
+                        isLoadMoreByScroll = true,
+                        isLoadMoreForce = true
+                    )
+                )
+            }) {
+            Text("Загрузить больше")
         }
     }
 }
@@ -544,7 +587,8 @@ fun FlatList(
     onFlatClick: (UiFlat) -> Unit,
     clickOnFavorite: (UiFlat) -> Unit,
     onLoadMore: (Int) -> Unit,
-    topContent: LazyListScope.() -> Unit = {}
+    topContent: LazyListScope.() -> Unit = {},
+    bottomContent: LazyListScope.() -> Unit = {}
 ) {
     LaunchedEffect(flats, isListView, isLoadingMore) {
         snapshotFlow {
@@ -638,6 +682,7 @@ fun FlatList(
                 }
             }
         }
+        bottomContent()
     }
 }
 
