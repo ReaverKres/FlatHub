@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
-import io.flatzen.screens.home.ListScreen
+import io.flatzen.screens.home.HomeScreen
 import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
@@ -50,10 +50,7 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.FaqScreen
 import org.koin.compose.koinInject
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.onSizeChanged
@@ -214,7 +211,7 @@ fun App() {
                 ) {
                     // Экран списка (основной)
                     composable<ListScreenDestination> {
-                        ListScreen(
+                        HomeScreen(
                             navigateToDetails = { platform, id ->
                                 navController.navigate(DetailScreenDestination(platform.name, id))
                             },

@@ -14,45 +14,29 @@ import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
 
 enum class RepairType(val displayName: String) {
-    COSMETIC("Косметический"),
-    EURO("Евроремонт"),
-    DESIGNER("Дизайнерский"),
-    NO_REPAIR("Без ремонта")
+    COSMETIC("Косметический"), EURO("Евроремонт"), DESIGNER("Дизайнерский"), NO_REPAIR("Без ремонта")
 }
 
 enum class Amenity(val displayName: String) {
-    FURNITURE("Мебель"),
-    NO_FURNITURE("Без мебели"),
-    AIR_CONDITIONER("Кондиционер"),
-    REFRIGERATOR("Холодильник"),
-    WASHING_MACHINE("Стиральная машина"),
-    DISHWASHER("Посудомойка"),
-    INTERNET("Интернет"),
-    TV("Телевизор"),
-    BATHTUB("Ванна"),
-    KITCHEN_FURNITURE("Кухонная мебель")
+    FURNITURE("Мебель"), NO_FURNITURE("Без мебели"), AIR_CONDITIONER("Кондиционер"), REFRIGERATOR("Холодильник"), WASHING_MACHINE(
+        "Стиральная машина"
+    ),
+    DISHWASHER("Посудомойка"), INTERNET("Интернет"), TV("Телевизор"), BATHTUB("Ванна"), KITCHEN_FURNITURE(
+        "Кухонная мебель"
+    )
 }
 
 enum class MetroLineState() {
-    GREEN,
-    BLUE,
-    RED,
+    GREEN, BLUE, RED,
 }
 
 @Immutable
 data class UiMetroStation(
-    val name: String,
-    val line: MetroLineState,
-    val selected: Boolean = false
+    val name: String, val line: MetroLineState, val selected: Boolean = false
 )
 
 enum class Room(val displayName: String) {
-    ONE("1"),
-    TWO("2"),
-    THREE("3"),
-    FOUR("4"),
-    FIVE("5"),
-    SIX("6"),
+    ONE("1"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"),
 }
 
 @Immutable
@@ -65,9 +49,7 @@ data class UiCity(val code: CityCode, val name: String? = null)
 data class LocationUiFilter(
     val selectedCountry: UiCountry = UiCountry(CountryCode.BY),
     val selectedCity: UiCityItem = UiCityItem(
-        CityCode.MINSK,
-        "Минск",
-        Coordinates(53.902147, 27.561388)
+        CityCode.MINSK, "Минск", Coordinates(53.902147, 27.561388)
     ),
     val availableCities: List<UiCityItem> = LocationUiMapper.cities()
 )
@@ -87,10 +69,7 @@ data class FilterDialogState(
 
 @Immutable
 data class SavedFilterState(
-    val id: Long,
-    val name: String,
-    val selected: Boolean = false,
-    val createdAt: Long
+    val id: Long, val name: String, val selected: Boolean = false, val createdAt: Long
 )
 
 @Immutable
@@ -106,21 +85,105 @@ data class FilterState(
     val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
     val withPhotoOnly: Boolean = false,
-    val kidsAllowed: Boolean = false,
-    val petsAllowed: Boolean = false,
-    val amenities: Set<Amenity> = emptySet(),
-    val repairTypes: Set<RepairType> = emptySet(),
-    val floorFrom: Int? = null,
-    val floorTo: Int? = null,
-    val totalAreaFrom: Double? = null,
-    val totalAreaTo: Double? = null,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
     }
 
-    fun isAnyFilterActive(): Boolean {
-        return false
+    fun getActiveFiltersText(): String {
+        val activeFilters = mutableListOf<String>()
+
+        // Тип объявления
+        activeFilters.add("Тип: ${when (adType) {
+            AdType.RENT -> "Аренда"
+            AdType.SALE -> "Продажа"
+        }}")
+
+        // Полная цена
+        priceFull?.let { price ->
+            activeFilters.add("Цена: ${price.priceFrom?.let { "от $it" } ?: ""} ${price.priceTo?.let { "до $it" } ?: ""} ${
+                when (currency) {
+                    Currency.USD -> "$"
+                    Currency.EUR -> "€"
+                    else -> currency.toString()
+                }
+            }".trim())
+        }
+
+        // Цена за м²
+        pricePerSquare?.let { price ->
+            activeFilters.add("Цена за м²: ${price.priceFrom?.let { "от $it" } ?: ""} ${price.priceTo?.let { "до $it" } ?: ""} ${
+                when (currency) {
+                    Currency.USD -> "$"
+                    Currency.EUR -> "€"
+                    else -> currency.toString()
+                }
+            }".trim())
+        }
+
+        // Общая площадь
+        totalArea?.let { area ->
+            activeFilters.add("Общая площадь: ${area.fromRange?.let { "от $it" } ?: ""} ${area.toRange?.let { "до $it" } ?: ""} м²".trim())
+        }
+
+        // Комнаты
+        if (rooms.isNotEmpty()) {
+            val roomsText = rooms.sorted().joinToString(", ") {
+                when (it) {
+                    0 -> "студия"
+                    5 -> "5+ комнат"
+                    else -> "$it ${getRoomWord(it)}"
+                }
+            }
+            activeFilters.add("Комнаты: $roomsText")
+        }
+
+        // Метро
+        val selectedMetro = metroStationsState.filter { it.selected }
+        if (selectedMetro.isNotEmpty()) {
+            val metroText = selectedMetro.joinToString(", ") { it.name }
+            activeFilters.add("Метро: $metroText")
+        }
+
+        // Адрес
+        if (!address.isNullOrEmpty()) {
+            val addressText = address.joinToString(", ") { it.address }
+            activeFilters.add("Адрес: $addressText")
+        }
+
+        // Локация
+        location?.let {
+            activeFilters.add("Локация: ${it.selectedCity.displayName}")
+        }
+
+        // Булевы фильтры
+        if (fromOwnerOnly) activeFilters.add("Только от собственника")
+        if (withPhotoOnly) activeFilters.add("Только с фото")
+
+//        activeFilters.add("Сортировка: ${getSortOptionName(sortOption)}")
+
+        return if (activeFilters.isEmpty()) {
+            "Активные фильтры не выбраны"
+        } else {
+            "Активные фильтры:\n" + activeFilters.joinToString("\n• ", "• ")
+        }
+    }
+
+    // Вспомогательные функции для правильного склонения и перевода
+    private fun getRoomWord(count: Int): String {
+        return when {
+            count % 10 == 1 && count % 100 != 11 -> "комната"
+            count % 10 in 2..4 && count % 100 !in 12..14 -> "комнаты"
+            else -> "комнат"
+        }
+    }
+
+    private fun getSortOptionName(sortOption: FlatSort): String {
+        return when (sortOption) {
+            FlatSort.NEWEST_FIRST -> "сначала новые"
+            FlatSort.CHEAPEST_FIRST -> "сначала дешёвые"
+            FlatSort.MOST_EXPENSIVE_FIRST -> "сначала дорогие"
+        }
     }
 }

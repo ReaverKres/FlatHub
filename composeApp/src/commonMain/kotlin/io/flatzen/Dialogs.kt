@@ -66,7 +66,7 @@ fun SaveFilterDialog(
                     )
                 }
                 Text(
-                    text = "Название фильтра не должно превышать 15 символов",
+                    text = "Название фильтра не должно превышать 25 символов",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
