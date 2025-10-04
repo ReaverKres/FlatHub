@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
@@ -68,10 +69,11 @@ fun MoreScreen(
             ) {
             // FAQ Button at the top
             if(faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()){
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 AppTextButton(
                     image = null,
                     text = "Часто задаваемые вопросы (FAQ)",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
                     onClick = navigateToFaq
                 )
             }

@@ -16,6 +16,7 @@ data class FlatListScreenState(
     val noFlatsToLoadMore: Boolean,
     val isAnyFilterApplied: Boolean,
     val flatList: List<UiFlat>,
+    val currentSearchPage: Int,
     val isListView: Boolean = false,
     val infoDialogState: InfoDialogState? = null,
     val errorDialogState: SearchErrorDialogState? = null

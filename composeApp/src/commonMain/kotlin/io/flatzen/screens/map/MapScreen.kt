@@ -237,7 +237,7 @@ fun MapScreen(
                             onClick = {
                                 listViewModel.onIntent(
                                     FlatListScreenAction.SearchFlats(
-                                        isLoadMore = false,
+                                        isLoadMoreByScroll = false,
                                         isRefreshing = true
                                     )
                                 )
