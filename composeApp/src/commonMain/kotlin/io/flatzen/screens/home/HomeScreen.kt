@@ -96,7 +96,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(
+fun HomeScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
     modifier: Modifier = Modifier
@@ -230,6 +230,12 @@ fun ListScreen(
                             EmptyScreenContent(
                                 modifier = Modifier.fillMaxSize(),
                                 stringResource = Res.string.no_data_available
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            Text(
+                                text = currentFilters.getActiveFiltersText(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
