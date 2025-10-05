@@ -1,6 +1,8 @@
 package io.flatzen
 
 import DetailScreen
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -56,7 +58,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import io.flatzen.widgets.ErrorSnackbar
-
+import androidx.navigation.navDeepLink
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.ui.unit.IntOffset
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import io.flatzen.animations.animatedComposable
+import kotlin.jvm.JvmSuppressWildcards
+import kotlin.reflect.KType
 
 @Serializable
 object ListScreenDestination
@@ -263,7 +283,7 @@ fun App() {
                     }
 
                     // DetailScreen (общий для всех)
-                    composable<DetailScreenDestination> { backStackEntry ->
+                    animatedComposable<DetailScreenDestination> { backStackEntry ->
                         val args = backStackEntry.toRoute<DetailScreenDestination>()
                         val platform =
                             FlatPlatform.entries.firstOrNull { it.name == args.flatPlatform || it.value == args.flatPlatform }
@@ -284,16 +304,16 @@ fun App() {
                         )
                     }
 
-                    // Общие экраны (фильтры, локация и т.д.)
+                    // Общие экраны (фильтры, локация и т.д.) - Not in BottomNav
                     // Экран Фильтров (открывается поверх)
-                    composable<FilterScreenDestination> {
+                    animatedComposable<FilterScreenDestination> {
                         FilterScreen(
                             navigateBack = { navController.popBackStack() },
                             onOpenLocation = { navController.navigate(LocationScreenDestination) }
                         )
                     }
 
-                    composable<LocationScreenDestination> {
+                    animatedComposable<LocationScreenDestination> {
                         LocationScreen(
                             navigateBack = { navController.popBackStack() },
                             openCity = { navController.navigate(CitySelectScreenDestination) },
@@ -301,19 +321,19 @@ fun App() {
                         )
                     }
 
-                    composable<CitySelectScreenDestination> {
+                    animatedComposable<CitySelectScreenDestination> {
                         CitySelectScreen(
                             navigateBack = { navController.popBackStack() }
                         )
                     }
 
-                    composable<MetroSelectScreenDestination> {
+                    animatedComposable<MetroSelectScreenDestination> {
                         MetroSelectScreen(
                             navigateBack = { navController.popBackStack() }
                         )
                     }
 
-                    composable<FaqScreenDestination> {
+                    animatedComposable<FaqScreenDestination> {
                         FaqScreen(
                             navigateBack = { navController.popBackStack() }
                         )

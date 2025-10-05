@@ -111,7 +111,7 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             ?.let { repairMapping[it] }
 
         val condition = adParams.findParamStringValue("condition")?.safeString()
-            ?.let { if (it == "1") "Вторичное" else "Новостройка" }
+            ?.let { if (it == "1") "Вторичное" else if (it == "2") "Новостройка" else null }
 
         val windowDirections = adParams.findParamValue("flat_windows_side")
             ?.safeIntList()
