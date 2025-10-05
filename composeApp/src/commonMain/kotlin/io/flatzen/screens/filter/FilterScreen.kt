@@ -52,6 +52,7 @@ import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.utils.onlyDoublePredicate
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
 import io.flatzen.widgets.AppTextField
@@ -147,23 +148,14 @@ fun FilterScreen(
             }
             // Расположение
             FilterSectionTitle(title = "Расположение", modifier = Modifier.padding(top = 4.dp))
-            ListItem(
-                headlineContent = {
-                    Text(state.filters.location?.selectedCity?.displayName.orEmpty())
-                },
-                supportingContent = if (state.filters.metroStationsState.isEmpty()) {
-                    null
-                } else {
-                    { Text("Метро") }
-                },
-                trailingContent = {
-                    if (currentFilters.isLocationFilterActive()) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onOpenLocation() }
+            LocationItem(
+                selectedCity = state.filters.location?.selectedCity?.displayName,
+                selectedMetro = state.filters.getSelectedMetroStation(),
+                selectedAddress = state.filters.getSelectedAddress(),
+                isLocationFilterActive = currentFilters.isLocationFilterActive(),
+                onOpenLocation = {
+                    onOpenLocation()
+                }
             )
 
             FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
@@ -345,6 +337,64 @@ private fun SavedFiltersChips(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun LocationItem(
+    selectedCity: String?,
+    selectedMetro: String,
+    selectedAddress: String?,
+    isLocationFilterActive: Boolean,
+    onOpenLocation: () -> Unit,
+    ) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onOpenLocation() },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = selectedCity
+                    ?: LocationUiFilter().selectedCity.displayName,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            if (selectedMetro.isNotEmpty()) {
+                Text(
+                    text = "Метро: $selectedMetro",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            if (!selectedAddress.isNullOrEmpty()) {
+                Text(
+                    text = "Адрес: $selectedAddress",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+
+//        if (isLocationFilterActive) {
+//            Icon(
+//                Icons.Default.CheckCircle,
+//                contentDescription = "Фильтр активен",
+//                tint = MaterialTheme.colorScheme.primary
+//            )
+//        }
     }
 }
 
