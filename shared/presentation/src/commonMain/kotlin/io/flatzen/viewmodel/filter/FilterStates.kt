@@ -91,6 +91,12 @@ data class FilterState(
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
     }
 
+    fun getSelectedMetroStation(): String =
+        metroStationsState.filter { it.selected }.joinToString(separator = ", ") { it.name }
+
+    fun getSelectedAddress(): String =
+        address?.joinToString(separator = ", ") { it.address }.orEmpty()
+
     fun getActiveFiltersText(): String {
         val activeFilters = mutableListOf<String>()
 
