@@ -77,6 +77,29 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+    
+    buildTypes {
+        debug {
+            versionNameSuffix = "-DEBUG"
+            isDebuggable = true
+            isMinifyEnabled = false
+            // Debug build doesn't need obfuscation
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt")
+            )
+        }
+        
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
+            // Release build with R8 optimization and obfuscation
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt")
+            )
+        }
+    }
+    
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

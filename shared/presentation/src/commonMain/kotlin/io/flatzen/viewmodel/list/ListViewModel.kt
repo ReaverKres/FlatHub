@@ -373,7 +373,8 @@ class FlatSearchViewModel(
                                 if (flatFromDb != null) {
                                     flatOnScreen.copy(
                                         savedInFavorite = flatFromDb.savedInFavorites,
-                                        isViewed = flatFromDb.isViewed
+                                        isViewed = flatFromDb.isViewed,
+                                        imageUrls = flatFromDb.imageUrls ?: flatOnScreen.imageUrls
                                     )
                                 } else {
                                     flatOnScreen

@@ -7,6 +7,8 @@ import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.utils.asPriceFormat
+import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -30,7 +32,9 @@ import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
 import repository.mergedrepo.MergedRepository
+import server_request.Currency
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 @Immutable
 data class UiDetailFlat(
@@ -202,8 +206,8 @@ class FlatDetailViewModel(
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty(),
-            priceUsd = formatPrice(appFlat.priceUsd, "USD"),
-            priceByn = formatPrice(appFlat.priceByn, "BYN"),
+            priceUsd = priceWithCurrency(appFlat.priceUsd, "USD"),
+            priceByn = priceWithCurrency(appFlat.priceByn, "BYN"),
             priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
             priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),
@@ -245,17 +249,11 @@ class FlatDetailViewModel(
         )
     }
 
-    private fun formatPrice(price: Double?, currency: String): String {
-        return price?.let {
-            "${it.toInt()} $currency"
-        } ?: "Цена не указана"
-    }
-
     private fun formatArea(area: Double): String {
-        return "${area.toInt()} м²"
+        return "${area.roundToInt()} м²"
     }
 
     private fun formatPricePerSquare(price: Double, currency: String): String {
-        return "${price.toInt()} $currency/м²"
+        return "${price.asPriceFormat()} $currency/м²"
     }
 }

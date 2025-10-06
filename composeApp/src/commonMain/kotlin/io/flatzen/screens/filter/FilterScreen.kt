@@ -15,19 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -45,11 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.SaveFilterDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
-import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
-import io.flatzen.utils.onlyDoublePredicate
+import io.flatzen.commoncomponents.utils.asIntPrice
+import io.flatzen.commoncomponents.utils.asPriceFormat
+import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
@@ -188,9 +183,9 @@ fun FilterScreen(
             Spacer(Modifier.height(10.dp))
 
             NumberRange(
-                title = "Цена",
+                title = "Цена ($)",
                 launchedKey = clearAllEffectKey,
-                rangeFrom = currentFilters.priceFull?.priceFrom?.toString().orEmpty(),
+                rangeFrom = currentFilters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
                         priceFull = currentFilters.priceFull?.copy(
@@ -200,7 +195,7 @@ fun FilterScreen(
                         )
                     )
                 },
-                rangeTo = currentFilters.priceFull?.priceTo?.toString().orEmpty(),
+                rangeTo = currentFilters.priceFull?.priceTo?.asIntPrice().orEmpty(),
                 toOnChange = {
                     currentFilters = currentFilters.copy(
                         priceFull = currentFilters.priceFull?.copy(
@@ -213,9 +208,9 @@ fun FilterScreen(
             )
             Spacer(Modifier.height(10.dp))
             NumberRange(
-                title = "Цена за м2",
+                title = "Цена за м2 ($)",
                 launchedKey = clearAllEffectKey,
-                rangeFrom = currentFilters.pricePerSquare?.priceFrom?.toString().orEmpty(),
+                rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
                         pricePerSquare = currentFilters.pricePerSquare?.copy(
@@ -225,7 +220,7 @@ fun FilterScreen(
                         )
                     )
                 },
-                rangeTo = currentFilters.pricePerSquare?.priceTo?.toString().orEmpty(),
+                rangeTo = currentFilters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
                 toOnChange = {
                     currentFilters = currentFilters.copy(
                         pricePerSquare = currentFilters.pricePerSquare?.copy(
@@ -416,7 +411,7 @@ private fun NumberRange(
             launchedKey = launchedKey,
             text = rangeFrom,
             label = "От",
-            onChangePredicate = onlyDoublePredicate,
+            onChangePredicate = onlyIntPredicate,
             onChange = fromOnChange
         )
         AppTextField(
@@ -424,7 +419,7 @@ private fun NumberRange(
             launchedKey = launchedKey,
             text = rangeTo,
             label = "До",
-            onChangePredicate = onlyDoublePredicate,
+            onChangePredicate = onlyIntPredicate,
             onChange = toOnChange
         )
     }
