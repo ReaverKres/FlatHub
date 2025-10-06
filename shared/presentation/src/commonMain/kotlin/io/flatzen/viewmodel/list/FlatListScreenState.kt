@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.utils.asPriceFormat
+import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
@@ -29,8 +31,8 @@ data class UiFlat(
     val savedInFavorite: Boolean,
     val isViewed: Boolean,
     val imageUrls: List<String>,
-    val priceUsd: UiPrice,
-    val priceByn: UiPrice,
+    val priceUsd: String,
+    val priceByn: String?,
     val numberOfRooms: Int?,
     val publishedAt: String?,
     val metroStation: String?,
@@ -46,14 +48,8 @@ data class UiFlat(
                     imageUrls = it.imageUrls ?: listOf(),
                     savedInFavorite = it.savedInFavorites,
                     isViewed = it.isViewed,
-                    priceByn = UiPrice(
-                        price = it.priceByn,
-                        currency = "BYN"
-                    ),
-                    priceUsd = UiPrice(
-                        price = it.priceUsd,
-                        currency = "USD"
-                    ),
+                    priceByn = it.priceByn?.let { priceByn -> priceWithCurrency(priceByn, "BYN") },
+                    priceUsd = priceWithCurrency(it.priceUsd, "$"),
                     numberOfRooms = it.rooms,
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
@@ -71,6 +67,6 @@ data class UiFlat(
 
 @Immutable
 data class UiPrice(
-    val price: Double?,
+    val price: String?,
     val currency: String
 )

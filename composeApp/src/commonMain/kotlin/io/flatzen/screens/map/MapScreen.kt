@@ -396,15 +396,15 @@ fun FlatItemContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${flat.priceUsd.price} ${flat.priceUsd.currency}",
+                text = flat.priceUsd,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            flat.priceByn.price?.let {
+            flat.priceByn?.let {
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "(${flat.priceByn.price} ${flat.priceByn.currency})",
+                    text = "($it)",
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

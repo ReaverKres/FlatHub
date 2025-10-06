@@ -56,7 +56,8 @@ class KufarRepositoryImpl(
         }
 
         val filter = filterRepository.lastFilter()
-        val metroIds: List<Int>? = filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
+        val metroIds: List<Int>? =
+            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
 
         val city = when (filter.location?.city) {
             null, CityCode.MINSK -> KufarCities.MINSK
@@ -84,8 +85,8 @@ class KufarRepositoryImpl(
 
         try {
             val request = api.searchFlats(
-                searchId = generateSearchId(),
-                queryParams = params
+                queryParams = params,
+                searchId = generateSearchId()
             )
 
             when (request) {
@@ -124,7 +125,8 @@ class KufarRepositoryImpl(
                         NetworkResponseWrapper.error(
                             request.ex, NetworkErrorInfo(
                                 platform = FlatPlatform.KUFAR,
-                                errorMessages = parsedError?.errorMessages() ?: listOf("Internal server error")
+                                errorMessages = parsedError?.errorMessages()
+                                    ?: listOf(request.ex.message.orEmpty().substringBefore("["))
                             )
                         )
                     )
@@ -150,11 +152,6 @@ class KufarRepositoryImpl(
         }
     }.flowOn(Dispatchers.IO)
 
-    private fun generateSearchId(): String {
-        val chars = "0123456789abcdef"
-        return (1..32).map { chars.random() }.joinToString("")
-    }
-
 
     private suspend fun getApartmentHtml(url: String): String {
         return try {
@@ -165,5 +162,10 @@ class KufarRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
+    }
+
+    private fun generateSearchId(): String {
+        val chars = "0123456789abcdef"
+        return (1..32).map { chars.random() }.joinToString("")
     }
 }
