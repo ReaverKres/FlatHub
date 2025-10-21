@@ -40,6 +40,7 @@ import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.shareLauncher
 import io.flatzen.viewmodel.ContactInformationUi
@@ -67,7 +68,7 @@ fun DetailScreen(
     val viewModel = koinViewModel<FlatDetailViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(objectId) {
+    LaunchedEffectOnce(objectId) {
         viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(flatPlatform, objectId))
         // Track screen view through MviAction
         viewModel.onIntent(

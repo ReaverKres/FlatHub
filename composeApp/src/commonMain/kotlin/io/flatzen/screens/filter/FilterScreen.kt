@@ -45,6 +45,7 @@ import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.asPriceFormat
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
@@ -72,7 +73,7 @@ fun FilterScreen(
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffectOnce(Unit) {
         // Track screen view through MviAction
         viewModel.onIntent(
             FilterScreenAction.TrackScreenView(
