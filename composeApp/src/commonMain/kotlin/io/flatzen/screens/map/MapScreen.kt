@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.SearchErrorDialog
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
 import io.flatzen.viewmodel.MapViewModel
@@ -167,8 +168,8 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(Unit) { mapViewModel.onIntent(MapAction.Initialize) }
-    LaunchedEffect(Unit) {
+    LaunchedEffectOnce(Unit) { mapViewModel.onIntent(MapAction.Initialize) }
+    LaunchedEffectOnce(Unit) {
         listViewModel.onIntent(FlatListScreenAction.ScreenVisible)
     }
 

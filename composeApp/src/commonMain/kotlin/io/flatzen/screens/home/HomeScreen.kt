@@ -50,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -80,8 +81,10 @@ import io.flatzen.uiExtensions.thenIf
 import io.flatzen.utils.text
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.list.FlatListEffect
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatListScreenState
 import io.flatzen.viewmodel.list.FlatSearchViewModel
@@ -116,7 +119,7 @@ fun HomeScreen(
     }
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
 
-    var showSortSheet by remember { mutableStateOf(false) }
+    var showSortSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
         filterViewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -133,9 +136,20 @@ fun HomeScreen(
         val count = if (state.isListView) 6 else 8
         derivedStateOf { firstVisibleItemIndex >= count && state.flatList.isNotEmpty() }
     }
+    val scrollToTopBtnSize: Dp = 48.dp
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(FlatListScreenAction.ScreenVisible)
+        viewModel.effect.collect {
+            when (it) {
+                is FlatListEffect.ScrollToTop -> {
+                    lazyListState.scrollToItem(0)
+                }
+            }
+        }
+    }
+
+    LaunchedEffectOnce(Unit) {
         viewModel.onIntent(
             FlatListScreenAction.TrackScreenView(
                 screenName = AppMetrcica.Screens.LIST,
@@ -284,6 +298,9 @@ fun HomeScreen(
                                     LoadMoreForce(state.currentSearchPage, viewModel)
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
+                                    if(showScrollToTopBtn) {
+                                        Spacer(Modifier.height(scrollToTopBtnSize))
+                                    }
                                 }
                             }
                         }
@@ -309,7 +326,7 @@ fun HomeScreen(
                         }
                     },
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(scrollToTopBtnSize)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary)
                 ) {

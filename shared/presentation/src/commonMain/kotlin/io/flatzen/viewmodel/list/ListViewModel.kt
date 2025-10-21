@@ -24,10 +24,12 @@ import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -39,6 +41,7 @@ import repository.mergedrepo.MergedRepository
 import repository.userpreferences.UserPreferencesRepository
 
 sealed interface FlatListScreenAction : MviAction {
+    data object ScrollToTop: FlatListScreenAction
     class SearchFlats(
         val isLoadMoreByScroll: Boolean,
         val isLoadMoreForce: Boolean = false,
@@ -66,6 +69,7 @@ sealed interface FlatListScreenAction : MviAction {
 }
 
 sealed interface FlatListEvents : MviEvent {
+    data object ScrollToTop: FlatListEvents
     data class AllFlatsLoaded(
         val allFlats: LCE<List<AppFlat>>,
         val isLoadMore: Boolean,
@@ -89,6 +93,10 @@ sealed interface FlatListEvents : MviEvent {
     class ErrorDialogHidden() : FlatListEvents
 }
 
+sealed interface FlatListEffect : MviEffect {
+    data object ScrollToTop: FlatListEffect
+}
+
 class FlatSearchViewModel(
     private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
@@ -96,7 +104,7 @@ class FlatSearchViewModel(
     private val connectionMonitor: ConnectionMonitor,
     private val analyticsManager: AnalyticsManager,
     private val configFieldsChecker: ConfigFieldsChecker
-) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, MviEffect>() {
+) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, FlatListEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
     private var isNetworkAvailable: Boolean = true
@@ -144,6 +152,9 @@ class FlatSearchViewModel(
         currentState: FlatListScreenState
     ): Flow<FlatListEvents> {
         return when (action) {
+            is FlatListScreenAction.ScrollToTop -> {
+                flowOf(ScrollToTop)
+            }
             is FlatListScreenAction.ScreenVisible -> {
                 val lastNet = filterRepository.lastNetworkFilter
                 // First, check and apply selected saved filter if exists
@@ -215,6 +226,9 @@ class FlatSearchViewModel(
                 }
                 if (action.isLoadMoreByScroll) {
                     filterRepository.currentAppPage++
+                }
+                if(action.isLoadMoreByScroll.not()) {
+                    onIntent(FlatListScreenAction.ScrollToTop)
                 }
                 loadAllFlats(action.isLoadMoreByScroll, action.isRefreshing)
             }
@@ -428,6 +442,7 @@ class FlatSearchViewModel(
                     errorDialogState = null
                 )
             }
+            is ScrollToTop -> currentState
         }
     }
 
@@ -474,6 +489,13 @@ class FlatSearchViewModel(
                     currentSearchPage = filterRepository.currentAppPage
                 )
             }
+        }
+    }
+
+    override suspend fun onEvent(event: FlatListEvents): FlatListEffect? {
+        return when (event) {
+            ScrollToTop -> FlatListEffect.ScrollToTop
+            else -> super.onEvent(event)
         }
     }
 }
