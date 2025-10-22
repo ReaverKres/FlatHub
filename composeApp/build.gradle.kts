@@ -1,6 +1,18 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+object Keystore {
+    //Debug
+    const val debug_key_store_password = "android"
+    const val debug_key_alias = "androiddebugkey"
+    const val debug_key_alias_password = "android"
+
+    //Release
+    const val key_store_password = "Denis@24862"
+    const val key_alias = "LocusKey"
+    const val key_alias_password = "Denis@24862"
+}
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -74,10 +86,19 @@ android {
         applicationId = "io.flatzen"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
-    
+
+    signingConfigs {
+        create("release") {
+            keyAlias = Keystore.key_alias
+            keyPassword = Keystore.key_alias_password
+            storeFile = rootProject.file("LocusKeyStore.jks")
+            storePassword = Keystore.key_store_password
+        }
+    }
+
     buildTypes {
         debug {
             versionNameSuffix = "-DEBUG"
@@ -85,7 +106,8 @@ android {
             isMinifyEnabled = false
             // Debug build doesn't need obfuscation
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
         
@@ -93,9 +115,11 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
             // Release build with R8 optimization and obfuscation
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
     }
