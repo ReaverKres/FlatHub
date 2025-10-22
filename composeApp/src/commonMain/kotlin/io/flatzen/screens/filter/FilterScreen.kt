@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.SaveFilterDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.utils.asIntPrice
@@ -154,12 +155,16 @@ fun FilterScreen(
                 }
             )
 
-            FilterSwitch("Только от собственника", currentFilters.fromOwnerOnly) {
+            FilterSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
                 currentFilters = currentFilters.copy(fromOwnerOnly = it)
             }
-            Spacer(Modifier.height(6.dp))
-            FilterSwitch("Только с фото", currentFilters.withPhotoOnly) {
+            FilterSwitch(label = "Только с фото", state = currentFilters.withPhotoOnly) {
                 currentFilters = currentFilters.copy(withPhotoOnly = it)
+            }
+            if (currentFilters.adType == AdType.RENT) {
+                FilterSwitch(label = "Снять комнату", state = currentFilters.roomOnly) {
+                    currentFilters = currentFilters.copy(roomOnly = it)
+                }
             }
 
             FilterSectionTitle(title = "Комнат в квартире")

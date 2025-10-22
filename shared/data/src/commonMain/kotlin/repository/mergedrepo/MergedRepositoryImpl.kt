@@ -11,7 +11,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -39,13 +41,19 @@ class MergedRepositoryImpl(
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
 
     override fun searchFlats(): Flow<MergedFlatResponse> {
-        return kufarRepository.searchFlats()
+        val filter = filterRepository.lastFilter()
+        val baseFlow = kufarRepository.searchFlats()
             .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
                 listOf(kufarList, onlinerList)
             }
-            .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
-            .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
-            .mapLatest { networkFlats ->
+
+        val finalFlow = if (filter.isRoomForRent) {
+            baseFlow
+        } else {
+            baseFlow.zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
+                .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+        }
+            return finalFlow.mapLatest { networkFlats ->
                 val appFlats: MutableList<AppFlat> = mutableListOf()
                 val errors: MutableList<NetworkErrorInfo> = mutableListOf()
 

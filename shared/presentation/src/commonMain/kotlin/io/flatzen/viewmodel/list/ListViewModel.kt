@@ -24,12 +24,10 @@ import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -43,7 +41,7 @@ import repository.userpreferences.UserPreferencesRepository
 sealed interface FlatListScreenAction : MviAction {
     data object ScrollToTop: FlatListScreenAction
     class SearchFlats(
-        val isLoadMoreByScroll: Boolean,
+        val isLoadMore: Boolean,
         val isLoadMoreForce: Boolean = false,
         val isRefreshing: Boolean = false
     ) :
@@ -193,7 +191,7 @@ class FlatSearchViewModel(
                         AnalyticsEvent(
                             eventName = "search_flats",
                             parameters = mapOf(
-                                "is_load_more" to action.isLoadMoreByScroll,
+                                "is_load_more" to action.isLoadMore,
                                 "is_refreshing" to action.isRefreshing,
                                 "page" to filterRepository.currentAppPage
                             )
@@ -220,17 +218,17 @@ class FlatSearchViewModel(
                 if (action.isLoadMoreForce.not() && noFlatsToLoadMore && action.isRefreshing.not()) {
                     return flowOf()
                 }
-                if (action.isRefreshing || action.isLoadMoreByScroll.not()) {
+                if (action.isRefreshing || action.isLoadMore.not()) {
                     filterRepository.currentAppPage = 1
                     mergedRepository.clearCashedFlats()
                 }
-                if (action.isLoadMoreByScroll) {
+                if (action.isLoadMore) {
                     filterRepository.currentAppPage++
                 }
-                if(action.isLoadMoreByScroll.not()) {
+                if(action.isLoadMore.not()) {
                     onIntent(FlatListScreenAction.ScrollToTop)
                 }
-                loadAllFlats(action.isLoadMoreByScroll, action.isRefreshing)
+                loadAllFlats(action.isLoadMore, action.isRefreshing)
             }
 
             is FlatListScreenAction.ClickOnFavorite -> {

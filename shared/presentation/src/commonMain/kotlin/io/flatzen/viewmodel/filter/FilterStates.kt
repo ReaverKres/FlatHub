@@ -85,6 +85,7 @@ data class FilterState(
     val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
     val withPhotoOnly: Boolean = false,
+    val roomOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
 ) {
     fun isLocationFilterActive(): Boolean {

@@ -56,6 +56,7 @@ data class CommonFilterRequestModel(
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
+    val roomOnly: Boolean = false,
     val fromOwnerOnly: Boolean? = null,
     val withPhotoOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
@@ -63,6 +64,9 @@ data class CommonFilterRequestModel(
 
     val isRentType: Boolean
         get() = adType == AdType.RENT
+
+    val isRoomForRent: Boolean
+        get() = adType == AdType.RENT && roomOnly
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -96,6 +100,7 @@ data class CommonFilterRequestModel(
             else -> this.fromOwnerOnly == other.fromOwnerOnly
         }
 
+        if(roomOnly != other.roomOnly) return false
         if(withPhotoOnly != other.withPhotoOnly) return false
         if (adType != other.adType) return false
         if(totalArea != other.totalArea) return false
@@ -118,6 +123,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + (totalArea?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
+        result = 31 * result + roomOnly.hashCode()
         result = 31 * result + withPhotoOnly.hashCode()
         result = 31 * result + adType.hashCode()
         result = 31 * result + currency.hashCode()

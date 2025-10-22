@@ -47,8 +47,8 @@ class OnlinerRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroLines =
             filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
-        val cityBounds = when(filter.location?.city) {
-            null,  CityCode.MINSK -> OnlinerCitiesBounds.MINSK
+        val cityBounds = when (filter.location?.city) {
+            null, CityCode.MINSK -> OnlinerCitiesBounds.MINSK
             CityCode.BREST -> OnlinerCitiesBounds.BREST
             CityCode.GOMEL -> OnlinerCitiesBounds.GOMEL
             CityCode.GRODNO -> OnlinerCitiesBounds.GRODNO
@@ -82,9 +82,12 @@ class OnlinerRepositoryImpl(
         )
         try {
             val request = if (filter.isRentType) {
-                val rentTypes = filter.numberOfRooms?.map {
-                    if (it == 1) "${it}_room" else "${it}_rooms"
-                } ?: emptyList()
+                val rentTypes: List<String> = when {
+                    filter.roomOnly -> listOf("room")
+                    else -> filter.numberOfRooms?.map {
+                        if (it == 1) "${it}_room" else "${it}_rooms"
+                    } ?: emptyList()
+                }
                 api.searchRentFlats(params, rentTypes)
             } else {
                 val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
@@ -93,7 +96,9 @@ class OnlinerRepositoryImpl(
             when (request) {
                 is NetworkResponseWrapper.Success -> {
                     val onlinerFlatList = request.data.apartments
-                        ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }
+                        ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }?.filter {
+                            if (filter.isRoomForRent.not() && it.rooms == 0) false else true
+                        }
                     onlinerFlatList?.let {
                         emit(NetworkResponseWrapper.success(it))
                     } ?: run {

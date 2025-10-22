@@ -86,7 +86,6 @@ import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListEffect
 import io.flatzen.viewmodel.list.FlatListScreenAction
-import io.flatzen.viewmodel.list.FlatListScreenState
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
@@ -174,7 +173,7 @@ fun HomeScreen(
                 if (state.isLoading.not()) {
                     viewModel.onIntent(
                         FlatListScreenAction.SearchFlats(
-                            isLoadMoreByScroll = false,
+                            isLoadMore = false,
                             isRefreshing = true
                         )
                     )
@@ -299,7 +298,7 @@ fun HomeScreen(
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
                                     if(showScrollToTopBtn) {
-                                        Spacer(Modifier.height(scrollToTopBtnSize))
+                                        Spacer(Modifier.height(scrollToTopBtnSize + 24.dp))
                                     }
                                 }
                             }
@@ -397,7 +396,7 @@ private fun LoadMoreForce(
             onClick = {
                 viewModel.onIntent(
                     FlatListScreenAction.SearchFlats(
-                        isLoadMoreByScroll = true,
+                        isLoadMore = true,
                         isLoadMoreForce = true
                     )
                 )
