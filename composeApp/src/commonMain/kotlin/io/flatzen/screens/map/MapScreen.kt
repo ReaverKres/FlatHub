@@ -169,7 +169,7 @@ fun MapScreen(
     }
 
     LaunchedEffectOnce(Unit) { mapViewModel.onIntent(MapAction.Initialize) }
-    LaunchedEffectOnce(Unit) {
+    LaunchedEffect(Unit) {
         listViewModel.onIntent(FlatListScreenAction.ScreenVisible)
     }
 
