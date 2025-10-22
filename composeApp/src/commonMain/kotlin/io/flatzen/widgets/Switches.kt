@@ -12,9 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterSwitch(label: String, state: Boolean, onStateChange: (Boolean) -> Unit) {
+fun FilterSwitch(
+    modifier: Modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    label: String,
+    state: Boolean,
+    onStateChange: (Boolean) -> Unit
+) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
 
