@@ -1,0 +1,5 @@
+# Сохранить имена классов для навигации
+-keepnames class io.flatzen.ListScreenDestination
+-keepnames class io.flatzen.FavoritesScreenDestination
+-keepnames class io.flatzen.SettingsScreenDestination
+-keepnames class io.flatzen.MapScreenDestination
