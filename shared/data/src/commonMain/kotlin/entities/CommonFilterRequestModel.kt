@@ -37,10 +37,12 @@ import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import kotlinx.serialization.Serializable
 import server_request.Currency
 
@@ -67,6 +69,12 @@ data class CommonFilterRequestModel(
 
     val isRoomForRent: Boolean
         get() = adType == AdType.RENT && roomOnly
+
+    val isCommercial: Boolean
+        get() = adType.isCommercial
+
+    val isPricePerSquareNeeded: Boolean
+        get() = adType == AdType.SALE || isCommercial
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

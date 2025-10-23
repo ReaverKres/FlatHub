@@ -49,6 +49,8 @@ class MergedRepositoryImpl(
 
         val finalFlow = if (filter.isRoomForRent) {
             baseFlow
+        } else if(filter.isCommercial) {
+            kufarRepository.searchFlats().map { listOf(it) }
         } else {
             baseFlow.zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
                 .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }

@@ -9,6 +9,7 @@ import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
@@ -69,14 +70,18 @@ class KufarRepositoryImpl(
             else -> KufarCities.MINSK
         }
 
-        val dealType = if (filter.isRentType) AdType.RENT else AdType.SALE
-        val categoryId = if (dealType == AdType.RENT && filter.roomOnly) 1040 else 1010
+        val dealType = filter.adType
+        val categoryId = when {
+            dealType == AdType.RENT && filter.roomOnly -> 1040
+            filter.isCommercial -> 1050
+            else -> 1010
+        }
 
         val params = KufarApi.createQueryParams(
             categoryId = categoryId,
             dealType = dealType,
             priceFull = filter.priceFull,
-            pricePerSquare = if (filter.adType == AdType.SALE) filter.pricePerSquare else null,
+            pricePerSquare = if (filter.isPricePerSquareNeeded) filter.pricePerSquare else null,
             metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
             rooms = filter.numberOfRooms,

@@ -71,17 +71,22 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.ForceUpdateDialog
 import io.flatzen.SearchErrorDialog
+import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.screens.map.FlatItemContent
 import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.text
 import io.flatzen.viewmodel.filter.FilterScreenAction
-import io.flatzen.commoncomponents.commonentities.FlatSort
-import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListEffect
@@ -119,6 +124,7 @@ fun HomeScreen(
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
 
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
+    var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
         filterViewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -288,6 +294,9 @@ fun HomeScreen(
                                 },
                                 showSortSheet = {
                                     showSortSheet = true
+                                },
+                                showCommercialDialog = {
+                                    showCommercialDialog = true
                                 }
                             )
                         },
@@ -297,7 +306,7 @@ fun HomeScreen(
                                     LoadMoreForce(state.currentSearchPage, viewModel)
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
-                                    if(showScrollToTopBtn) {
+                                    if (showScrollToTopBtn) {
                                         Spacer(Modifier.height(scrollToTopBtnSize + 24.dp))
                                     }
                                 }
@@ -372,6 +381,31 @@ fun HomeScreen(
                         currentFilters = currentFilters.copy(sortOption = sortOption)
                     },
                     onDismiss = { showSortSheet = false }
+                )
+            }
+
+            if (showCommercialDialog) {
+                SingleChoiceDialog(
+                    title = "Тип сделки",
+                    items = listOf(
+                        SingleChoiceEntity(
+                            title = "Продажа", AdType.COMMERCIAL(
+                                CommercialType.SALE
+                            )
+                        ),
+                        SingleChoiceEntity(
+                            title = "Аренда", AdType.COMMERCIAL(
+                                CommercialType.RENT
+                            )
+                        )
+                    ),
+                    selectedItem = currentFilters.adType,
+                    onDismissRequest = {
+                        showCommercialDialog = false
+                    },
+                    onSelected = { adType ->
+                        currentFilters = currentFilters.copy(adType = adType)
+                    }
                 )
             }
 
@@ -533,13 +567,18 @@ private fun LazyListScope.topContentHeader(
     filterState: FilterState?,
     updateFilters: (FilterState) -> Unit,
     onToggleView: () -> Unit,
-    showSortSheet: () -> Unit = {}
+    showSortSheet: () -> Unit = {},
+    showCommercialDialog: () -> Unit = {}
 ) {
 
     filterState?.let {
         item {
-            RentSaleButtons(filterState.adType) {
-                updateFilters(filterState.copy(adType = it))
+            RentSaleButtons(filterState.adType) { adType ->
+                if (adType.isCommercial) {
+                    showCommercialDialog()
+                } else {
+                    updateFilters(filterState.copy(adType = adType))
+                }
             }
         }
     }

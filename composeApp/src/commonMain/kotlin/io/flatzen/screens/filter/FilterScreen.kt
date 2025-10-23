@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +40,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.SaveFilterDialog
+import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.asPriceFormat
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
+import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
@@ -69,6 +74,7 @@ fun FilterScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
     var clearAllEffectKey by remember { mutableStateOf(0) }
+    var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
@@ -108,6 +114,32 @@ fun FilterScreen(
             )
         },
     ) { paddingValues ->
+
+        if (showCommercialDialog) {
+            SingleChoiceDialog(
+                title = "Тип сделки",
+                items = listOf(
+                    SingleChoiceEntity(
+                        title = "Продажа", AdType.COMMERCIAL(
+                            CommercialType.SALE
+                        )
+                    ),
+                    SingleChoiceEntity(
+                        title = "Аренда", AdType.COMMERCIAL(
+                            CommercialType.RENT
+                        )
+                    )
+                ),
+                selectedItem = currentFilters.adType,
+                onDismissRequest = {
+                    showCommercialDialog = false
+                },
+                onSelected = { adType ->
+                    currentFilters = currentFilters.copy(adType = adType)
+                }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -135,16 +167,23 @@ fun FilterScreen(
 
             // Продажа или Аренда
             RentSaleButtons(state.filters.adType) {
-                currentFilters = currentFilters.copy(adType = it)
+                if (it.isCommercial) {
+                    showCommercialDialog = true
+                } else {
+                    currentFilters = currentFilters.copy(adType = it)
+                }
             }
+
+            Spacer(Modifier.height(8.dp))
 
             // Сортировка
             FilterSectionTitle(title = "Сортировка")
             SortOptionRadioButtons(state.filters.sortOption) { sortOption ->
                 viewModel.onIntent(FilterScreenAction.UpdateSortOption(sortOption))
             }
+            Spacer(Modifier.height(8.dp))
             // Расположение
-            FilterSectionTitle(title = "Расположение", modifier = Modifier.padding(top = 4.dp))
+            FilterSectionTitle(title = "Расположение")
             LocationItem(
                 selectedCity = state.filters.location?.selectedCity?.displayName,
                 selectedMetro = state.filters.getSelectedMetroStation(),

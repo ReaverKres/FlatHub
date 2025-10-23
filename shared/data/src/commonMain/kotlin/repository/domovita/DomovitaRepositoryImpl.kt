@@ -9,6 +9,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.City
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ class DomovitaRepositoryImpl(
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = null
 //            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
-        val city = when(filter.location?.city) {
+        val city = when (filter.location?.city) {
             null, CityCode.MINSK -> DomovitaCities.MINSK
             CityCode.BREST -> DomovitaCities.BREST
             CityCode.GOMEL -> DomovitaCities.GOMEL
@@ -62,7 +63,7 @@ class DomovitaRepositoryImpl(
             page = currentPage,
             limit = 20,
             priceFull = filter.priceFull,
-            pricePerSquare = if(filter.adType == AdType.SALE) filter.pricePerSquare else null,
+            pricePerSquare = if (filter.isPricePerSquareNeeded) filter.pricePerSquare else null,
             rooms = filter.numberOfRooms,
             metroIds = metroIds,
             //TODO Add onlyOwner to request

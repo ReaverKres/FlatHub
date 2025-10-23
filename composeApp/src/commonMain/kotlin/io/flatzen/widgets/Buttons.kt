@@ -3,13 +3,18 @@ package io.flatzen.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -31,8 +36,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.AdType.*
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.utils.mapLauncher
 
 @Composable
@@ -63,68 +71,84 @@ fun RentSaleButtons(
     selectedAdType: AdType,
     onClick: (AdType) -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(
-            onClick = {
-                onClick(AdType.RENT)
-            },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (selectedAdType == AdType.RENT) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surfaceVariant
-                },
-                contentColor = if (selectedAdType == AdType.RENT) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
+
+    val commercialAdTypeBtnText = when (selectedAdType) {
+        COMMERCIAL(CommercialType.RENT) -> "Коммерческая (Снять)"
+        COMMERCIAL(CommercialType.SALE) -> "Коммерческая (Купить)"
+        else -> "Коммерческая (Снять)"
+    }
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.Start,
         ) {
+            AdTypeButton(
+                modifier = Modifier
+                    .height(44.dp)
+                    .weight(1f),
+                adType = AdType.RENT,
+                adTypeBtnText = "Аренда",
+                onClick = onClick,
+                selectedAdType = selectedAdType
+            )
+
+            Spacer(Modifier.width(32.dp))
+
+            AdTypeButton(
+                modifier = Modifier
+                    .height(44.dp)
+                    .weight(1f),
+                adType = AdType.SALE,
+                adTypeBtnText = "Продажа",
+                onClick = onClick,
+                selectedAdType = selectedAdType
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        AdTypeButton(
+            modifier = Modifier
+                .height(44.dp)
+                .wrapContentWidth(),
+            adType = AdType.COMMERCIAL(),
+            adTypeBtnText = commercialAdTypeBtnText,
+            onClick = onClick,
+            selectedAdType = selectedAdType
+        )
+    }
+}
+
+@Composable
+private fun AdTypeButton(
+    modifier: Modifier,
+    adType: AdType,
+    adTypeBtnText: String,
+    onClick: (AdType) -> Unit,
+    selectedAdType: AdType
+) {
+    Button(
+        onClick = {
+            onClick(adType)
+        },
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (selectedAdType == adType || (selectedAdType.isCommercial && adType is COMMERCIAL)) {
+                Color(0xFF2b64ad).copy(alpha = 0.8f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    ) {
 //            Icon(
 //                imageVector = rentIcon,
 //                contentDescription = null,
 //                modifier = Modifier.padding(end = 8.dp)
 //            )
 //            Spacer(Modifier.width(6.dp))
-            Text("Аренда")
-        }
-
-        Spacer(Modifier.width(16.dp))
-
-        Button(
-            onClick = {
-                onClick(AdType.SALE)
-            },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (selectedAdType == AdType.SALE) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surfaceVariant
-                },
-                contentColor = if (selectedAdType == AdType.SALE) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        ) {
-//            Icon(
-//                imageVector = saleIcon,
-//                contentDescription = null,
-//                modifier = Modifier.padding(end = 8.dp)
-//            )
-//            Spacer(Modifier.width(6.dp))
-            Text("Продажа")
-        }
+        Text(text = adTypeBtnText, maxLines = 1)
     }
 }
 
