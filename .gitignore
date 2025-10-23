@@ -1,4 +1,5 @@
 *.iml
+composeApp/release/
 .kotlin
 .gradle
 **/build/

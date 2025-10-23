@@ -87,7 +87,7 @@ fun DetailScreen(
     ) {
         TopAppBar(
             windowInsets = WindowInsets(0, 0, 0, 0),
-            title = {  },
+            title = { },
             navigationIcon = {
                 IconButton(onClick = navigateBack) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
@@ -207,11 +207,12 @@ private fun FlatDetailContent(
                 condition = flat.condition
             )
 
-            if(flat.coordinates != null) {
+            if (flat.coordinates != null) {
                 val coroutineScope = rememberCoroutineScope()
                 mapState.apply {
                     val mercatorCoordinates =
-                        flat.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) } ?: return
+                        flat.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
+                            ?: return
                     coroutineScope.launch {
                         snapScrollTo(mercatorCoordinates.first, mercatorCoordinates.second)
                     }
@@ -227,9 +228,11 @@ private fun FlatDetailContent(
                     }
                 }
 
-                Box(modifier = Modifier.padding(top = 24.dp, bottom = 12.dp).fillMaxWidth().height(200.dp).clickable {
-                    navigateToMap()
-                }) {
+                Box(
+                    modifier = Modifier.padding(top = 24.dp, bottom = 12.dp).fillMaxWidth()
+                        .height(200.dp).clickable {
+                        navigateToMap()
+                    }) {
                     MapUI(modifier = Modifier.fillMaxSize(), state = mapState)
                 }
 
@@ -270,7 +273,7 @@ private fun FlatDetailContent(
             }
 
             // Местоположение
-            if (!flat.district.isNullOrBlank() || !flat.metroStation.isNullOrBlank()) {
+            if (!flat.district.isNullOrBlank() || !flat.metroStation.isNullOrBlank() || flat.address.isNotBlank()) {
                 HorizontalDivider()
                 LocationSection(
                     district = flat.district,
@@ -363,7 +366,7 @@ private fun SourceLinkSection(
             fontWeight = FontWeight.Bold,
             textDecoration = TextDecoration.Underline
         )
-        
+
         IconButton(
             onClick = {
                 shareLauncher.shareText(
@@ -381,7 +384,12 @@ private fun SourceLinkSection(
 }
 
 @Composable
-private fun PriceSection(priceUsd: String, priceByn: String, priceUsdSquare: String?, priceBynSquare: String?) {
+private fun PriceSection(
+    priceUsd: String,
+    priceByn: String,
+    priceUsdSquare: String?,
+    priceBynSquare: String?
+) {
     Column {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
