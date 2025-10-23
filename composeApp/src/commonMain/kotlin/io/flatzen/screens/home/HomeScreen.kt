@@ -356,6 +356,7 @@ fun HomeScreen(
                         }
                 ) {
                     Text(
+                        modifier = Modifier.align(Alignment.Center),
                         text = "Квартиры с текущими фильтрами закончились",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,

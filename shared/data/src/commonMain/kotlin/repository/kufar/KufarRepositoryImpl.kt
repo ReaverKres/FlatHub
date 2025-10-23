@@ -57,7 +57,7 @@ class KufarRepositoryImpl(
 
         val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? =
-            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
+            filter.metroStations.filter { it.selected }.map { it.metroId }.takeIf { it.isNotEmpty() }
 
         val city = when (filter.location?.city) {
             null, CityCode.MINSK -> KufarCities.MINSK

@@ -76,7 +76,7 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
                     .takeIf { it.isNotBlank() }
             }
 
-        return AppFlat(
+        return baseFlat.copy(
             flatPlatform = FlatPlatform.ONLINER,
             flatDevInfo = FlatDevInfo(
                 isDetailData = true,
@@ -88,8 +88,6 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             publishedAtServer = baseFlat.publishedAtServer,
             publishedAtUi = baseFlat.publishedAtUi,
             imageUrls = images,
-            priceUsd = priceUsd,
-            priceByn = priceByn,
             rooms = rooms,
             district = tableParams["Район"],
             address = address,
