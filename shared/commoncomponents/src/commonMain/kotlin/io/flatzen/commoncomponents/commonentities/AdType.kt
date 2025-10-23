@@ -1,5 +1,21 @@
 package io.flatzen.commoncomponents.commonentities
 
-enum class AdType {
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class AdType {
+    data object RENT: AdType()
+    data object SALE: AdType()
+    data class COMMERCIAL(val commercialType: CommercialType = CommercialType.RENT): AdType()
+}
+
+val AdType.isCommercial: Boolean
+    get() = this == AdType.COMMERCIAL(
+        CommercialType.RENT
+    ) || this == AdType.COMMERCIAL(
+        CommercialType.SALE
+    )
+
+enum class CommercialType {
     RENT, SALE
 }

@@ -5,6 +5,7 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import server_response.KufarListResponse
@@ -53,7 +54,7 @@ interface KufarApi {
                     put("cursor", cursor.orEmpty())
                 }
                 put("size", pageSize.toString())
-                if (dealType == AdType.RENT) {
+                if (dealType == AdType.RENT || dealType == AdType.COMMERCIAL(CommercialType.RENT)) {
                     put("typ", "let")
                 } else {
                     put("typ", "sell")

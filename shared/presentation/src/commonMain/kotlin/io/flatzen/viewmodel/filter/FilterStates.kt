@@ -2,7 +2,9 @@ package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.AdType.*
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -105,6 +107,9 @@ data class FilterState(
         activeFilters.add("Тип: ${when (adType) {
             AdType.RENT -> "Аренда"
             AdType.SALE -> "Продажа"
+            COMMERCIAL(CommercialType.SALE) -> "Коммерческая (купить)"
+            COMMERCIAL(CommercialType.RENT) -> "Коммерческая (снять)"
+            is AdType.COMMERCIAL -> "Коммерческая"
         }}")
 
         // Полная цена
