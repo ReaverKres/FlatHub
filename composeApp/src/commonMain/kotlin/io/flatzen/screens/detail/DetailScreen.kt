@@ -596,9 +596,25 @@ private fun AboutBuildingSection(flat: UiDetailFlat) {
 
 @Composable
 private fun AboutApartmentSection(flat: UiDetailFlat) {
-    SectionCard(title = "О квартире") {
+    val isCommercialRoom = flat.commercialUiInfo?.numberOfRooms != null
+    val roomTitle = if(isCommercialRoom) {
+        "о помещении"
+    } else {
+        "О квартире"
+    }
+    val roomNumberTitle = if(isCommercialRoom) {
+        "Количество помещений"
+    } else {
+        "Количество комнат"
+    }
+    val roomNumber = if(isCommercialRoom) {
+        flat.commercialUiInfo?.numberOfRooms.orEmpty()
+    } else {
+        flat.numberOfRooms
+    }
+    SectionCard(title = roomTitle) {
         if (flat.numberOfRooms.isNotBlank()) {
-            InfoRow("Количество комнат", flat.numberOfRooms)
+            InfoRow(roomNumberTitle, roomNumber)
         }
         flat.totalArea?.takeIf { it.isNotBlank() }?.let {
             InfoRow("Общая площадь", it)

@@ -99,7 +99,8 @@ class DomovitaFlatMapper :
             forWhom = null,
             parkingInfo = null,
             owner = isFromOwner,
-            contactInformation = contactInfo
+            contactInformation = contactInfo,
+            commercialInfo = null
         )
     }
 

@@ -49,6 +49,7 @@ import server_request.Currency
 @Serializable
 data class CommonFilterRequestModel(
     val adType: AdType = AdType.RENT,
+    val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
@@ -61,7 +62,8 @@ data class CommonFilterRequestModel(
     val roomOnly: Boolean = false,
     val fromOwnerOnly: Boolean? = null,
     val withPhotoOnly: Boolean = false,
-    val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
+    val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
+    val commercial: CommercialRequestModel? = null
 ) {
 
     val isRentType: Boolean
@@ -112,6 +114,7 @@ data class CommonFilterRequestModel(
         if(withPhotoOnly != other.withPhotoOnly) return false
         if (adType != other.adType) return false
         if(totalArea != other.totalArea) return false
+        if(commercial != other.commercial) return false
         if (priceFull != other.priceFull) return false
         if (pricePerSquare != other.pricePerSquare) return false
         if (!isFromOwnerOnlyEqual) return false
@@ -129,6 +132,7 @@ data class CommonFilterRequestModel(
     override fun hashCode(): Int {
         var result = priceFull?.hashCode() ?: 0
         result = 31 * result + (totalArea?.hashCode() ?: 0)
+        result = 31 * result + (commercial?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
         result = 31 * result + roomOnly.hashCode()

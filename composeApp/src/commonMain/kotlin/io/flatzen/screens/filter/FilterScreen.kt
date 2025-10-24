@@ -48,10 +48,10 @@ import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.utils.asIntPrice
-import io.flatzen.commoncomponents.utils.asPriceFormat
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
+import io.flatzen.viewmodel.filter.CommercialFilters
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
@@ -61,6 +61,7 @@ import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.FilterSwitch
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
+import kotlinx.coroutines.flow.combine
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -130,12 +131,15 @@ fun FilterScreen(
                         )
                     )
                 ),
-                selectedItem = currentFilters.adType,
+                selectedItem = currentFilters.lastCommercialAdType,
                 onDismissRequest = {
                     showCommercialDialog = false
                 },
                 onSelected = { adType ->
-                    currentFilters = currentFilters.copy(adType = adType)
+                    currentFilters = currentFilters.copy(
+                        adType = adType,
+                        lastCommercialAdType = adType
+                        )
                 }
             )
         }
@@ -166,13 +170,18 @@ fun FilterScreen(
             }
 
             // Продажа или Аренда
-            RentSaleButtons(state.filters.adType) {
-                if (it.isCommercial) {
-                    showCommercialDialog = true
-                } else {
+            RentSaleButtons(
+                selectedAdType = state.filters.adType,
+                lastCommercialAdType = state.filters.lastCommercialAdType,
+                onClick = {
                     currentFilters = currentFilters.copy(adType = it)
-                }
-            }
+                },
+                fewTypeInOneClick = {
+                    if (it.isCommercial) {
+                        showCommercialDialog = true
+                    }
+                },
+            )
 
             Spacer(Modifier.height(8.dp))
 
@@ -206,23 +215,55 @@ fun FilterScreen(
                 }
             }
 
-            FilterSectionTitle(title = "Комнат в квартире")
-            Spacer(Modifier.height(6.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Room.values().forEach {
-                    val room = it.displayName.toInt()
-                    FilterChip(
-                        selected = currentFilters.rooms.contains(room),
-                        onClick = {
-                            val newTypes = currentFilters.rooms.toMutableSet()
-                            if (newTypes.contains(room)) newTypes.remove(room) else newTypes.add(
-                                room
-                            )
-                            currentFilters = currentFilters.copy(rooms = newTypes)
-                        },
-                        label = { Text(it.displayName) }
-                    )
+            if (currentFilters.adType.isCommercial.not()){
+                FilterSectionTitle(title = "Комнат в квартире")
+                Spacer(Modifier.height(6.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Room.values().forEach {
+                        val room = it.displayName.toInt()
+                        FilterChip(
+                            selected = currentFilters.rooms.contains(room),
+                            onClick = {
+                                val newTypes = currentFilters.rooms.toMutableSet()
+                                if (newTypes.contains(room)) newTypes.remove(room) else newTypes.add(
+                                    room
+                                )
+                                currentFilters = currentFilters.copy(rooms = newTypes)
+                            },
+                            label = { Text(it.displayName) }
+                        )
+                    }
                 }
+            } else {
+                Spacer(Modifier.height(6.dp))
+                NumberRange(
+                    title = "Количество помещений",
+                    launchedKey = clearAllEffectKey,
+                    rangeFrom = currentFilters.commercial?.roomRange?.fromRange?.toInt()?.toString().orEmpty(),
+                    fromOnChange = {
+                        currentFilters = currentFilters.copy(
+                            commercial = currentFilters.commercial?.copy(
+                                roomRange = currentFilters.commercial?.roomRange?.copy(
+                                    fromRange = it.toDoubleOrNull()
+                                ) ?: FromToRange(fromRange = it.toDoubleOrNull())
+                            ) ?: CommercialFilters(
+                                roomRange = FromToRange(fromRange = it.toDoubleOrNull())
+                            )
+                        )
+                    },
+                    rangeTo = currentFilters.commercial?.roomRange?.toRange?.toInt()?.toString().orEmpty(),
+                    toOnChange = {
+                        currentFilters = currentFilters.copy(
+                            commercial = currentFilters.commercial?.copy(
+                                roomRange = currentFilters.commercial?.roomRange?.copy(
+                                    toRange = it.toDoubleOrNull()
+                                ) ?: FromToRange(toRange = it.toDoubleOrNull())
+                            ) ?: CommercialFilters(
+                                roomRange = FromToRange(toRange = it.toDoubleOrNull())
+                            )
+                        )
+                    }
+                )
             }
 
             Spacer(Modifier.height(10.dp))
@@ -282,7 +323,7 @@ fun FilterScreen(
             NumberRange(
                 title = "Площадь",
                 launchedKey = clearAllEffectKey,
-                rangeFrom = currentFilters.totalArea?.fromRange?.toString().orEmpty(),
+                rangeFrom = currentFilters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
                         totalArea = currentFilters.totalArea?.copy(
@@ -292,7 +333,7 @@ fun FilterScreen(
                         )
                     )
                 },
-                rangeTo = currentFilters.totalArea?.toRange?.toString().orEmpty(),
+                rangeTo = currentFilters.totalArea?.toRange?.toInt()?.toString().orEmpty(),
                 toOnChange = {
                     currentFilters = currentFilters.copy(
                         totalArea = currentFilters.totalArea?.copy(
@@ -387,7 +428,7 @@ private fun LocationItem(
     selectedAddress: String?,
     isLocationFilterActive: Boolean,
     onOpenLocation: () -> Unit,
-    ) {
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

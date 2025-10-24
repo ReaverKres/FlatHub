@@ -43,6 +43,7 @@ data class UiDetailFlat(
     val isDetailDataLoaded: Boolean?,
     val savedInFavorite: Boolean,
     val isViewed: Boolean,
+    val commercialUiInfo: CommercialUiInfo?,
     val flatUrl: String,
     val description: String,
     val imageUrls: List<String>,
@@ -83,6 +84,11 @@ data class UiDetailFlat(
 data class ContactInformationUi(
     val phones: List<String>?,
     val ownerName: String?
+)
+
+@Immutable
+data class CommercialUiInfo(
+    val numberOfRooms: String?
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
@@ -203,6 +209,9 @@ class FlatDetailViewModel(
             isViewed = true,
             savedInFavorite = appFlat.savedInFavorites,
             platform = appFlat.flatPlatform,
+            commercialUiInfo = appFlat.commercialInfo?.takeIf { it.numberOfRooms != null }?.let {
+                CommercialUiInfo(numberOfRooms = it.numberOfRooms.toString())
+            },
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty(),

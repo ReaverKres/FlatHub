@@ -79,7 +79,8 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
             contactInformation = ContactInformation(
                 phones = response.contactPhones?.filterNotNull(),
                 ownerName = response.contactName
-            )
+            ),
+            commercialInfo = null
         )
     }
 }

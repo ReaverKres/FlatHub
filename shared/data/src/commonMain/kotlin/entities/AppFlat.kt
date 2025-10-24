@@ -15,6 +15,7 @@ data class AppFlat(
     @Embedded val flatDevInfo: FlatDevInfo,
     @Embedded val contactInformation: ContactInformation?,
     @Embedded val coordinates: Coordinates?,
+    @Embedded val commercialInfo: CommercialInfo?,
     val savedInFavorites: Boolean = false,
     val isViewed: Boolean = false,
     val flatPlatform: FlatPlatform,
@@ -78,4 +79,8 @@ data class FlatDevInfo(
 data class ContactInformation(
     val phones: List<String>?,
     val ownerName: String?
+)
+
+data class CommercialInfo(
+    val numberOfRooms: Int?,
 )

@@ -87,7 +87,8 @@ class KufarRepositoryImpl(
             rooms = filter.numberOfRooms,
             cursor = pageCursor,
             geoTag = city,
-            sortOption = filter.sortOption
+            sortOption = filter.sortOption,
+            commercialRequestModel = filter.commercial
         )
 
         try {
