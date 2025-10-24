@@ -10,6 +10,7 @@ import entities.SavedFilter
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
@@ -32,9 +33,16 @@ import repository.fillter.lastFilter
 sealed interface FilterScreenAction : MviAction {
     data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) :
         FilterScreenAction
+
+    data class UpdateSelectedCommercialPropertyType(
+        val commercialPropertyType: CommercialPropertyType
+    ) : FilterScreenAction
+
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
-    data class UpdateSortOption(val sortOption: FlatSort) : FilterScreenAction // Added sort option action
+    data class UpdateSortOption(val sortOption: FlatSort) :
+        FilterScreenAction // Added sort option action
+
     data object ClearAllFilters : FilterScreenAction
     data object ClearLocationFilters : FilterScreenAction
     data object ClearMetroFilters : FilterScreenAction
@@ -49,7 +57,7 @@ sealed interface FilterScreenAction : MviAction {
     data class DeleteSavedFilter(val id: Long) : FilterScreenAction
     data class ToggleSavedFilterSelection(val filterId: Long) : FilterScreenAction
     data class CheckFilterMatchesSelected(val currentFilter: FilterState) : FilterScreenAction
-    
+
     // Analytics actions
     class TrackScreenView(
         val screenName: String,
@@ -69,6 +77,7 @@ data class FilterScreenState(
 sealed interface FilterScreenEvent : MviEvent {
     data class FiltersUpdated(val newFilterState: FilterState, val doNetworkCall: Boolean = false) :
         FilterScreenEvent
+
     data class SavedFiltersLoaded(val filters: List<SavedFilterState>) : FilterScreenEvent
     data class FilterSaved(val filterId: Long) : FilterScreenEvent
     data class FilterDeleted(val filterId: Long) : FilterScreenEvent
@@ -107,20 +116,39 @@ class FilterViewModel(
                 // Check if current filter still matches selected saved filter
                 val selectedFilter = currentState.savedFilters.find { it.selected }
                 val events = mutableListOf<FilterScreenEvent>()
-                events.add(FilterScreenEvent.FiltersUpdated(action.newFilterState, action.doNetworkCall))
-                
+                events.add(
+                    FilterScreenEvent.FiltersUpdated(
+                        action.newFilterState,
+                        action.doNetworkCall
+                    )
+                )
+
                 selectedFilter?.let { selected ->
-                    val selectedFilterData = filterRepository.getSavedFilterById(selected.id)?.filterData
+                    val selectedFilterData =
+                        filterRepository.getSavedFilterById(selected.id)?.filterData
                     val currentFilterData = mapFilterStateToFilterModel(action.newFilterState)
-                    
+
                     if (selectedFilterData != currentFilterData) {
                         // Current filter doesn't match selected saved filter, deselect it
                         filterRepository.clearAllSavedFilterSelections()
                         events.add(FilterScreenEvent.SavedFilterSelectionUpdated(null))
                     }
                 }
-                
+
                 flowOf(*events.toTypedArray())
+            }
+
+            is FilterScreenAction.UpdateSelectedCommercialPropertyType -> {
+                val updatedCommercialTypes: List<CommercialPropertyTypeInfo>? =
+                    currentState.filters.commercial.commercialPropertyType?.map {
+                        if (it.commercialPropertyType == action.commercialPropertyType) it.copy(
+                            selected = true
+                        ) else it.copy(selected = false)
+                    }
+                val newState = currentState.filters.copy(
+                    commercial = currentState.filters.commercial.copy(commercialPropertyType = updatedCommercialTypes)
+                )
+                flowOf(FilterScreenEvent.FiltersUpdated(newState))
             }
 
             is FilterScreenAction.UpdateAddressFilter -> {
@@ -143,7 +171,7 @@ class FilterViewModel(
 
             is FilterScreenAction.UpdateSortOption -> {
                 val updatedFilterState = currentState.filters.copy(sortOption = action.sortOption)
-                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState)) // Trigger network call
+                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
             }
 
             is FilterScreenAction.ClearAllFilters -> {
@@ -168,20 +196,24 @@ class FilterViewModel(
 
             // Saved filters actions
             is FilterScreenAction.ShowSaveFilterDialog -> {
-                flowOf(FilterScreenEvent.DialogStateUpdated(
-                    currentState.dialogState.copy(isVisible = true)
-                ))
+                flowOf(
+                    FilterScreenEvent.DialogStateUpdated(
+                        currentState.dialogState.copy(isVisible = true)
+                    )
+                )
             }
 
             is FilterScreenAction.HideSaveFilterDialog -> {
-                flowOf(FilterScreenEvent.DialogStateUpdated(
-                    currentState.dialogState.copy(
-                        isVisible = false,
-                        filterName = "",
-                        isNameValid = true,
-                        errorMessage = null
+                flowOf(
+                    FilterScreenEvent.DialogStateUpdated(
+                        currentState.dialogState.copy(
+                            isVisible = false,
+                            filterName = "",
+                            isNameValid = true,
+                            errorMessage = null
+                        )
                     )
-                ))
+                )
             }
 
             is FilterScreenAction.UpdateFilterName -> {
@@ -191,13 +223,15 @@ class FilterViewModel(
                     action.name.length > 25 -> "Название фильтра не должно превышать 25 символов"
                     else -> null
                 }
-                flowOf(FilterScreenEvent.DialogStateUpdated(
-                    currentState.dialogState.copy(
-                        filterName = action.name,
-                        isNameValid = isNameValid,
-                        errorMessage = errorMessage
+                flowOf(
+                    FilterScreenEvent.DialogStateUpdated(
+                        currentState.dialogState.copy(
+                            filterName = action.name,
+                            isNameValid = isNameValid,
+                            errorMessage = errorMessage
+                        )
                     )
-                ))
+                )
             }
 
             is FilterScreenAction.SaveFilter -> {
@@ -239,7 +273,7 @@ class FilterViewModel(
                 filterRepository.deleteSavedFilter(action.id)
                 flowOf(FilterScreenEvent.FilterDeleted(action.id))
             }
-            
+
             is FilterScreenAction.ToggleSavedFilterSelection -> {
                 val currentlySelected = currentState.savedFilters.find { it.selected }
                 if (currentlySelected?.id == action.filterId) {
@@ -260,9 +294,10 @@ class FilterViewModel(
             is FilterScreenAction.CheckFilterMatchesSelected -> {
                 val selectedFilter = currentState.savedFilters.find { it.selected }
                 selectedFilter?.let { selected ->
-                    val selectedFilterData = filterRepository.getSavedFilterById(selected.id)?.filterData
+                    val selectedFilterData =
+                        filterRepository.getSavedFilterById(selected.id)?.filterData
                     val currentFilterData = mapFilterStateToFilterModel(action.currentFilter)
-                    
+
                     if (selectedFilterData != currentFilterData) {
                         // Current filter doesn't match selected saved filter, deselect it
                         filterRepository.clearAllSavedFilterSelections()
@@ -272,7 +307,7 @@ class FilterViewModel(
                     }
                 } ?: flowOf()
             }
-            
+
             is FilterScreenAction.TrackScreenView -> {
                 // Handle screen view analytics tracking
                 viewModelScope.launch {
@@ -305,27 +340,36 @@ class FilterViewModel(
                     val filterModel: CommonFilterRequestModel =
                         mapFilterStateToFilterModel(it.filters)
                     if (filterModel != filterRepository.lastFilter()) {
-                        filterRepository.updateFilter(mapFilterStateToFilterModel(it.filters), event.doNetworkCall)
+                        filterRepository.updateFilter(
+                            mapFilterStateToFilterModel(it.filters),
+                            event.doNetworkCall
+                        )
                     }
                 }
             }
+
             is FilterScreenEvent.SavedFiltersLoaded -> {
                 currentState.copy(savedFilters = event.filters)
             }
+
             is FilterScreenEvent.FilterSaved -> {
                 currentState
             }
+
             is FilterScreenEvent.FilterDeleted -> {
                 currentState.copy(
                     savedFilters = currentState.savedFilters.filter { it.id != event.filterId }
                 )
             }
+
             is FilterScreenEvent.FilterApplied -> {
                 currentState
             }
+
             is FilterScreenEvent.DialogStateUpdated -> {
                 currentState.copy(dialogState = event.dialogState)
             }
+
             is FilterScreenEvent.SavedFilterSelectionUpdated -> {
                 currentState.copy(
                     savedFilters = currentState.savedFilters.map { filter ->
@@ -361,9 +405,35 @@ class FilterViewModel(
             } ?: LocationUiFilter(),
             address = model.addressRequestModel.map { AddressUiState(address = it.address) }
                 .toSet(),
-            sortOption = model.sortOption, // Added sort option mapping
-            commercial = CommercialFilters(roomRange = model.commercial?.roomRange)
+            sortOption = model.sortOption,
+            commercial = CommercialFilters(
+                roomRange = model.commercial?.roomRange,
+                commercialPropertyType = getCommercialPropertiesTypeInfo(model)
+            )
         )
+    }
+
+    private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): List<CommercialPropertyTypeInfo> {
+        var list = CommercialPropertyType.allInstances.map {
+            val selected = model.commercial?.commercialPropertyType == it
+            CommercialPropertyTypeInfo(
+                selected = selected,
+                commercialPropertyType = it,
+                commercialPropertyTypeName = CommercialPropertyTypeInfo.commercialPropertyTypeName(
+                    it
+                )
+            )
+        }
+        if (list.find { it.selected } == null) {
+            list = list.map {
+                if (it.commercialPropertyType == CommercialPropertyType.All) {
+                    it.copy(selected = true)
+                } else {
+                    it
+                }
+            }
+        }
+        return list
     }
 
     private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
@@ -376,7 +446,7 @@ class FilterViewModel(
             currency = filters.currency,
             numberOfRooms = filters.rooms,
             fromOwnerOnly = filters.fromOwnerOnly,
-            withPhotoOnly= filters.withPhotoOnly,
+            withPhotoOnly = filters.withPhotoOnly,
             roomOnly = filters.roomOnly,
             metroStations = MetroStations.allStationsRequest().map { requestStation ->
                 val sameStationFromUi =
@@ -392,8 +462,13 @@ class FilterViewModel(
             addressRequestModel = filters.address?.map {
                 AddressRequestModel(address = it.address)
             }?.toSet().orEmpty(),
-            sortOption = filters.sortOption, // Added sort option mapping
-            commercial = CommercialRequestModel(roomRange = filters.commercial?.roomRange)
+            sortOption = filters.sortOption,
+            commercial = CommercialRequestModel(
+                roomRange = filters.commercial.roomRange,
+                commercialPropertyType = filters.commercial.commercialPropertyType?.find {
+                    it.selected
+                }?.commercialPropertyType
+            )
         )
     }
 

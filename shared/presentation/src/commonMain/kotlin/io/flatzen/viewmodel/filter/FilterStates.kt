@@ -4,7 +4,8 @@ import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.*
 import io.flatzen.commoncomponents.commonentities.CityCode
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -90,9 +91,7 @@ data class FilterState(
     val withPhotoOnly: Boolean = false,
     val roomOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
-    val commercial: CommercialFilters? = CommercialFilters(
-        roomRange = null
-    ),
+    val commercial: CommercialFilters = CommercialFilters(),
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
@@ -111,8 +110,8 @@ data class FilterState(
         activeFilters.add("Тип: ${when (adType) {
             AdType.RENT -> "Аренда"
             AdType.SALE -> "Продажа"
-            COMMERCIAL(CommercialType.SALE) -> "Коммерческая (купить)"
-            COMMERCIAL(CommercialType.RENT) -> "Коммерческая (снять)"
+            COMMERCIAL(CommercialAdType.SALE) -> "Коммерческая (купить)"
+            COMMERCIAL(CommercialAdType.RENT) -> "Коммерческая (снять)"
             is AdType.COMMERCIAL -> "Коммерческая"
         }}")
 

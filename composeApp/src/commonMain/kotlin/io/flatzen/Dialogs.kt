@@ -264,7 +264,7 @@ fun <T> SingleChoiceDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp),
+                        .padding(top = 10.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -288,7 +288,6 @@ fun <T> SingleChoiceItem(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = { onSelected(item.type) }
     ) {
         Row(modifier = Modifier

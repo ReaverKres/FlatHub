@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -43,7 +45,8 @@ import io.flatzen.SaveFilterDialog
 import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
@@ -51,7 +54,7 @@ import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
-import io.flatzen.viewmodel.filter.CommercialFilters
+import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
@@ -61,9 +64,7 @@ import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.FilterSwitch
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
-import kotlinx.coroutines.flow.combine
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,8 +75,25 @@ fun FilterScreen(
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
+    val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
+        val uiPropertyTypes = currentFilters.commercial.commercialPropertyType?.mapNotNull {
+            it.commercialPropertyType?.let { propertyType ->
+                SingleChoiceEntity(
+                    title = it.commercialPropertyTypeName.orEmpty(),
+                    type = propertyType // уже не-null
+                )
+            }
+        } ?: listOf()
+        mutableStateOf(uiPropertyTypes)
+    }
+    val selectedCommercialPropertyType: CommercialPropertyTypeInfo? by remember(state.filters) {
+        val selectedItem = state.filters.commercial.commercialPropertyType?.find { it.selected }
+        mutableStateOf(selectedItem)
+    }
+
     var clearAllEffectKey by remember { mutableStateOf(0) }
-    var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
+    var showCommercialAdTypeDialog by rememberSaveable { mutableStateOf(false) }
+    var showCommercialPropertyTypeDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
@@ -115,31 +133,49 @@ fun FilterScreen(
             )
         },
     ) { paddingValues ->
+        if (showCommercialPropertyTypeDialog) {
+            SingleChoiceDialog(
+                title = "Тип помещения",
+                items = propertyTypes,
+                selectedItem = selectedCommercialPropertyType?.commercialPropertyType,
+                onDismissRequest = {
+                    showCommercialPropertyTypeDialog = false
+                },
+                onSelected = { selectedPropertyType ->
+                    viewModel.onIntent(
+                        FilterScreenAction.UpdateSelectedCommercialPropertyType(
+                            selectedPropertyType
+                        )
+                    )
+                    showCommercialPropertyTypeDialog = false
+                }
+            )
+        }
 
-        if (showCommercialDialog) {
+        if (showCommercialAdTypeDialog) {
             SingleChoiceDialog(
                 title = "Тип сделки",
                 items = listOf(
                     SingleChoiceEntity(
                         title = "Продажа", AdType.COMMERCIAL(
-                            CommercialType.SALE
+                            CommercialAdType.SALE
                         )
                     ),
                     SingleChoiceEntity(
                         title = "Аренда", AdType.COMMERCIAL(
-                            CommercialType.RENT
+                            CommercialAdType.RENT
                         )
                     )
                 ),
                 selectedItem = currentFilters.lastCommercialAdType,
                 onDismissRequest = {
-                    showCommercialDialog = false
+                    showCommercialAdTypeDialog = false
                 },
                 onSelected = { adType ->
                     currentFilters = currentFilters.copy(
                         adType = adType,
                         lastCommercialAdType = adType
-                        )
+                    )
                 }
             )
         }
@@ -178,7 +214,7 @@ fun FilterScreen(
                 },
                 fewTypeInOneClick = {
                     if (it.isCommercial) {
-                        showCommercialDialog = true
+                        showCommercialAdTypeDialog = true
                     }
                 },
             )
@@ -193,15 +229,19 @@ fun FilterScreen(
             Spacer(Modifier.height(8.dp))
             // Расположение
             FilterSectionTitle(title = "Расположение")
-            LocationItem(
-                selectedCity = state.filters.location?.selectedCity?.displayName,
-                selectedMetro = state.filters.getSelectedMetroStation(),
-                selectedAddress = state.filters.getSelectedAddress(),
-                isLocationFilterActive = currentFilters.isLocationFilterActive(),
-                onOpenLocation = {
-                    onOpenLocation()
-                }
-            )
+            Spacer(Modifier.height(4.dp))
+            Card {
+                LocationItem(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                    selectedCity = state.filters.location?.selectedCity?.displayName,
+                    selectedMetro = state.filters.getSelectedMetroStation(),
+                    selectedAddress = state.filters.getSelectedAddress(),
+                    isLocationFilterActive = currentFilters.isLocationFilterActive(),
+                    onOpenLocation = {
+                        onOpenLocation()
+                    }
+                )
+            }
 
             FilterSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
                 currentFilters = currentFilters.copy(fromOwnerOnly = it)
@@ -215,11 +255,12 @@ fun FilterScreen(
                 }
             }
 
-            if (currentFilters.adType.isCommercial.not()){
+            if (currentFilters.adType.isCommercial.not()) {
+                Spacer(Modifier.height(6.dp))
                 FilterSectionTitle(title = "Комнат в квартире")
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Room.values().forEach {
+                    Room.entries.forEach {
                         val room = it.displayName.toInt()
                         FilterChip(
                             selected = currentFilters.rooms.contains(room),
@@ -239,27 +280,25 @@ fun FilterScreen(
                 NumberRange(
                     title = "Количество помещений",
                     launchedKey = clearAllEffectKey,
-                    rangeFrom = currentFilters.commercial?.roomRange?.fromRange?.toInt()?.toString().orEmpty(),
+                    rangeFrom = currentFilters.commercial.roomRange?.fromRange?.toInt()?.toString()
+                        .orEmpty(),
                     fromOnChange = {
                         currentFilters = currentFilters.copy(
-                            commercial = currentFilters.commercial?.copy(
-                                roomRange = currentFilters.commercial?.roomRange?.copy(
+                            commercial = currentFilters.commercial.copy(
+                                roomRange = currentFilters.commercial.roomRange?.copy(
                                     fromRange = it.toDoubleOrNull()
                                 ) ?: FromToRange(fromRange = it.toDoubleOrNull())
-                            ) ?: CommercialFilters(
-                                roomRange = FromToRange(fromRange = it.toDoubleOrNull())
                             )
                         )
                     },
-                    rangeTo = currentFilters.commercial?.roomRange?.toRange?.toInt()?.toString().orEmpty(),
+                    rangeTo = currentFilters.commercial.roomRange?.toRange?.toInt()?.toString()
+                        .orEmpty(),
                     toOnChange = {
                         currentFilters = currentFilters.copy(
-                            commercial = currentFilters.commercial?.copy(
-                                roomRange = currentFilters.commercial?.roomRange?.copy(
+                            commercial = currentFilters.commercial.copy(
+                                roomRange = currentFilters.commercial.roomRange?.copy(
                                     toRange = it.toDoubleOrNull()
                                 ) ?: FromToRange(toRange = it.toDoubleOrNull())
-                            ) ?: CommercialFilters(
-                                roomRange = FromToRange(toRange = it.toDoubleOrNull())
                             )
                         )
                     }
@@ -267,6 +306,34 @@ fun FilterScreen(
             }
 
             Spacer(Modifier.height(10.dp))
+
+            if (currentFilters.adType.isCommercial) {
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showCommercialPropertyTypeDialog = true }
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .padding(vertical = 6.dp),
+                            text = "Тип помещения",
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        selectedCommercialPropertyType?.commercialPropertyTypeName?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+            }
 
             NumberRange(
                 title = "Цена ($)",
@@ -423,6 +490,7 @@ private fun SavedFiltersChips(
 
 @Composable
 private fun LocationItem(
+    modifier: Modifier,
     selectedCity: String?,
     selectedMetro: String,
     selectedAddress: String?,
@@ -430,7 +498,7 @@ private fun LocationItem(
     onOpenLocation: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable { onOpenLocation() },

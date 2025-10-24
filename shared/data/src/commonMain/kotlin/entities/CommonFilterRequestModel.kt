@@ -37,7 +37,7 @@ import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
@@ -78,6 +78,41 @@ data class CommonFilterRequestModel(
     val isPricePerSquareNeeded: Boolean
         get() = adType == AdType.SALE || isCommercial
 
+    private fun compareCommercial(
+        commercial1: CommercialRequestModel?,
+        commercial2: CommercialRequestModel?
+    ): Boolean {
+        val isCommercialPropertyTypeEqual = compareCommercialPropertyType(
+            commercial1?.commercialPropertyType,
+            commercial2?.commercialPropertyType
+        )
+
+        return when {
+            commercial1 == null && commercial2 == null -> true
+            commercial1 == null && commercial2 != null ->
+                isCommercialPropertyTypeEqual && commercial2.roomRange == null
+
+            commercial1 != null && commercial2 == null ->
+                isCommercialPropertyTypeEqual && commercial1.roomRange == null
+
+            else -> isCommercialPropertyTypeEqual && commercial1?.roomRange == commercial2?.roomRange
+        }
+    }
+
+    private fun compareCommercialPropertyType(
+        propertyType1: CommercialPropertyType?,
+        propertyType2: CommercialPropertyType?
+    ): Boolean {
+        return when {
+            propertyType1 == null && propertyType2 == null -> true
+            propertyType1 == null -> propertyType2 == CommercialPropertyType.All
+            propertyType2 == null -> propertyType1 == CommercialPropertyType.All
+            else -> propertyType1 == propertyType2 ||
+                    (propertyType1 == CommercialPropertyType.All && propertyType2 == null) ||
+                    (propertyType1 == null && propertyType2 == CommercialPropertyType.All)
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
@@ -109,12 +144,13 @@ data class CommonFilterRequestModel(
             other.fromOwnerOnly == null -> this.fromOwnerOnly == false
             else -> this.fromOwnerOnly == other.fromOwnerOnly
         }
+        val isCommercialEqual = compareCommercial(this.commercial, other.commercial)
 
-        if(roomOnly != other.roomOnly) return false
-        if(withPhotoOnly != other.withPhotoOnly) return false
+        if (roomOnly != other.roomOnly) return false
+        if (withPhotoOnly != other.withPhotoOnly) return false
         if (adType != other.adType) return false
-        if(totalArea != other.totalArea) return false
-        if(commercial != other.commercial) return false
+        if (!isCommercialEqual) return false
+        if (totalArea != other.totalArea) return false
         if (priceFull != other.priceFull) return false
         if (pricePerSquare != other.pricePerSquare) return false
         if (!isFromOwnerOnlyEqual) return false
@@ -131,8 +167,9 @@ data class CommonFilterRequestModel(
 
     override fun hashCode(): Int {
         var result = priceFull?.hashCode() ?: 0
+        val commercialForHashCode = normalizeCommercialForHashCode(commercial)
+        result = 31 * result + (commercialForHashCode?.hashCode() ?: 0)
         result = 31 * result + (totalArea?.hashCode() ?: 0)
-        result = 31 * result + (commercial?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
         result = 31 * result + roomOnly.hashCode()
@@ -153,6 +190,16 @@ data class CommonFilterRequestModel(
         result = 31 * result + (locationForHashCode.hashCode())
 
         return result
+    }
+}
+
+private fun normalizeCommercialForHashCode(commercial: CommercialRequestModel?): CommercialRequestModel? {
+    return when {
+        commercial == null -> null
+        commercial.commercialPropertyType == null || commercial.commercialPropertyType == CommercialPropertyType.All ->
+            commercial.copy(commercialPropertyType = null)
+
+        else -> commercial
     }
 }
 

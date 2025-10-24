@@ -7,9 +7,7 @@ import core.networkEmptyList
 import database.FlatsDao
 import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
-import io.flatzen.commoncomponents.commonentities.City
 import io.flatzen.commoncomponents.commonentities.CityCode
-import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +15,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.serialization.json.Json
 import mappers.base.ResponseToEntitiesFlatMapper

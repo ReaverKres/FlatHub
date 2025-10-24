@@ -31,6 +31,8 @@ import ovh.plrapps.mapcompose.api.disableZooming
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
+import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
 import server_request.Currency
 import kotlin.math.pow
@@ -88,7 +90,8 @@ data class ContactInformationUi(
 
 @Immutable
 data class CommercialUiInfo(
-    val numberOfRooms: String?
+    val isCommercialAd: Boolean,
+    val numberOfRooms: String? = null
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
@@ -112,6 +115,7 @@ sealed interface FlatDetailEvents : MviEvent {
 }
 
 class FlatDetailViewModel(
+    private val filterRepository: FilterRepository,
     private val mergedRepository: MergedRepository,
     private val tileStreamProvider: TileStreamProvider,
     private val analyticsManager: AnalyticsManager
@@ -209,8 +213,13 @@ class FlatDetailViewModel(
             isViewed = true,
             savedInFavorite = appFlat.savedInFavorites,
             platform = appFlat.flatPlatform,
-            commercialUiInfo = appFlat.commercialInfo?.takeIf { it.numberOfRooms != null }?.let {
-                CommercialUiInfo(numberOfRooms = it.numberOfRooms.toString())
+            commercialUiInfo = if (filterRepository.lastFilter().isCommercial){
+                CommercialUiInfo(
+                    isCommercialAd = true,
+                    numberOfRooms = appFlat.commercialInfo?.numberOfRooms.toString()
+                )
+            } else {
+                null
             },
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
