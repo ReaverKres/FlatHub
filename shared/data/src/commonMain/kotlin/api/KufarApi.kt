@@ -4,6 +4,7 @@ import core.NetworkResponseWrapper
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
+import entities.CommercialRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialType
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -21,6 +22,7 @@ interface KufarApi {
     companion object {
         private const val KUFAR_PAGE_SIZE = 30
         private const val KUFAR_MAX_PRICE = 1_000_000_000
+        private const val KUFAR_MAX_COMMERCIAL_ROOMS = 20
 
         fun createQueryParams(
             categoryId: Int = 1010,
@@ -36,7 +38,8 @@ interface KufarApi {
             rooms: Set<Int>? = null,
             metroIds: List<Int>? = null,
             onlyOwner: Boolean? = null,
-            sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option parameter
+            sortOption: FlatSort = FlatSort.NEWEST_FIRST,
+            commercialRequestModel: CommercialRequestModel? = null,
         ): MutableMap<String, String> {
             // Map SortOption to Kufar sort parameter
             val kufarSortParam = when (sortOption) {
@@ -71,28 +74,54 @@ interface KufarApi {
                 }
             }
 
-            val fullPriceName =  "prc"
+            val fullPriceName = "prc"
             val squarePriceName = "psm"
 
             when {
                 priceFull?.priceFrom != null && priceFull.priceTo != null -> {
                     params[fullPriceName] = "r:${priceFull.priceFrom},${priceFull.priceTo}"
                 }
+
                 priceFull?.priceFrom != null -> {
                     params[fullPriceName] = "r:${priceFull.priceFrom},${KUFAR_MAX_PRICE}"
                 }
+
                 priceFull?.priceTo != null -> {
                     params[fullPriceName] = "r:0,${priceFull.priceTo}"
                 }
 
                 pricePerSquare?.priceFrom != null && pricePerSquare.priceTo != null -> {
-                    params[squarePriceName] = "r:${pricePerSquare.priceFrom},${pricePerSquare.priceTo}"
+                    params[squarePriceName] =
+                        "r:${pricePerSquare.priceFrom},${pricePerSquare.priceTo}"
                 }
+
                 pricePerSquare?.priceFrom != null -> {
                     params[squarePriceName] = "r:${pricePerSquare.priceFrom},${KUFAR_MAX_PRICE}"
                 }
+
                 pricePerSquare?.priceTo != null -> {
                     params[squarePriceName] = "r:0,${pricePerSquare.priceTo}"
+                }
+            }
+
+            val commercialRoomRange = commercialRequestModel?.roomRange
+            val fullCommercialRoomsName = "cmrm"
+            val intFromRange: Int? = commercialRoomRange?.fromRange?.toInt()
+            val intToRange: Int? = commercialRoomRange?.toRange?.toInt()
+
+            when {
+                intFromRange != null && intToRange != null -> {
+                    params[fullCommercialRoomsName] =
+                        "r:${intFromRange},${intToRange}"
+                }
+
+                intFromRange != null -> {
+                    params[fullCommercialRoomsName] =
+                        "r:${intFromRange},${KUFAR_MAX_COMMERCIAL_ROOMS}"
+                }
+
+                intToRange != null -> {
+                    params[fullCommercialRoomsName] = "r:0,${intToRange}"
                 }
             }
 

@@ -77,6 +77,7 @@ data class SavedFilterState(
 @Immutable
 data class FilterState(
     val adType: AdType = AdType.RENT,
+    val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
@@ -88,7 +89,10 @@ data class FilterState(
     val fromOwnerOnly: Boolean = false,
     val withPhotoOnly: Boolean = false,
     val roomOnly: Boolean = false,
-    val sortOption: FlatSort = FlatSort.NEWEST_FIRST // Added sort option
+    val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
+    val commercial: CommercialFilters? = CommercialFilters(
+        roomRange = null
+    ),
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }

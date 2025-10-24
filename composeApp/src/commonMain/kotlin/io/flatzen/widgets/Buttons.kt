@@ -3,25 +3,23 @@ package io.flatzen.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -30,11 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.*
 import io.flatzen.commoncomponents.commonentities.CommercialType
@@ -69,10 +65,12 @@ fun OpenInMapButton(
 @Composable
 fun RentSaleButtons(
     selectedAdType: AdType,
+    lastCommercialAdType: AdType,
     onClick: (AdType) -> Unit,
+    fewTypeInOneClick: (AdType) -> Unit
 ) {
 
-    val commercialAdTypeBtnText = when (selectedAdType) {
+    val commercialAdTypeBtnText = when (lastCommercialAdType) {
         COMMERCIAL(CommercialType.RENT) -> "Коммерческая (Снять)"
         COMMERCIAL(CommercialType.SALE) -> "Коммерческая (Купить)"
         else -> "Коммерческая (Снять)"
@@ -108,15 +106,30 @@ fun RentSaleButtons(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        AdTypeButton(
-            modifier = Modifier
-                .height(44.dp)
-                .wrapContentWidth(),
-            adType = AdType.COMMERCIAL(),
-            adTypeBtnText = commercialAdTypeBtnText,
-            onClick = onClick,
-            selectedAdType = selectedAdType
-        )
+        Row {
+            AdTypeButton(
+                modifier = Modifier
+                    .height(44.dp)
+                    .wrapContentWidth(),
+                adType = lastCommercialAdType,
+                adTypeBtnText = commercialAdTypeBtnText,
+                onClick = onClick,
+                selectedAdType = selectedAdType
+            )
+            Spacer(Modifier.width(8.dp))
+            Card(
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.wrapContentWidth().height(44.dp),
+                onClick = { fewTypeInOneClick(AdType.COMMERCIAL()) },
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.padding(12.dp),
+                    imageVector = Icons.Default.Create,
+                    contentDescription = null,
+                )
+            }
+        }
     }
 }
 
@@ -134,7 +147,7 @@ private fun AdTypeButton(
         },
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (selectedAdType == adType || (selectedAdType.isCommercial && adType is COMMERCIAL)) {
+            containerColor = if (selectedAdType == adType) {
                 Color(0xFF2b64ad).copy(alpha = 0.8f)
             } else {
                 MaterialTheme.colorScheme.surfaceVariant

@@ -238,7 +238,7 @@ fun HomeScreen(
                     ) {
                         topContentHeader(
                             isListView = state.isListView,
-                            filterState = filterScreenState.filters,
+                            filterState = currentFilters,
                             updateFilters = {
                                 currentFilters = it
                             },
@@ -285,7 +285,7 @@ fun HomeScreen(
                         topContent = {
                             topContentHeader(
                                 isListView = state.isListView,
-                                filterState = filterScreenState.filters,
+                                filterState = currentFilters,
                                 updateFilters = {
                                     currentFilters = it
                                 },
@@ -399,12 +399,15 @@ fun HomeScreen(
                             )
                         )
                     ),
-                    selectedItem = currentFilters.adType,
+                    selectedItem = currentFilters.lastCommercialAdType,
                     onDismissRequest = {
                         showCommercialDialog = false
                     },
                     onSelected = { adType ->
-                        currentFilters = currentFilters.copy(adType = adType)
+                        currentFilters = currentFilters.copy(
+                            adType = adType,
+                            lastCommercialAdType = adType
+                        )
                     }
                 )
             }
@@ -573,13 +576,18 @@ private fun LazyListScope.topContentHeader(
 
     filterState?.let {
         item {
-            RentSaleButtons(filterState.adType) { adType ->
-                if (adType.isCommercial) {
-                    showCommercialDialog()
-                } else {
+            RentSaleButtons(
+                selectedAdType = filterState.adType,
+                lastCommercialAdType = filterState.lastCommercialAdType,
+                onClick = { adType ->
                     updateFilters(filterState.copy(adType = adType))
+                },
+                fewTypeInOneClick = { adType ->
+                    if (adType.isCommercial) {
+                        showCommercialDialog()
+                    }
                 }
-            }
+            )
         }
     }
 

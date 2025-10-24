@@ -1,0 +1,323 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "3dc8e842df8d7a96a67c94e3f45c01e5",
+    "entities": [
+      {
+        "tableName": "AppFlat",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`adId` INTEGER NOT NULL, `savedInFavorites` INTEGER NOT NULL, `isViewed` INTEGER NOT NULL, `flatPlatform` TEXT NOT NULL, `flatDetailUrl` TEXT NOT NULL, `publishedAt` INTEGER, `publishedAtServer` TEXT, `publishedAtUi` TEXT, `imageUrls` TEXT, `priceUsd` REAL, `priceByn` REAL, `priceUsdSquare` REAL, `priceBynSquare` REAL, `rooms` INTEGER, `district` TEXT, `address` TEXT, `metroStation` TEXT, `description` TEXT, `yearBuilt` INTEGER, `totalArea` REAL, `livingArea` REAL, `kitchenArea` REAL, `floor` INTEGER, `totalFloors` INTEGER, `sleepingPlaces` INTEGER, `isStudio` INTEGER, `bathroomType` TEXT, `balcony` TEXT, `repairType` TEXT, `condition` TEXT, `windowDirections` TEXT, `buildingImprovements` TEXT, `prepaymentType` TEXT, `amenities` TEXT, `kitchenEquipment` TEXT, `forWhom` TEXT, `parkingInfo` TEXT, `owner` INTEGER, `isDetailData` INTEGER NOT NULL, `isDetailLoaded` INTEGER NOT NULL, `phones` TEXT, `ownerName` TEXT, `latitude` REAL, `longitude` REAL, `numberOfRooms` INTEGER, PRIMARY KEY(`adId`))",
+        "fields": [
+          {
+            "fieldPath": "adId",
+            "columnName": "adId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedInFavorites",
+            "columnName": "savedInFavorites",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isViewed",
+            "columnName": "isViewed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flatPlatform",
+            "columnName": "flatPlatform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flatDetailUrl",
+            "columnName": "flatDetailUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publishedAt",
+            "columnName": "publishedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "publishedAtServer",
+            "columnName": "publishedAtServer",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "publishedAtUi",
+            "columnName": "publishedAtUi",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageUrls",
+            "columnName": "imageUrls",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "priceUsd",
+            "columnName": "priceUsd",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "priceByn",
+            "columnName": "priceByn",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "priceUsdSquare",
+            "columnName": "priceUsdSquare",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "priceBynSquare",
+            "columnName": "priceBynSquare",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "rooms",
+            "columnName": "rooms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "district",
+            "columnName": "district",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "metroStation",
+            "columnName": "metroStation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "yearBuilt",
+            "columnName": "yearBuilt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "totalArea",
+            "columnName": "totalArea",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "livingArea",
+            "columnName": "livingArea",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "kitchenArea",
+            "columnName": "kitchenArea",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "floor",
+            "columnName": "floor",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "totalFloors",
+            "columnName": "totalFloors",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sleepingPlaces",
+            "columnName": "sleepingPlaces",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isStudio",
+            "columnName": "isStudio",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "bathroomType",
+            "columnName": "bathroomType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "balcony",
+            "columnName": "balcony",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "repairType",
+            "columnName": "repairType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "condition",
+            "columnName": "condition",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "windowDirections",
+            "columnName": "windowDirections",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "buildingImprovements",
+            "columnName": "buildingImprovements",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "prepaymentType",
+            "columnName": "prepaymentType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "amenities",
+            "columnName": "amenities",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "kitchenEquipment",
+            "columnName": "kitchenEquipment",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "forWhom",
+            "columnName": "forWhom",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "parkingInfo",
+            "columnName": "parkingInfo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "owner",
+            "columnName": "owner",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "flatDevInfo.isDetailData",
+            "columnName": "isDetailData",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "flatDevInfo.isDetailLoaded",
+            "columnName": "isDetailLoaded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactInformation.phones",
+            "columnName": "phones",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contactInformation.ownerName",
+            "columnName": "ownerName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "coordinates.latitude",
+            "columnName": "latitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "coordinates.longitude",
+            "columnName": "longitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "commercialInfo.numberOfRooms",
+            "columnName": "numberOfRooms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "adId"
+          ]
+        }
+      },
+      {
+        "tableName": "saved_filters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `filterData` TEXT NOT NULL, `selected` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filterData",
+            "columnName": "filterData",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "user_preferences",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `isListView` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isListView",
+            "columnName": "isListView",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3dc8e842df8d7a96a67c94e3f45c01e5')"
+    ]
+  }
+}

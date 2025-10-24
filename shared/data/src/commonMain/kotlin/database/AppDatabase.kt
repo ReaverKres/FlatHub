@@ -11,7 +11,7 @@ import entities.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [AppFlat::class, SavedFilter::class, UserPreferences::class], version = 6)
+@Database(entities = [AppFlat::class, SavedFilter::class, UserPreferences::class], version = 7)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): FlatsDao

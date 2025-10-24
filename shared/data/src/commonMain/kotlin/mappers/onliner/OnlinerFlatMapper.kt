@@ -74,7 +74,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             forWhom = null,
             parkingInfo = null,
             owner = data.contact?.owner,
-            contactInformation = null
+            contactInformation = null,
+            commercialInfo = null
         )
     }
 

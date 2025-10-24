@@ -2,6 +2,7 @@ package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import entities.AddressRequestModel
+import entities.CommercialRequestModel
 import entities.CommonFilterRequestModel
 import entities.LocationFilter
 import entities.MetroStations
@@ -338,6 +339,7 @@ class FilterViewModel(
     private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         return FilterState(
             adType = model.adType,
+            lastCommercialAdType = model.lastCommercialAdType,
             priceFull = model.priceFull,
             pricePerSquare = model.pricePerSquare,
             totalArea = model.totalArea,
@@ -359,13 +361,15 @@ class FilterViewModel(
             } ?: LocationUiFilter(),
             address = model.addressRequestModel.map { AddressUiState(address = it.address) }
                 .toSet(),
-            sortOption = model.sortOption // Added sort option mapping
+            sortOption = model.sortOption, // Added sort option mapping
+            commercial = CommercialFilters(roomRange = model.commercial?.roomRange)
         )
     }
 
     private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
         return CommonFilterRequestModel(
             adType = filters.adType,
+            lastCommercialAdType = filters.lastCommercialAdType,
             priceFull = filters.priceFull,
             pricePerSquare = filters.pricePerSquare,
             totalArea = filters.totalArea,
@@ -388,7 +392,8 @@ class FilterViewModel(
             addressRequestModel = filters.address?.map {
                 AddressRequestModel(address = it.address)
             }?.toSet().orEmpty(),
-            sortOption = filters.sortOption // Added sort option mapping
+            sortOption = filters.sortOption, // Added sort option mapping
+            commercial = CommercialRequestModel(roomRange = filters.commercial?.roomRange)
         )
     }
 
