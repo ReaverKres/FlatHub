@@ -74,7 +74,8 @@ import io.flatzen.SearchErrorDialog
 import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
@@ -390,12 +391,12 @@ fun HomeScreen(
                     items = listOf(
                         SingleChoiceEntity(
                             title = "Продажа", AdType.COMMERCIAL(
-                                CommercialType.SALE
+                                CommercialAdType.SALE
                             )
                         ),
                         SingleChoiceEntity(
                             title = "Аренда", AdType.COMMERCIAL(
-                                CommercialType.RENT
+                                CommercialAdType.RENT
                             )
                         )
                     ),

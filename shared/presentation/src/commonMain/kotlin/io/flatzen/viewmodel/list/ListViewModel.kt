@@ -129,6 +129,7 @@ class FlatSearchViewModel(
             if (newFilters.doNetworkCall) {
                 onIntent(FlatListScreenAction.SearchFlats(false))
             }
+            println("commonFilterRequestModel ${newFilters.commonFilterRequestModel}\n default ${CommonFilterRequestModel()}")
             onIntent(
                 FlatListScreenAction.IsAnyFilterAppliedCheck(
                     newFilters.commonFilterRequestModel != CommonFilterRequestModel()

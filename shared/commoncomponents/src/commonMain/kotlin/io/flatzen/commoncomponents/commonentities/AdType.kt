@@ -9,16 +9,16 @@ sealed class AdType {
     @Serializable
     data object SALE: AdType()
     @Serializable
-    data class COMMERCIAL(val commercialType: CommercialType = CommercialType.RENT): AdType()
+    data class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
 }
 
 val AdType.isCommercial: Boolean
     get() = this == AdType.COMMERCIAL(
-        CommercialType.RENT
+        CommercialAdType.RENT
     ) || this == AdType.COMMERCIAL(
-        CommercialType.SALE
+        CommercialAdType.SALE
     )
 
-enum class CommercialType {
+enum class CommercialAdType {
     RENT, SALE
 }

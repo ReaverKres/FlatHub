@@ -231,8 +231,8 @@ private fun FlatDetailContent(
                 Box(
                     modifier = Modifier.padding(top = 24.dp, bottom = 12.dp).fillMaxWidth()
                         .height(200.dp).clickable {
-                        navigateToMap()
-                    }) {
+                            navigateToMap()
+                        }) {
                     MapUI(modifier = Modifier.fillMaxSize(), state = mapState)
                 }
 
@@ -596,21 +596,18 @@ private fun AboutBuildingSection(flat: UiDetailFlat) {
 
 @Composable
 private fun AboutApartmentSection(flat: UiDetailFlat) {
-    val isCommercialRoom = flat.commercialUiInfo?.numberOfRooms != null
-    val roomTitle = if(isCommercialRoom) {
-        "о помещении"
+    val isCommercialRoom = flat.commercialUiInfo?.isCommercialAd != null
+    val roomTitle: String
+    val roomNumberTitle: String
+    val roomNumber: String
+    if (isCommercialRoom) {
+        roomTitle = "о помещении"
+        roomNumberTitle = "Количество помещений"
+        roomNumber = flat.commercialUiInfo?.numberOfRooms.orEmpty()
     } else {
-        "О квартире"
-    }
-    val roomNumberTitle = if(isCommercialRoom) {
-        "Количество помещений"
-    } else {
-        "Количество комнат"
-    }
-    val roomNumber = if(isCommercialRoom) {
-        flat.commercialUiInfo?.numberOfRooms.orEmpty()
-    } else {
-        flat.numberOfRooms
+        roomTitle = "о квартире"
+        roomNumberTitle = "Количество комнат"
+        roomNumber = flat.numberOfRooms
     }
     SectionCard(title = roomTitle) {
         if (flat.numberOfRooms.isNotBlank()) {

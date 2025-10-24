@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.*
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatSort
-import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.utils.mapLauncher
 
 @Composable
@@ -71,8 +70,8 @@ fun RentSaleButtons(
 ) {
 
     val commercialAdTypeBtnText = when (lastCommercialAdType) {
-        COMMERCIAL(CommercialType.RENT) -> "Коммерческая (Снять)"
-        COMMERCIAL(CommercialType.SALE) -> "Коммерческая (Купить)"
+        COMMERCIAL(CommercialAdType.RENT) -> "Коммерческая (Снять)"
+        COMMERCIAL(CommercialAdType.SALE) -> "Коммерческая (Купить)"
         else -> "Коммерческая (Снять)"
     }
 

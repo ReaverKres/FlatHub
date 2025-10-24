@@ -6,7 +6,8 @@ import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.QueryMap
 import entities.CommercialRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.CommercialType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import server_response.KufarListResponse
@@ -23,6 +24,16 @@ interface KufarApi {
         private const val KUFAR_PAGE_SIZE = 30
         private const val KUFAR_MAX_PRICE = 1_000_000_000
         private const val KUFAR_MAX_COMMERCIAL_ROOMS = 20
+
+        private fun CommercialPropertyType.asParam(): String? = when (this) {
+            is CommercialPropertyType.Office -> "1"
+            is CommercialPropertyType.Retail -> "2"
+            is CommercialPropertyType.Services -> "10"
+            is CommercialPropertyType.Industrial -> "3"
+            is CommercialPropertyType.Warehouses -> "4"
+            CommercialPropertyType.Other -> "6"
+            else -> null
+        }
 
         fun createQueryParams(
             categoryId: Int = 1010,
@@ -57,7 +68,7 @@ interface KufarApi {
                     put("cursor", cursor.orEmpty())
                 }
                 put("size", pageSize.toString())
-                if (dealType == AdType.RENT || dealType == AdType.COMMERCIAL(CommercialType.RENT)) {
+                if (dealType == AdType.RENT || dealType == AdType.COMMERCIAL(CommercialAdType.RENT)) {
                     put("typ", "let")
                 } else {
                     put("typ", "sell")
@@ -108,6 +119,11 @@ interface KufarApi {
             val fullCommercialRoomsName = "cmrm"
             val intFromRange: Int? = commercialRoomRange?.fromRange?.toInt()
             val intToRange: Int? = commercialRoomRange?.toRange?.toInt()
+
+            val commercialPropertyType = commercialRequestModel?.commercialPropertyType
+            if (commercialPropertyType != null && commercialPropertyType.asParam() != null){
+                params["prt"] = commercialPropertyType.asParam().orEmpty()
+            }
 
             when {
                 intFromRange != null && intToRange != null -> {
