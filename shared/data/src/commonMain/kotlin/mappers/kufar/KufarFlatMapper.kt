@@ -3,6 +3,7 @@ package mappers.kufar
 import entities.AppFlat
 import entities.CommercialInfo
 import entities.FlatDevInfo
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
@@ -82,6 +83,9 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
         // Основные параметры
         val rooms = adParams.findParamValue("rooms")?.safeInt()
         val commercialRooms = adParams.findParamValue("commercial_rooms")?.safeInt()
+        val commercialType: CommercialPropertyType? = adParams.findParamValue("property_type")?.safeInt()?.let {
+            KufarPropertyTypes.numberToPropertyType(it)
+        }
         val district = adParams.findParamStringValue("re_district")?.safeString()
         val address = data.accountParameters
             ?.filterNotNull()
@@ -167,7 +171,10 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
                 isDetailLoaded = false
             ),
             flatDetailUrl = data.adLink.orEmpty(),
-            commercialInfo = CommercialInfo(numberOfRooms = commercialRooms),
+            commercialInfo = CommercialInfo(
+                numberOfRooms = commercialRooms,
+                propertyType = commercialType
+            ),
             adId = data.adId ?: -1,
             publishedAt = flatDateInstant,
             publishedAtServer = data.listTime,

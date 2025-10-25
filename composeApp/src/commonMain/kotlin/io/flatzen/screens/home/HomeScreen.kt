@@ -832,11 +832,25 @@ private fun GridFlatCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+            val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
+            val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
+            if(propertyTypeName.isNullOrEmpty().not()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = propertyTypeName,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             Spacer(Modifier.height(4.dp))
 
+            val roomSuffix = if(propertyTypeRoom.isNullOrEmpty().not()) {
+                "помещений"
+            } else {
+                "комн"
+            }
             Text(
-                text = "${flat.numberOfRooms}-комн.",
+                text = "${flat.numberOfRooms} $roomSuffix",
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(

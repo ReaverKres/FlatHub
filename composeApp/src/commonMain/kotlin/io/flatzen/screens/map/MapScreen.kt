@@ -133,7 +133,7 @@ fun MapScreen(
                         renderingStrategy = RenderingStrategy.Clustering(clusterId)
                     ) {
                         RoomMarker(
-                            rooms = it.numberOfRooms.toString(),
+                            rooms = it.numberOfRooms?.toIntOrNull(),
                             pinColor = if (detailFlatId == it.adId) Color.Green else Color(
                                 0xFFD32F2F
                             ),
@@ -317,7 +317,7 @@ private fun Cluster(size: Int) {
 
 @Composable
 fun RoomMarker(
-    rooms: String,             // можно передавать "3" или "Ст"
+    rooms: Int?,             // можно передавать "3" или "Ст"
     pinColor: Color = Color(0xFFD32F2F),  // насыщенный красный
     fillColor: Color = Color.White,       // белая внутренняя часть круга
     textColor: Color = Color(0xFF757575), // серый текст как на примере
@@ -336,8 +336,9 @@ fun RoomMarker(
                 .border(borderWidth, pinColor, CircleShape),
             contentAlignment = Alignment.Center
         ) {
+            val roomText = if(rooms == null) "-" else "$rooms"
             Text(
-                text = rooms,
+                text = roomText,
                 color = textColor,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge,
@@ -426,9 +427,25 @@ fun FlatItemContent(
 
         Spacer(Modifier.height(4.dp))
 
+        val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
+        val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
+        if(propertyTypeName.isNullOrEmpty().not()) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = propertyTypeName,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
+
+        val roomSuffix = if(propertyTypeRoom.isNullOrEmpty().not()) {
+            "помещений"
+        } else {
+            "комн"
+        }
         // Комнаты
         Text(
-            text = "${flat.numberOfRooms}-комн.",
+            text = "${flat.numberOfRooms} $roomSuffix",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = 4.dp)
         )
