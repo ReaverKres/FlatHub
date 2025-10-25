@@ -5,6 +5,7 @@ import entities.AppFlat
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.asPriceFormat
@@ -18,6 +19,7 @@ import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.base.BaseMviViewModel
+import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
@@ -91,12 +93,21 @@ data class ContactInformationUi(
 @Immutable
 data class CommercialUiInfo(
     val isCommercialAd: Boolean,
-    val numberOfRooms: String? = null
+    val numberOfRooms: String? = null,
+    val propertyType: PropertyTypeUi
+)
+
+@Immutable
+data class PropertyTypeUi(
+    val commercialPropertyType: CommercialPropertyType? = null,
+    val commercialPropertyTypeName: String? = null
 )
 
 sealed interface FlatDetailScreenAction : MviAction {
-    data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) : FlatDetailScreenAction
-    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long): FlatDetailScreenAction
+    data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) :
+        FlatDetailScreenAction
+
+    class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatDetailScreenAction
     class TrackScreenView(
         val screenName: String,
         val parameters: Map<String, Any> = emptyMap()
@@ -148,31 +159,35 @@ class FlatDetailViewModel(
             is FlatDetailScreenAction.LoadFlatDetails -> {
                 loadFlatDetails(action.flatPlatform, action.flatId)
             }
+
             is FlatDetailScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).map {
                     FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().last())
                 }
             }
-            
+
             is FlatDetailScreenAction.TrackScreenView -> {
                 // Handle screen view analytics tracking
                 viewModelScope.launch {
-                        analyticsManager.registerEvent(
-                            AnalyticsEvent(
-                                eventName = AppMetrcica.Events.SCREEN_VIEW,
-                                parameters = mapOf(
-                                    AppMetrcica.Parameters.SCREEN_NAME to action.screenName,
-                                    AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
-                                ) + action.parameters
-                            )
+                    analyticsManager.registerEvent(
+                        AnalyticsEvent(
+                            eventName = AppMetrcica.Events.SCREEN_VIEW,
+                            parameters = mapOf(
+                                AppMetrcica.Parameters.SCREEN_NAME to action.screenName,
+                                AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
+                            ) + action.parameters
                         )
+                    )
                 }
                 flowOf()
             }
         }
     }
 
-    private suspend fun loadFlatDetails(flatPlatform: FlatPlatform, flatId: Long): Flow<FlatDetailEvents> {
+    private suspend fun loadFlatDetails(
+        flatPlatform: FlatPlatform,
+        flatId: Long
+    ): Flow<FlatDetailEvents> {
         return mergedRepository.getFlatByIdWithDetails(flatPlatform, flatId).asLCE().map {
             FlatDetailEvents.FlatLoaded(it)
         }
@@ -213,10 +228,16 @@ class FlatDetailViewModel(
             isViewed = true,
             savedInFavorite = appFlat.savedInFavorites,
             platform = appFlat.flatPlatform,
-            commercialUiInfo = if (filterRepository.lastFilter().isCommercial){
+            commercialUiInfo = if (appFlat.commercialInfo?.propertyType != null) {
                 CommercialUiInfo(
                     isCommercialAd = true,
-                    numberOfRooms = appFlat.commercialInfo?.numberOfRooms.toString()
+                    numberOfRooms = appFlat.commercialInfo?.numberOfRooms.toString(),
+                    propertyType = PropertyTypeUi(
+                        commercialPropertyType = appFlat.commercialInfo?.propertyType,
+                        commercialPropertyTypeName = CommercialPropertyTypeInfo.commercialPropertyTypeName(
+                            appFlat.commercialInfo?.propertyType
+                        )
+                    )
                 )
             } else {
                 null
@@ -235,9 +256,13 @@ class FlatDetailViewModel(
             } else {
                 "🚇 ${appFlat.metroStation}"
             },
-            numberOfRooms = appFlat.rooms?.let {
-                if (appFlat.isStudio == true) "Студия" else "$it"
-            } ?: "Не указано",
+            numberOfRooms = if (appFlat.rooms != null) {
+                if (appFlat.isStudio == true) "Студия" else "${appFlat.rooms}"
+            } else if (appFlat.commercialInfo?.numberOfRooms != null) {
+                "${appFlat.commercialInfo?.numberOfRooms}"
+            } else {
+                "Не указано"
+            },
             totalArea = appFlat.totalArea?.let { formatArea(it) },
             livingArea = appFlat.livingArea?.let { formatArea(it) },
             kitchenArea = appFlat.kitchenArea?.let { formatArea(it) },

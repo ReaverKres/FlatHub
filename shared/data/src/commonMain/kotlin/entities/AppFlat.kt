@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.datetime.Instant
@@ -83,4 +84,5 @@ data class ContactInformation(
 
 data class CommercialInfo(
     val numberOfRooms: Int?,
+    val propertyType: CommercialPropertyType?
 )

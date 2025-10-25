@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -193,6 +194,17 @@ private fun FlatDetailContent(
                 priceBynSquare = flat.priceBynSquare
             )
 
+            val propertyName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
+            if (propertyName.isNullOrEmpty().not()) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = propertyName,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Medium
+                    )
+                )
+            }
+
             // Адрес и метро
             AddressSection(
                 address = flat.address,
@@ -222,7 +234,7 @@ private fun FlatDetailContent(
                         y = mercatorCoordinates.second,
                     ) {
                         RoomMarker(
-                            flat.numberOfRooms,
+                            rooms = flat.numberOfRooms.toIntOrNull(),
                             textColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -597,6 +609,7 @@ private fun AboutBuildingSection(flat: UiDetailFlat) {
 @Composable
 private fun AboutApartmentSection(flat: UiDetailFlat) {
     val isCommercialRoom = flat.commercialUiInfo?.isCommercialAd != null
+    val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
     val roomTitle: String
     val roomNumberTitle: String
     val roomNumber: String
@@ -610,6 +623,9 @@ private fun AboutApartmentSection(flat: UiDetailFlat) {
         roomNumber = flat.numberOfRooms
     }
     SectionCard(title = roomTitle) {
+        if(propertyTypeName.isNullOrEmpty().not()) {
+            InfoRow("Тип помещения", propertyTypeName)
+        }
         if (flat.numberOfRooms.isNotBlank()) {
             InfoRow(roomNumberTitle, roomNumber)
         }

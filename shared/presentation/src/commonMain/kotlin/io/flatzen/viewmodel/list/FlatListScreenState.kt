@@ -7,6 +7,9 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.asPriceFormat
 import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.mvi.MviState
+import io.flatzen.viewmodel.CommercialUiInfo
+import io.flatzen.viewmodel.PropertyTypeUi
+import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 
@@ -28,12 +31,13 @@ data class FlatListScreenState(
 data class UiFlat(
     val adId: Long,
     val flatPlatform: FlatPlatform,
+    val commercialUiInfo: CommercialUiInfo?,
     val savedInFavorite: Boolean,
     val isViewed: Boolean,
     val imageUrls: List<String>,
     val priceUsd: String,
     val priceByn: String?,
-    val numberOfRooms: Int?,
+    val numberOfRooms: String?,
     val publishedAt: String?,
     val metroStation: String?,
     val address: String,
@@ -45,12 +49,32 @@ data class UiFlat(
                 UiFlat(
                     adId = it.adId,
                     flatPlatform = it.flatPlatform,
+                    commercialUiInfo = if (it.commercialInfo?.propertyType != null) {
+                        CommercialUiInfo(
+                            isCommercialAd = true,
+                            numberOfRooms = it.commercialInfo?.numberOfRooms.toString(),
+                            propertyType = PropertyTypeUi(
+                                commercialPropertyType = it.commercialInfo?.propertyType,
+                                commercialPropertyTypeName = CommercialPropertyTypeInfo.commercialPropertyTypeName(
+                                    it.commercialInfo?.propertyType
+                                )
+                            )
+                        )
+                    } else {
+                        null
+                    },
                     imageUrls = it.imageUrls ?: listOf(),
                     savedInFavorite = it.savedInFavorites,
                     isViewed = it.isViewed,
                     priceByn = it.priceByn?.let { priceByn -> priceWithCurrency(priceByn, "BYN") },
                     priceUsd = priceWithCurrency(it.priceUsd, "$"),
-                    numberOfRooms = it.rooms,
+                    numberOfRooms = if (it.rooms != null) {
+                        if (it.isStudio == true) "Студия" else "${it.rooms}"
+                    } else if (it.commercialInfo?.numberOfRooms != null) {
+                        "${it.commercialInfo?.numberOfRooms}"
+                    } else {
+                        "Не указано"
+                    },
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
                     metroStation = if (it.metroStation.isNullOrBlank()) {
