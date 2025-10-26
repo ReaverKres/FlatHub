@@ -31,9 +31,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.AdType.*
+import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
-import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.utils.mapLauncher
@@ -92,7 +91,7 @@ fun RentSaleButtons(
                 selectedAdType = selectedAdType
             )
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(16.dp))
 
             AdTypeButton(
                 modifier = Modifier
@@ -103,7 +102,7 @@ fun RentSaleButtons(
                 onClick = onClick,
                 selectedAdType = selectedAdType
             )
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(16.dp))
 
             AdTypeButton(
                 modifier = Modifier

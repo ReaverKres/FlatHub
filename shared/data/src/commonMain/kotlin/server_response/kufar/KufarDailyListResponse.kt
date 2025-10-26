@@ -27,6 +27,7 @@ data class KufarDailyListResponse(
 
     @Serializable
     data class RentalObject(
+        val appCity: String?,
         @SerialName("ad_id")
         val adId: Int?,
         @SerialName("ad_snapshot")

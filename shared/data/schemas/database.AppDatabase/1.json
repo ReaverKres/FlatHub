@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "eba0dcce852606716a4a3b5af07fcaf0",
+    "version": 1,
+    "identityHash": "a4360c6add84b667a0693ce8e92de041",
     "entities": [
       {
         "tableName": "AppFlat",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`adId` INTEGER NOT NULL, `flatSavedInFavorites` INTEGER NOT NULL, `flatPlatform` TEXT NOT NULL, `flatDetailUrl` TEXT NOT NULL, `publishedAt` INTEGER, `publishedAtServer` TEXT, `publishedAtUi` TEXT, `imageUrls` TEXT, `priceUsd` REAL, `priceByn` REAL, `priceUsdSquare` REAL, `priceBynSquare` REAL, `rooms` INTEGER, `district` TEXT, `address` TEXT, `metroStation` TEXT, `description` TEXT, `yearBuilt` INTEGER, `totalArea` REAL, `livingArea` REAL, `kitchenArea` REAL, `floor` INTEGER, `totalFloors` INTEGER, `sleepingPlaces` INTEGER, `isStudio` INTEGER, `bathroomType` TEXT, `balcony` TEXT, `repairType` TEXT, `condition` TEXT, `windowDirections` TEXT, `buildingImprovements` TEXT, `prepaymentType` TEXT, `amenities` TEXT, `kitchenEquipment` TEXT, `forWhom` TEXT, `parkingInfo` TEXT, `owner` INTEGER, `isDetailData` INTEGER NOT NULL, `isDetailLoaded` INTEGER NOT NULL, `phones` TEXT, `ownerName` TEXT, `latitude` REAL, `longitude` REAL, PRIMARY KEY(`adId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`adId` INTEGER NOT NULL, `savedInFavorites` INTEGER NOT NULL, `isViewed` INTEGER NOT NULL, `flatPlatform` TEXT NOT NULL, `flatDetailUrl` TEXT NOT NULL, `publishedAt` INTEGER, `publishedAtServer` TEXT, `publishedAtUi` TEXT, `imageUrls` TEXT, `priceUsd` REAL, `priceByn` REAL, `priceUsdSquare` REAL, `priceBynSquare` REAL, `rooms` INTEGER, `district` TEXT, `address` TEXT, `metroStation` TEXT, `description` TEXT, `yearBuilt` INTEGER, `totalArea` REAL, `livingArea` REAL, `kitchenArea` REAL, `floor` INTEGER, `totalFloors` INTEGER, `sleepingPlaces` INTEGER, `isStudio` INTEGER, `bathroomType` TEXT, `balcony` TEXT, `repairType` TEXT, `condition` TEXT, `windowDirections` TEXT, `buildingImprovements` TEXT, `prepaymentType` TEXT, `amenities` TEXT, `kitchenEquipment` TEXT, `forWhom` TEXT, `parkingInfo` TEXT, `owner` INTEGER, `isDetailData` INTEGER NOT NULL, `isDetailLoaded` INTEGER NOT NULL, `phones` TEXT, `ownerName` TEXT, `latitude` REAL, `longitude` REAL, `numberOfRooms` INTEGER, `propertyType` TEXT, PRIMARY KEY(`adId`))",
         "fields": [
           {
             "fieldPath": "adId",
@@ -15,8 +15,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "flatSavedInFavorites",
-            "columnName": "flatSavedInFavorites",
+            "fieldPath": "savedInFavorites",
+            "columnName": "savedInFavorites",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isViewed",
+            "columnName": "isViewed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -228,6 +234,16 @@
             "fieldPath": "coordinates.longitude",
             "columnName": "longitude",
             "affinity": "REAL"
+          },
+          {
+            "fieldPath": "commercialInfo.numberOfRooms",
+            "columnName": "numberOfRooms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "commercialInfo.propertyType",
+            "columnName": "propertyType",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -278,11 +294,35 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "user_preferences",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `isListView` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isListView",
+            "columnName": "isListView",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eba0dcce852606716a4a3b5af07fcaf0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4360c6add84b667a0693ce8e92de041')"
     ]
   }
 }

@@ -10,7 +10,7 @@ import mappers.kufar.KufarPropertyTypes
 object KufarListQuery {
 
         private const val KUFAR_PAGE_SIZE = 30
-        private const val KUFAR_MAX_PRICE = 1_000_000_000
+        const val KUFAR_MAX_PRICE = 1_000_000_000
         private const val KUFAR_MAX_COMMERCIAL_ROOMS = 20
 
         fun createQueryParams(

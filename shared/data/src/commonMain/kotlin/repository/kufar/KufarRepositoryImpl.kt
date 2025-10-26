@@ -11,6 +11,7 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.Location
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -35,6 +36,7 @@ import server_response.kufar.KufarDailyListQuery
 import server_response.kufar.KufarDailyListResponse
 import server_response.kufar.KufarListQuery
 import server_response.kufar.KufarListResponse
+import kotlin.enums.EnumEntries
 
 class KufarRepositoryImpl(
     private val api: KufarApi,
@@ -171,10 +173,15 @@ class KufarRepositoryImpl(
         metroIds: List<Int>?,
         city: String,
     ) {
+        val currentCityCodes: EnumEntries<CityCode> = CityCode.entries
+        val currentCityName = currentCityCodes.find { it == filter.location?.city}?.let {
+            Location.mapCityCodeToDomainName(it)
+        }
         val params = KufarDailyListQuery.createQueryParams(
             categoryId = categoryId,
             metroIds = metroIds,
             rooms = filter.numberOfRooms,
+            priceFull = filter.priceFull,
             cursor = pageCursor,
             geoTag = city,
             sortOption = filter.sortOption,
@@ -193,7 +200,7 @@ class KufarRepositoryImpl(
 
                     val kufarUsualFlatList = request.data.rentalObjects
                         ?.filterNotNull()
-                        ?.map { kufarDailyResponseMapper.map(it) }
+                        ?.map { kufarDailyResponseMapper.map(it.copy(appCity = currentCityName)) }
                         .orEmpty()
                     val kufarPoleFlatList = request.data.polePosition
                         ?.filterNotNull()

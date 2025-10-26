@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.utils.formatMainPrice
+import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
 import io.flatzen.utils.LaunchedEffectOnce
@@ -397,21 +398,25 @@ private fun SourceLinkSection(
 
 @Composable
 private fun PriceSection(
-    priceUsd: String,
-    priceByn: String,
+    priceUsd: Double?,
+    priceByn: Double?,
     priceUsdSquare: String?,
     priceBynSquare: String?
 ) {
+    val usdPriceText = formatMainPrice(priceUsd)
+
     Column {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                modifier = Modifier.alignByBaseline(),
-                text = priceUsd,
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+            if (usdPriceText != null) {
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = usdPriceText,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
             priceUsdSquare?.let {
                 Text(
                     modifier = Modifier.alignByBaseline(),
@@ -424,7 +429,7 @@ private fun PriceSection(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                text = priceByn,
+                text = priceWithCurrency(priceByn, "BYN"),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
