@@ -46,7 +46,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.SearchErrorDialog
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.utils.formatMainPrice
+import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -336,7 +339,7 @@ fun RoomMarker(
                 .border(borderWidth, pinColor, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            val roomText = if(rooms == null) "-" else "$rooms"
+            val roomText = if (rooms == null) "-" else "$rooms"
             Text(
                 text = roomText,
                 color = textColor,
@@ -397,16 +400,27 @@ fun FlatItemContent(
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = flat.priceUsd,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            flat.priceByn?.let {
+            val mainPriceText = if (flat.adType == AdType.DAILY && flat.priceByn != null) {
+                formatMainPrice(flat.priceByn, "BYN")
+            } else if(flat.priceUsd != null) {
+                formatMainPrice(flat.priceUsd)
+            } else "Цена не указана"
+
+            val secondPriceText = if (flat.adType != AdType.DAILY) {
+                formatSecondPrice(flat.priceByn, mainPriceText != null)
+            } else null
+            if (mainPriceText != null) {
+                Text(
+                    text = mainPriceText,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (secondPriceText != null) {
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "($it)",
+                    text = secondPriceText,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -429,7 +443,7 @@ fun FlatItemContent(
 
         val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
         val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
-        if(propertyTypeName.isNullOrEmpty().not()) {
+        if (propertyTypeName.isNullOrEmpty().not()) {
             Spacer(Modifier.height(4.dp))
             Text(
                 text = propertyTypeName,
@@ -438,7 +452,7 @@ fun FlatItemContent(
             )
         }
 
-        val roomSuffix = if(propertyTypeRoom.isNullOrEmpty().not()) {
+        val roomSuffix = if (propertyTypeRoom.isNullOrEmpty().not()) {
             "помещений"
         } else {
             "комн"

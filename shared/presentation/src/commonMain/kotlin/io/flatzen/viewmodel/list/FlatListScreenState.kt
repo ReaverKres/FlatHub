@@ -2,10 +2,9 @@ package io.flatzen.viewmodel.list
 
 import androidx.compose.runtime.Immutable
 import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.utils.asPriceFormat
-import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.CommercialUiInfo
 import io.flatzen.viewmodel.PropertyTypeUi
@@ -30,13 +29,14 @@ data class FlatListScreenState(
 @Immutable
 data class UiFlat(
     val adId: Long,
+    val adType: AdType,
     val flatPlatform: FlatPlatform,
     val commercialUiInfo: CommercialUiInfo?,
     val savedInFavorite: Boolean,
     val isViewed: Boolean,
     val imageUrls: List<String>,
-    val priceUsd: String,
-    val priceByn: String?,
+    val priceUsd: Double?,
+    val priceByn: Double?,
     val numberOfRooms: String?,
     val publishedAt: String?,
     val metroStation: String?,
@@ -48,6 +48,7 @@ data class UiFlat(
             return appFlatList.map {
                 UiFlat(
                     adId = it.adId,
+                    adType = it.getAdTypeNonNull(),
                     flatPlatform = it.flatPlatform,
                     commercialUiInfo = if (it.commercialInfo?.propertyType != null) {
                         CommercialUiInfo(
@@ -66,8 +67,8 @@ data class UiFlat(
                     imageUrls = it.imageUrls ?: listOf(),
                     savedInFavorite = it.savedInFavorites,
                     isViewed = it.isViewed,
-                    priceByn = it.priceByn?.let { priceByn -> priceWithCurrency(priceByn, "BYN") },
-                    priceUsd = priceWithCurrency(it.priceUsd, "$"),
+                    priceByn = it.priceByn,
+                    priceUsd = it.priceUsd,
                     numberOfRooms = if (it.rooms != null) {
                         if (it.isStudio == true) "Студия" else "${it.rooms}"
                     } else if (it.commercialInfo?.numberOfRooms != null) {

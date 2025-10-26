@@ -7,14 +7,13 @@ import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.Price
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
@@ -80,6 +79,7 @@ class MergedRepositoryImpl(
                                 } else null
 
                             val updated = net.copy(
+                                adType = filter.adType,
                                 savedInFavorites = fromDb?.savedInFavorites == true,
                                 isViewed = fromDb?.isViewed == true,
                                 priceUsdSquare = priceUsdSquare,
@@ -148,39 +148,20 @@ class MergedRepositoryImpl(
         var resultList = flats
 
         // Filter by full price
-        if (currentFilter.priceFull != null) {
-            val priceFrom = currentFilter.priceFull.priceFrom
-            val priceTo = currentFilter.priceFull.priceTo
-
-            if (priceFrom != null) {
-                resultList = resultList.filter { flat ->
-                    flat.priceUsd != null && flat.priceUsd >= priceFrom
-                }
-            }
-
-            if (priceTo != null) {
-                resultList = resultList.filter { flat ->
-                    flat.priceUsd != null && flat.priceUsd <= priceTo
-                }
-            }
-        }
+        val priceIsAdInUsd = currentFilter.adType != AdType.DAILY
+        resultList = filterByPrice(
+            priceInFilter = currentFilter.priceFull,
+            priceInAd = { if(priceIsAdInUsd) it.priceUsd else it.priceByn },
+            resultList = resultList
+        )
 
         // Filter by price per square meter
-        if (currentFilter.pricePerSquare != null) {
-            val priceFrom = currentFilter.pricePerSquare.priceFrom
-            val priceTo = currentFilter.pricePerSquare.priceTo
-
-            if (priceFrom != null) {
-                resultList = resultList.filter { flat ->
-                    flat.priceUsdSquare != null && flat.priceUsdSquare >= priceFrom
-                }
-            }
-
-            if (priceTo != null) {
-                resultList = resultList.filter { flat ->
-                    flat.priceUsdSquare != null && flat.priceUsdSquare <= priceTo
-                }
-            }
+        if(currentFilter.adType != AdType.DAILY) {
+            resultList = filterByPrice(
+                priceInFilter = currentFilter.pricePerSquare,
+                priceInAd = { it.priceUsdSquare },
+                resultList = resultList
+            )
         }
 
         //total area
@@ -229,7 +210,7 @@ class MergedRepositoryImpl(
             }
         }
 
-        if (currentFilter.fromOwnerOnly == true) {
+        if (currentFilter.fromOwnerOnly == true && currentFilter.adType != AdType.DAILY) {
             resultList = resultList.filter { it.owner == currentFilter.fromOwnerOnly }
         }
 
@@ -238,6 +219,33 @@ class MergedRepositoryImpl(
         }
 
         return resultList
+    }
+
+    private fun filterByPrice(
+        priceInFilter: Price?,
+        priceInAd: (AppFlat) -> Double?,
+        resultList: List<AppFlat>
+    ): List<AppFlat> {
+        var resultList1 = resultList
+        if (priceInFilter != null) {
+            val priceFrom = priceInFilter.priceFrom
+            val priceTo = priceInFilter.priceTo
+
+            if (priceFrom != null) {
+                resultList1 = resultList1.filter { flat ->
+                    val pricePerSquareInAdValue = priceInAd(flat)
+                    pricePerSquareInAdValue != null && pricePerSquareInAdValue >= priceFrom
+                }
+            }
+
+            if (priceTo != null) {
+                resultList1 = resultList1.filter { flat ->
+                    val pricePerSquareInAdValue = priceInAd(flat)
+                    pricePerSquareInAdValue != null && pricePerSquareInAdValue <= priceTo
+                }
+            }
+        }
+        return resultList1
     }
 
     override fun getFavoritesFromLocalDb(): Flow<List<AppFlat>> {

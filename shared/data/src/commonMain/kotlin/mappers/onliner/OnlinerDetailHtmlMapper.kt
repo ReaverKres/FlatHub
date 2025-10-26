@@ -1,10 +1,10 @@
 package mappers.onliner
 
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
 import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
-import com.fleeksoft.ksoup.Ksoup
-import com.fleeksoft.ksoup.nodes.Document
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.base.AdditionalParamMapper
@@ -16,20 +16,6 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
     override fun map(baseFlat: AppFlat, html: String): AppFlat {
         if (html.isBlank()) return baseFlat
         val doc = Ksoup.parse(html)
-
-        // Парсим цены
-        val priceUsd = doc.select(".apartment-bar__price-value_complementary")
-            .firstOrNull()?.text()
-            ?.replace("$", "")
-            ?.replace(" ", "")
-            ?.toDoubleOrNull()
-
-        val priceByn = doc.select(".apartment-bar__price-value_primary")
-            .firstOrNull()?.text()
-            ?.replace("р.", "")
-            ?.replace(" ", "")
-            ?.replace(",", ".")
-            ?.toDoubleOrNull()
 
         // Парсим количество комнат
         val roomsText = doc.select(".apartment-bar__value")

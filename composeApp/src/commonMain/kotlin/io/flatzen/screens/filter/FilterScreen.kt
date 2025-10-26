@@ -45,8 +45,8 @@ import io.flatzen.SaveFilterDialog
 import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
@@ -80,7 +80,7 @@ fun FilterScreen(
             it.commercialPropertyType?.let { propertyType ->
                 SingleChoiceEntity(
                     title = it.commercialPropertyTypeName.orEmpty(),
-                    type = propertyType // уже не-null
+                    type = propertyType
                 )
             }
         } ?: listOf()
@@ -243,8 +243,10 @@ fun FilterScreen(
                 )
             }
 
-            FilterSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
-                currentFilters = currentFilters.copy(fromOwnerOnly = it)
+            if(currentFilters.adType != AdType.DAILY) {
+                FilterSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
+                    currentFilters = currentFilters.copy(fromOwnerOnly = it)
+                }
             }
             FilterSwitch(label = "Только с фото", state = currentFilters.withPhotoOnly) {
                 currentFilters = currentFilters.copy(withPhotoOnly = it)
@@ -335,8 +337,14 @@ fun FilterScreen(
                 Spacer(Modifier.height(8.dp))
             }
 
+            val currencyText = if(currentFilters.adType == AdType.DAILY) "(BYN)" else "($)"
+            val priceTitle = if(currentFilters.adType == AdType.DAILY) {
+                "Цена за сутки $currencyText"
+            } else {
+                "Цена $currencyText"
+            }
             NumberRange(
-                title = "Цена ($)",
+                title = priceTitle,
                 launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
@@ -359,34 +367,35 @@ fun FilterScreen(
                     )
                 }
             )
-            Spacer(Modifier.height(10.dp))
-            NumberRange(
-                title = "Цена за м2 ($)",
-                launchedKey = clearAllEffectKey,
-                rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
-                fromOnChange = {
-                    currentFilters = currentFilters.copy(
-                        pricePerSquare = currentFilters.pricePerSquare?.copy(
-                            priceFrom = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceFrom = it.toDoubleOrNull()
+            if(currentFilters.adType != AdType.DAILY) {
+                Spacer(Modifier.height(10.dp))
+                NumberRange(
+                    title = "Цена за м2 $currencyText",
+                    launchedKey = clearAllEffectKey,
+                    rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
+                    fromOnChange = {
+                        currentFilters = currentFilters.copy(
+                            pricePerSquare = currentFilters.pricePerSquare?.copy(
+                                priceFrom = it.toDoubleOrNull()
+                            ) ?: Price(
+                                priceFrom = it.toDoubleOrNull()
+                            )
                         )
-                    )
-                },
-                rangeTo = currentFilters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
-                toOnChange = {
-                    currentFilters = currentFilters.copy(
-                        pricePerSquare = currentFilters.pricePerSquare?.copy(
-                            priceTo = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceTo = it.toDoubleOrNull()
+                    },
+                    rangeTo = currentFilters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
+                    toOnChange = {
+                        currentFilters = currentFilters.copy(
+                            pricePerSquare = currentFilters.pricePerSquare?.copy(
+                                priceTo = it.toDoubleOrNull()
+                            ) ?: Price(
+                                priceTo = it.toDoubleOrNull()
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
 
             Spacer(Modifier.height(10.dp))
-
             NumberRange(
                 title = "Площадь",
                 launchedKey = clearAllEffectKey,

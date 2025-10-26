@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -13,6 +14,7 @@ import kotlinx.datetime.Instant
 @TypeConverters(RoomTypeConverter::class)
 data class AppFlat(
     @PrimaryKey val adId: Long,
+    @Embedded val adType: AdType? = AdType.RENT,
     @Embedded val flatDevInfo: FlatDevInfo,
     @Embedded val contactInformation: ContactInformation?,
     @Embedded val coordinates: Coordinates?,
@@ -70,7 +72,9 @@ data class AppFlat(
     val forWhom: List<String>?, // ["Семейным", "Студентам"] и т.д.
     val parkingInfo: String?, // Информация о парковке
     val owner: Boolean?, // Собственник или агент
-)
+) {
+    fun getAdTypeNonNull(): AdType = adType ?: AdType.RENT
+}
 
 data class FlatDevInfo(
     val isDetailData: Boolean,

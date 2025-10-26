@@ -9,14 +9,26 @@ import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.kufar.KufarDailyListResponse
 
-class KufarDailyFlatMapper: ResponseToEntitiesFlatMapper<KufarDailyListResponse.RentalObject, AppFlat> {
+class KufarDailyFlatMapper :
+    ResponseToEntitiesFlatMapper<KufarDailyListResponse.RentalObject, AppFlat> {
 
     override fun map(rentalObject: KufarDailyListResponse.RentalObject): AppFlat {
+        val metroStations = rentalObject.metroStationNames?.map { it?.ru }?.let {
+            if (it.isNotEmpty()) {
+                it.joinToString(separator = ", ")
+            } else {
+                null
+            }
+        }
+        val cityName = rentalObject.appCity ?: "minsk"
+        val detailUrl = rentalObject.selfUrl.takeIf { it.isNullOrEmpty().not() }
+            ?: "https://travel.kufar.by/vi/$cityName/${rentalObject.adId}"
+
         return AppFlat(
             adId = rentalObject.adId?.toLong() ?: -1L,
             flatDevInfo = FlatDevInfo(
-                isDetailData = false,
-                isDetailLoaded = false
+                isDetailData = true,
+                isDetailLoaded = true
             ),
             contactInformation = null, // Kufar Daily не предоставляет контактную информацию
             coordinates = rentalObject.coordinates?.let { coords ->
@@ -27,11 +39,11 @@ class KufarDailyFlatMapper: ResponseToEntitiesFlatMapper<KufarDailyListResponse.
                     )
                 } else null
             },
-            commercialInfo = null, // Для жилой недвижимости
+            commercialInfo = null,
             savedInFavorites = false,
             isViewed = false,
             flatPlatform = FlatPlatform.KUFAR,
-            flatDetailUrl = rentalObject.selfUrl ?: "",
+            flatDetailUrl = detailUrl,
             publishedAt = DateConverter.stringToInstant(rentalObject.listTime.orEmpty()),
             publishedAtServer = rentalObject.listTime,
             publishedAtUi = DateConverter.formatInstant(
@@ -50,14 +62,14 @@ class KufarDailyFlatMapper: ResponseToEntitiesFlatMapper<KufarDailyListResponse.
                 }
             },
             priceUsd = null, // Kufar Daily предоставляет только цену в BYN
-            priceByn = rentalObject.price?.toDouble(),
+            priceByn = rentalObject.price?.toDouble()?.div(100),
             priceUsdSquare = null,
             priceBynSquare = null,
             rooms = rentalObject.rooms,
-            district = extractDistrictFromAddress(rentalObject.address),
+            district = null, //area?,
             address = rentalObject.address,
-            metroStation = rentalObject.metroStationNames?.firstOrNull()?.ru,
-            description = rentalObject.shortDescription,
+            metroStation = metroStations,
+            description = rentalObject.adSnapshot?.body,
             yearBuilt = extractYearFromAdSnapshot(rentalObject.adSnapshot),
             // Основные параметры квартиры
             totalArea = rentalObject.area?.toDouble(),
@@ -85,7 +97,8 @@ class KufarDailyFlatMapper: ResponseToEntitiesFlatMapper<KufarDailyListResponse.
             // Дополнительные параметры
             forWhom = null,
             parkingInfo = null,
-            owner = rentalObject.isSuperhost // Если не суперхост, вероятно собственник
+            owner = null
+//            owner = rentalObject.isSuperhost // Если не суперхост, вероятно собственник
         )
     }
 

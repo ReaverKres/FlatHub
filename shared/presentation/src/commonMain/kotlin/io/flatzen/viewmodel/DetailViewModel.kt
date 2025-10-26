@@ -9,7 +9,6 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.asPriceFormat
-import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -34,9 +33,7 @@ import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
 import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
-import server_request.Currency
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -51,8 +48,8 @@ data class UiDetailFlat(
     val flatUrl: String,
     val description: String,
     val imageUrls: List<String>,
-    val priceUsd: String,
-    val priceByn: String,
+    val priceUsd: Double?,
+    val priceByn: Double?,
     val priceUsdSquare: String?,
     val priceBynSquare: String?,
     val address: String,
@@ -245,8 +242,8 @@ class FlatDetailViewModel(
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty(),
-            priceUsd = priceWithCurrency(appFlat.priceUsd, "USD"),
-            priceByn = priceWithCurrency(appFlat.priceByn, "BYN"),
+            priceUsd = appFlat.priceUsd,
+            priceByn = appFlat.priceByn,
             priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
             priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),

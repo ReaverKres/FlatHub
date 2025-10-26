@@ -27,3 +27,24 @@ fun priceWithCurrency(price: Double?, currency: String): String {
         "${it.asPriceFormat()} $currency"
     } ?: "Цена не указана"
 }
+
+fun formatMainPrice(price: Double?, currency: String = "$"): String? {
+    return if (price != null) {
+        priceWithCurrency(price, currency)
+    } else {
+        null
+    }
+}
+
+fun formatSecondPrice(price: Double?, isUsdPricePresent: Boolean): String? {
+    return if (price != null) {
+        val formatedPrice = priceWithCurrency(price, "BYN")
+        if (!isUsdPricePresent) {
+            formatedPrice
+        } else {
+            "($formatedPrice)"
+        }
+    } else {
+        null
+    }
+}

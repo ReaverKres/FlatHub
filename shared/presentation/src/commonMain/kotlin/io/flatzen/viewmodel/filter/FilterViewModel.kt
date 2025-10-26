@@ -10,6 +10,7 @@ import entities.SavedFilter
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.mappers.LocationUiMapper
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import server_request.Currency
 
 // Actions
 sealed interface FilterScreenAction : MviAction {
@@ -116,9 +118,11 @@ class FilterViewModel(
                 // Check if current filter still matches selected saved filter
                 val selectedFilter = currentState.savedFilters.find { it.selected }
                 val events = mutableListOf<FilterScreenEvent>()
+                val currency = if(currentState.filters.adType == AdType.DAILY) Currency.BYR else Currency.USD
+                val updatedFilter = action.newFilterState.copy(currency = currency)
                 events.add(
                     FilterScreenEvent.FiltersUpdated(
-                        action.newFilterState,
+                        updatedFilter,
                         action.doNetworkCall
                     )
                 )

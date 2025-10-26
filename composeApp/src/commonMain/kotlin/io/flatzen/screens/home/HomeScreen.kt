@@ -75,10 +75,11 @@ import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
-import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.utils.formatMainPrice
+import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
@@ -807,16 +808,27 @@ private fun GridFlatCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = flat.priceUsd,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                flat.priceByn?.let {
+                val mainPriceText = if (flat.adType == AdType.DAILY && flat.priceByn != null) {
+                    formatMainPrice(flat.priceByn, "BYN")
+                } else if(flat.priceUsd != null) {
+                    formatMainPrice(flat.priceUsd)
+                } else "Цена не указана"
+
+                val secondPriceText = if (flat.adType != AdType.DAILY) {
+                    formatSecondPrice(flat.priceByn, mainPriceText != null)
+                } else null
+                if (mainPriceText != null) {
+                    Text(
+                        text = mainPriceText,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (secondPriceText != null) {
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = "($it)",
+                        text = secondPriceText,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -834,7 +846,7 @@ private fun GridFlatCard(
             }
             val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
             val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
-            if(propertyTypeName.isNullOrEmpty().not()) {
+            if (propertyTypeName.isNullOrEmpty().not()) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = propertyTypeName,
@@ -844,7 +856,7 @@ private fun GridFlatCard(
 
             Spacer(Modifier.height(4.dp))
 
-            val roomSuffix = if(propertyTypeRoom.isNullOrEmpty().not()) {
+            val roomSuffix = if (propertyTypeRoom.isNullOrEmpty().not()) {
                 "помещений"
             } else {
                 "комн"

@@ -2,6 +2,7 @@ package database
 
 import androidx.room.TypeConverter
 import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -9,6 +10,16 @@ import kotlinx.serialization.json.Json
 @Suppress("Unused")
 class RoomTypeConverter {
     private val json = Json { ignoreUnknownKeys = true }
+
+    @TypeConverter
+    fun fromAdType(adType: AdType): String {
+        return adType.let { Json.encodeToString(it) }
+    }
+
+    @TypeConverter
+    fun toAdType(value: String): AdType {
+        return Json.decodeFromString<AdType>(value)
+    }
 
     @TypeConverter
     fun fromCommercialPropertyType(commercialPropertyType: CommercialPropertyType?): String? {

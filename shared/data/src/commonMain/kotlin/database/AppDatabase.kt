@@ -1,7 +1,7 @@
 package database
 
-import androidx.room.Database
 import androidx.room.ConstructedBy
+import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
@@ -11,7 +11,7 @@ import entities.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [AppFlat::class, SavedFilter::class, UserPreferences::class], version = 8)
+@Database(entities = [AppFlat::class, SavedFilter::class, UserPreferences::class], version = 1)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): FlatsDao
