@@ -16,19 +16,6 @@ import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
 import server_request.Currency
 
-enum class RepairType(val displayName: String) {
-    COSMETIC("Косметический"), EURO("Евроремонт"), DESIGNER("Дизайнерский"), NO_REPAIR("Без ремонта")
-}
-
-enum class Amenity(val displayName: String) {
-    FURNITURE("Мебель"), NO_FURNITURE("Без мебели"), AIR_CONDITIONER("Кондиционер"), REFRIGERATOR("Холодильник"), WASHING_MACHINE(
-        "Стиральная машина"
-    ),
-    DISHWASHER("Посудомойка"), INTERNET("Интернет"), TV("Телевизор"), BATHTUB("Ванна"), KITCHEN_FURNITURE(
-        "Кухонная мебель"
-    )
-}
-
 enum class MetroLineState() {
     GREEN, BLUE, RED,
 }
@@ -44,9 +31,6 @@ enum class Room(val displayName: String) {
 
 @Immutable
 data class UiCountry(val code: CountryCode, val name: String? = null)
-
-@Immutable
-data class UiCity(val code: CityCode, val name: String? = null)
 
 @Immutable
 data class LocationUiFilter(
@@ -77,8 +61,8 @@ data class SavedFilterState(
 
 @Immutable
 data class FilterState(
-    val adType: AdType = AdType.RENT,
-    val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
+    val adType: AdType = RENT,
+    val lastCommercialAdType: AdType = COMMERCIAL(),
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
@@ -108,11 +92,12 @@ data class FilterState(
 
         // Тип объявления
         activeFilters.add("Тип: ${when (adType) {
-            AdType.RENT -> "Аренда"
-            AdType.SALE -> "Продажа"
+            RENT -> "Аренда"
+            SALE -> "Продажа"
             COMMERCIAL(CommercialAdType.SALE) -> "Коммерческая (купить)"
             COMMERCIAL(CommercialAdType.RENT) -> "Коммерческая (снять)"
-            is AdType.COMMERCIAL -> "Коммерческая"
+            is COMMERCIAL -> "Коммерческая"
+            is DAILY -> "Посуточно"
         }}")
 
         // Полная цена

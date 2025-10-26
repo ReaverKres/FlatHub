@@ -15,6 +15,7 @@ import mappers.kufar.KufarFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
+import mappers.kufar.KufarDailyFlatMapper
 import mappers.kufar.KufarDetailHtmlMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
@@ -37,15 +38,19 @@ import repository.realt.RealtRepositoryImpl
 import repository.userpreferences.UserPreferencesRepository
 import repository.userpreferences.UserPreferencesRepositoryImpl
 import server_response.DomovitaListResponse
-import server_response.KufarListResponse
+import server_response.kufar.KufarListResponse
 import server_response.OnlinerListResponse
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
+import server_response.kufar.KufarDailyListResponse
 
 
 val dataModule = module {
     single<ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>>(
         qualifier = DataQualifiers.KUFAR_FLAT_MAPPER
     ) { KufarFlatMapper() }
+    single<ResponseToEntitiesFlatMapper<KufarDailyListResponse.RentalObject, AppFlat>>(
+        qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER
+    ) { KufarDailyFlatMapper() }
     single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
     single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
 
@@ -57,6 +62,7 @@ val dataModule = module {
             connectionMonitor = get(),
             kufarDetailHtmlMapper = get(qualifier = DataQualifiers.KUFAR_DETAIL_FLAT_MAPPER),
             kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
+            kufarDailyResponseMapper = get(qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER),
             filterRepository = get(),
             flatsDao = get()
         )
