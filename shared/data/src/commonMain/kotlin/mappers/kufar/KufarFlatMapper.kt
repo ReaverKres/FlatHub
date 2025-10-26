@@ -16,7 +16,7 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import mappers.base.ResponseToEntitiesFlatMapper
-import server_response.KufarListResponse
+import server_response.kufar.KufarListResponse
 
 class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat> {
 

@@ -92,7 +92,7 @@ fun RentSaleButtons(
                 selectedAdType = selectedAdType
             )
 
-            Spacer(Modifier.width(32.dp))
+            Spacer(Modifier.width(12.dp))
 
             AdTypeButton(
                 modifier = Modifier
@@ -100,6 +100,17 @@ fun RentSaleButtons(
                     .weight(1f),
                 adType = AdType.SALE,
                 adTypeBtnText = "Продажа",
+                onClick = onClick,
+                selectedAdType = selectedAdType
+            )
+            Spacer(Modifier.width(12.dp))
+
+            AdTypeButton(
+                modifier = Modifier
+                    .height(44.dp)
+                    .weight(1f),
+                adType = AdType.DAILY,
+                adTypeBtnText = "Посуточно",
                 onClick = onClick,
                 selectedAdType = selectedAdType
             )

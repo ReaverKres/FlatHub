@@ -1,5 +1,4 @@
-package server_response
-
+package server_response.kufar
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
