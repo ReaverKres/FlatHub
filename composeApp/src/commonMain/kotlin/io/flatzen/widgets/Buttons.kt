@@ -3,6 +3,7 @@ package io.flatzen.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,16 +76,17 @@ fun RentSaleButtons(
     }
 
     Column {
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             AdTypeButton(
                 modifier = Modifier
                     .height(44.dp)
-                    .weight(1f),
+                    .weight(1f, fill = false),
                 adType = AdType.RENT,
                 adTypeBtnText = "Аренда",
                 onClick = onClick,
@@ -96,7 +98,7 @@ fun RentSaleButtons(
             AdTypeButton(
                 modifier = Modifier
                     .height(44.dp)
-                    .weight(1f),
+                    .weight(1f, fill = false),
                 adType = AdType.SALE,
                 adTypeBtnText = "Продажа",
                 onClick = onClick,
@@ -107,36 +109,39 @@ fun RentSaleButtons(
             AdTypeButton(
                 modifier = Modifier
                     .height(44.dp)
-                    .weight(1f),
+                    .weight(1f, fill = false),
                 adType = AdType.DAILY,
                 adTypeBtnText = "Посуточно",
                 onClick = onClick,
                 selectedAdType = selectedAdType
             )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            AdTypeButton(
-                modifier = Modifier
-                    .height(44.dp)
-                    .wrapContentWidth(),
-                adType = lastCommercialAdType,
-                adTypeBtnText = commercialAdTypeBtnText,
-                onClick = onClick,
-                selectedAdType = selectedAdType
-            )
-            Spacer(Modifier.width(8.dp))
-            Card(
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.wrapContentWidth().height(44.dp),
-                onClick = { fewTypeInOneClick(AdType.COMMERCIAL()) },
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            Spacer(Modifier.width(16.dp))
+            // Обертка для группировки кнопки и карточки
+            Row(
+                modifier = Modifier.wrapContentWidth()
             ) {
-                Icon(
-                    modifier = Modifier.padding(12.dp),
-                    imageVector = Icons.Default.Create,
-                    contentDescription = null,
+                AdTypeButton(
+                    modifier = Modifier
+                        .height(44.dp)
+                        .wrapContentWidth(),
+                    adType = lastCommercialAdType,
+                    adTypeBtnText = commercialAdTypeBtnText,
+                    onClick = onClick,
+                    selectedAdType = selectedAdType
                 )
+                Spacer(Modifier.width(8.dp))
+                Card(
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.wrapContentWidth().height(44.dp),
+                    onClick = { fewTypeInOneClick(AdType.COMMERCIAL()) },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(12.dp),
+                        imageVector = Icons.Default.Create,
+                        contentDescription = null,
+                    )
+                }
             }
         }
     }
