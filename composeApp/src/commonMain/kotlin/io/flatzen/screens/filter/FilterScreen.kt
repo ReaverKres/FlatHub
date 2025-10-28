@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,11 +47,13 @@ import io.flatzen.SaveFilterDialog
 import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.entities.SingleChoiceEntity
@@ -60,10 +64,14 @@ import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
+import io.flatzen.widgets.AppReadOnlyTextField
 import io.flatzen.widgets.AppTextField
+import io.flatzen.widgets.DateRangePickerDialog
 import io.flatzen.widgets.FilterSwitch
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,6 +100,7 @@ fun FilterScreen(
     }
 
     var clearAllEffectKey by remember { mutableStateOf(0) }
+    var dateTextEffectKey by remember { mutableStateOf(0) }
     var showCommercialAdTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showCommercialPropertyTypeDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -125,6 +134,7 @@ fun FilterScreen(
                 actions = {
                     TextButton(onClick = {
                         clearAllEffectKey = clearAllEffectKey + 1
+                        dateTextEffectKey = dateTextEffectKey + 1
                         viewModel.onIntent(FilterScreenAction.ClearAllFilters)
                     }) {
                         Text("Сбросить")
@@ -257,7 +267,7 @@ fun FilterScreen(
                 }
             }
 
-            if (currentFilters.adType.isCommercial.not()) {
+            if (currentFilters.adType.isCommercial.not() && currentFilters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
                 FilterSectionTitle(title = "Комнат в квартире")
                 Spacer(Modifier.height(6.dp))
@@ -267,17 +277,17 @@ fun FilterScreen(
                         FilterChip(
                             selected = currentFilters.rooms.contains(room),
                             onClick = {
-                                val newTypes = currentFilters.rooms.toMutableSet()
-                                if (newTypes.contains(room)) newTypes.remove(room) else newTypes.add(
+                                val rooms = currentFilters.rooms.toMutableSet()
+                                if (rooms.contains(room)) rooms.remove(room) else rooms.add(
                                     room
                                 )
-                                currentFilters = currentFilters.copy(rooms = newTypes)
+                                currentFilters = currentFilters.copy(rooms = rooms)
                             },
                             label = { Text(it.displayName) }
                         )
                     }
                 }
-            } else {
+            } else if(currentFilters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
                 NumberRange(
                     title = "Количество помещений",
@@ -335,6 +345,79 @@ fun FilterScreen(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
+            }
+
+            if(currentFilters.adType == AdType.DAILY) {
+                var showDatePicker by rememberSaveable { mutableStateOf(false) }
+
+                // Get the current booking dates from the filter
+                val startDateMillis = currentFilters.bookingDatesFilter?.dateFrom?.toEpochMilliseconds()
+                val endDateMillis = currentFilters.bookingDatesFilter?.dateTo?.toEpochMilliseconds()
+                
+                // Format the date range for display
+                val formattedDateRange = remember(startDateMillis, endDateMillis) {
+                    if (startDateMillis != null && endDateMillis != null) {
+                        val dateFrom = Instant.fromEpochMilliseconds(startDateMillis)
+                        val dateFromText = DateConverter.formatInstant(
+                            instant = dateFrom,
+                            timeZone = TimeZone.currentSystemDefault(),
+                            onlyDayAndMonth = true
+                        )
+                        val dateTo = Instant.fromEpochMilliseconds(endDateMillis)
+                        val dateToText = DateConverter.formatInstant(
+                            instant = dateTo,
+                            timeZone = TimeZone.currentSystemDefault(),
+                            onlyDayAndMonth = true
+                        )
+                        "Выбрано: $dateFromText - $dateToText"
+                    } else {
+                        ""
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AppReadOnlyTextField(
+                        modifier = Modifier.weight(1f),
+                        text = formattedDateRange,
+                        label = "Дата бронирования",
+                        launchedKey = dateTextEffectKey,
+                        onChange = {},
+                        onClick = { showDatePicker = true }
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    IconButton(onClick = {
+                        currentFilters = currentFilters.copy(bookingDatesFilter = null)
+                        dateTextEffectKey++
+                    }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Удалить дату")
+                    }
+                }
+
+                if (showDatePicker) {
+                    DateRangePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        onDateRangeSelected = { dateRange ->
+                            val (startDate, endDate) = dateRange
+                            if (startDate != null && endDate != null) {
+                                // Update the filter with the selected dates
+                                val bookingDatesFilter = BookingDatesFilter(
+                                    dateFrom = Instant.fromEpochMilliseconds(startDate),
+                                    dateTo = Instant.fromEpochMilliseconds(endDate),
+                                    timeZone = TimeZone.currentSystemDefault()
+                                )
+                                currentFilters = currentFilters.copy(bookingDatesFilter = bookingDatesFilter)
+                                dateTextEffectKey++
+                            }
+                            showDatePicker = false
+                        },
+                        initialSelectedStartDateMillis = startDateMillis,
+                        initialSelectedEndDateMillis = endDateMillis
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
             }
 
             val currencyText = if(currentFilters.adType == AdType.DAILY) "(BYN)" else "($)"

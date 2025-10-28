@@ -2,10 +2,13 @@ package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.AdType
-import io.flatzen.commoncomponents.commonentities.AdType.*
+import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
+import io.flatzen.commoncomponents.commonentities.AdType.DAILY
+import io.flatzen.commoncomponents.commonentities.AdType.RENT
+import io.flatzen.commoncomponents.commonentities.AdType.SALE
+import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
-import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
@@ -76,6 +79,7 @@ data class FilterState(
     val roomOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
     val commercial: CommercialFilters = CommercialFilters(),
+    val bookingDatesFilter: BookingDatesFilter? = null
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }

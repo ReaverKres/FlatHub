@@ -413,7 +413,8 @@ class FilterViewModel(
             commercial = CommercialFilters(
                 roomRange = model.commercial?.roomRange,
                 commercialPropertyType = getCommercialPropertiesTypeInfo(model)
-            )
+            ),
+            bookingDatesFilter = model.bookingDatesFilter
         )
     }
 
@@ -472,7 +473,8 @@ class FilterViewModel(
                 commercialPropertyType = filters.commercial.commercialPropertyType?.find {
                     it.selected
                 }?.commercialPropertyType
-            )
+            ),
+            bookingDatesFilter = filters.bookingDatesFilter
         )
     }
 

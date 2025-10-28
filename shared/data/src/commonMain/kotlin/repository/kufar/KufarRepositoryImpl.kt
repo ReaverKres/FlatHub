@@ -12,6 +12,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.Location
+import io.flatzen.commoncomponents.date.toKufarDateDays
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -54,7 +55,9 @@ class KufarRepositoryImpl(
     private var pageCursor: String? = null
 
     override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
-        if (pageCursor == null && filterRepository.currentAppPage > 1) {
+        val filter = filterRepository.lastFilter()
+
+        if (filter.adType != AdType.DAILY && pageCursor == null && filterRepository.currentAppPage > 1) {
             emit(networkEmptyList)
             return@flow
         }
@@ -63,9 +66,9 @@ class KufarRepositoryImpl(
             pageCursor = null
         }
 
-        val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? =
-            filter.metroStations.filter { it.selected }.map { it.metroId }.takeIf { it.isNotEmpty() }
+            filter.metroStations.filter { it.selected }.map { it.metroId }
+                .takeIf { it.isNotEmpty() }
 
         val city = when (filter.location?.city) {
             null, CityCode.MINSK -> KufarCities.MINSK
@@ -86,7 +89,7 @@ class KufarRepositoryImpl(
         }
 
         if (dealType == AdType.DAILY) {
-            sendKufarDailyFlatRequest(categoryId,filter, metroIds, city)
+            sendKufarDailyFlatRequest(categoryId, filter, metroIds, city)
         } else {
             sendKufarFlatRequest(categoryId, dealType, filter, metroIds, city)
         }
@@ -99,6 +102,7 @@ class KufarRepositoryImpl(
         metroIds: List<Int>?,
         city: String,
     ) {
+        val numberOfRoms = if (filter.roomOnly) null else filter.numberOfRooms
         val params = KufarListQuery.createQueryParams(
             categoryId = categoryId,
             dealType = dealType,
@@ -106,7 +110,7 @@ class KufarRepositoryImpl(
             pricePerSquare = if (filter.isPricePerSquareNeeded) filter.pricePerSquare else null,
             metroIds = metroIds,
             onlyOwner = filter.fromOwnerOnly,
-            rooms = filter.numberOfRooms,
+            rooms = numberOfRoms,
             cursor = pageCursor,
             geoTag = city,
             sortOption = filter.sortOption,
@@ -163,7 +167,7 @@ class KufarRepositoryImpl(
                 }
             }
         } catch (e: Exception) {
-    //            emit(networkEmptyList)
+            //            emit(networkEmptyList)
         }
     }
 
@@ -174,23 +178,24 @@ class KufarRepositoryImpl(
         city: String,
     ) {
         val currentCityCodes: EnumEntries<CityCode> = CityCode.entries
-        val currentCityName = currentCityCodes.find { it == filter.location?.city}?.let {
+        val currentCityName = currentCityCodes.find { it == filter.location?.city }?.let {
             Location.mapCityCodeToDomainName(it)
         }
+        val numberOfRoms = if (filter.roomOnly) null else filter.numberOfRooms
         val params = KufarDailyListQuery.createQueryParams(
             categoryId = categoryId,
+            page = filterRepository.currentAppPage,
             metroIds = metroIds,
-            rooms = filter.numberOfRooms,
+            rooms = numberOfRoms,
             priceFull = filter.priceFull,
-            cursor = pageCursor,
             geoTag = city,
             sortOption = filter.sortOption,
+            dateFrom = filter.bookingDatesFilter?.dateFrom?.toKufarDateDays(),
+            dateTo = filter.bookingDatesFilter?.dateTo?.toKufarDateDays()
         )
 
         try {
-            val request = api.searchFlatsDaily(
-                queryParams = params,
-            )
+            val request = api.searchFlatsDaily(queryParams = params)
 
             when (request) {
                 is NetworkResponseWrapper.Success -> {
