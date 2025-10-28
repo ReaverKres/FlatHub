@@ -36,6 +36,7 @@ import entities.MetroStationNames.URUCHIE
 import entities.MetroStationNames.VOKZALNAYA
 import entities.MetroStationNames.VOSTOK
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
@@ -63,7 +64,8 @@ data class CommonFilterRequestModel(
     val fromOwnerOnly: Boolean? = null,
     val withPhotoOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
-    val commercial: CommercialRequestModel? = null
+    val commercial: CommercialRequestModel? = null,
+    val bookingDatesFilter: BookingDatesFilter? = null
 ) {
 
     val isRentType: Boolean
@@ -150,6 +152,7 @@ data class CommonFilterRequestModel(
         if (withPhotoOnly != other.withPhotoOnly) return false
         if (adType != other.adType) return false
         if (!isCommercialEqual) return false
+        if (bookingDatesFilter != other.bookingDatesFilter) return false
         if (totalArea != other.totalArea) return false
         if (priceFull != other.priceFull) return false
         if (pricePerSquare != other.pricePerSquare) return false
@@ -169,6 +172,7 @@ data class CommonFilterRequestModel(
         var result = priceFull?.hashCode() ?: 0
         val commercialForHashCode = normalizeCommercialForHashCode(commercial)
         result = 31 * result + (commercialForHashCode?.hashCode() ?: 0)
+        result = 31 * result + (bookingDatesFilter?.hashCode() ?: 0)
         result = 31 * result + (totalArea?.hashCode() ?: 0)
         result = 31 * result + (pricePerSquare?.hashCode() ?: 0)
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()

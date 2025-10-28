@@ -11,14 +11,16 @@ object KufarDailyListQuery {
 
     fun createQueryParams(
         categoryId: Int = 1010,
+        page: Int,
         geoTag: String = "country-belarus~province-minsk~locality-minsk",
         language: String = "ru",
-        cursor: String? = null,
         priceFull: Price? = null,
         pageSize: Int = KUFAR_PAGE_SIZE,
         rooms: Set<Int>? = null,
         metroIds: List<Int>? = null,
         sortOption: FlatSort = FlatSort.NEWEST_FIRST,
+        dateFrom: Int? = null,
+        dateTo: Int? = null,
     ): MutableMap<String, String> {
         val updatedPriceFull: PriceInt? = priceFull?.copy(
             priceFrom = priceFull.priceFrom?.times(100),
@@ -40,11 +42,9 @@ object KufarDailyListQuery {
             put("cat", categoryId.toString())
             put("gtsy", geoTag)
             put("lang", language)
-            if (cursor.isNullOrBlank().not()) {
-                put("cursor", cursor.orEmpty())
-            }
             put("sort", kufarSortParam)
             put("size", pageSize.toString())
+            put("page", page.toString())
             if (!rooms.isNullOrEmpty()) {
                 put("rms", "v.or:${rooms.joinToString(",")}")
             }
@@ -68,6 +68,9 @@ object KufarDailyListQuery {
             updatedPriceFull?.priceTo != null -> {
                 params[fullPriceName] = "r:0,${updatedPriceFull.priceTo}"
             }
+        }
+        if (dateFrom != null && dateTo != null) {
+            params["bkcl"] = "rn:$dateFrom,$dateTo,1,0"
         }
 
         return params

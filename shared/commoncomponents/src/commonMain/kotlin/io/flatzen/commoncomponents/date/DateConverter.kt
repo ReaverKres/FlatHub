@@ -7,6 +7,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 
 /**
  * Утилитарный класс для преобразования дат в формате ISO 8601.
@@ -54,7 +55,11 @@ object DateConverter {
         return instant.toString()
     }
 
-    fun formatInstant(instant: Instant, timeZone: TimeZone): String {
+    fun formatInstant(
+        instant: Instant,
+        timeZone: TimeZone,
+        onlyDayAndMonth: Boolean = false
+    ): String {
         val localDateTime: LocalDateTime = instant.toLocalDateTime(timeZone)
 
         fun Int.pad(): String = this.toString().padStart(2, '0')
@@ -65,7 +70,12 @@ object DateConverter {
         val month = localDateTime.monthNumber.pad()
         val year = localDateTime.year
 
-        return "$hour:$minute $day.$month.$year"
+        return if (onlyDayAndMonth) {
+            "$day.$month"
+        } else {
+            "$hour:$minute $day.$month.$year"
+        }
+
     }
 
     fun formatInstantWithDomovitaDates(
@@ -98,4 +108,11 @@ object DateConverter {
         return baseDate
     }
 }
+
+
+fun Instant.toKufarDateDays(): Int {
+    val baseDate = Instant.parse("1970-01-01T00:00:00Z")
+    return ((this - baseDate) / 1.days).toInt()
+}
+
 
