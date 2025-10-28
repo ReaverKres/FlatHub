@@ -212,12 +212,16 @@ class KufarRepositoryImpl(
                         ?.map { kufarDailyResponseMapper.map(it) }
                         .orEmpty()
                     val kufarFlatList = kufarUsualFlatList + kufarPoleFlatList
+                    val filteredKufarList = kufarFlatList.filter { item1 ->
+                        lastEmitList?.none { item2 -> item1.adId == item2.adId } ?: false
+                    }
 
-                    if (kufarFlatList.isEmpty()) {
+                    if (filteredKufarList.isEmpty()) {
                         emit(networkEmptyList)
                     } else {
-                        emit(NetworkResponseWrapper.success(kufarFlatList))
+                        emit(NetworkResponseWrapper.success(filteredKufarList))
                     }
+                    lastEmitList = kufarFlatList
                 }
 
                 is NetworkResponseWrapper.Error -> {
