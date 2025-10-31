@@ -12,15 +12,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ErrorSnackbar(
+fun MessageSnackbar(
     message: String,
+    color: Color = Color.Red,
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .background(Color.Red),
+            .background(color),
         contentAlignment = Alignment.Center,
     ) {
         Text(

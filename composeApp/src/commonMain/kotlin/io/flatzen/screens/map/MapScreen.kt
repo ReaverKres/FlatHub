@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +47,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import flatzen.composeapp.generated.resources.Res
+import io.flatzen.SaveDialog
 import io.flatzen.SearchErrorDialog
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -53,19 +58,25 @@ import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
+import io.flatzen.viewmodel.MapEffect
 import io.flatzen.viewmodel.MapViewModel
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.widgets.ActionButton
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
+import io.flatzen.widgets.MessageSnackbar
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
+import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
 import ovh.plrapps.mapcompose.api.addMarker
+import ovh.plrapps.mapcompose.api.getPathData
 import ovh.plrapps.mapcompose.api.onMarkerClick
+import ovh.plrapps.mapcompose.api.onTap
 import ovh.plrapps.mapcompose.api.removeAllMarkers
 import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.scrollTo
@@ -100,6 +111,8 @@ fun MapScreen(
     val filterViewModel = koinViewModel<FilterViewModel>()
     val filterState by filterViewModel.state.collectAsStateWithLifecycle()
 
+    val mapModelState by mapViewModel.state.collectAsStateWithLifecycle()
+
     BackHandler {
         navigateBack()
     }
@@ -117,41 +130,53 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(listState.flatList) {
-        mapViewModel.mapState.apply {
-            onMarkerClick { id, x, y ->
-                selectedFlatId = id.toLongOrNull()
+    LaunchedEffect(listState.flatList, mapModelState.isMapAreaActive) {
+        if (mapModelState.isMapAreaActive) {
+            mapViewModel.mapState.removeAllMarkers()
+        } else {
+            mapViewModel.mapState.apply {
+                onMarkerClick { id, x, y ->
+                    selectedFlatId = id.toLongOrNull()
+                }
+                if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
+                    removeAllMarkers()
+                    listState.flatList.forEach {
+                        val mercatorCoordinates =
+                            it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
+                                ?: return@LaunchedEffect
+                        addMarker(
+                            id = it.adId.toString(),
+                            x = mercatorCoordinates.first,
+                            y = mercatorCoordinates.second,
+                            clickableAreaScale = Offset(1.3f, 1.3f),
+                            renderingStrategy = RenderingStrategy.Clustering(clusterId)
+                        ) {
+                            RoomMarker(
+                                rooms = it.numberOfRooms?.toIntOrNull(),
+                                pinColor = if (detailFlatId == it.adId) Color.Green else Color(
+                                    0xFFD32F2F
+                                ),
+                                textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    addClusterer(
+                        id = clusterId,
+                        clusteringThreshold = 30.dp
+                    ) { ids ->
+                        {
+                            Cluster(size = ids.size)
+                        }
+                    }
+                }
             }
-            if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
-                removeAllMarkers()
-                listState.flatList.forEach {
-                    val mercatorCoordinates =
-                        it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
-                            ?: return@LaunchedEffect
-                    addMarker(
-                        id = it.adId.toString(),
-                        x = mercatorCoordinates.first,
-                        y = mercatorCoordinates.second,
-                        clickableAreaScale = Offset(1.3f, 1.3f),
-                        renderingStrategy = RenderingStrategy.Clustering(clusterId)
-                    ) {
-                        RoomMarker(
-                            rooms = it.numberOfRooms?.toIntOrNull(),
-                            pinColor = if (detailFlatId == it.adId) Color.Green else Color(
-                                0xFFD32F2F
-                            ),
-                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                addClusterer(
-                    id = clusterId,
-                    clusteringThreshold = 30.dp
-                ) { ids ->
-                    {
-                        Cluster(size = ids.size)
-                    }
-                }
+        }
+    }
+
+    LaunchedEffect(mapModelState.isMapAreaActive) {
+        if (mapModelState.isMapAreaActive) {
+            mapViewModel.mapState.onTap { x, y ->
+                mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
             }
         }
     }
@@ -174,6 +199,72 @@ fun MapScreen(
     LaunchedEffectOnce(Unit) { mapViewModel.onIntent(MapAction.Initialize) }
     LaunchedEffect(Unit) {
         listViewModel.onIntent(FlatListScreenAction.ScreenVisible)
+    }
+    LaunchedEffect(Unit) {
+        mapViewModel.effect.collect {
+            when(it) {
+                is MapEffect.FirstPointInPathEffect -> {
+                    mapViewModel.mapState.apply {
+                        addMarker(
+                            id = "pathid1",
+                            x = it.x,
+                            y = it.y,
+                            clickableAreaScale = Offset(1.3f, 1.3f),
+                        ) {
+                            RoomMarker(
+                                rooms = null,
+                                pinColor = Color.Blue,
+                                textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        onMarkerClick { id, x, y ->
+                            mapViewModel.mapState.getPathData("pathId")?.size?.let { size ->
+                                if(size > 2) {
+                                    mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
+                                    mapViewModel.mapState.addCallout(
+                                        id = "pathId",
+                                        x = x,
+                                        y = y,
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .wrapContentSize()
+                                                .padding(vertical = 4.dp, horizontal = 4.dp)
+                                                .clickable {
+                                                    mapViewModel.onIntent(MapAction.ShowSaveAreaDialog)
+                                                }
+                                                .background(Color.White)
+                                                .clip(RoundedCornerShape(4.dp)),
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            Text(
+                                                text = "Сохранить",
+                                                modifier = Modifier.padding(horizontal = 16.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (mapModelState.saveAreaDialogState.isVisible) {
+        SaveDialog(
+            dialogState = mapModelState.saveAreaDialogState,
+            onNameChange = { name ->
+                mapViewModel.onIntent(MapAction.UpdateAreaName(name))
+            },
+            onSave = {
+                mapViewModel.onIntent(MapAction.SaveArea)
+            },
+            onCancel = {
+                mapViewModel.onIntent(MapAction.HideSaveAreaDialog)
+            }
+        )
     }
 
     MapScreenWithFlatModalSheet(
@@ -230,68 +321,109 @@ fun MapScreen(
                     )
                 }
 
-                Column(Modifier.fillMaxWidth().wrapContentHeight()) {
-                    Spacer(Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center
+                if (mapModelState.isMapAreaActive) {
+                    Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        MessageSnackbar(
+                            modifier = Modifier
+                                .padding(horizontal = 6.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            message = "Кликай по карте, рисуя контур, замкни его нажав на первую точку\nЧтобы сохранить нажми на маркер",
+                            color = Color(0xFF2b64ad).copy(alpha = 0.8f)
+                            )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 56.dp + 6.dp)
+                            .padding(bottom = 6.dp)
                     ) {
-                        Button(
-                            contentPadding = ButtonDefaults.TextButtonContentPadding,
-                            onClick = {
-                                listViewModel.onIntent(
-                                    FlatListScreenAction.SearchFlats(
-                                        isLoadMore = false,
-                                        isRefreshing = true
-                                    )
-                                )
-                            }) {
-                            Text("Обновить")
-                        }
-                        Spacer(Modifier.width(10.dp))
-                        Button(
-                            contentPadding = ButtonDefaults.TextButtonContentPadding,
-                            enabled = listState.noFlatsToLoadMore.not() && isMarkersSizeTooBig.not(),
-                            colors = ButtonDefaults.buttonColors().copy(
-                                disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(
-                                    alpha = 0.7f
-                                ),
-                                disabledContentColor = ButtonDefaults.buttonColors().contentColor.copy(
-                                    alpha = 0.5f
-                                )
-                            ),
-                            onClick = {
-                                listViewModel.onIntent(
-                                    FlatListScreenAction.SearchFlats(true)
-                                )
-                            }) {
-                            Text("Загрузить больше")
+                        Row(horizontalArrangement = Arrangement.Center) {
+                            ActionButton("Выход") {
+                                mapViewModel.onIntent(MapAction.ClickOnMapArea)
+                            }
                         }
                     }
-                }
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 56.dp + 6.dp)
-                ) {
-                    if (listState.noFlatsToLoadMore) {
-                        Text(
-                            modifier = Modifier.padding(10.dp),
-                            text = "Квартиры с текущими фильтрами закончились",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            color = Color.DarkGray
-                        )
+                } else {
+                    Column(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncImage(
+                                model = Res.getUri("drawable/area_on_map.png"),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clickable {
+                                        mapViewModel.onIntent(MapAction.ClickOnMapArea)
+                                    }
+                            )
+
+                            // Кнопки по центру
+                            Row(horizontalArrangement = Arrangement.Center) {
+                                Button(
+                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                                    onClick = {
+                                        listViewModel.onIntent(
+                                            FlatListScreenAction.SearchFlats(
+                                                isLoadMore = false,
+                                                isRefreshing = true
+                                            )
+                                        )
+                                    }) {
+                                    Text("Обновить")
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Button(
+                                    contentPadding = ButtonDefaults.TextButtonContentPadding,
+                                    enabled = listState.noFlatsToLoadMore.not() && isMarkersSizeTooBig.not(),
+                                    colors = ButtonDefaults.buttonColors().copy(
+                                        disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(
+                                            alpha = 0.7f
+                                        ),
+                                        disabledContentColor = ButtonDefaults.buttonColors().contentColor.copy(
+                                            alpha = 0.5f
+                                        )
+                                    ),
+                                    onClick = {
+                                        listViewModel.onIntent(
+                                            FlatListScreenAction.SearchFlats(true)
+                                        )
+                                    }) {
+                                    Text("Загрузить больше")
+                                }
+                            }
+
+                            // Пустой элемент для балансировки (чтобы кнопки были по центру)
+                            Spacer(Modifier.size(24.dp).padding(end = 16.dp))
+                        }
                     }
-                    if (isMarkersSizeTooBig) {
-                        Text(
-                            modifier = Modifier.padding(10.dp),
-                            text = "Слишком много объектов на карте, отображена только часть," +
-                                    " добавьте фильтры или нажмите кнопку обновить",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            color = Color.DarkGray
-                        )
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 56.dp + 6.dp)
+                    ) {
+                        if (listState.noFlatsToLoadMore) {
+                            Text(
+                                modifier = Modifier.padding(10.dp),
+                                text = "Квартиры с текущими фильтрами закончились",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                color = Color.DarkGray
+                            )
+                        }
+                        if (isMarkersSizeTooBig) {
+                            Text(
+                                modifier = Modifier.padding(10.dp),
+                                text = "Слишком много объектов на карте, отображена только часть," +
+                                        " добавьте фильтры или нажмите кнопку обновить",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                color = Color.DarkGray
+                            )
+                        }
                     }
                 }
             }
@@ -339,14 +471,15 @@ fun RoomMarker(
                 .border(borderWidth, pinColor, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            val roomText = if (rooms == null) "-" else "$rooms"
-            Text(
-                text = roomText,
-                color = textColor,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 1
-            )
+            rooms?.let {
+                Text(
+                    text = rooms.toString(),
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
+                )
+            }
         }
 
         // Треугольный хвостик (залит красным)
@@ -404,7 +537,7 @@ fun FlatItemContent(
             val bynMainPrice = flat.priceUsd == null && flat.priceByn != null
             val mainPriceText = if (bynMainPrice) {
                 formatMainPrice(flat.priceByn, "BYN")
-            } else if(flat.priceUsd != null) {
+            } else if (flat.priceUsd != null) {
                 formatMainPrice(flat.priceUsd)
             } else "Цена не указана"
 

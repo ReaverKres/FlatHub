@@ -50,7 +50,7 @@ data class AddressUiState(
 )
 
 @Immutable
-data class FilterDialogState(
+data class SaveDialogState(
     val isVisible: Boolean = false,
     val filterName: String = "",
     val isNameValid: Boolean = true,
