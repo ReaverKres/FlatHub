@@ -17,7 +17,15 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.viewmodel.base.BaseMviViewModel
-import io.flatzen.viewmodel.list.FlatListEvents.*
+import io.flatzen.viewmodel.list.FlatListEvents.AllFlatsLoaded
+import io.flatzen.viewmodel.list.FlatListEvents.DbFlatsLoaded
+import io.flatzen.viewmodel.list.FlatListEvents.ErrorDialogHidden
+import io.flatzen.viewmodel.list.FlatListEvents.ErrorDialogShowed
+import io.flatzen.viewmodel.list.FlatListEvents.FlatUpdateInFavorite
+import io.flatzen.viewmodel.list.FlatListEvents.InfoDialogShowed
+import io.flatzen.viewmodel.list.FlatListEvents.IsAnyFilterApplied
+import io.flatzen.viewmodel.list.FlatListEvents.ScrollToTop
+import io.flatzen.viewmodel.list.FlatListEvents.ViewToggled
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
@@ -39,7 +47,7 @@ import repository.mergedrepo.MergedRepository
 import repository.userpreferences.UserPreferencesRepository
 
 sealed interface FlatListScreenAction : MviAction {
-    data object ScrollToTop: FlatListScreenAction
+    data object ScrollToTop : FlatListScreenAction
     class SearchFlats(
         val isLoadMore: Boolean,
         val isLoadMoreForce: Boolean = false,
@@ -67,7 +75,7 @@ sealed interface FlatListScreenAction : MviAction {
 }
 
 sealed interface FlatListEvents : MviEvent {
-    data object ScrollToTop: FlatListEvents
+    data object ScrollToTop : FlatListEvents
     data class AllFlatsLoaded(
         val allFlats: LCE<List<AppFlat>>,
         val isLoadMore: Boolean,
@@ -75,7 +83,12 @@ sealed interface FlatListEvents : MviEvent {
     ) :
         FlatListEvents
 
-    data class FlatUpdateInFavorite(val flat: LCE<AppFlat?>) : FlatListEvents
+    data class FlatUpdateInFavorite(
+        val flat: LCE<AppFlat?>,
+        val flatPlatform: FlatPlatform,
+        val adId: Long
+    ) : FlatListEvents
+
     data class DbFlatsLoaded(val dbFlats: LCE<List<AppFlat>>) : FlatListEvents
     class IsAnyFilterApplied(val applied: Boolean) : FlatListEvents
     class ViewToggled(val isListView: Boolean) : FlatListEvents
@@ -92,7 +105,7 @@ sealed interface FlatListEvents : MviEvent {
 }
 
 sealed interface FlatListEffect : MviEffect {
-    data object ScrollToTop: FlatListEffect
+    data object ScrollToTop : FlatListEffect
 }
 
 class FlatSearchViewModel(
@@ -154,6 +167,7 @@ class FlatSearchViewModel(
             is FlatListScreenAction.ScrollToTop -> {
                 flowOf(ScrollToTop)
             }
+
             is FlatListScreenAction.ScreenVisible -> {
                 val lastNet = filterRepository.lastNetworkFilter
                 // First, check and apply selected saved filter if exists
@@ -226,7 +240,7 @@ class FlatSearchViewModel(
                 if (action.isLoadMore) {
                     filterRepository.currentAppPage++
                 }
-                if(action.isLoadMore.not()) {
+                if (action.isLoadMore.not()) {
                     onIntent(FlatListScreenAction.ScrollToTop)
                 }
                 loadAllFlats(action.isLoadMore, action.isRefreshing)
@@ -234,7 +248,7 @@ class FlatSearchViewModel(
 
             is FlatListScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).asLCE().map {
-                    FlatUpdateInFavorite(it)
+                    FlatUpdateInFavorite(it, action.flatPlatform, action.adId)
                 }
             }
 
@@ -356,22 +370,43 @@ class FlatSearchViewModel(
                 currentState.copy(isAnyFilterApplied = event.applied)
             }
 
-            is FlatUpdateInFavorite -> event.flat.process(
-                onLoading = { currentState },
-                onError = { _, _ -> currentState },
-                onSuccess = { updatedFlat ->
-                    val updatedList = currentState.flatList.map { uiFlat ->
-                        if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
-                            uiFlat.copy(
-                                savedInFavorite = updatedFlat.savedInFavorites
-                            )
+            is FlatUpdateInFavorite -> {
+                val detailFlatAccessible = currentState.flatList.find {
+                    it.adId == event.adId && it.flatPlatform == event.flatPlatform
+                }?.isDetailDataLoaded == true
+                event.flat.process(
+                    onLoading = {
+                        if (detailFlatAccessible) {
+                            currentState
                         } else {
-                            uiFlat
+                            val updatedList = currentState.flatList.map { uiFlat ->
+                                if (uiFlat.adId == event.adId && event.flatPlatform == uiFlat.flatPlatform) {
+                                    uiFlat.copy(
+                                        saveInFavoriteInProgress = true
+                                    )
+                                } else {
+                                    uiFlat
+                                }
+                            }
+                            currentState.copy(flatList = updatedList)
                         }
+                    },
+                    onError = { _, _ -> currentState },
+                    onSuccess = { updatedFlat ->
+                        val updatedList = currentState.flatList.map { uiFlat ->
+                            if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
+                                uiFlat.copy(
+                                    savedInFavorite = updatedFlat.savedInFavorites,
+                                    saveInFavoriteInProgress = false
+                                )
+                            } else {
+                                uiFlat
+                            }
+                        }
+                        currentState.copy(flatList = updatedList)
                     }
-                    currentState.copy(flatList = updatedList)
-                }
-            )
+                )
+            }
 
             is DbFlatsLoaded -> event.dbFlats.process(
                 onLoading = { currentState },
@@ -441,6 +476,7 @@ class FlatSearchViewModel(
                     errorDialogState = null
                 )
             }
+
             is ScrollToTop -> currentState
         }
     }

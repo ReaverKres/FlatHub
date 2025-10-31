@@ -367,7 +367,7 @@ fun HomeScreen(
                         }
                 ) {
                     Text(
-                        modifier = Modifier.align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 2.dp),
                         text = "Квартиры с текущими фильтрами закончились",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium,
@@ -799,6 +799,7 @@ private fun GridFlatCard(
                 imageUrls = flat.imageUrls,
                 isViewed = flat.isViewed,
                 savedInFavorite = flat.savedInFavorite,
+                saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
                 clickOnFavorite = clickOnFavorite
             )
 
