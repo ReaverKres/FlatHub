@@ -43,20 +43,27 @@ class MergedRepositoryImpl(
     override fun searchFlats(): Flow<MergedFlatResponse> {
         val filter = filterRepository.lastFilter()
 
-        val finalFlow = if (filter.isRoomForRent) {
-            kufarRepository.searchFlats()
-                .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
-                    listOf(kufarList, onlinerList)
-                }
-        } else if (filter.isCommercial || filter.adType == AdType.DAILY) {
-            kufarRepository.searchFlats().map { listOf(it) }
-        } else {
-            kufarRepository.searchFlats()
-                .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
-                    listOf(kufarList, onlinerList)
-                }
-                .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
-                .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+        val finalFlow = when {
+            filter.isRoomForRent -> {
+                kufarRepository.searchFlats()
+                    .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
+                        listOf(kufarList, onlinerList)
+                    }
+            }
+            filter.isCommercial -> {
+                kufarRepository.searchFlats().map { listOf(it) }
+            }
+            filter.adType == AdType.DAILY -> {
+                kufarRepository.searchFlats()
+                    .zip(realtRepository.searchFlats()) { k, r -> listOf(k, r) }
+            }
+            else -> {
+                kufarRepository.searchFlats()
+                    .zip(onlinerRepository.searchFlats())
+                    { kufarList, onlinerList -> listOf(kufarList, onlinerList) }
+                    .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
+                    .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+            }
         }
         return finalFlow.mapLatest { networkFlats ->
             val appFlats: MutableList<AppFlat> = mutableListOf()

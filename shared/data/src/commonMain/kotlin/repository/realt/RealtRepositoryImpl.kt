@@ -24,12 +24,12 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
+import server_request.Currency
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
 class RealtRepositoryImpl(
@@ -55,7 +55,16 @@ class RealtRepositoryImpl(
             else -> RealtCities.MINSK
         }
 
-        val category = if (filter.isRentType) 2 else 5
+        val category = when {
+            filter.isRentType -> 2
+            filter.adType == AdType.DAILY -> 1
+            else -> 5
+        }
+        val priceType: String = if (filter.currency == Currency.BYR) {
+            "933"
+        } else {
+            "840"
+        }
         val priceMax = when {
             filter.priceFull != null -> filter.priceFull.priceTo
             filter.adType == AdType.SALE -> filter.pricePerSquare?.priceTo
@@ -81,17 +90,14 @@ class RealtRepositoryImpl(
                                 seller = onlyOwner.toString(), // Только собственники
                                 priceFrom = priceMin.toNullableString(), // Цена от (можно null если не нужно)
                                 priceTo = priceMax.toNullableString(), // Цена до (можно null если не нужно)
-                                priceType = "840" // Валюта (840 = USD)
+                                priceType = priceType
                             ),
                             pagination = PaginationRequestRealt(
                                 page = filterRepository.currentAppPage, pageSize = 30
                             ),
                             sort = when (filter.sortOption) {
                                 FlatSort.NEWEST_FIRST -> listOf(
-                                    SortItem("paymentStatus", "DESC"),
-                                    SortItem("priority", "DESC"),
-                                    SortItem("raiseDate", "DESC"),
-                                    SortItem("updatedAt", "DESC")
+                                    SortItem("newAgainDate", "DESC")
                                 )
                                 FlatSort.CHEAPEST_FIRST -> listOf(
                                     SortItem("price", "ASC")
