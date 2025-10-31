@@ -50,10 +50,7 @@ class MergedRepositoryImpl(
                         listOf(kufarList, onlinerList)
                     }
             }
-            filter.isCommercial -> {
-                kufarRepository.searchFlats().map { listOf(it) }
-            }
-            filter.adType == AdType.DAILY -> {
+            filter.isCommercial || filter.adType == AdType.DAILY -> {
                 kufarRepository.searchFlats()
                     .zip(realtRepository.searchFlats()) { k, r -> listOf(k, r) }
             }

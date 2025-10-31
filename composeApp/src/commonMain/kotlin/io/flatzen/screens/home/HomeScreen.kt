@@ -808,7 +808,7 @@ private fun GridFlatCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val mainPriceText = if (flat.adType == AdType.DAILY && flat.priceByn != null) {
+                val mainPriceText = if (flat.priceUsd == null && flat.priceByn != null) {
                     formatMainPrice(flat.priceByn, "BYN")
                 } else if(flat.priceUsd != null) {
                     formatMainPrice(flat.priceUsd)
