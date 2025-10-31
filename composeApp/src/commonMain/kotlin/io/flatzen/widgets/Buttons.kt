@@ -154,6 +154,29 @@ fun RentSaleButtons(
 }
 
 @Composable
+fun ActionButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF2b64ad).copy(alpha = 0.8f),
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    ) {
+//            Icon(
+//                imageVector = rentIcon,
+//                contentDescription = null,
+//                modifier = Modifier.padding(end = 8.dp)
+//            )
+//            Spacer(Modifier.width(6.dp))
+        Text(text = text, maxLines = 1)
+    }
+}
+
+@Composable
 private fun AdTypeButton(
     modifier: Modifier,
     adType: AdType,
@@ -172,7 +195,11 @@ private fun AdTypeButton(
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
             },
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            contentColor = if (selectedAdType == AdType) {
+                Color.White
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
         )
     ) {
 //            Icon(

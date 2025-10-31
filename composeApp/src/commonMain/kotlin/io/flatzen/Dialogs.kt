@@ -43,26 +43,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.entities.SingleChoiceEntity
-import io.flatzen.viewmodel.filter.FilterDialogState
+import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 
 @Composable
-fun SaveFilterDialog(
-    dialogState: FilterDialogState,
+fun SaveDialog(
+    dialogState: SaveDialogState,
+    title: String = "Сохранить фильтр",
+    textFieldHint: String = "Название фильтра",
+    validationHint: String = "Название фильтра не должно превышать 25 символов",
+    saveBtnText: String = "Сохранить",
+    cancelBtnText: String = "Отменить",
     onNameChange: (String) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text("Сохранить фильтр") },
+        title = { Text(title) },
         text = {
             Column {
                 OutlinedTextField(
                     value = dialogState.filterName,
                     onValueChange = onNameChange,
-                    label = { Text("Название фильтра") },
+                    label = { Text(textFieldHint) },
                     isError = !dialogState.isNameValid,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -75,7 +80,7 @@ fun SaveFilterDialog(
                     )
                 }
                 Text(
-                    text = "Название фильтра не должно превышать 25 символов",
+                    text = validationHint,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
@@ -87,12 +92,12 @@ fun SaveFilterDialog(
                 onClick = onSave,
                 enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
             ) {
-                Text("Сохранить")
+                Text(saveBtnText)
             }
         },
         dismissButton = {
             TextButton(onClick = onCancel) {
-                Text("Отменить")
+                Text(cancelBtnText)
             }
         }
     )

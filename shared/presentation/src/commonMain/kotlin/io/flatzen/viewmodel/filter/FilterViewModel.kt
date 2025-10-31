@@ -72,7 +72,7 @@ sealed interface FilterScreenAction : MviAction {
 data class FilterScreenState(
     val filters: FilterState,
     val savedFilters: List<SavedFilterState> = emptyList(),
-    val dialogState: FilterDialogState = FilterDialogState()
+    val saveDialogState: SaveDialogState = SaveDialogState()
 ) : MviState
 
 // Events
@@ -84,7 +84,7 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FilterSaved(val filterId: Long) : FilterScreenEvent
     data class FilterDeleted(val filterId: Long) : FilterScreenEvent
     data class FilterApplied(val filter: SavedFilter) : FilterScreenEvent
-    data class DialogStateUpdated(val dialogState: FilterDialogState) : FilterScreenEvent
+    data class DialogStateUpdated(val dialogState: SaveDialogState) : FilterScreenEvent
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
 }
 
@@ -202,7 +202,7 @@ class FilterViewModel(
             is FilterScreenAction.ShowSaveFilterDialog -> {
                 flowOf(
                     FilterScreenEvent.DialogStateUpdated(
-                        currentState.dialogState.copy(isVisible = true)
+                        currentState.saveDialogState.copy(isVisible = true)
                     )
                 )
             }
@@ -210,7 +210,7 @@ class FilterViewModel(
             is FilterScreenAction.HideSaveFilterDialog -> {
                 flowOf(
                     FilterScreenEvent.DialogStateUpdated(
-                        currentState.dialogState.copy(
+                        currentState.saveDialogState.copy(
                             isVisible = false,
                             filterName = "",
                             isNameValid = true,
@@ -229,7 +229,7 @@ class FilterViewModel(
                 }
                 flowOf(
                     FilterScreenEvent.DialogStateUpdated(
-                        currentState.dialogState.copy(
+                        currentState.saveDialogState.copy(
                             filterName = action.name,
                             isNameValid = isNameValid,
                             errorMessage = errorMessage
@@ -241,13 +241,13 @@ class FilterViewModel(
             is FilterScreenAction.SaveFilter -> {
                 val currentFilter = mapFilterStateToFilterModel(currentState.filters)
                 val filterId = filterRepository.saveFilter(
-                    currentState.dialogState.filterName,
+                    currentState.saveDialogState.filterName,
                     currentFilter
                 )
                 flowOf(
                     FilterScreenEvent.FilterSaved(filterId),
                     FilterScreenEvent.DialogStateUpdated(
-                        currentState.dialogState.copy(
+                        currentState.saveDialogState.copy(
                             isVisible = false,
                             filterName = "",
                             isNameValid = true,
@@ -371,7 +371,7 @@ class FilterViewModel(
             }
 
             is FilterScreenEvent.DialogStateUpdated -> {
-                currentState.copy(dialogState = event.dialogState)
+                currentState.copy(saveDialogState = event.dialogState)
             }
 
             is FilterScreenEvent.SavedFilterSelectionUpdated -> {

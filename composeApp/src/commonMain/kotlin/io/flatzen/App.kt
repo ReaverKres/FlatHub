@@ -1,14 +1,14 @@
 package io.flatzen
 
 import DetailScreen
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -31,16 +31,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import io.flatzen.animations.animatedComposable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.serialization.Serializable
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
 import io.flatzen.screens.home.HomeScreen
@@ -48,35 +50,12 @@ import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
-
-import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.FaqScreen
+import io.flatzen.screens.more.MoreScreen
+import io.flatzen.widgets.MessageSnackbar
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import io.flatzen.widgets.ErrorSnackbar
-import androidx.navigation.navDeepLink
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.ui.unit.IntOffset
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import io.flatzen.animations.animatedComposable
-import kotlin.jvm.JvmSuppressWildcards
-import kotlin.reflect.KType
 
 @Serializable
 object ListScreenDestination
@@ -350,7 +329,7 @@ fun App() {
                                 snackbarHeight = with(density) { layout.height.toDp() }
                             }
                     ) {
-                        ErrorSnackbar(message = "Нет подключения к интернету")
+                        MessageSnackbar(message = "Нет подключения к интернету")
                     }
                 }
             }

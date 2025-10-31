@@ -24,7 +24,7 @@ import io.flatzen.viewmodel.list.FlatListEvents.ErrorDialogShowed
 import io.flatzen.viewmodel.list.FlatListEvents.FlatUpdateInFavorite
 import io.flatzen.viewmodel.list.FlatListEvents.InfoDialogShowed
 import io.flatzen.viewmodel.list.FlatListEvents.IsAnyFilterApplied
-import io.flatzen.viewmodel.list.FlatListEvents.ScrollToTop
+import io.flatzen.viewmodel.list.FlatListEvents.ScrollToTopEffect
 import io.flatzen.viewmodel.list.FlatListEvents.ViewToggled
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
@@ -75,7 +75,7 @@ sealed interface FlatListScreenAction : MviAction {
 }
 
 sealed interface FlatListEvents : MviEvent {
-    data object ScrollToTop : FlatListEvents
+    data object ScrollToTopEffect : FlatListEvents
     data class AllFlatsLoaded(
         val allFlats: LCE<List<AppFlat>>,
         val isLoadMore: Boolean,
@@ -165,7 +165,7 @@ class FlatSearchViewModel(
     ): Flow<FlatListEvents> {
         return when (action) {
             is FlatListScreenAction.ScrollToTop -> {
-                flowOf(ScrollToTop)
+                flowOf(ScrollToTopEffect)
             }
 
             is FlatListScreenAction.ScreenVisible -> {
@@ -477,7 +477,7 @@ class FlatSearchViewModel(
                 )
             }
 
-            is ScrollToTop -> currentState
+            is ScrollToTopEffect -> currentState
         }
     }
 
@@ -529,7 +529,7 @@ class FlatSearchViewModel(
 
     override suspend fun onEvent(event: FlatListEvents): FlatListEffect? {
         return when (event) {
-            ScrollToTop -> FlatListEffect.ScrollToTop
+            ScrollToTopEffect -> FlatListEffect.ScrollToTop
             else -> super.onEvent(event)
         }
     }

@@ -43,7 +43,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.SaveFilterDialog
+import io.flatzen.SaveDialog
 import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -519,9 +519,9 @@ fun FilterScreen(
     }
 
     // Диалог сохранения фильтра
-    if (state.dialogState.isVisible) {
-        SaveFilterDialog(
-            dialogState = state.dialogState,
+    if (state.saveDialogState.isVisible) {
+        SaveDialog(
+            dialogState = state.saveDialogState,
             onNameChange = { name ->
                 viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
             },
