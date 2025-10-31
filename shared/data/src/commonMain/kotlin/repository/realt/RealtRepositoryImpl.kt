@@ -95,12 +95,10 @@ class RealtRepositoryImpl(
         }
         val priceMax = when {
             filter.priceFull != null -> filter.priceFull.priceTo
-            filter.adType == AdType.SALE -> filter.pricePerSquare?.priceTo
             else -> null
         }
         val priceMin = when {
             filter.priceFull != null -> filter.priceFull.priceFrom
-            filter.adType == AdType.SALE -> filter.pricePerSquare?.priceFrom
             else -> null
         }
 
