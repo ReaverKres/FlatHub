@@ -83,39 +83,45 @@ fun RentSaleButtons(
             horizontalArrangement = Arrangement.Start,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            AdTypeButton(
-                modifier = Modifier
-                    .height(44.dp)
-                    .weight(1f, fill = false),
-                adType = AdType.RENT,
-                adTypeBtnText = "Аренда",
-                onClick = onClick,
-                selectedAdType = selectedAdType
-            )
+            Row {
+                AdTypeButton(
+                    modifier = Modifier
+                        .height(44.dp)
+                        .weight(1f, fill = false),
+                    adType = AdType.RENT,
+                    adTypeBtnText = "Аренда",
+                    onClick = onClick,
+                    selectedAdType = selectedAdType
+                )
 
-            Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(16.dp))
+            }
 
-            AdTypeButton(
-                modifier = Modifier
-                    .height(44.dp)
-                    .weight(1f, fill = false),
-                adType = AdType.SALE,
-                adTypeBtnText = "Продажа",
-                onClick = onClick,
-                selectedAdType = selectedAdType
-            )
-            Spacer(Modifier.width(16.dp))
+            Row {
+                AdTypeButton(
+                    modifier = Modifier
+                        .height(44.dp)
+                        .weight(1f, fill = false),
+                    adType = AdType.SALE,
+                    adTypeBtnText = "Продажа",
+                    onClick = onClick,
+                    selectedAdType = selectedAdType
+                )
+                Spacer(Modifier.width(16.dp))
+            }
 
-            AdTypeButton(
-                modifier = Modifier
-                    .height(44.dp)
-                    .weight(1f, fill = false),
-                adType = AdType.DAILY,
-                adTypeBtnText = "Посуточно",
-                onClick = onClick,
-                selectedAdType = selectedAdType
-            )
-            Spacer(Modifier.width(16.dp))
+            Row {
+                AdTypeButton(
+                    modifier = Modifier
+                        .height(44.dp)
+                        .weight(1f, fill = false),
+                    adType = AdType.DAILY,
+                    adTypeBtnText = "Посуточно",
+                    onClick = onClick,
+                    selectedAdType = selectedAdType
+                )
+                Spacer(Modifier.width(16.dp))
+            }
             // Обертка для группировки кнопки и карточки
             Row(
                 modifier = Modifier.wrapContentWidth()

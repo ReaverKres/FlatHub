@@ -199,29 +199,28 @@ class KufarRepositoryImpl(
 
             when (request) {
                 is NetworkResponseWrapper.Success -> {
-//                    pageCursor = request.data.pagination?.pages
-//                        ?.getOrNull(filterRepository.currentAppPage)
-//                        ?.token
 
                     val kufarUsualFlatList = request.data.rentalObjects
                         ?.filterNotNull()
-                        ?.map { kufarDailyResponseMapper.map(it.copy(appCity = currentCityName)) }
+                        ?.map {
+                            mapDailyFlat(it, currentCityName)
+                        }
                         .orEmpty()
                     val kufarPoleFlatList = request.data.polePosition
                         ?.filterNotNull()
-                        ?.map { kufarDailyResponseMapper.map(it) }
+                        ?.map {
+                            mapDailyFlat(it, currentCityName)
+                        }
                         .orEmpty()
                     val kufarFlatList = kufarUsualFlatList + kufarPoleFlatList
-                    val filteredKufarList = kufarFlatList.filter { item1 ->
-                        lastEmitList?.none { item2 -> item1.adId == item2.adId } ?: false
-                    }
 
-                    if (filteredKufarList.isEmpty()) {
+                    if (kufarFlatList.isEmpty() || (request.data.paginator?.page ?: -1) >=
+                        (request.data.paginator?.pages ?: -1)
+                    ) {
                         emit(networkEmptyList)
                     } else {
-                        emit(NetworkResponseWrapper.success(filteredKufarList))
+                        emit(NetworkResponseWrapper.success(kufarFlatList))
                     }
-                    lastEmitList = kufarFlatList
                 }
 
                 is NetworkResponseWrapper.Error -> {
@@ -253,6 +252,16 @@ class KufarRepositoryImpl(
             //            emit(networkEmptyList)
         }
     }
+
+    private fun mapDailyFlat(
+        rentalObject: KufarDailyListResponse.RentalObject,
+        currentCityName: String?
+    ): AppFlat = kufarDailyResponseMapper.map(
+        rentalObject.copy(
+            appCity = currentCityName,
+            currentPage = filterRepository.currentAppPage
+        )
+    )
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
         getFlatByIdFromDb(flatId, flatsDao)

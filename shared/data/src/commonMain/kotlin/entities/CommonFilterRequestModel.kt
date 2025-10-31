@@ -158,7 +158,8 @@ data class CommonFilterRequestModel(
         if (pricePerSquare != other.pricePerSquare) return false
         if (!isFromOwnerOnlyEqual) return false
         if (priceType != other.priceType) return false
-        if (currency != other.currency) return false
+        //TODO
+//        if (currency != other.currency) return false
         if (addressRequestModel != other.addressRequestModel) return false
         if (numberOfRooms != other.numberOfRooms) return false
         if (thisSelectedMetro != otherSelectedMetro) return false
@@ -179,7 +180,8 @@ data class CommonFilterRequestModel(
         result = 31 * result + roomOnly.hashCode()
         result = 31 * result + withPhotoOnly.hashCode()
         result = 31 * result + adType.hashCode()
-        result = 31 * result + currency.hashCode()
+        //TODO
+//        result = 31 * result + currency.hashCode()
         result = 31 * result + priceType.hashCode()
         result = 31 * result + addressRequestModel.hashCode()
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)

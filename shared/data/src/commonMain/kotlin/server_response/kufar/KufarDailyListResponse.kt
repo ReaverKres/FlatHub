@@ -28,6 +28,8 @@ data class KufarDailyListResponse(
     @Serializable
     data class RentalObject(
         val appCity: String?,
+        //TODO java.lang.IllegalArgumentException: Key "1030745363" was already used. If you are using LazyColumn/Row please make sure you provide a unique key for each item.
+        val currentPage: Int = 1,
         @SerialName("ad_id")
         val adId: Int?,
         @SerialName("ad_snapshot")

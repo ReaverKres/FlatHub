@@ -25,7 +25,7 @@ class KufarDailyFlatMapper :
             ?: "https://travel.kufar.by/vi/$cityName/${rentalObject.adId}"
 
         return AppFlat(
-            adId = rentalObject.adId?.toLong() ?: -1L,
+            adId = ((rentalObject.adId ?: -1) + rentalObject.currentPage).toLong(),
             flatDevInfo = FlatDevInfo(
                 isDetailData = true,
                 isDetailLoaded = true

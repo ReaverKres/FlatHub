@@ -16,7 +16,11 @@ import kotlin.time.ExperimentalTime
 class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
-        val urlPath = if (response.adType == AdType.RENT) "rent-flat-for-long" else "sale-flats"
+        val urlPath = when (response.adType) {
+            AdType.RENT -> "rent-flat-for-long"
+            AdType.DAILY -> "rent-flat-for-day"
+            else -> "sale-flats"
+        }
         return AppFlat(
             flatPlatform = FlatPlatform.REALT,
             flatDevInfo = FlatDevInfo(
@@ -32,8 +36,12 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                 TimeZone.currentSystemDefault()
             ),
             imageUrls = response.images?.filterNotNull().orEmpty(),
-            priceUsd = response.price?.toDouble(),
-            priceByn = null, //(response.price?.toDouble() ?: 0.0) * 3.3, // примерный курс
+            priceUsd = response.price?.toDouble().takeIf {
+                response.priceCurrency == 840
+            },
+            priceByn = response.price?.toDouble().takeIf {
+                response.priceCurrency == 933
+            },
             rooms = response.rooms,
             district = response.stateDistrictName,
             address = listOfNotNull(response.streetName, response.buildingNumber).joinToString(" "),
