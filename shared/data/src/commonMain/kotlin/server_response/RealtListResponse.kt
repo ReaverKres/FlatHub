@@ -2,6 +2,7 @@ package server_response
 
 
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -75,6 +76,7 @@ class RealtListResponse {
                     @Serializable
                     data class RealtFlatResponse(
                         val adType: AdType = AdType.RENT,
+                        val commercialPropertyType: CommercialPropertyType?,
                         @SerialName("address")
                         val address: String?,
                         @SerialName("agencyName")

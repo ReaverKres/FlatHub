@@ -16,6 +16,8 @@ import database.FlatsDao
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.extensions.toNullableString
@@ -58,6 +60,32 @@ class RealtRepositoryImpl(
         val category = when {
             filter.isRentType -> 2
             filter.adType == AdType.DAILY -> 1
+            filter.isCommercial -> {
+                when (filter.commercial?.commercialPropertyType) {
+                    CommercialPropertyType.All -> {
+                        emit(networkEmptyList)
+                        return@flow
+                    }
+                    CommercialPropertyType.Industrial -> if (filter.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) 23 else 29
+                    CommercialPropertyType.Office -> if (filter.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) 19 else 20
+                    CommercialPropertyType.Other -> {
+                        emit(networkEmptyList)
+                        return@flow
+                    }
+                    CommercialPropertyType.Retail -> if (filter.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) 17 else 18
+                    CommercialPropertyType.Services -> if (filter.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) 25 else 31
+                    CommercialPropertyType.Warehouses -> if (filter.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) 22 else 28
+                    null -> {
+                        emit(networkEmptyList)
+                        return@flow
+                    }
+                }
+            }
             else -> 5
         }
         val priceType: String = if (filter.currency == Currency.BYR) {
@@ -117,7 +145,10 @@ class RealtRepositoryImpl(
                 is NetworkResponseWrapper.Success -> {
                     val flats = request.data.data?.searchObjects?.body?.results
                         ?.filterNotNull()
-                        ?.map { realtResponseMapper.map(it.copy(adType = filter.adType)) }
+                        ?.map { realtResponseMapper.map(it.copy(
+                            commercialPropertyType = filter.commercial?.commercialPropertyType,
+                            adType = filter.adType
+                        )) }
                         .orEmpty()
 
                     if (lastEmitList == flats) {

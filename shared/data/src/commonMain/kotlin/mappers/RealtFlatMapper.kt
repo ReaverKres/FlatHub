@@ -4,8 +4,11 @@ import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
@@ -16,9 +19,26 @@ import kotlin.time.ExperimentalTime
 class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
-        val urlPath = when (response.adType) {
-            AdType.RENT -> "rent-flat-for-long"
-            AdType.DAILY -> "rent-flat-for-day"
+        val urlPath = when {
+            response.adType == AdType.RENT -> "rent-flat-for-long"
+            response.adType == AdType.DAILY -> "rent-flat-for-day"
+            response.adType.isCommercial -> {
+                when (response.commercialPropertyType) {
+                    CommercialPropertyType.All -> null
+                    CommercialPropertyType.Industrial -> if (response.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) "rent-proizvodstvo" else "sale-proizvodstvo"
+                    CommercialPropertyType.Office -> if (response.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) "rent-offices" else "sale-offices"
+                    CommercialPropertyType.Other -> null
+                    CommercialPropertyType.Retail -> if (response.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) "rent-shops" else "sale-shops"
+                    CommercialPropertyType.Services -> if (response.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) "rent-services" else "sale-services"
+                    CommercialPropertyType.Warehouses -> if (response.adType == AdType.COMMERCIAL(
+                            CommercialAdType.RENT)) "rent-warehouses" else "sale-warehouses"
+                    null -> null
+                }
+            }
             else -> "sale-flats"
         }
         return AppFlat(
