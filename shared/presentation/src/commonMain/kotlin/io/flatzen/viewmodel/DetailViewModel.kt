@@ -43,6 +43,7 @@ data class UiDetailFlat(
     val platform: FlatPlatform,
     val isDetailDataLoaded: Boolean?,
     val savedInFavorite: Boolean,
+    val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
     val commercialUiInfo: CommercialUiInfo?,
     val flatUrl: String,
@@ -120,6 +121,7 @@ data class FlatDetailScreenState(
 
 sealed interface FlatDetailEvents : MviEvent {
     data class FlatLoaded(val flat: LCE<AppFlat>) : FlatDetailEvents
+    data class FlatSavedInFavorite(val flat: LCE<AppFlat>) : FlatDetailEvents
 }
 
 class FlatDetailViewModel(
@@ -159,7 +161,7 @@ class FlatDetailViewModel(
 
             is FlatDetailScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId).map {
-                    FlatDetailEvents.FlatLoaded(flowOf(it!!).asLCE().last())
+                    FlatDetailEvents.FlatSavedInFavorite(flowOf(it!!).asLCE().last())
                 }
             }
 
@@ -195,6 +197,27 @@ class FlatDetailViewModel(
         currentState: FlatDetailScreenState
     ): FlatDetailScreenState {
         return when (event) {
+            is FlatDetailEvents.FlatSavedInFavorite -> {
+                val detailFlatAccessible = currentState.flat?.isDetailDataLoaded == true
+                event.flat.process(
+                    onLoading = {
+                        if (detailFlatAccessible) {
+                            currentState
+                        } else {
+                            currentState.copy(flat = currentState.flat?.copy(saveInFavoriteInProgress = true))
+                        }
+                    },
+                    onError = { message, _ ->
+                        currentState
+                    },
+                    onSuccess = {
+                        currentState.copy(flat = currentState.flat?.copy(
+                            saveInFavoriteInProgress = false,
+                            savedInFavorite = it.savedInFavorites
+                        ))
+                    }
+                )
+            }
             is FlatDetailEvents.FlatLoaded -> event.flat.process(
                 onLoading = {
                     currentState.copy(isLoading = true, error = null)
@@ -224,6 +247,7 @@ class FlatDetailViewModel(
             isDetailDataLoaded = appFlat.flatDevInfo.isDetailLoaded,
             isViewed = true,
             savedInFavorite = appFlat.savedInFavorites,
+            saveInFavoriteInProgress = false,
             platform = appFlat.flatPlatform,
             commercialUiInfo = if (appFlat.commercialInfo?.propertyType != null) {
                 CommercialUiInfo(

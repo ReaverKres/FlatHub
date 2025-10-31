@@ -388,6 +388,7 @@ fun FlatItemContent(
             imageUrls = flat.imageUrls,
             isViewed = flat.isViewed,
             savedInFavorite = flat.savedInFavorite,
+            saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
             clickOnFavorite = clickOnFavorite
         )
 

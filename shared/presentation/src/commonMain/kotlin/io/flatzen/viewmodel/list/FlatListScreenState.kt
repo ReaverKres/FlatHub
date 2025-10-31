@@ -31,8 +31,10 @@ data class UiFlat(
     val adId: Long,
     val adType: AdType,
     val flatPlatform: FlatPlatform,
+    val isDetailDataLoaded: Boolean,
     val commercialUiInfo: CommercialUiInfo?,
     val savedInFavorite: Boolean,
+    val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
     val imageUrls: List<String>,
     val priceUsd: Double?,
@@ -41,7 +43,7 @@ data class UiFlat(
     val publishedAt: String?,
     val metroStation: String?,
     val address: String,
-    val coordinates: Coordinates?
+    val coordinates: Coordinates?,
 ) {
     companion object {
         fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
@@ -50,6 +52,7 @@ data class UiFlat(
                     adId = it.adId,
                     adType = it.getAdTypeNonNull(),
                     flatPlatform = it.flatPlatform,
+                    isDetailDataLoaded = it.flatDevInfo.isDetailLoaded,
                     commercialUiInfo = if (it.commercialInfo?.propertyType != null) {
                         CommercialUiInfo(
                             isCommercialAd = true,
@@ -66,6 +69,7 @@ data class UiFlat(
                     },
                     imageUrls = it.imageUrls ?: listOf(),
                     savedInFavorite = it.savedInFavorites,
+                    saveInFavoriteInProgress = false,
                     isViewed = it.isViewed,
                     priceByn = it.priceByn,
                     priceUsd = it.priceUsd,

@@ -156,6 +156,7 @@ private fun FlatDetailContent(
             imageUrls = flat.imageUrls,
             contentScale = ContentScale.Fit,
             savedInFavorite = flat.savedInFavorite,
+            saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
             clickOnFavorite = clickOnFavorite
         )
 

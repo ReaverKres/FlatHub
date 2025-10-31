@@ -1,5 +1,10 @@
 package io.flatzen.widgets
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,9 +29,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -48,6 +55,7 @@ fun FlatImagePager(
     imageUrls: List<String>,
     contentScale: ContentScale = ContentScale.Crop,
     savedInFavorite: Boolean = false,
+    saveInFavoriteInProgress: Boolean = false,
     isViewed: Boolean = false,
     clickOnFavorite: () -> Unit = {},
 ) {
@@ -59,10 +67,11 @@ fun FlatImagePager(
             contentScale = contentScale,
             isViewed = isViewed,
             savedInFavorite = savedInFavorite,
+            saveInFavoriteInProgress = saveInFavoriteInProgress,
             clickOnFavorite = clickOnFavorite
         )
     } else {
-        FlatEmptyImage(flatPlatform, isViewed, savedInFavorite, clickOnFavorite)
+        FlatEmptyImage(flatPlatform, isViewed, savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
     }
 }
 
@@ -71,6 +80,7 @@ private fun FlatEmptyImage(
     flatPlatform: FlatPlatform,
     isViewed: Boolean,
     savedInFavorite: Boolean,
+    saveInFavoriteInProgress: Boolean,
     clickOnFavorite: () -> Unit
 ) {
     Box(
@@ -85,7 +95,7 @@ private fun FlatEmptyImage(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        AddToFavoriteIcon(savedInFavorite, clickOnFavorite)
+        AddToFavoriteIcon(savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
         PlatformIcon(flatPlatform)
         if (isViewed) {
             EyeIcon()
@@ -102,6 +112,7 @@ private fun ImagePager(
     isViewed: Boolean,
     savedInFavorite: Boolean = false,
     clickOnFavorite: () -> Unit = {},
+    saveInFavoriteInProgress: Boolean,
 ) {
     val pagerState = rememberPagerState { imageUrls.size }
 
@@ -119,7 +130,7 @@ private fun ImagePager(
             )
         }
 
-        AddToFavoriteIcon(savedInFavorite, clickOnFavorite)
+        AddToFavoriteIcon(savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
         PlatformIcon(flatPlatform)
         if (isViewed) {
             EyeIcon()
@@ -152,8 +163,20 @@ private fun ImagePager(
 @Composable
 fun BoxScope.AddToFavoriteIcon(
     savedInFavorite: Boolean = false,
+    saveInFavoriteInProgress: Boolean = false,
     clickOnFavorite: () -> Unit = {}
 ) {
+    val rotation by animateFloatAsState(
+        targetValue = if (saveInFavoriteInProgress) 360f else 0f,
+        animationSpec = if (saveInFavoriteInProgress) {
+            infiniteRepeatable(
+                animation = tween(durationMillis = 1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            )
+        } else {
+            tween(durationMillis = 300)
+        }
+    )
     Icon(
         imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
         contentDescription = "Добавить в избранное",
@@ -163,6 +186,7 @@ fun BoxScope.AddToFavoriteIcon(
             .clickable { clickOnFavorite() }
             .padding(8.dp)
             .size(24.dp)
+            .rotate(rotation)
     )
 }
 
