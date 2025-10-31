@@ -1,14 +1,11 @@
 package io.flatzen
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.FilterDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
@@ -290,10 +286,12 @@ fun <T> SingleChoiceItem(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onSelected(item.type) }
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
                 selected = isSelected,

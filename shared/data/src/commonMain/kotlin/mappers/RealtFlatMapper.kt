@@ -1,6 +1,7 @@
 package mappers
 
 import entities.AppFlat
+import entities.CommercialInfo
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -19,6 +20,13 @@ import kotlin.time.ExperimentalTime
 class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
+        var priceUsd = response.price?.toDouble().takeIf {
+            response.priceCurrency == 840
+        }
+        if(response.priceCurrency == 978) {
+            //TODO получить текущий курс
+            priceUsd = response.price?.times(1.16)
+        }
         val urlPath = when {
             response.adType == AdType.RENT -> "rent-flat-for-long"
             response.adType == AdType.DAILY -> "rent-flat-for-day"
@@ -47,6 +55,10 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                 isDetailData = true,
                 isDetailLoaded = true
             ),
+            commercialInfo = CommercialInfo(
+                numberOfRooms = response.rooms,
+                propertyType = response.commercialPropertyType
+            ),
             flatDetailUrl = "https://realt.by${response.code?.let { "/$urlPath/object/$it" } ?: ""}",
             adId = response.code?.toLong() ?: 0L,
             publishedAt = DateConverter.stringToInstant(response.updatedAt.orEmpty()),
@@ -56,9 +68,7 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                 TimeZone.currentSystemDefault()
             ),
             imageUrls = response.images?.filterNotNull().orEmpty(),
-            priceUsd = response.price?.toDouble().takeIf {
-                response.priceCurrency == 840
-            },
+            priceUsd = priceUsd,
             priceByn = response.price?.toDouble().takeIf {
                 response.priceCurrency == 933
             },
@@ -107,8 +117,7 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
             contactInformation = ContactInformation(
                 phones = response.contactPhones?.filterNotNull(),
                 ownerName = response.contactName
-            ),
-            commercialInfo = null
+            )
         )
     }
 }

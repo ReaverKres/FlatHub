@@ -315,7 +315,8 @@ private fun hasApartmentData(flat: UiDetailFlat): Boolean {
             !flat.balcony.isNullOrBlank() ||
             !flat.repairType.isNullOrBlank() ||
             flat.windowDirection.isNotEmpty() ||
-            flat.sleepingPlaces != null
+            flat.sleepingPlaces != null ||
+            flat.commercialUiInfo != null
 }
 
 private fun hasBuildingData(flat: UiDetailFlat): Boolean {
