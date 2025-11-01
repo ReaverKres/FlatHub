@@ -1,6 +1,8 @@
 package io.flatzen.utils
 
 import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.tan
@@ -20,6 +22,24 @@ fun lonLatToNormalized(latitude: Double, longitude: Double): Pair<Double, Double
     val normalizedY = (piR - Y) / (2.0 * piR)
 
     return Pair(normalizedX, normalizedY)
+}
+
+fun normalizedToLonLat(normalizedX: Double, normalizedY: Double): Pair<Double, Double> {
+    val earthRadius = 6_378_137.0 // in meters
+    val piR = earthRadius * PI
+
+    // Convert normalized coordinates back to Web Mercator coordinates
+    val X = normalizedX * (2.0 * piR) - piR
+    val Y = piR - normalizedY * (2.0 * piR)
+
+    // Convert Web Mercator coordinates back to longitude and latitude
+    val longitude = X / earthRadius * 180.0 / PI
+
+    // For latitude, we need to reverse the mercator projection formula
+    val latRad = 2.0 * atan(exp(Y / earthRadius)) - PI / 2.0
+    val latitude = latRad * 180.0 / PI
+
+    return Pair(latitude, longitude)
 }
 
 /**

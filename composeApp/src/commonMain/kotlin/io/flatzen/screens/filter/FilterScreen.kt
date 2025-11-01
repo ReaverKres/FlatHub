@@ -43,8 +43,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.SaveDialog
-import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
@@ -70,6 +68,8 @@ import io.flatzen.widgets.DateRangePickerDialog
 import io.flatzen.widgets.FilterSwitch
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
+import io.flatzen.widgets.dialogs.SaveDialog
+import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel

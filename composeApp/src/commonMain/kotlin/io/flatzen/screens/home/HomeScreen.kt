@@ -69,9 +69,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
-import io.flatzen.ForceUpdateDialog
-import io.flatzen.SearchErrorDialog
-import io.flatzen.SingleChoiceDialog
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -100,6 +97,9 @@ import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortBottomSheet
+import io.flatzen.widgets.dialogs.ForceUpdateDialog
+import io.flatzen.widgets.dialogs.SearchErrorDialog
+import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
