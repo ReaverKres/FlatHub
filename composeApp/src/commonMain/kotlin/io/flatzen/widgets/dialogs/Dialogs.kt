@@ -1,4 +1,4 @@
-package io.flatzen
+package io.flatzen.widgets.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

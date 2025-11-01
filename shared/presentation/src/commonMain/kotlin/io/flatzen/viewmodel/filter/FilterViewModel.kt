@@ -118,7 +118,8 @@ class FilterViewModel(
                 // Check if current filter still matches selected saved filter
                 val selectedFilter = currentState.savedFilters.find { it.selected }
                 val events = mutableListOf<FilterScreenEvent>()
-                val currency = if(currentState.filters.adType == AdType.DAILY) Currency.BYR else Currency.USD
+                val currency =
+                    if (currentState.filters.adType == AdType.DAILY) Currency.BYR else Currency.USD
                 val updatedFilter = action.newFilterState.copy(currency = currency)
                 events.add(
                     FilterScreenEvent.FiltersUpdated(
@@ -407,6 +408,7 @@ class FilterViewModel(
                     availableCities = LocationUiMapper.cities()
                 )
             } ?: LocationUiFilter(),
+            mapAreas = MapAreasUi.mapFromModelToUi(model.mapAreas),
             address = model.addressRequestModel.map { AddressUiState(address = it.address) }
                 .toSet(),
             sortOption = model.sortOption,
@@ -464,6 +466,7 @@ class FilterViewModel(
                     city = filters.location.selectedCity.code
                 )
             },
+            mapAreas = MapAreasUi.mapFromUiToModel(filters.mapAreas),
             addressRequestModel = filters.address?.map {
                 AddressRequestModel(address = it.address)
             }?.toSet().orEmpty(),

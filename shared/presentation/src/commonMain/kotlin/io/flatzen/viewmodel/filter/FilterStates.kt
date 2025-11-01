@@ -1,6 +1,7 @@
 package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
+import entities.MapAreas
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.AdType.DAILY
@@ -63,6 +64,38 @@ data class SavedFilterState(
 )
 
 @Immutable
+data class MapAreasUi(
+    val id: String,
+    val coordinates: List<Coordinates>,
+    val isActive: Boolean,
+    val name: String
+) {
+    companion object {
+        fun mapFromModelToUi(areas: List<MapAreas>): List<MapAreasUi> {
+            return areas.map {
+                MapAreasUi(
+                    id = it.id,
+                    coordinates = it.coordinates,
+                    isActive = it.isActive,
+                    name = it.name
+                )
+            }
+        }
+
+        fun mapFromUiToModel(areas: List<MapAreasUi>?): List<MapAreas> {
+            return areas?.map {
+                MapAreas(
+                    id = it.id,
+                    coordinates = it.coordinates,
+                    isActive = it.isActive,
+                    name = it.name
+                )
+            } ?: emptyList()
+        }
+    }
+}
+
+@Immutable
 data class FilterState(
     val adType: AdType = RENT,
     val lastCommercialAdType: AdType = COMMERCIAL(),
@@ -73,6 +106,7 @@ data class FilterState(
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val location: LocationUiFilter? = null,
+    val mapAreas: List<MapAreasUi>? = null,
     val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
     val withPhotoOnly: Boolean = false,

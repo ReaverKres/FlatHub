@@ -60,6 +60,7 @@ data class CommonFilterRequestModel(
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
+    val mapAreas: List<MapAreas> = emptyList(),
     val roomOnly: Boolean = false,
     val fromOwnerOnly: Boolean? = null,
     val withPhotoOnly: Boolean = false,
@@ -125,6 +126,10 @@ data class CommonFilterRequestModel(
         val thisSelectedMetro = this.metroStations.filter { it.selected }
         val otherSelectedMetro = other.metroStations.filter { it.selected }
 
+        // Всегда сравниваем только выбранные области
+        val thisSelectedAreas = this.mapAreas.filter { it.isActive }
+        val otherSelectedAreas = other.mapAreas.filter { it.isActive }
+
         //TODO
         // Специальная логика сравнения location: null эквивалентен LocationFilter(BY, MINSK)
         val isLocationEqual = when {
@@ -163,6 +168,7 @@ data class CommonFilterRequestModel(
         if (addressRequestModel != other.addressRequestModel) return false
         if (numberOfRooms != other.numberOfRooms) return false
         if (thisSelectedMetro != otherSelectedMetro) return false
+        if (thisSelectedAreas != otherSelectedAreas) return false
         if (!isLocationEqual) return false // Используем кастомную проверку location
         if (sortOption != other.sortOption) return false // Added sort option comparison
 
@@ -186,6 +192,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + addressRequestModel.hashCode()
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)
         result = 31 * result + metroStations.filter { it.selected }.hashCode()
+        result = 31 * result + mapAreas.filter { it.isActive }.hashCode()
         result = 31 * result + sortOption.hashCode() // Added sort option to hash code
 
         //TODO

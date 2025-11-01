@@ -49,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
-import io.flatzen.SaveDialog
-import io.flatzen.SearchErrorDialog
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.formatMainPrice
@@ -69,6 +67,9 @@ import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
 import io.flatzen.widgets.MessageSnackbar
+import io.flatzen.widgets.dialogs.SaveDialog
+import io.flatzen.widgets.dialogs.SavedAreasDialog
+import io.flatzen.widgets.dialogs.SearchErrorDialog
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addCallout
@@ -174,8 +175,8 @@ fun MapScreen(
     }
 
     LaunchedEffect(mapModelState.isMapAreaActive) {
-        if (mapModelState.isMapAreaActive) {
-            mapViewModel.mapState.onTap { x, y ->
+        mapViewModel.mapState.onTap { x, y ->
+            if (mapModelState.isMapAreaActive) {
                 mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
             }
         }
@@ -202,7 +203,7 @@ fun MapScreen(
     }
     LaunchedEffect(Unit) {
         mapViewModel.effect.collect {
-            when(it) {
+            when (it) {
                 is MapEffect.FirstPointInPathEffect -> {
                     mapViewModel.mapState.apply {
                         addMarker(
@@ -218,8 +219,8 @@ fun MapScreen(
                             )
                         }
                         onMarkerClick { id, x, y ->
-                            mapViewModel.mapState.getPathData("pathId")?.size?.let { size ->
-                                if(size > 2) {
+                            mapViewModel.mapState.getPathData(it.pathId)?.size?.let { size ->
+                                if (size > 2) {
                                     mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
                                     mapViewModel.mapState.addCallout(
                                         id = "pathId",
@@ -239,7 +240,11 @@ fun MapScreen(
                                         ) {
                                             Text(
                                                 text = "Сохранить",
-                                                modifier = Modifier.padding(horizontal = 16.dp)
+                                                color = Color.Black,
+                                                modifier = Modifier.padding(
+                                                    horizontal = 10.dp,
+                                                    vertical = 4.dp
+                                                )
                                             )
                                         }
                                     }
@@ -263,6 +268,21 @@ fun MapScreen(
             },
             onCancel = {
                 mapViewModel.onIntent(MapAction.HideSaveAreaDialog)
+            }
+        )
+    }
+
+    if (mapModelState.savedAreasDialogState.isVisible) {
+        SavedAreasDialog(
+            state = mapModelState.savedAreasDialogState,
+            onApplyFilter = { id, isChecked ->
+                mapViewModel.onIntent(MapAction.ActivateMapArea(id, isChecked))
+            },
+            onDeleteFilter = {
+                mapViewModel.onIntent(MapAction.DeleteMapArea(it))
+            },
+            onDismiss = {
+                mapViewModel.onIntent(MapAction.HideSavedAreaListDialog)
             }
         )
     }
@@ -291,7 +311,8 @@ fun MapScreen(
                             "Карта",
                             style = MaterialTheme.typography.titleLarge
                         )
-                    })
+                    },
+                )
             },
             floatingActionButton = {
                 FilterActionButton(
@@ -329,7 +350,7 @@ fun MapScreen(
                                 .clip(RoundedCornerShape(10.dp)),
                             message = "Кликай по карте, рисуя контур, замкни его нажав на первую точку\nЧтобы сохранить нажми на маркер",
                             color = Color(0xFF2b64ad).copy(alpha = 0.8f)
-                            )
+                        )
                     }
                     Column(
                         modifier = Modifier
@@ -338,6 +359,10 @@ fun MapScreen(
                             .padding(bottom = 6.dp)
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
+                            ActionButton("Отменить") {
+                                mapViewModel.onIntent(MapAction.UndoLastPoint)
+                            }
+                            Spacer(Modifier.width(8.dp))
                             ActionButton("Выход") {
                                 mapViewModel.onIntent(MapAction.ClickOnMapArea)
                             }
@@ -351,15 +376,27 @@ fun MapScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            AsyncImage(
-                                model = Res.getUri("drawable/area_on_map.png"),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clickable {
-                                        mapViewModel.onIntent(MapAction.ClickOnMapArea)
-                                    }
-                            )
+                            Column {
+                                AsyncImage(
+                                    model = Res.getUri("drawable/area_on_map.png"),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clickable {
+                                            mapViewModel.onIntent(MapAction.ClickOnMapArea)
+                                        }
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                AsyncImage(
+                                    model = Res.getUri("drawable/list.svg"),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clickable {
+                                            mapViewModel.onIntent(MapAction.ShowSavedAreaListDialog)
+                                        }
+                                )
+                            }
 
                             // Кнопки по центру
                             Row(horizontalArrangement = Arrangement.Center) {
@@ -624,5 +661,3 @@ fun FlatItemContent(
         }
     }
 }
-
-

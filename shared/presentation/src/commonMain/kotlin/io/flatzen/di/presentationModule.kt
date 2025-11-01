@@ -1,18 +1,18 @@
 package io.flatzen.di
 
 import di.dataModule
-import di.networkModule
 import di.databaseModule
-import io.flatzen.viewmodel.filter.FilterViewModel
-import io.flatzen.viewmodel.FlatDetailViewModel
+import di.networkModule
 import io.flatzen.viewmodel.FavoritesViewModel
+import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.MapViewModel
 import io.flatzen.viewmodel.SplashScreenViewModel
-import org.koin.core.context.startKoin
+import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
 import org.koin.core.KoinApplication
+import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -48,7 +48,12 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel { MapViewModel(tileStreamProvider = get()) }
+    viewModel {
+        MapViewModel(
+            tileStreamProvider = get(),
+            filterRepository = get()
+        )
+    }
 
     viewModel {
         SplashScreenViewModel(configManager = get())
