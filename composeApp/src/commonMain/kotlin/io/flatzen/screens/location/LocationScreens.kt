@@ -53,6 +53,7 @@ import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.MetroLineState
+import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +68,21 @@ fun LocationScreen(
 
     var addressInput by remember { mutableStateOf("") }
     val addresses = state.filters.address?.toMutableSet() ?: mutableSetOf()
+
+    if (state.savedAreasDialogState.isVisible) {
+        SavedAreasDialog(
+            state = state.savedAreasDialogState,
+            onCheckArea = { id, isChecked ->
+                viewModel.onIntent(FilterScreenAction.ActivateMapArea(id, isChecked))
+            },
+            onDeleteArea = {
+                viewModel.onIntent(FilterScreenAction.DeleteMapArea(it))
+            },
+            onDismiss = {
+                viewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -169,9 +185,21 @@ fun LocationScreen(
                         }
                     }
                 }
-            } else {
-                viewModel.onIntent(FilterScreenAction.ClearMetroFilters)
             }
+
+            ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+                viewModel.onIntent(FilterScreenAction.ShowSavedAreaListDialog)
+            }) {
+                Row(modifier = Modifier.padding(16.dp)) {
+                    BadgedBox(badge = {
+                        val count = state.filters.mapAreas?.filter { it.isActive }?.size ?: 0
+                        if (count > 0) Badge { Text(count.toString()) }
+                    }) {
+                        Text("Сохранённые области")
+                    }
+                }
+            }
+
         }
     }
 }

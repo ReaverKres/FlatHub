@@ -35,6 +35,7 @@ import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
+import repository.fillter.FilterRepository
 import repository.fillter.MapAreaRepository
 import kotlin.math.pow
 import kotlin.random.Random
@@ -42,6 +43,7 @@ import kotlin.random.Random
 class MapViewModel(
     private val tileStreamProvider: TileStreamProvider,
     private val mapAreaRepository: MapAreaRepository,
+    private val filterRepository: FilterRepository
 ) : BaseMviViewModel<MapAction, MapUiState, MapEvent, MapEffect>() {
 
     private val maxLevel = 18
@@ -232,6 +234,7 @@ class MapViewModel(
         return flowOf(
             MapEvent.SavedAreasDialogStateUpdated(
                 SavedAreasDialogState(
+                    title = "Сохранённые области",
                     isVisible = true,
                     savedAreas = mapAreasUi
                 )
@@ -279,7 +282,7 @@ class MapViewModel(
         }
     }
 
-    private fun showPathFromDb(items: List<MapArea>) {
+    private suspend fun showPathFromDb(items: List<MapArea>) {
         pathDataPoints.clear()
         mapState.removeAllPaths()
         items.forEach { mapAreaDb ->
@@ -291,6 +294,13 @@ class MapViewModel(
                 showPath(mapAreaDb.pathId)
             }
         }
+//        val activeAreas = items.filter { it.isActive }
+//        val lastFilter = filterRepository.lastFilter()
+//        val lastFilterAreas = lastFilter.mapAreas
+//        if (lastFilterAreas != activeAreas) {
+//            val updatedFilter = lastFilter.copy(mapAreas = activeAreas)
+//            filterRepository.updateFilter(updatedFilter, true)
+//        }
     }
 
     private fun generatePathId(): String {

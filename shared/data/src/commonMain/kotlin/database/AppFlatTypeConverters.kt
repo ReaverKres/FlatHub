@@ -6,6 +6,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import kotlinx.datetime.Instant
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 @Suppress("Unused")
@@ -53,16 +54,16 @@ class RoomTypeConverter {
         value?.let { json.decodeFromString(CommonFilterRequestModel.serializer(), it) }
 
     @TypeConverter
-    fun fromCoordinates(coordinates: Coordinates?): String? {
-        return coordinates?.let {
-            Json.encodeToString(Coordinates.serializer(), it)
+    fun fromCoordinatesList(coordinatesList: List<Coordinates>?): String? {
+        return coordinatesList?.let {
+            Json.encodeToString(ListSerializer(Coordinates.serializer()), it)
         }
     }
 
     @TypeConverter
-    fun toCoordinates(coordinatesString: String?): Coordinates? {
-        return coordinatesString?.let {
-            Json.decodeFromString(Coordinates.serializer(), it)
+    fun toCoordinatesList(coordinatesListString: String?): List<Coordinates>? {
+        return coordinatesListString?.let {
+            Json.decodeFromString(ListSerializer(Coordinates.serializer()), it)
         }
     }
 }

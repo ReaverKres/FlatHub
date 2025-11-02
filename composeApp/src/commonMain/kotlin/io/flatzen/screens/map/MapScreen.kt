@@ -263,6 +263,9 @@ fun MapScreen(
 
     if (mapModelState.saveAreaDialogState.isVisible) {
         SaveDialog(
+            title = "Сохранить область",
+            textFieldHint = "Название области",
+            validationHint = "Название области не должно превышать 25 символов",
             dialogState = mapModelState.saveAreaDialogState,
             onNameChange = { name ->
                 mapViewModel.onIntent(MapAction.UpdateAreaName(name))
@@ -375,12 +378,16 @@ fun MapScreen(
                 } else {
                     Column(Modifier.fillMaxWidth().wrapContentHeight()) {
                         Spacer(Modifier.height(12.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
                         ) {
-                            Column {
+                            // Картинки слева
+                            Column(
+                                modifier = Modifier.align(Alignment.TopStart)
+                                    .padding(start = 16.dp)
+                            ) {
                                 AsyncImage(
                                     model = Res.getUri("drawable/area_on_map.png"),
                                     contentDescription = null,
@@ -392,10 +399,11 @@ fun MapScreen(
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 AsyncImage(
-                                    model = Res.getUri("drawable/list.svg"),
+                                    model = Res.getUri("drawable/save_areas.svg"),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(60.dp)
+                                        .padding(start = 6.dp)
+                                        .size(32.dp)
                                         .clickable {
                                             mapViewModel.onIntent(MapAction.ShowSavedAreaListDialog)
                                         }
@@ -403,7 +411,10 @@ fun MapScreen(
                             }
 
                             // Кнопки по центру
-                            Row(horizontalArrangement = Arrangement.Center) {
+                            Row(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
                                 Button(
                                     contentPadding = ButtonDefaults.TextButtonContentPadding,
                                     onClick = {
@@ -437,8 +448,12 @@ fun MapScreen(
                                 }
                             }
 
-                            // Пустой элемент для балансировки (чтобы кнопки были по центру)
-                            Spacer(Modifier.size(24.dp).padding(end = 16.dp))
+                            // Пустой элемент справа для балансировки
+                            Spacer(
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .align(Alignment.TopEnd)
+                            )
                         }
                     }
                     Column(

@@ -4,7 +4,9 @@ import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
+import entities.MapArea
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
@@ -222,7 +224,56 @@ class MergedRepositoryImpl(
             resultList = resultList.filter { it.imageUrls?.isNotEmpty() == true }
         }
 
+        if (currentFilter.mapAreas.any { it.isActive }) {
+            resultList = filterFlatsInActiveArea(resultList, currentFilter.mapAreas)
+        }
+
         return resultList
+    }
+
+    private fun filterFlatsInActiveArea(flats: List<AppFlat>, mapAreas: List<MapArea>): List<AppFlat> {
+        val activeAreas = mapAreas.filter { it.isActive }
+        if (activeAreas.isEmpty()) return flats
+
+        val result = mutableSetOf<AppFlat>()
+
+        for (area in activeAreas) {
+            val polygon = area.coordinates
+            if (polygon.size < 3) continue
+
+            val flatsInThisArea = flats.filter { flat ->
+                flat.coordinates?.let { coord ->
+                    isPointInPolygon(coord, polygon)
+                } ?: false
+            }
+
+            result.addAll(flatsInThisArea)
+        }
+
+        return result.toList()
+    }
+
+    private fun isPointInPolygon(point: Coordinates, polygon: List<Coordinates>): Boolean {
+        var inside = false
+        var j = polygon.size - 1
+        val px = point.longitude
+        val py = point.latitude
+
+        for (i in polygon.indices) {
+            val xi = polygon[i].longitude
+            val yi = polygon[i].latitude
+            val xj = polygon[j].longitude
+            val yj = polygon[j].latitude
+
+            if ((yi > py) != (yj > py)) {
+                if (px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+                    inside = !inside
+                }
+            }
+            j = i
+        }
+
+        return inside
     }
 
     private fun filterByPrice(

@@ -44,6 +44,7 @@ val flatSearchPresentationModule = module {
     viewModel {
         FilterViewModel(
             filterRepository = get(),
+            mapAreaRepository = get(),
             analyticsManager = get()
         )
     }
@@ -51,8 +52,8 @@ val flatSearchPresentationModule = module {
     viewModel {
         MapViewModel(
             tileStreamProvider = get(),
-            filterRepository = get(),
-            mapAreaRepository = get()
+            mapAreaRepository = get(),
+            filterRepository = get()
         )
     }
 

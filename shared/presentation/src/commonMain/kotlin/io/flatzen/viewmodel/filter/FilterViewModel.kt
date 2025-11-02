@@ -20,6 +20,15 @@ import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.base.BaseMviViewModel
+import io.flatzen.viewmodel.filter.FilterScreenEvent.DialogStateUpdated
+import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterApplied
+import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterDeleted
+import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterSaved
+import io.flatzen.viewmodel.filter.FilterScreenEvent.FiltersUpdated
+import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedAreasDialogStateUpdated
+import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedFilterSelectionUpdated
+import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedFiltersLoaded
+import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -28,6 +37,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
+import repository.fillter.MapAreaRepository
 import repository.fillter.lastFilter
 import server_request.Currency
 
@@ -52,6 +62,13 @@ sealed interface FilterScreenAction : MviAction {
     // Saved filters actions
     data object ShowSaveFilterDialog : FilterScreenAction
     data object HideSaveFilterDialog : FilterScreenAction
+
+    data object ShowSavedAreaListDialog : FilterScreenAction
+    data object HideSavedAreaListDialog : FilterScreenAction
+
+    data class ActivateMapArea(val id: String, val checked: Boolean) : FilterScreenAction
+    data class DeleteMapArea(val id: String) : FilterScreenAction
+
     data class UpdateFilterName(val name: String) : FilterScreenAction
     data object SaveFilter : FilterScreenAction
     data object LoadSavedFilters : FilterScreenAction
@@ -72,7 +89,8 @@ sealed interface FilterScreenAction : MviAction {
 data class FilterScreenState(
     val filters: FilterState,
     val savedFilters: List<SavedFilterState> = emptyList(),
-    val saveDialogState: SaveDialogState = SaveDialogState()
+    val saveDialogState: SaveDialogState = SaveDialogState(),
+    val savedAreasDialogState: SavedAreasDialogState = SavedAreasDialogState()
 ) : MviState
 
 // Events
@@ -86,10 +104,12 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FilterApplied(val filter: SavedFilter) : FilterScreenEvent
     data class DialogStateUpdated(val dialogState: SaveDialogState) : FilterScreenEvent
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
+    data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) : FilterScreenEvent
 }
 
 class FilterViewModel(
     private val filterRepository: FilterRepository,
+    private val mapAreaRepository: MapAreaRepository,
     private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
@@ -122,7 +142,7 @@ class FilterViewModel(
                     if (currentState.filters.adType == AdType.DAILY) Currency.BYR else Currency.USD
                 val updatedFilter = action.newFilterState.copy(currency = currency)
                 events.add(
-                    FilterScreenEvent.FiltersUpdated(
+                    FiltersUpdated(
                         updatedFilter,
                         action.doNetworkCall
                     )
@@ -136,7 +156,7 @@ class FilterViewModel(
                     if (selectedFilterData != currentFilterData) {
                         // Current filter doesn't match selected saved filter, deselect it
                         filterRepository.clearAllSavedFilterSelections()
-                        events.add(FilterScreenEvent.SavedFilterSelectionUpdated(null))
+                        events.add(SavedFilterSelectionUpdated(null))
                     }
                 }
 
@@ -153,12 +173,12 @@ class FilterViewModel(
                 val newState = currentState.filters.copy(
                     commercial = currentState.filters.commercial.copy(commercialPropertyType = updatedCommercialTypes)
                 )
-                flowOf(FilterScreenEvent.FiltersUpdated(newState))
+                flowOf(FiltersUpdated(newState))
             }
 
             is FilterScreenAction.UpdateAddressFilter -> {
                 val newState = currentState.filters.copy(address = action.addressUiState)
-                flowOf(FilterScreenEvent.FiltersUpdated(newState))
+                flowOf(FiltersUpdated(newState))
             }
 
             is FilterScreenAction.UpdateMetroFilter -> {
@@ -171,23 +191,23 @@ class FilterViewModel(
                         }
                     }
                 )
-                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
+                flowOf(FiltersUpdated(updatedFilterState))
             }
 
             is FilterScreenAction.UpdateSortOption -> {
                 val updatedFilterState = currentState.filters.copy(sortOption = action.sortOption)
-                flowOf(FilterScreenEvent.FiltersUpdated(updatedFilterState))
+                flowOf(FiltersUpdated(updatedFilterState))
             }
 
             is FilterScreenAction.ClearAllFilters -> {
-                flowOf(FilterScreenEvent.FiltersUpdated(FilterState()))
+                flowOf(FiltersUpdated(FilterState()))
             }
 
             is FilterScreenAction.ClearMetroFilters -> {
                 val filter: FilterState = currentState.filters.copy(
                     metroStationsState = MetroStationsMapper.allStationsOrderedForUi()
                 )
-                flowOf(FilterScreenEvent.FiltersUpdated(filter))
+                flowOf(FiltersUpdated(filter))
             }
 
             is FilterScreenAction.ClearLocationFilters -> {
@@ -196,13 +216,13 @@ class FilterViewModel(
                     location = null,
                     address = null,
                 )
-                flowOf(FilterScreenEvent.FiltersUpdated(filter))
+                flowOf(FiltersUpdated(filter))
             }
 
             // Saved filters actions
             is FilterScreenAction.ShowSaveFilterDialog -> {
                 flowOf(
-                    FilterScreenEvent.DialogStateUpdated(
+                    DialogStateUpdated(
                         currentState.saveDialogState.copy(isVisible = true)
                     )
                 )
@@ -210,7 +230,7 @@ class FilterViewModel(
 
             is FilterScreenAction.HideSaveFilterDialog -> {
                 flowOf(
-                    FilterScreenEvent.DialogStateUpdated(
+                    DialogStateUpdated(
                         currentState.saveDialogState.copy(
                             isVisible = false,
                             filterName = "",
@@ -229,7 +249,7 @@ class FilterViewModel(
                     else -> null
                 }
                 flowOf(
-                    FilterScreenEvent.DialogStateUpdated(
+                    DialogStateUpdated(
                         currentState.saveDialogState.copy(
                             filterName = action.name,
                             isNameValid = isNameValid,
@@ -246,8 +266,8 @@ class FilterViewModel(
                     currentFilter
                 )
                 flowOf(
-                    FilterScreenEvent.FilterSaved(filterId),
-                    FilterScreenEvent.DialogStateUpdated(
+                    FilterSaved(filterId),
+                    DialogStateUpdated(
                         currentState.saveDialogState.copy(
                             isVisible = false,
                             filterName = "",
@@ -263,20 +283,20 @@ class FilterViewModel(
                 // We need to get the current value from the flow
                 val savedFilters = filterRepository.getAllSavedFilters().first()
                 val savedFilterStates = savedFilters.map { mapSavedFilterToSavedFilterState(it) }
-                flowOf(FilterScreenEvent.SavedFiltersLoaded(savedFilterStates))
+                flowOf(SavedFiltersLoaded(savedFilterStates))
             }
 
             is FilterScreenAction.ApplySavedFilter -> {
                 val savedFilter = filterRepository.getSavedFilterById(action.filterId)
                 savedFilter?.let {
                     filterRepository.applySavedFilter(it, false)
-                    flowOf(FilterScreenEvent.FilterApplied(it))
+                    flowOf(FilterApplied(it))
                 } ?: flowOf()
             }
 
             is FilterScreenAction.DeleteSavedFilter -> {
                 filterRepository.deleteSavedFilter(action.id)
-                flowOf(FilterScreenEvent.FilterDeleted(action.id))
+                flowOf(FilterDeleted(action.id))
             }
 
             is FilterScreenAction.ToggleSavedFilterSelection -> {
@@ -284,7 +304,7 @@ class FilterViewModel(
                 if (currentlySelected?.id == action.filterId) {
                     // Deselect current filter
                     filterRepository.clearAllSavedFilterSelections()
-                    flowOf(FilterScreenEvent.SavedFilterSelectionUpdated(null))
+                    flowOf(SavedFilterSelectionUpdated(null))
                 } else {
                     // Select new filter and apply it
                     filterRepository.updateSavedFilterSelection(action.filterId)
@@ -292,7 +312,7 @@ class FilterViewModel(
                     savedFilter?.let {
                         filterRepository.applySavedFilter(it, false)
                     }
-                    flowOf(FilterScreenEvent.SavedFilterSelectionUpdated(action.filterId))
+                    flowOf(SavedFilterSelectionUpdated(action.filterId))
                 }
             }
 
@@ -306,7 +326,7 @@ class FilterViewModel(
                     if (selectedFilterData != currentFilterData) {
                         // Current filter doesn't match selected saved filter, deselect it
                         filterRepository.clearAllSavedFilterSelections()
-                        flowOf(FilterScreenEvent.SavedFilterSelectionUpdated(null))
+                        flowOf(SavedFilterSelectionUpdated(null))
                     } else {
                         flowOf() // No change needed
                     }
@@ -332,6 +352,34 @@ class FilterViewModel(
                 }
                 flowOf()
             }
+
+            is FilterScreenAction.ActivateMapArea -> {
+                if(action.checked) {
+                    mapAreaRepository.activateMapArea(action.id)
+                } else {
+                    mapAreaRepository.deactivateMapArea(action.id)
+                }
+                val currentAreas = MapAreasUi.mapFromModelToUi(mapAreaRepository.getAllSavedAreas().first())
+                val newState = currentState.filters.copy(mapAreas = currentAreas)
+                flowOf(FiltersUpdated(newState), getUpdatedMapAreaDialogState())
+            }
+            is FilterScreenAction.DeleteMapArea -> {
+                mapAreaRepository.deleteSavedArea(action.id)
+                val currentAreas = MapAreasUi.mapFromModelToUi(mapAreaRepository.getAllSavedAreas().first())
+                val newState = currentState.filters.copy(mapAreas = currentAreas)
+                flowOf(FiltersUpdated(newState), getUpdatedMapAreaDialogState())
+            }
+
+            FilterScreenAction.ShowSavedAreaListDialog -> {
+                flowOf(getUpdatedMapAreaDialogState())
+            }
+            FilterScreenAction.HideSavedAreaListDialog -> {
+                flowOf(
+                    SavedAreasDialogStateUpdated(
+                        currentState.savedAreasDialogState.copy(isVisible = false)
+                    )
+                )
+            }
         }
     }
 
@@ -340,7 +388,7 @@ class FilterViewModel(
         currentState: FilterScreenState
     ): FilterScreenState {
         return when (event) {
-            is FilterScreenEvent.FiltersUpdated -> {
+            is FiltersUpdated -> {
                 currentState.copy(filters = event.newFilterState).also {
                     val filterModel: CommonFilterRequestModel =
                         mapFilterStateToFilterModel(it.filters)
@@ -353,36 +401,54 @@ class FilterViewModel(
                 }
             }
 
-            is FilterScreenEvent.SavedFiltersLoaded -> {
+            is SavedFiltersLoaded -> {
                 currentState.copy(savedFilters = event.filters)
             }
 
-            is FilterScreenEvent.FilterSaved -> {
+            is FilterSaved -> {
                 currentState
             }
 
-            is FilterScreenEvent.FilterDeleted -> {
+            is FilterDeleted -> {
                 currentState.copy(
                     savedFilters = currentState.savedFilters.filter { it.id != event.filterId }
                 )
             }
 
-            is FilterScreenEvent.FilterApplied -> {
+            is FilterApplied -> {
                 currentState
             }
 
-            is FilterScreenEvent.DialogStateUpdated -> {
+            is DialogStateUpdated -> {
                 currentState.copy(saveDialogState = event.dialogState)
             }
 
-            is FilterScreenEvent.SavedFilterSelectionUpdated -> {
+            is SavedFilterSelectionUpdated -> {
                 currentState.copy(
                     savedFilters = currentState.savedFilters.map { filter ->
                         filter.copy(selected = filter.id == event.selectedFilterId)
                     }
                 )
             }
+
+            is SavedAreasDialogStateUpdated -> {
+                currentState.copy(savedAreasDialogState = event.dialogState)
+            }
         }
+    }
+
+    private suspend fun getUpdatedMapAreaDialogState(): SavedAreasDialogStateUpdated {
+        val mapAreasUi = mapAreaRepository.getAllSavedAreas().let {
+            MapAreasUi.mapFromModelToUi(it.first())
+        }
+        return SavedAreasDialogStateUpdated(
+                SavedAreasDialogState(
+                    title = "Сохранённые области",
+                    isVisible = true,
+                    savedAreas = mapAreasUi
+                )
+            )
+
     }
 
     private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {

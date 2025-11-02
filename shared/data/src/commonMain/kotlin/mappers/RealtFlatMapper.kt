@@ -55,10 +55,12 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                 isDetailData = true,
                 isDetailLoaded = true
             ),
-            commercialInfo = CommercialInfo(
-                numberOfRooms = response.rooms,
-                propertyType = response.commercialPropertyType
-            ),
+            commercialInfo = if(response.adType.isCommercial) {
+                CommercialInfo(
+                    numberOfRooms = response.rooms,
+                    propertyType = response.commercialPropertyType
+                )
+            } else null,
             flatDetailUrl = "https://realt.by${response.code?.let { "/$urlPath/object/$it" } ?: ""}",
             adId = response.code?.toLong() ?: 0L,
             publishedAt = DateConverter.stringToInstant(response.updatedAt.orEmpty()),

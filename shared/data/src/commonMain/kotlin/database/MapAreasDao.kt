@@ -1,11 +1,13 @@
 package database
 
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import entities.MapArea
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface MapAreasDao {
     @Insert
     suspend fun saveArea(area: MapArea): Long
