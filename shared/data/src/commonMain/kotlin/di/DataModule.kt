@@ -11,22 +11,23 @@ import api.createRealtApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
 import mappers.DomovitaFlatMapper
-import mappers.kufar.KufarFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import mappers.kufar.KufarDailyFlatMapper
 import mappers.kufar.KufarDetailHtmlMapper
+import mappers.kufar.KufarFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
 import maps.TileProviderImpl
-import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import repository.domovita.DomovitaRepository
 import repository.domovita.DomovitaRepositoryImpl
 import repository.fillter.FilterRepository
 import repository.fillter.FilterRepositoryImpl
+import repository.fillter.MapAreaRepository
+import repository.fillter.MapAreaRepositoryImpl
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl
 import repository.mergedrepo.MergedRepository
@@ -38,10 +39,10 @@ import repository.realt.RealtRepositoryImpl
 import repository.userpreferences.UserPreferencesRepository
 import repository.userpreferences.UserPreferencesRepositoryImpl
 import server_response.DomovitaListResponse
-import server_response.kufar.KufarListResponse
 import server_response.OnlinerListResponse
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 import server_response.kufar.KufarDailyListResponse
+import server_response.kufar.KufarListResponse
 
 
 val dataModule = module {
@@ -52,6 +53,7 @@ val dataModule = module {
         qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER
     ) { KufarDailyFlatMapper() }
     single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
+    single<MapAreaRepository> { MapAreaRepositoryImpl(mapAreasDao = get()) }
     single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
 
     single<KufarApi> { get<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT).createKufarApi() }

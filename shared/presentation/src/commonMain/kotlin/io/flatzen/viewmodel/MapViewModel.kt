@@ -1,7 +1,7 @@
 package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
-import entities.MapAreas
+import entities.MapArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
@@ -20,25 +20,28 @@ import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.addPath
 import ovh.plrapps.mapcompose.api.enableRotation
 import ovh.plrapps.mapcompose.api.hasPath
 import ovh.plrapps.mapcompose.api.makePathDataBuilder
+import ovh.plrapps.mapcompose.api.removeAllPaths
 import ovh.plrapps.mapcompose.api.removePath
 import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
-import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
+import repository.fillter.MapAreaRepository
 import kotlin.math.pow
 import kotlin.random.Random
 
 class MapViewModel(
     private val tileStreamProvider: TileStreamProvider,
-    private val filterRepository: FilterRepository,
+    private val mapAreaRepository: MapAreaRepository,
 ) : BaseMviViewModel<MapAction, MapUiState, MapEvent, MapEffect>() {
 
     private val maxLevel = 18
@@ -62,6 +65,13 @@ class MapViewModel(
     private var currentPathId: String? = null
 
     override fun initialState(): MapUiState = MapUiState()
+
+    init {
+        mapAreaRepository.getAllSavedAreas()
+            .onEach { items -> showPathFromDb(items) }
+//            .flowOn(Dispatchers.IO)
+            .launchIn(viewModelScope)
+    }
 
     override suspend fun handleIntent(action: MapAction, currentState: MapUiState): Flow<MapEvent> {
         return when (action) {
@@ -96,7 +106,7 @@ class MapViewModel(
                     pathDataPoints[pathId]?.add(Pair(action.x, action.y))
                 }
 
-                showPath(mapState, pathId)
+                showPath(pathId)
                 if (pathDataPoints[pathId]?.size == 1) {
                     flowOf(FirstPointInPathEvent(pathId, action.x, action.y))
                 } else {
@@ -116,7 +126,7 @@ class MapViewModel(
                     pathDataPoints.remove(pathId)
                 } else {
                     // Redraw the path with remaining points
-                    showPath(mapState, pathId)
+                    showPath(pathId)
                 }
                 flowOf()
             }
@@ -190,15 +200,7 @@ class MapViewModel(
                 )
             }
             MapAction.ShowSavedAreaListDialog -> {
-                val filter = filterRepository.lastFilter()
-                flowOf(
-                    MapEvent.SavedAreasDialogStateUpdated(
-                        currentState.savedAreasDialogState.copy(
-                            isVisible = true,
-                            savedFilters = MapAreasUi.mapFromModelToUi(filter.mapAreas)
-                        )
-                    )
-                )
+                getUpdatedMapAreaDialogState()
             }
             MapAction.HideSavedAreaListDialog -> {
                 flowOf(
@@ -209,12 +211,32 @@ class MapViewModel(
             }
 
             is MapAction.ActivateMapArea -> {
-                flowOf()
+                if(action.checked) {
+                    mapAreaRepository.activateMapArea(action.id)
+                } else {
+                    mapAreaRepository.deactivateMapArea(action.id)
+                }
+                getUpdatedMapAreaDialogState()
             }
             is MapAction.DeleteMapArea -> {
-                flowOf()
+                mapAreaRepository.deleteSavedArea(action.id)
+                getUpdatedMapAreaDialogState()
             }
         }
+    }
+
+    private suspend fun getUpdatedMapAreaDialogState(): Flow<MapEvent.SavedAreasDialogStateUpdated> {
+        val mapAreasUi = mapAreaRepository.getAllSavedAreas().let {
+            MapAreasUi.mapFromModelToUi(it.first())
+        }
+        return flowOf(
+            MapEvent.SavedAreasDialogStateUpdated(
+                SavedAreasDialogState(
+                    isVisible = true,
+                    savedAreas = mapAreasUi
+                )
+            )
+        )
     }
 
     override suspend fun reduce(event: MapEvent, currentState: MapUiState): MapUiState =
@@ -238,7 +260,7 @@ class MapViewModel(
         }
     }
 
-    private fun showPath(mapState: MapState, pathId: String) {
+    private fun showPath(pathId: String) {
         val pathBuilder = mapState.makePathDataBuilder().apply {
             pathDataPoints[pathId]?.forEach {
                 this.addPoint(it.first, it.second)
@@ -257,14 +279,18 @@ class MapViewModel(
         }
     }
 
-    private fun removeAllPaths() {
-        pathDataPoints.keys.forEach { pathId ->
-            if (mapState.hasPath(pathId)) {
-                mapState.removePath(pathId)
+    private fun showPathFromDb(items: List<MapArea>) {
+        pathDataPoints.clear()
+        mapState.removeAllPaths()
+        items.forEach { mapAreaDb ->
+            if(mapAreaDb.isActive) {
+                val normalizedCoordinates = mapAreaDb.coordinates.map { coordinate ->
+                    lonLatToNormalized(coordinate.latitude, coordinate.longitude)
+                }.toMutableList()
+                pathDataPoints[mapAreaDb.pathId] = normalizedCoordinates
+                showPath(mapAreaDb.pathId)
             }
         }
-        pathDataPoints.clear()
-        currentPathId = null
     }
 
     private fun generatePathId(): String {
@@ -288,20 +314,14 @@ class MapViewModel(
         coordinates: List<Coordinates>,
         name: String
     ) {
-        val currentFilter = filterRepository.lastFilter()
-        val updatedAreas: MutableList<MapAreas> = currentFilter.mapAreas.toMutableList()
-        updatedAreas.add(
-            MapAreas(
-                id = pathId,
+        mapAreaRepository.saveArea(
+            MapArea(
+                pathId = pathId,
                 coordinates = coordinates,
                 isActive = true,
                 name = name
             )
         )
-
-        val updatedFilter = currentFilter.copy(mapAreas = updatedAreas)
-
-        filterRepository.saveFilter(name, updatedFilter)
     }
 }
 

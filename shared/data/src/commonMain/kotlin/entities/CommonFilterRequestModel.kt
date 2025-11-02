@@ -60,7 +60,7 @@ data class CommonFilterRequestModel(
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
     val location: LocationFilter? = null,
-    val mapAreas: List<MapAreas> = emptyList(),
+    val mapAreas: List<MapArea> = emptyList(),
     val roomOnly: Boolean = false,
     val fromOwnerOnly: Boolean? = null,
     val withPhotoOnly: Boolean = false,
