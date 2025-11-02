@@ -113,7 +113,7 @@ data class FilterState(
     val roomOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
     val commercial: CommercialFilters = CommercialFilters(),
-    val bookingDatesFilter: BookingDatesFilter? = null
+    val bookingDatesFilter: BookingDatesFilter? = null,
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }

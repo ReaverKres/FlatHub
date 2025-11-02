@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,9 +47,10 @@ fun SavedAreasDialog(
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .padding(16.dp),
         ) {
-            Column{
+            Column(modifier = Modifier.padding(16.dp)) {
                 // Заголовок
                 Spacer(Modifier.height(16.dp))
                 Text(
@@ -60,24 +60,26 @@ fun SavedAreasDialog(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Список опций в LazyColumn
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .heightIn(max = 400.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(mapAreas) { item ->
-                        SavedAreaItem(
-                            mapArea = item,
-                            onApply = onCheckArea,
-                            onDelete = onDeleteArea
-                        )
+                if(mapAreas.isEmpty()) {
+                    Text("Сохранённные области не найдены")
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .heightIn(max = 400.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(mapAreas) { item ->
+                            SavedAreaItem(
+                                mapArea = item,
+                                onApply = onCheckArea,
+                                onDelete = onDeleteArea
+                            )
+                        }
                     }
                 }
 
-                // Кнопки действий
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,37 +105,31 @@ fun SavedAreaItem(
     onApply: (String, Boolean) -> Unit,
     onDelete: (String) -> Unit
 ) {
-    Card(
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(checked = mapArea.isActive, onCheckedChange = {
-                onApply(mapArea.id, !mapArea.isActive)
-            })
-            Spacer(Modifier.width(6.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = mapArea.name,
-                style = MaterialTheme.typography.bodyLarge
+        Checkbox(checked = mapArea.isActive, onCheckedChange = {
+            onApply(mapArea.id, !mapArea.isActive)
+        })
+        Spacer(Modifier.width(6.dp))
+        Text(
+            modifier = Modifier.weight(1f),
+            text = mapArea.name,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(Modifier.width(6.dp))
+        IconButton(onClick = {
+            onDelete(mapArea.id)
+        }) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Удалить"
             )
-            Spacer(Modifier.width(6.dp))
-            IconButton(onClick = {
-                onDelete(mapArea.id)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Удалить"
-                )
-            }
-            Spacer(Modifier.width(6.dp))
         }
+        Spacer(Modifier.width(6.dp))
     }
 }

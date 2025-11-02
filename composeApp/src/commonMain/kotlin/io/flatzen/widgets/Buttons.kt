@@ -208,7 +208,15 @@ private fun AdTypeButton(
 //                modifier = Modifier.padding(end = 8.dp)
 //            )
 //            Spacer(Modifier.width(6.dp))
-        Text(text = adTypeBtnText, maxLines = 1)
+        Text(
+            text = adTypeBtnText,
+            maxLines = 1,
+            color = if (selectedAdType == AdType) {
+                Color(0xFFFFFFFF)
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
+        )
     }
 }
 

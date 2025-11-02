@@ -18,4 +18,28 @@ data class MapArea(
     val isActive: Boolean,
     val name: String,
     val createdAt: Long = Clock.System.now().toEpochMilliseconds()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as MapArea
+
+        if (id != other.id) return false
+        if (isActive != other.isActive) return false
+        if (pathId != other.pathId) return false
+        if (coordinates != other.coordinates) return false
+        if (name != other.name) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + isActive.hashCode()
+        result = 31 * result + pathId.hashCode()
+        result = 31 * result + coordinates.hashCode()
+        result = 31 * result + name.hashCode()
+        return result
+    }
+}
