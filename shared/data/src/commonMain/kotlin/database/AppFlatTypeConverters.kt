@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 
@@ -50,4 +51,18 @@ class RoomTypeConverter {
     @TypeConverter
     fun toCommonFilterRequestModel(value: String?): CommonFilterRequestModel? = 
         value?.let { json.decodeFromString(CommonFilterRequestModel.serializer(), it) }
+
+    @TypeConverter
+    fun fromCoordinates(coordinates: Coordinates?): String? {
+        return coordinates?.let {
+            Json.encodeToString(Coordinates.serializer(), it)
+        }
+    }
+
+    @TypeConverter
+    fun toCoordinates(coordinatesString: String?): Coordinates? {
+        return coordinatesString?.let {
+            Json.decodeFromString(Coordinates.serializer(), it)
+        }
+    }
 }

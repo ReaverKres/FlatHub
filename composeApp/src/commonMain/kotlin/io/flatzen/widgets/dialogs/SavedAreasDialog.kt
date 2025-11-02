@@ -5,13 +5,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -19,8 +21,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,66 +35,60 @@ import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 @Composable
 fun SavedAreasDialog(
     state: SavedAreasDialogState,
-    onApplyFilter: (savedFilterId: String, isChecked: Boolean) -> Unit,
-    onDeleteFilter: (savedFilterId: String) -> Unit,
+    onCheckArea: (areaId: String, isChecked: Boolean) -> Unit,
+    onDeleteArea: (areaId: String) -> Unit,
     onDismiss: () -> Unit,
 ) {
 
+    val title = state.title ?: ""
+    val mapAreas = state.savedAreas
+
     Dialog(onDismissRequest = onDismiss) {
-        Surface(
+        Card(
             shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.surface,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight(),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
+            Column{
+                // Заголовок
+                Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "Сохраненные области",
+                    text = title,
                     style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                if (state.savedFilters.isEmpty()) {
-                    Text(
-                        text = "Нет сохраненных областей",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
-                        items(state.savedFilters) { savedFilter ->
-                            SavedAreaItem(
-                                mapArea = savedFilter,
-                                onApply = { id, isChecked ->
-                                    onApplyFilter(savedFilter.id, isChecked)
-                                    onDismiss()
-                                },
-                                onDelete = {
-                                    onDeleteFilter(savedFilter.id)
-                                }
-                            )
-                        }
+                // Список опций в LazyColumn
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .heightIn(max = 400.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(mapAreas) { item ->
+                        SavedAreaItem(
+                            mapArea = item,
+                            onApply = onCheckArea,
+                            onDelete = onDeleteArea
+                        )
                     }
                 }
 
+                // Кнопки действий
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.End
+                        .padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(onClick = onDismiss) {
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
                         Text("Закрыть")
                     }
                 }
@@ -119,25 +115,25 @@ fun SavedAreaItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row {
-                Checkbox(checked = mapArea.isActive, onCheckedChange = {
-                    onApply(mapArea.id, !mapArea.isActive)
-                })
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = mapArea.name,
-                    style = MaterialTheme.typography.bodyLarge
+            Checkbox(checked = mapArea.isActive, onCheckedChange = {
+                onApply(mapArea.id, !mapArea.isActive)
+            })
+            Spacer(Modifier.width(6.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = mapArea.name,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(Modifier.width(6.dp))
+            IconButton(onClick = {
+                onDelete(mapArea.id)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Удалить"
                 )
-                Spacer(Modifier.width(6.dp))
-                IconButton(onClick = {
-                    onDelete(mapArea.id)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Удалить"
-                    )
-                }
             }
+            Spacer(Modifier.width(6.dp))
         }
     }
 }

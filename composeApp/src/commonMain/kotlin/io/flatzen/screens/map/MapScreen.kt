@@ -79,6 +79,7 @@ import ovh.plrapps.mapcompose.api.getPathData
 import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.onTap
 import ovh.plrapps.mapcompose.api.removeAllMarkers
+import ovh.plrapps.mapcompose.api.removeCallout
 import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
@@ -114,6 +115,8 @@ fun MapScreen(
 
     val mapModelState by mapViewModel.state.collectAsStateWithLifecycle()
 
+    val savePathCalloutId = "savePathCalloutId"
+
     BackHandler {
         navigateBack()
     }
@@ -135,6 +138,7 @@ fun MapScreen(
         if (mapModelState.isMapAreaActive) {
             mapViewModel.mapState.removeAllMarkers()
         } else {
+            mapViewModel.mapState.removeCallout(savePathCalloutId)
             mapViewModel.mapState.apply {
                 onMarkerClick { id, x, y ->
                     selectedFlatId = id.toLongOrNull()
@@ -223,7 +227,7 @@ fun MapScreen(
                                 if (size > 2) {
                                     mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
                                     mapViewModel.mapState.addCallout(
-                                        id = "pathId",
+                                        id = savePathCalloutId,
                                         x = x,
                                         y = y,
                                     ) {
@@ -275,10 +279,10 @@ fun MapScreen(
     if (mapModelState.savedAreasDialogState.isVisible) {
         SavedAreasDialog(
             state = mapModelState.savedAreasDialogState,
-            onApplyFilter = { id, isChecked ->
+            onCheckArea = { id, isChecked ->
                 mapViewModel.onIntent(MapAction.ActivateMapArea(id, isChecked))
             },
-            onDeleteFilter = {
+            onDeleteArea = {
                 mapViewModel.onIntent(MapAction.DeleteMapArea(it))
             },
             onDismiss = {
