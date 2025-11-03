@@ -1,11 +1,13 @@
 package repository.fillter
 
 import database.MapAreasDao
+import database.SavedFiltersDao
 import entities.MapArea
 import kotlinx.coroutines.flow.Flow
 
 class MapAreaRepositoryImpl(
-    private val mapAreasDao: MapAreasDao
+    private val mapAreasDao: MapAreasDao,
+    private val filtersDao: SavedFiltersDao,
 ): MapAreaRepository {
     override suspend fun saveArea(area: MapArea): Long {
         return mapAreasDao.saveArea(area)
@@ -18,13 +20,5 @@ class MapAreaRepositoryImpl(
     override suspend fun deleteSavedArea(id: String) {
         val area = mapAreasDao.getSavedAreaById(id)
         area?.let { mapAreasDao.deleteSavedArea(it) }
-    }
-
-    override suspend fun activateMapArea(id: String) {
-        mapAreasDao.selectArea(id)
-    }
-
-    override suspend fun deactivateMapArea(id: String) {
-        mapAreasDao.deselectArea(id)
     }
 }
