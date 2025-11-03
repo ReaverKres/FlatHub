@@ -94,7 +94,7 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
             floor = response.storey,
             totalFloors = response.storeys,
             sleepingPlaces = response.numberOfBeds,
-            isStudio = response.rooms == 1 && (response.areaTotal ?: 0.0) < 35.0,
+            isStudio = false,
             bathroomType = null,
 //                when (r?.code) {
 //                    1 -> "Раздельный"

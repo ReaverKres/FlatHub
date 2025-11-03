@@ -16,11 +16,8 @@ import io.flatzen.viewmodel.MapEvent.Ready
 import io.flatzen.viewmodel.MapEvent.SaveAreaDialogStateUpdated
 import io.flatzen.viewmodel.MapEvent.ShowMapArea
 import io.flatzen.viewmodel.base.BaseMviViewModel
-import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.SaveDialogState
-import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -37,6 +34,7 @@ import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
 import repository.fillter.FilterRepository
 import repository.fillter.MapAreaRepository
+import repository.fillter.areasInFilter
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -69,8 +67,11 @@ class MapViewModel(
     override fun initialState(): MapUiState = MapUiState()
 
     init {
-        mapAreaRepository.getAllSavedAreas()
-            .onEach { items -> showPathFromDb(items) }
+        filterRepository.cashedFilterFlow
+            .onEach { items ->
+                val areaInFilter = filterRepository.areasInFilter(mapAreaRepository)
+                showPathFromDb(areaInFilter)
+            }
 //            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
     }
@@ -165,6 +166,8 @@ class MapViewModel(
 
                 // Hide dialog and reset
                 flowOf(
+                    MapEvent.MapAreaSaved(pathId),
+                    MapEvent.HideUndoBtn,
                     SaveAreaDialogStateUpdated(
                         currentState.saveAreaDialogState.copy(
                             isVisible = false,
@@ -201,64 +204,32 @@ class MapViewModel(
                     )
                 )
             }
-            MapAction.ShowSavedAreaListDialog -> {
-                getUpdatedMapAreaDialogState()
-            }
-            MapAction.HideSavedAreaListDialog -> {
-                flowOf(
-                    MapEvent.SavedAreasDialogStateUpdated(
-                        currentState.savedAreasDialogState.copy(isVisible = false)
-                    )
-                )
-            }
-
-            is MapAction.ActivateMapArea -> {
-                if(action.checked) {
-                    mapAreaRepository.activateMapArea(action.id)
-                } else {
-                    mapAreaRepository.deactivateMapArea(action.id)
-                }
-                getUpdatedMapAreaDialogState()
-            }
-            is MapAction.DeleteMapArea -> {
-                mapAreaRepository.deleteSavedArea(action.id)
-                getUpdatedMapAreaDialogState()
-            }
         }
-    }
-
-    private suspend fun getUpdatedMapAreaDialogState(): Flow<MapEvent.SavedAreasDialogStateUpdated> {
-        val mapAreasUi = mapAreaRepository.getAllSavedAreas().let {
-            MapAreasUi.mapFromModelToUi(it.first())
-        }
-        return flowOf(
-            MapEvent.SavedAreasDialogStateUpdated(
-                SavedAreasDialogState(
-                    title = "Сохранённые области",
-                    isVisible = true,
-                    savedAreas = mapAreasUi
-                )
-            )
-        )
     }
 
     override suspend fun reduce(event: MapEvent, currentState: MapUiState): MapUiState =
         when (event) {
             Ready -> currentState
             HideMapArea -> currentState.copy(isMapAreaActive = false)
-            ShowMapArea -> currentState.copy(isMapAreaActive = true)
-            is FirstPointInPathEvent -> currentState
+            ShowMapArea -> currentState.copy(isMapAreaActive = true, undoBtnVisible = true)
+            MapEvent.HideUndoBtn -> currentState.copy(undoBtnVisible = false)
+
             is SaveAreaDialogStateUpdated -> {
                 currentState.copy(saveAreaDialogState = event.dialogState)
             }
-            is MapEvent.SavedAreasDialogStateUpdated -> {
-                currentState.copy(savedAreasDialogState = event.dialogState)
-            }
+
+            is FirstPointInPathEvent -> currentState
+            is MapEvent.MapAreaSaved -> currentState
         }
 
     override suspend fun onEvent(event: MapEvent): MapEffect? {
         return when (event) {
-            is FirstPointInPathEvent -> MapEffect.FirstPointInPathEffect(event.pathId, event.x, event.y)
+            is FirstPointInPathEvent -> MapEffect.FirstPointInPathEffect(
+                event.pathId,
+                event.x,
+                event.y
+            )
+            is MapEvent.MapAreaSaved -> MapEffect.MapAreaSavedEffect(event.pathId)
             else -> super.onEvent(event)
         }
     }
@@ -286,7 +257,7 @@ class MapViewModel(
         pathDataPoints.clear()
         mapState.removeAllPaths()
         items.forEach { mapAreaDb ->
-            if(mapAreaDb.isActive) {
+            if (mapAreaDb.isActive) {
                 val normalizedCoordinates = mapAreaDb.coordinates.map { coordinate ->
                     lonLatToNormalized(coordinate.latitude, coordinate.longitude)
                 }.toMutableList()
@@ -294,13 +265,6 @@ class MapViewModel(
                 showPath(mapAreaDb.pathId)
             }
         }
-//        val activeAreas = items.filter { it.isActive }
-//        val lastFilter = filterRepository.lastFilter()
-//        val lastFilterAreas = lastFilter.mapAreas
-//        if (lastFilterAreas != activeAreas) {
-//            val updatedFilter = lastFilter.copy(mapAreas = activeAreas)
-//            filterRepository.updateFilter(updatedFilter, true)
-//        }
     }
 
     private fun generatePathId(): String {
@@ -338,8 +302,8 @@ class MapViewModel(
 @Immutable
 data class MapUiState(
     val isMapAreaActive: Boolean = false,
+    val undoBtnVisible: Boolean = true,
     val saveAreaDialogState: SaveDialogState = SaveDialogState(),
-    val savedAreasDialogState: SavedAreasDialogState = SavedAreasDialogState()
 ) : MviState
 
 sealed interface MapAction : MviAction {
@@ -353,22 +317,19 @@ sealed interface MapAction : MviAction {
     data object HideSaveAreaDialog : MapAction
     data class UpdateAreaName(val name: String) : MapAction
     data object SaveArea : MapAction
-    data object ShowSavedAreaListDialog : MapAction
-    data object HideSavedAreaListDialog : MapAction
-
-    data class ActivateMapArea(val id: String, val checked: Boolean) : MapAction
-    data class DeleteMapArea(val id: String) : MapAction
 }
 
 sealed interface MapEvent : MviEvent {
     data object Ready : MapEvent
     data object ShowMapArea : MapEvent
     data object HideMapArea : MapEvent
+    data object HideUndoBtn: MapEvent
     data class FirstPointInPathEvent(val pathId: String, val x: Double, val y: Double) : MapEvent
     data class SaveAreaDialogStateUpdated(val dialogState: SaveDialogState) : MapEvent
-    data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) : MapEvent
+    data class MapAreaSaved(val pathId: String) : MapEvent
 }
 
 sealed interface MapEffect : MviEffect {
     data class FirstPointInPathEffect(val pathId: String, val x: Double, val y: Double) : MapEffect
+    data class MapAreaSavedEffect(val pathId: String) : MapEffect
 }

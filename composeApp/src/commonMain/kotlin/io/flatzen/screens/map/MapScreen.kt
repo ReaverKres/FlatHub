@@ -56,8 +56,10 @@ import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
+import io.flatzen.viewmodel.MapAction.AddPointToPath
 import io.flatzen.viewmodel.MapEffect
 import io.flatzen.viewmodel.MapViewModel
+import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
 import io.flatzen.viewmodel.list.FlatSearchViewModel
@@ -143,8 +145,8 @@ fun MapScreen(
                 onMarkerClick { id, x, y ->
                     selectedFlatId = id.toLongOrNull()
                 }
+                removeAllMarkers()
                 if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
-                    removeAllMarkers()
                     listState.flatList.forEach {
                         val mercatorCoordinates =
                             it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
@@ -225,7 +227,7 @@ fun MapScreen(
                         onMarkerClick { id, x, y ->
                             mapViewModel.mapState.getPathData(it.pathId)?.size?.let { size ->
                                 if (size > 2) {
-                                    mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
+                                    mapViewModel.onIntent(AddPointToPath(x, y))
                                     mapViewModel.mapState.addCallout(
                                         id = savePathCalloutId,
                                         x = x,
@@ -257,6 +259,16 @@ fun MapScreen(
                         }
                     }
                 }
+
+                is MapEffect.MapAreaSavedEffect -> {
+                    mapViewModel.mapState.removeCallout(savePathCalloutId)
+                    filterViewModel.onIntent(FilterScreenAction.ActivateMapArea(
+                        id = it.pathId,
+                        checked = true,
+                        doNetworkCall = true,
+                        savedAreasDialogIsVisible = false
+                    ))
+                }
             }
         }
     }
@@ -279,17 +291,17 @@ fun MapScreen(
         )
     }
 
-    if (mapModelState.savedAreasDialogState.isVisible) {
+    if (filterState.savedAreasDialogState.isVisible) {
         SavedAreasDialog(
-            state = mapModelState.savedAreasDialogState,
+            state = filterState.savedAreasDialogState,
             onCheckArea = { id, isChecked ->
-                mapViewModel.onIntent(MapAction.ActivateMapArea(id, isChecked))
+                filterViewModel.onIntent(FilterScreenAction.ActivateMapArea(id, isChecked, true))
             },
             onDeleteArea = {
-                mapViewModel.onIntent(MapAction.DeleteMapArea(it))
+                filterViewModel.onIntent(FilterScreenAction.DeleteMapArea(it, true))
             },
             onDismiss = {
-                mapViewModel.onIntent(MapAction.HideSavedAreaListDialog)
+                filterViewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
             }
         )
     }
@@ -366,8 +378,10 @@ fun MapScreen(
                             .padding(bottom = 6.dp)
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
-                            ActionButton("Отменить") {
-                                mapViewModel.onIntent(MapAction.UndoLastPoint)
+                            if(mapModelState.undoBtnVisible) {
+                                ActionButton("Отменить") {
+                                    mapViewModel.onIntent(MapAction.UndoLastPoint)
+                                }
                             }
                             Spacer(Modifier.width(8.dp))
                             ActionButton("Выход") {
@@ -405,7 +419,7 @@ fun MapScreen(
                                         .padding(start = 6.dp)
                                         .size(32.dp)
                                         .clickable {
-                                            mapViewModel.onIntent(MapAction.ShowSavedAreaListDialog)
+                                            filterViewModel.onIntent(FilterScreenAction.ShowSavedAreaListDialog)
                                         }
                                 )
                             }
@@ -430,7 +444,7 @@ fun MapScreen(
                                 Spacer(Modifier.width(10.dp))
                                 Button(
                                     contentPadding = ButtonDefaults.TextButtonContentPadding,
-                                    enabled = listState.noFlatsToLoadMore.not() && isMarkersSizeTooBig.not(),
+                                    enabled = isMarkersSizeTooBig.not(),
                                     colors = ButtonDefaults.buttonColors().copy(
                                         disabledContainerColor = ButtonDefaults.buttonColors().containerColor.copy(
                                             alpha = 0.7f
@@ -441,7 +455,10 @@ fun MapScreen(
                                     ),
                                     onClick = {
                                         listViewModel.onIntent(
-                                            FlatListScreenAction.SearchFlats(true)
+                                            FlatListScreenAction.SearchFlats(
+                                                isLoadMore = true,
+                                                isLoadMoreForce = true
+                                            )
                                         )
                                     }) {
                                     Text("Загрузить больше")

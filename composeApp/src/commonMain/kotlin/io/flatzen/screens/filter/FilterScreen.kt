@@ -60,6 +60,7 @@ import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
+import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
 import io.flatzen.widgets.AppReadOnlyTextField
@@ -246,6 +247,7 @@ fun FilterScreen(
                     selectedCity = state.filters.location?.selectedCity?.displayName,
                     selectedMetro = state.filters.getSelectedMetroStation(),
                     selectedAddress = state.filters.getSelectedAddress(),
+                    selectedAreas = state.filters.mapAreas,
                     isLocationFilterActive = currentFilters.isLocationFilterActive(),
                     onOpenLocation = {
                         onOpenLocation()
@@ -586,6 +588,7 @@ private fun LocationItem(
     selectedCity: String?,
     selectedMetro: String,
     selectedAddress: String?,
+    selectedAreas: List<MapAreasUi>?,
     isLocationFilterActive: Boolean,
     onOpenLocation: () -> Unit,
 ) {
@@ -621,6 +624,16 @@ private fun LocationItem(
             if (!selectedAddress.isNullOrEmpty()) {
                 Text(
                     text = "Адрес: $selectedAddress",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (!selectedAreas.isNullOrEmpty()) {
+                val areasText = selectedAreas.joinToString(separator = ", ") { it.name }
+                Text(
+                    text = "Активные области: $areasText",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

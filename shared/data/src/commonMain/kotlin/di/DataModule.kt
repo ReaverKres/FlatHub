@@ -53,7 +53,7 @@ val dataModule = module {
         qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER
     ) { KufarDailyFlatMapper() }
     single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
-    single<MapAreaRepository> { MapAreaRepositoryImpl(mapAreasDao = get()) }
+    single<MapAreaRepository> { MapAreaRepositoryImpl(mapAreasDao = get(), filtersDao = get()) }
     single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
 
     single<KufarApi> { get<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT).createKufarApi() }

@@ -1,9 +1,11 @@
 package repository.fillter
 
 import entities.CommonFilterRequestModel
+import entities.MapArea
 import entities.SavedFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 
 interface FilterRepository {
 
@@ -28,4 +30,21 @@ interface FilterRepository {
 }
 
 fun FilterRepository.lastFilter(): CommonFilterRequestModel =
-    cashedFilterFlow.replayCache.firstOrNull()?.commonFilterRequestModel ?: CommonFilterRequestModel()
+    cashedFilterFlow.replayCache.firstOrNull()?.commonFilterRequestModel
+        ?: CommonFilterRequestModel()
+
+suspend fun FilterRepository.areasInFilter(mapAreaRepository: MapAreaRepository): List<MapArea> {
+    val filter = this.lastFilter()
+    val mapAreas = mapAreaRepository.getAllSavedAreas().first()
+
+    val mapAreasInFilter = mapAreas.map { mapArea ->
+        val filterArea = filter.mapAreas.find { it.pathId == mapArea.pathId }
+        if (filterArea != null) {
+            mapArea.copy(isActive = filterArea.isActive)
+        } else {
+            mapArea.copy(isActive = false)
+        }
+    }
+
+    return mapAreasInFilter
+}

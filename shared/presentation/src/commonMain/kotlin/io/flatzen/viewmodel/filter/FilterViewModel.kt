@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import repository.fillter.FilterRepository
 import repository.fillter.MapAreaRepository
+import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
 import server_request.Currency
 
@@ -66,8 +67,15 @@ sealed interface FilterScreenAction : MviAction {
     data object ShowSavedAreaListDialog : FilterScreenAction
     data object HideSavedAreaListDialog : FilterScreenAction
 
-    data class ActivateMapArea(val id: String, val checked: Boolean) : FilterScreenAction
-    data class DeleteMapArea(val id: String) : FilterScreenAction
+    data class ActivateMapArea(
+        val id: String,
+        val checked: Boolean,
+        val doNetworkCall: Boolean = false,
+        val savedAreasDialogIsVisible: Boolean = true
+    ) : FilterScreenAction
+
+    data class DeleteMapArea(val id: String, val doNetworkCall: Boolean = false) :
+        FilterScreenAction
 
     data class UpdateFilterName(val name: String) : FilterScreenAction
     data object SaveFilter : FilterScreenAction
@@ -104,7 +112,8 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FilterApplied(val filter: SavedFilter) : FilterScreenEvent
     data class DialogStateUpdated(val dialogState: SaveDialogState) : FilterScreenEvent
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
-    data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) : FilterScreenEvent
+    data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) :
+        FilterScreenEvent
 }
 
 class FilterViewModel(
@@ -354,25 +363,41 @@ class FilterViewModel(
             }
 
             is FilterScreenAction.ActivateMapArea -> {
-                if(action.checked) {
-                    mapAreaRepository.activateMapArea(action.id)
+                var currentAreas = filterRepository.areasInFilter(mapAreaRepository)
+                currentAreas = if (action.checked) {
+                    currentAreas.map {
+                        if (it.pathId == action.id) it.copy(isActive = true) else it
+                    }
                 } else {
-                    mapAreaRepository.deactivateMapArea(action.id)
+                    currentAreas.map {
+                        if (it.pathId == action.id) it.copy(isActive = false) else it
+                    }
                 }
-                val currentAreas = MapAreasUi.mapFromModelToUi(mapAreaRepository.getAllSavedAreas().first())
-                val newState = currentState.filters.copy(mapAreas = currentAreas)
-                flowOf(FiltersUpdated(newState), getUpdatedMapAreaDialogState())
+                val currentAreasUi = MapAreasUi.mapFromModelToUi(currentAreas)
+                val newState = currentState.filters.copy(mapAreas = currentAreasUi)
+                flowOf(
+                    FiltersUpdated(newState, action.doNetworkCall),
+                    getUpdatedMapAreaDialogState(currentAreasUi, action.savedAreasDialogIsVisible)
+                )
             }
+
             is FilterScreenAction.DeleteMapArea -> {
                 mapAreaRepository.deleteSavedArea(action.id)
-                val currentAreas = MapAreasUi.mapFromModelToUi(mapAreaRepository.getAllSavedAreas().first())
-                val newState = currentState.filters.copy(mapAreas = currentAreas)
-                flowOf(FiltersUpdated(newState), getUpdatedMapAreaDialogState())
+                val currentAreasUi =
+                    MapAreasUi.mapFromModelToUi(filterRepository.areasInFilter(mapAreaRepository))
+                val newState = currentState.filters.copy(mapAreas = currentAreasUi)
+                flowOf(
+                    FiltersUpdated(newState, action.doNetworkCall),
+                    getUpdatedMapAreaDialogState(currentAreasUi)
+                )
             }
 
             FilterScreenAction.ShowSavedAreaListDialog -> {
-                flowOf(getUpdatedMapAreaDialogState())
+                val currentAreas = filterRepository.areasInFilter(mapAreaRepository)
+                val currentAreasUi = MapAreasUi.mapFromModelToUi(currentAreas)
+                flowOf(getUpdatedMapAreaDialogState(currentAreasUi))
             }
+
             FilterScreenAction.HideSavedAreaListDialog -> {
                 flowOf(
                     SavedAreasDialogStateUpdated(
@@ -437,17 +462,17 @@ class FilterViewModel(
         }
     }
 
-    private suspend fun getUpdatedMapAreaDialogState(): SavedAreasDialogStateUpdated {
-        val mapAreasUi = mapAreaRepository.getAllSavedAreas().let {
-            MapAreasUi.mapFromModelToUi(it.first())
-        }
+    private suspend fun getUpdatedMapAreaDialogState(
+        currentAreas: List<MapAreasUi>,
+        isVisible: Boolean = true
+    ): SavedAreasDialogStateUpdated {
         return SavedAreasDialogStateUpdated(
-                SavedAreasDialogState(
-                    title = "Сохранённые области",
-                    isVisible = true,
-                    savedAreas = mapAreasUi
-                )
+            SavedAreasDialogState(
+                title = "Сохранённые области",
+                isVisible = isVisible,
+                savedAreas = currentAreas
             )
+        )
 
     }
 
