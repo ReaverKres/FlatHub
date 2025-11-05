@@ -247,7 +247,7 @@ fun FilterScreen(
                     selectedCity = state.filters.location?.selectedCity?.displayName,
                     selectedMetro = state.filters.getSelectedMetroStation(),
                     selectedAddress = state.filters.getSelectedAddress(),
-                    selectedAreas = state.filters.mapAreas,
+                    selectedAreas = state.filters.mapAreas?.filter { it.isActive },
                     isLocationFilterActive = currentFilters.isLocationFilterActive(),
                     onOpenLocation = {
                         onOpenLocation()

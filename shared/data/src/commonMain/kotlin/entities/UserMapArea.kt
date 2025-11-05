@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "map_areas")
 @Serializable
 @TypeConverters(RoomTypeConverter::class)
-data class MapArea(
+data class UserMapArea(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val pathId: String,
     val coordinates: List<Coordinates>,
@@ -23,7 +23,7 @@ data class MapArea(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as MapArea
+        other as UserMapArea
 
         if (id != other.id) return false
         if (isActive != other.isActive) return false

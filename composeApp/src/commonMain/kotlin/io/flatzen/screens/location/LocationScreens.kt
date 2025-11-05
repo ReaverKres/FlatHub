@@ -49,10 +49,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.viewmodel.DistrictsAction
+import io.flatzen.viewmodel.DistrictsViewModel
 import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.MetroLineState
+import io.flatzen.widgets.dialogs.DistrictAreasDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -65,6 +69,10 @@ fun LocationScreen(
 ) {
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val districtsViewModel: DistrictsViewModel = koinViewModel()
+    val districtsState by districtsViewModel.state.collectAsStateWithLifecycle()
+
 
     var addressInput by remember { mutableStateOf("") }
     val addresses = state.filters.address?.toMutableSet() ?: mutableSetOf()
@@ -80,6 +88,19 @@ fun LocationScreen(
             },
             onDismiss = {
                 viewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
+            }
+        )
+    }
+
+    if (state.districtAreasDialogState.isVisible) {
+        districtsViewModel.onIntent(DistrictsAction.LoadDistricts)
+        val districts = districtsState.districts.map { MapAreasUi(it.id.toString(), it.coordinates, false, it.nameLocal) }
+        DistrictAreasDialog(
+            state = state.savedAreasDialogState.copy(savedAreas = districts),
+            onCheckArea = { id, isChecked ->
+            },
+            onDismiss = {
+                viewModel.onIntent(FilterScreenAction.HideDistrictsDialog)
             }
         )
     }
@@ -183,6 +204,19 @@ fun LocationScreen(
                         }) {
                             Text("Метро")
                         }
+                    }
+                }
+            }
+
+            ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+                viewModel.onIntent(FilterScreenAction.ShowDistrictsDialog)
+            }) {
+                Row(modifier = Modifier.padding(16.dp)) {
+                    BadgedBox(badge = {
+                        val count = 0
+                        if (count > 0) Badge { Text(count.toString()) }
+                    }) {
+                        Text("Районы")
                     }
                 }
             }
