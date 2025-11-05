@@ -1,16 +1,22 @@
 package repository.osm
 
 import io.flatzen.commoncomponents.commonentities.Coordinates
+import io.flatzen.commoncomponents.commonentities.DistrictType
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
+import repository.fillter.FilterRepository
+import repository.fillter.lastFilter
 import server_response.osm.OsmCityIdResponse
 import server_response.osm.OsmDistrictsResponse
 import kotlin.random.Random
 
-class OsmApiService(private val httpClient: HttpClient) {
+class OsmApiService(
+    private val httpClient: HttpClient,
+    private val filterRepository: FilterRepository
+) {
 
     suspend fun findCityId(cityName: String): Long? {
         val query = """
@@ -32,12 +38,17 @@ class OsmApiService(private val httpClient: HttpClient) {
     }
 
     suspend fun getCityDistricts(cityId: Long): List<OsmDistricts> {
+        val areaId = 3600000000 + cityId
         val query = """
-            [out:json][timeout:25];
-            area(3600000000 + $cityId)->.city;
+        [out:json][timeout:25];
+        area($areaId)->.city;
+        (
             relation[boundary="administrative"][admin_level="9"](area.city);
-            out geom;
-        """.trimIndent()
+            relation[place="suburb"](area.city);
+            way[place="suburb"](area.city);
+        );
+        out geom;
+    """.trimIndent()
 
         return try {
             val response = executeQuery<OsmDistrictsResponse>(query)
@@ -48,7 +59,7 @@ class OsmApiService(private val httpClient: HttpClient) {
         }
     }
 
-    private suspend inline fun<reified T> executeQuery(query: String): T {
+    private suspend inline fun <reified T> executeQuery(query: String): T {
         val encodedQuery = query.replace("\n", "")
         val url = "https://overpass-api.de/api/interpreter?data=$encodedQuery"
 
@@ -59,24 +70,35 @@ class OsmApiService(private val httpClient: HttpClient) {
     }
 
     private fun parseDistricts(response: OsmDistrictsResponse): List<OsmDistricts> {
-        return response.elements?.map { element ->
+        val filter = filterRepository.lastFilter()
+        return response.elements?.mapNotNull  { element ->
             val coordinates = mutableListOf<Coordinates>()
 
             element?.members?.forEach { member ->
                 if (member?.type == "way" && member.role == "outer") {
                     member.geometry?.forEach { point ->
-                        if(point?.lat != null && point.lon != null){
+                        if (point?.lat != null && point.lon != null) {
                             coordinates.add(Coordinates(point.lat, point.lon))
                         }
                     }
                 }
             }
 
+            val nameEn = element?.tags?.nameEn
+            val nameRu = element?.tags?.nameRu
+            if (nameEn.isNullOrEmpty() && nameRu.isNullOrEmpty() || coordinates.isEmpty()) {
+                return@mapNotNull null
+            }
+
+            val isChecked = filter.districtsArea.find { it.id == element.id && it.isChecked } != null
+
             OsmDistricts(
-                id = element?.id ?: Random.nextLong(),
-                nameEn = element?.tags?.nameEn ?: "Unknown",
-                nameLocal = element?.tags?.nameRu ?: "Unknown",
-                coordinates = coordinates
+                id = element.id ?: Random.nextLong(),
+                nameEn = nameEn ?: nameRu ?: "Unknown",
+                nameLocal = nameRu ?: nameEn ?: "Unknown",
+                coordinates = coordinates,
+                districtType = if(element.tags.boundary == "administrative") DistrictType.ADMINISTRATIVE else DistrictType.SUBURB,
+                isChecked = isChecked
             )
         } ?: emptyList()
     }

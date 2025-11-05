@@ -69,6 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
+import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -149,7 +150,7 @@ fun HomeScreen(
         viewModel.onIntent(FlatListScreenAction.ScreenVisible)
         viewModel.effect.collect {
             when (it) {
-                is FlatListEffect.ScrollToTop -> {
+                is FlatListEffect.ScrollToTopEffect -> {
                     lazyListState.scrollToItem(0)
                 }
             }
@@ -487,15 +488,8 @@ fun LoadingContent(
 private fun SkeletonFlatGridItem(
     modifier: Modifier = Modifier
 ) {
-    val infiniteTransition = rememberInfiniteTransition()
-    val shimmerProgress by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
+
+    val shimmerProgress by rememberShimmerProgress()
 
     Card(
         modifier = modifier.fillMaxWidth(),

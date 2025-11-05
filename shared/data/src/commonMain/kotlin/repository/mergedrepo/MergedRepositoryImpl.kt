@@ -4,7 +4,6 @@ import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
-import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -224,21 +223,30 @@ class MergedRepositoryImpl(
             resultList = resultList.filter { it.imageUrls?.isNotEmpty() == true }
         }
 
-        if (currentFilter.userMapAreas.any { it.isActive }) {
-            resultList = filterFlatsInActiveArea(resultList, currentFilter.userMapAreas)
+        val userPolygons = currentFilter.userMapAreas
+            .filter { it.isActive }
+            .map { it.coordinates }
+        val districtPolygons = currentFilter.districtsArea
+            .filter { it.isChecked }
+            .map { it.coordinates }
+        val allActivePolygons = userPolygons + districtPolygons
+
+        if (allActivePolygons.isNotEmpty()) {
+            resultList = filterFlatsByPolygons(resultList, allActivePolygons)
         }
 
-        return resultList
+        return resultList.distinctBy { it.adId }
     }
 
-    private fun filterFlatsInActiveArea(flats: List<AppFlat>, userMapAreas: List<UserMapArea>): List<AppFlat> {
-        val activeAreas = userMapAreas.filter { it.isActive }
-        if (activeAreas.isEmpty()) return flats
+    private fun filterFlatsByPolygons(
+        flats: List<AppFlat>,
+        activePolygons: List<List<Coordinates>>
+    ): List<AppFlat> {
+        if (activePolygons.isEmpty()) return flats
 
         val result = mutableSetOf<AppFlat>()
 
-        for (area in activeAreas) {
-            val polygon = area.coordinates
+        for (polygon in activePolygons) {
             if (polygon.size < 3) continue
 
             val flatsInThisArea = flats.filter { flat ->

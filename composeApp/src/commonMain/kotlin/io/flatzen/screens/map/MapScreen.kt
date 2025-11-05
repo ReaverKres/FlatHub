@@ -82,6 +82,7 @@ import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.onTap
 import ovh.plrapps.mapcompose.api.removeAllMarkers
 import ovh.plrapps.mapcompose.api.removeCallout
+import ovh.plrapps.mapcompose.api.removeMarker
 import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
@@ -118,6 +119,7 @@ fun MapScreen(
     val mapModelState by mapViewModel.state.collectAsStateWithLifecycle()
 
     val savePathCalloutId = "savePathCalloutId"
+    val firstPointInPathMarker = "pathid1"
 
     BackHandler {
         navigateBack()
@@ -145,8 +147,9 @@ fun MapScreen(
                 onMarkerClick { id, x, y ->
                     selectedFlatId = id.toLongOrNull()
                 }
-                removeAllMarkers()
                 if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
+                    removeAllMarkers()
+
                     listState.flatList.forEach {
                         val mercatorCoordinates =
                             it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
@@ -213,7 +216,7 @@ fun MapScreen(
                 is MapEffect.FirstPointInPathEffect -> {
                     mapViewModel.mapState.apply {
                         addMarker(
-                            id = "pathid1",
+                            id = firstPointInPathMarker,
                             x = it.x,
                             y = it.y,
                             clickableAreaScale = Offset(1.3f, 1.3f),
@@ -262,6 +265,8 @@ fun MapScreen(
 
                 is MapEffect.MapAreaSavedEffect -> {
                     mapViewModel.mapState.removeCallout(savePathCalloutId)
+                    mapViewModel.mapState.removeMarker(firstPointInPathMarker)
+
                     filterViewModel.onIntent(FilterScreenAction.ActivateMapArea(
                         id = it.pathId,
                         checked = true,

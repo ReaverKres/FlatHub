@@ -18,6 +18,7 @@ import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
+import io.flatzen.viewmodel.UiDistrict
 import server_request.Currency
 
 enum class MetroLineState() {
@@ -106,7 +107,8 @@ data class FilterState(
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val location: LocationUiFilter? = null,
-    val mapAreas: List<MapAreasUi>? = null,
+    val userMapAreas: List<MapAreasUi>? = null,
+    val districtsArea: List<UiDistrict>? = null,
     val address: Set<AddressUiState>? = null,
     val fromOwnerOnly: Boolean = false,
     val withPhotoOnly: Boolean = false,

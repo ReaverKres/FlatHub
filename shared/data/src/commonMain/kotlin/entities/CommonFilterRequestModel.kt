@@ -45,6 +45,7 @@ import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
 import kotlinx.serialization.Serializable
+import repository.osm.OsmDistricts
 import server_request.Currency
 
 @Serializable
@@ -59,6 +60,7 @@ data class CommonFilterRequestModel(
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
+    val districtsArea: List<OsmDistricts> = emptyList(),
     val location: LocationFilter? = null,
     val userMapAreas: List<UserMapArea> = emptyList(),
     val roomOnly: Boolean = false,
@@ -130,6 +132,10 @@ data class CommonFilterRequestModel(
         val thisSelectedAreas = this.userMapAreas.filter { it.isActive }
         val otherSelectedAreas = other.userMapAreas.filter { it.isActive }
 
+        // Всегда сравниваем только выбранные области
+        val thisDistrictsAreas = this.districtsArea.filter { it.isChecked }
+        val otherDistrictsAreas = other.districtsArea.filter { it.isChecked }
+
         //TODO
         // Специальная логика сравнения location: null эквивалентен LocationFilter(BY, MINSK)
         val isLocationEqual = when {
@@ -169,6 +175,7 @@ data class CommonFilterRequestModel(
         if (numberOfRooms != other.numberOfRooms) return false
         if (thisSelectedMetro != otherSelectedMetro) return false
         if (thisSelectedAreas != otherSelectedAreas) return false
+        if (thisDistrictsAreas != otherDistrictsAreas) return false
         if (!isLocationEqual) return false // Используем кастомную проверку location
         if (sortOption != other.sortOption) return false // Added sort option comparison
 
@@ -193,6 +200,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + (numberOfRooms?.hashCode() ?: 0)
         result = 31 * result + metroStations.filter { it.selected }.hashCode()
         result = 31 * result + userMapAreas.filter { it.isActive }.hashCode()
+        result = 31 * result + districtsArea.filter { it.isChecked }.hashCode()
         result = 31 * result + sortOption.hashCode() // Added sort option to hash code
 
         //TODO
