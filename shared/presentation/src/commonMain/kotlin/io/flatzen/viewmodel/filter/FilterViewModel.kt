@@ -19,8 +19,8 @@ import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
 import io.flatzen.mvi.MviState
+import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.base.BaseMviViewModel
-import io.flatzen.viewmodel.filter.FilterScreenEvent.DistrictsDialogStateUpdated
 import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterApplied
 import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterDeleted
 import io.flatzen.viewmodel.filter.FilterScreenEvent.FilterSaved
@@ -29,7 +29,6 @@ import io.flatzen.viewmodel.filter.FilterScreenEvent.SaveDialogStateUpdated
 import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedAreasDialogStateUpdated
 import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedFilterSelectionUpdated
 import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedFiltersLoaded
-import io.flatzen.viewmodel.sharedstates.DistrictAreasDialogState
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -42,7 +41,6 @@ import repository.fillter.FilterRepository
 import repository.fillter.UserMapAreaRepository
 import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
-import repository.osm.OsmRepository
 import server_request.Currency
 
 // Actions
@@ -55,6 +53,7 @@ sealed interface FilterScreenAction : MviAction {
     ) : FilterScreenAction
 
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
+    data class UpdateDistrictFilter(val allDistricts: List<UiDistrict>, val district: UiDistrict) : FilterScreenAction
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
     data class UpdateSortOption(val sortOption: FlatSort) :
         FilterScreenAction // Added sort option action
@@ -65,9 +64,6 @@ sealed interface FilterScreenAction : MviAction {
 
     data object ShowSaveFilterDialog : FilterScreenAction
     data object HideSaveFilterDialog : FilterScreenAction
-
-    data object ShowDistrictsDialog : FilterScreenAction
-    data object HideDistrictsDialog : FilterScreenAction
 
     data object ShowSavedAreaListDialog : FilterScreenAction
     data object HideSavedAreaListDialog : FilterScreenAction
@@ -104,7 +100,6 @@ data class FilterScreenState(
     val savedFilters: List<SavedFilterState> = emptyList(),
     val saveDialogState: SaveDialogState = SaveDialogState(),
     val savedAreasDialogState: SavedAreasDialogState = SavedAreasDialogState(),
-    val districtAreasDialogState: DistrictAreasDialogState = DistrictAreasDialogState()
 ) : MviState
 
 // Events
@@ -117,7 +112,6 @@ sealed interface FilterScreenEvent : MviEvent {
     data class FilterDeleted(val filterId: Long) : FilterScreenEvent
     data class FilterApplied(val filter: SavedFilter) : FilterScreenEvent
     data class SaveDialogStateUpdated(val dialogState: SaveDialogState) : FilterScreenEvent
-    data class DistrictsDialogStateUpdated(val dialogState: DistrictAreasDialogState) : FilterScreenEvent
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
     data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) :
         FilterScreenEvent
@@ -126,7 +120,6 @@ sealed interface FilterScreenEvent : MviEvent {
 class FilterViewModel(
     private val filterRepository: FilterRepository,
     private val userMapAreaRepository: UserMapAreaRepository,
-    private val osmRepository: OsmRepository,
     private val analyticsManager: AnalyticsManager
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
@@ -211,6 +204,24 @@ class FilterViewModel(
                 flowOf(FiltersUpdated(updatedFilterState))
             }
 
+            is FilterScreenAction.UpdateDistrictFilter -> {
+                val allDistricts = if (currentState.filters.districtsArea.isNullOrEmpty()){
+                    action.allDistricts
+                } else {
+                    currentState.filters.districtsArea
+                }
+                val updatedFilterState = currentState.filters.copy(
+                    districtsArea = allDistricts.map {
+                        if (it.nameLocal == action.district.nameLocal) {
+                            action.district
+                        } else {
+                            it
+                        }
+                    }
+                )
+                flowOf(FiltersUpdated(updatedFilterState))
+            }
+
             is FilterScreenAction.UpdateSortOption -> {
                 val updatedFilterState = currentState.filters.copy(sortOption = action.sortOption)
                 flowOf(FiltersUpdated(updatedFilterState))
@@ -232,7 +243,8 @@ class FilterViewModel(
                     metroStationsState = MetroStationsMapper.allStationsOrderedForUi(),
                     location = null,
                     address = null,
-                    mapAreas = currentState.filters.mapAreas?.map { it.copy(isActive = false) },
+                    userMapAreas = currentState.filters.userMapAreas?.map { it.copy(isActive = false) },
+                    districtsArea = currentState.filters.districtsArea?.map { it.copy(isChecked = false) },
                 )
                 flowOf(FiltersUpdated(filter))
             }
@@ -253,31 +265,6 @@ class FilterViewModel(
                             filterName = "",
                             isNameValid = true,
                             errorMessage = null
-                        )
-                    )
-                )
-            }
-
-            is FilterScreenAction.ShowDistrictsDialog -> {
-                flowOf(
-                    DistrictsDialogStateUpdated(
-                        currentState.districtAreasDialogState.copy(
-                            isVisible = true,
-                            isLoading = true,
-                            title = "Районы города"
-                        )
-                    )
-                )
-            }
-
-            is FilterScreenAction.HideDistrictsDialog -> {
-                flowOf(
-                    DistrictsDialogStateUpdated(
-                        currentState.districtAreasDialogState.copy(
-                            isVisible = false,
-                            isLoading = false,
-                            title = null,
-                            districtsAreas = emptyList()
                         )
                     )
                 )
@@ -408,7 +395,7 @@ class FilterViewModel(
                     }
                 }
                 val currentAreasUi = MapAreasUi.mapFromModelToUi(currentAreas)
-                val newState = currentState.filters.copy(mapAreas = currentAreasUi)
+                val newState = currentState.filters.copy(userMapAreas = currentAreasUi)
                 flowOf(
                     FiltersUpdated(newState, action.doNetworkCall),
                     getUpdatedMapAreaDialogState(currentAreasUi, action.savedAreasDialogIsVisible)
@@ -419,7 +406,7 @@ class FilterViewModel(
                 userMapAreaRepository.deleteSavedArea(action.id)
                 val currentAreasUi =
                     MapAreasUi.mapFromModelToUi(filterRepository.areasInFilter(userMapAreaRepository))
-                val newState = currentState.filters.copy(mapAreas = currentAreasUi)
+                val newState = currentState.filters.copy(userMapAreas = currentAreasUi)
                 flowOf(
                     FiltersUpdated(newState, action.doNetworkCall),
                     getUpdatedMapAreaDialogState(currentAreasUi)
@@ -482,10 +469,6 @@ class FilterViewModel(
                 currentState.copy(saveDialogState = event.dialogState)
             }
 
-            is DistrictsDialogStateUpdated -> {
-                currentState.copy(districtAreasDialogState = event.dialogState)
-            }
-
             is SavedFilterSelectionUpdated -> {
                 currentState.copy(
                     savedFilters = currentState.savedFilters.map { filter ->
@@ -537,7 +520,8 @@ class FilterViewModel(
                     availableCities = LocationUiMapper.cities()
                 )
             } ?: LocationUiFilter(),
-            mapAreas = MapAreasUi.mapFromModelToUi(model.userMapAreas),
+            districtsArea = UiDistrict.mapFromModelToUi(model.districtsArea),
+            userMapAreas = MapAreasUi.mapFromModelToUi(model.userMapAreas),
             address = model.addressRequestModel.map { AddressUiState(address = it.address) }
                 .toSet(),
             sortOption = model.sortOption,
@@ -595,7 +579,8 @@ class FilterViewModel(
                     city = filters.location.selectedCity.code
                 )
             },
-            userMapAreas = MapAreasUi.mapFromUiToModel(filters.mapAreas),
+            districtsArea = UiDistrict.mapFromUiToModel(filters.districtsArea),
+            userMapAreas = MapAreasUi.mapFromUiToModel(filters.userMapAreas),
             addressRequestModel = filters.address?.map {
                 AddressRequestModel(address = it.address)
             }?.toSet().orEmpty(),

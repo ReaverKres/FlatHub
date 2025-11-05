@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -47,16 +49,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsAction
 import io.flatzen.viewmodel.DistrictsViewModel
 import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
-import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.MetroLineState
-import io.flatzen.widgets.dialogs.DistrictAreasDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -66,12 +69,10 @@ fun LocationScreen(
     navigateBack: () -> Unit,
     openCity: () -> Unit,
     openMetro: () -> Unit,
+    openDistricts: () -> Unit,
 ) {
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val districtsViewModel: DistrictsViewModel = koinViewModel()
-    val districtsState by districtsViewModel.state.collectAsStateWithLifecycle()
 
 
     var addressInput by remember { mutableStateOf("") }
@@ -88,19 +89,6 @@ fun LocationScreen(
             },
             onDismiss = {
                 viewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
-            }
-        )
-    }
-
-    if (state.districtAreasDialogState.isVisible) {
-        districtsViewModel.onIntent(DistrictsAction.LoadDistricts)
-        val districts = districtsState.districts.map { MapAreasUi(it.id.toString(), it.coordinates, false, it.nameLocal) }
-        DistrictAreasDialog(
-            state = state.savedAreasDialogState.copy(savedAreas = districts),
-            onCheckArea = { id, isChecked ->
-            },
-            onDismiss = {
-                viewModel.onIntent(FilterScreenAction.HideDistrictsDialog)
             }
         )
     }
@@ -209,7 +197,7 @@ fun LocationScreen(
             }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
-                viewModel.onIntent(FilterScreenAction.ShowDistrictsDialog)
+                openDistricts()
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {
@@ -226,7 +214,7 @@ fun LocationScreen(
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {
-                        val count = state.filters.mapAreas?.filter { it.isActive }?.size ?: 0
+                        val count = state.filters.userMapAreas?.filter { it.isActive }?.size ?: 0
                         if (count > 0) Badge { Text(count.toString()) }
                     }) {
                         Text("Сохранённые области")
@@ -312,7 +300,7 @@ fun MetroSelectScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val filteredStation = state.filters.metroStationsState.filter {
-        it.name.lowercase().contains(query.text.lowercase())
+        it.name.lowercase().contains(query.text.lowercase(), true)
     }
 
     Scaffold(
@@ -389,4 +377,111 @@ fun MetroSelectScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DistrictSelectScreen(
+    navigateBack: () -> Unit,
+) {
+    var query by remember { mutableStateOf(TextFieldValue("")) }
 
+    val filterViewModel: FilterViewModel = koinViewModel()
+    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
+
+
+    val districtsViewModel: DistrictsViewModel = koinViewModel()
+    val districtsState by districtsViewModel.state.collectAsStateWithLifecycle()
+
+    //Todo need Refactoring
+    val districts = if(filterState.filters.districtsArea.isNullOrEmpty()) {
+        districtsState.districts
+    } else {
+        filterState.filters.districtsArea
+    } ?:emptyList()
+
+    val filteredDistricts = districts.filter {
+        it.nameLocal.lowercase().contains(query.text.lowercase(), true)
+    }
+
+    val shimmerProgress by rememberShimmerProgress()
+
+    LaunchedEffectOnce(Unit) {
+        districtsViewModel.onIntent(DistrictsAction.LoadDistricts)
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                title = { Text("Районы") },
+                navigationIcon = {
+                    IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }
+                }
+            )
+        }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding)) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                placeholder = { Text("Поиск района") }
+            )
+
+            if(districtsState.isLoading) {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    repeat( 6) {
+                        ShimmerBox(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .height(20.dp),
+                            shimmerProgress = shimmerProgress
+                        )
+                    }
+                }
+            } else {
+                LazyColumn {
+                    items(filteredDistricts) { district ->
+                        ListItem(
+                            headlineContent = {
+                                Row {
+                                    Text(district.nameLocal, modifier = Modifier.weight(1f))
+                                    Spacer(modifier = Modifier.height(0.dp))
+                                }
+                            },
+                            trailingContent = {
+                                Row {
+                                    Checkbox(
+                                        checked = district.isChecked,
+                                        onCheckedChange = {
+                                            filterViewModel.onIntent(
+                                                FilterScreenAction.UpdateDistrictFilter(
+                                                    districtsState.districts,
+                                                    district.copy(isChecked = it)
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    filterViewModel.onIntent(
+                                        FilterScreenAction.UpdateDistrictFilter(
+                                            districtsState.districts,
+                                            district.copy(isChecked = district.isChecked.not())
+                                        )
+                                    )
+                                },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        )
+                        Divider()
+                    }
+                }
+            }
+        }
+    }
+}

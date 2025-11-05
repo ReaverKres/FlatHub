@@ -47,6 +47,7 @@ import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
 import io.flatzen.screens.home.HomeScreen
 import io.flatzen.screens.location.CitySelectScreen
+import io.flatzen.screens.location.DistrictSelectScreen
 import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
@@ -83,6 +84,9 @@ object CitySelectScreenDestination
 
 @Serializable
 object MetroSelectScreenDestination
+
+@Serializable
+object DistrictSelectScreenDestination
 
 @Serializable
 object FaqScreenDestination
@@ -296,7 +300,8 @@ fun App() {
                         LocationScreen(
                             navigateBack = { navController.popBackStack() },
                             openCity = { navController.navigate(CitySelectScreenDestination) },
-                            openMetro = { navController.navigate(MetroSelectScreenDestination) }
+                            openMetro = { navController.navigate(MetroSelectScreenDestination) },
+                            openDistricts = { navController.navigate(DistrictSelectScreenDestination)}
                         )
                     }
 
@@ -308,6 +313,12 @@ fun App() {
 
                     animatedComposable<MetroSelectScreenDestination> {
                         MetroSelectScreen(
+                            navigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    animatedComposable<DistrictSelectScreenDestination> {
+                        DistrictSelectScreen(
                             navigateBack = { navController.popBackStack() }
                         )
                     }

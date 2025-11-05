@@ -46,7 +46,6 @@ val flatSearchPresentationModule = module {
         FilterViewModel(
             filterRepository = get(),
             userMapAreaRepository = get(),
-            osmRepository = get(),
             analyticsManager = get()
         )
     }

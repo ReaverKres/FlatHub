@@ -2,7 +2,6 @@ package di
 
 import core.KtorConverterFactory
 import de.jensklingenberg.ktorfit.Ktorfit
-
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -10,14 +9,11 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.header
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders.ContentEncoding
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
-
 import org.koin.dsl.module
 
 private const val HTTP_TIMEOUT: Long = 20_000
@@ -28,7 +24,7 @@ private const val DOMOVITA_BASE_URL: String = "https://api.domovita.by/"
 
 val networkModule = module {
 
-    single<Json> {
+    single<Json>(named("defaultJson")) {
         Json {
             explicitNulls = false
             ignoreUnknownKeys = true
@@ -45,7 +41,7 @@ val networkModule = module {
             }
 
             install(ContentNegotiation) {
-                json(get())
+                json(get<Json>(named("defaultJson")))
             }
 
             install(Logging) {

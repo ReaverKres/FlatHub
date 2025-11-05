@@ -56,6 +56,7 @@ import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
+import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
@@ -247,7 +248,8 @@ fun FilterScreen(
                     selectedCity = state.filters.location?.selectedCity?.displayName,
                     selectedMetro = state.filters.getSelectedMetroStation(),
                     selectedAddress = state.filters.getSelectedAddress(),
-                    selectedAreas = state.filters.mapAreas?.filter { it.isActive },
+                    selectedUserAreas = state.filters.userMapAreas?.filter { it.isActive },
+                    selectedDistricts = state.filters.districtsArea?.filter { it.isChecked },
                     isLocationFilterActive = currentFilters.isLocationFilterActive(),
                     onOpenLocation = {
                         onOpenLocation()
@@ -588,7 +590,8 @@ private fun LocationItem(
     selectedCity: String?,
     selectedMetro: String,
     selectedAddress: String?,
-    selectedAreas: List<MapAreasUi>?,
+    selectedDistricts: List<UiDistrict>?,
+    selectedUserAreas: List<MapAreasUi>?,
     isLocationFilterActive: Boolean,
     onOpenLocation: () -> Unit,
 ) {
@@ -630,8 +633,18 @@ private fun LocationItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (!selectedAreas.isNullOrEmpty()) {
-                val areasText = selectedAreas.joinToString(separator = ", ") { it.name }
+            if (!selectedDistricts.isNullOrEmpty()) {
+                val areasText = selectedDistricts.joinToString(separator = ", ") { it.nameLocal }
+                Text(
+                    text = "Районы: $areasText",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (!selectedUserAreas.isNullOrEmpty()) {
+                val areasText = selectedUserAreas.joinToString(separator = ", ") { it.name }
                 Text(
                     text = "Активные области: $areasText",
                     style = MaterialTheme.typography.bodySmall,

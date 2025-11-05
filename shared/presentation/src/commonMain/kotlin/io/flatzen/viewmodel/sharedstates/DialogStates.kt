@@ -36,11 +36,3 @@ data class SavedAreasDialogState(
     val title: String? = null,
     val savedAreas: List<MapAreasUi> = emptyList()
 )
-
-@Immutable
-data class DistrictAreasDialogState(
-    val isVisible: Boolean = false,
-    val isLoading: Boolean = true,
-    val title: String? = null,
-    val districtsAreas: List<MapAreasUi> = emptyList()
-)
