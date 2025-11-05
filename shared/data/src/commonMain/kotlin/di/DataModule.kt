@@ -26,14 +26,17 @@ import repository.domovita.DomovitaRepository
 import repository.domovita.DomovitaRepositoryImpl
 import repository.fillter.FilterRepository
 import repository.fillter.FilterRepositoryImpl
-import repository.fillter.MapAreaRepository
-import repository.fillter.MapAreaRepositoryImpl
+import repository.fillter.UserMapAreaRepository
+import repository.fillter.UserMapAreaRepositoryImpl
 import repository.kufar.KufarRepository
 import repository.kufar.KufarRepositoryImpl
 import repository.mergedrepo.MergedRepository
 import repository.mergedrepo.MergedRepositoryImpl
 import repository.onliner.OnlinerRepository
 import repository.onliner.OnlinerRepositoryImpl
+import repository.osm.OsmApiService
+import repository.osm.OsmRepository
+import repository.osm.OsmRepositoryImpl
 import repository.realt.RealtRepository
 import repository.realt.RealtRepositoryImpl
 import repository.userpreferences.UserPreferencesRepository
@@ -53,7 +56,11 @@ val dataModule = module {
         qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER
     ) { KufarDailyFlatMapper() }
     single<FilterRepository> { FilterRepositoryImpl(savedFiltersDao = get()) }
-    single<MapAreaRepository> { MapAreaRepositoryImpl(mapAreasDao = get(), filtersDao = get()) }
+
+    single<UserMapAreaRepository> { UserMapAreaRepositoryImpl(userMapAreasDao = get()) }
+    single<OsmApiService> { OsmApiService(httpClient = get()) }
+    single<OsmRepository> { OsmRepositoryImpl(osmApiService = get()) }
+
     single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
 
     single<KufarApi> { get<Ktorfit>(qualifier = DataQualifiers.KUFAR_KTORFIT).createKufarApi() }

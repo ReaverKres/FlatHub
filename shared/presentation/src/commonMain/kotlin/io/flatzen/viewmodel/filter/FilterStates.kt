@@ -1,7 +1,7 @@
 package io.flatzen.viewmodel.filter
 
 import androidx.compose.runtime.Immutable
-import entities.MapArea
+import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.AdType.DAILY
@@ -71,7 +71,7 @@ data class MapAreasUi(
     val name: String
 ) {
     companion object {
-        fun mapFromModelToUi(areas: List<MapArea>): List<MapAreasUi> {
+        fun mapFromModelToUi(areas: List<UserMapArea>): List<MapAreasUi> {
             return areas.map {
                 MapAreasUi(
                     id = it.pathId,
@@ -82,9 +82,9 @@ data class MapAreasUi(
             }
         }
 
-        fun mapFromUiToModel(areas: List<MapAreasUi>?): List<MapArea> {
+        fun mapFromUiToModel(areas: List<MapAreasUi>?): List<UserMapArea> {
             return areas?.map {
-                MapArea(
+                UserMapArea(
                     pathId = it.id,
                     coordinates = it.coordinates,
                     isActive = it.isActive,

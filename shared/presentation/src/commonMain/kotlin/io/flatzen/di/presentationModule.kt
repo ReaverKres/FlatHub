@@ -3,6 +3,7 @@ package io.flatzen.di
 import di.dataModule
 import di.databaseModule
 import di.networkModule
+import io.flatzen.viewmodel.DistrictsViewModel
 import io.flatzen.viewmodel.FavoritesViewModel
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.MapViewModel
@@ -44,15 +45,21 @@ val flatSearchPresentationModule = module {
     viewModel {
         FilterViewModel(
             filterRepository = get(),
-            mapAreaRepository = get(),
+            userMapAreaRepository = get(),
+            osmRepository = get(),
             analyticsManager = get()
         )
     }
 
+    viewModel { DistrictsViewModel(
+        osmRepository = get(),
+        filterRepository = get()
+    ) }
+
     viewModel {
         MapViewModel(
             tileStreamProvider = get(),
-            mapAreaRepository = get(),
+            userMapAreaRepository = get(),
             filterRepository = get()
         )
     }

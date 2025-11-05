@@ -1,7 +1,7 @@
 package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
-import entities.MapArea
+import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
@@ -33,14 +33,14 @@ import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.layout.Forced
 import ovh.plrapps.mapcompose.ui.state.MapState
 import repository.fillter.FilterRepository
-import repository.fillter.MapAreaRepository
+import repository.fillter.UserMapAreaRepository
 import repository.fillter.areasInFilter
 import kotlin.math.pow
 import kotlin.random.Random
 
 class MapViewModel(
     private val tileStreamProvider: TileStreamProvider,
-    private val mapAreaRepository: MapAreaRepository,
+    private val userMapAreaRepository: UserMapAreaRepository,
     private val filterRepository: FilterRepository
 ) : BaseMviViewModel<MapAction, MapUiState, MapEvent, MapEffect>() {
 
@@ -69,7 +69,7 @@ class MapViewModel(
     init {
         filterRepository.cashedFilterFlow
             .onEach { items ->
-                val areaInFilter = filterRepository.areasInFilter(mapAreaRepository)
+                val areaInFilter = filterRepository.areasInFilter(userMapAreaRepository)
                 showPathFromDb(areaInFilter)
             }
 //            .flowOn(Dispatchers.IO)
@@ -253,7 +253,7 @@ class MapViewModel(
         }
     }
 
-    private suspend fun showPathFromDb(items: List<MapArea>) {
+    private suspend fun showPathFromDb(items: List<UserMapArea>) {
         pathDataPoints.clear()
         mapState.removeAllPaths()
         items.forEach { mapAreaDb ->
@@ -288,8 +288,8 @@ class MapViewModel(
         coordinates: List<Coordinates>,
         name: String
     ) {
-        mapAreaRepository.saveArea(
-            MapArea(
+        userMapAreaRepository.saveArea(
+            UserMapArea(
                 pathId = pathId,
                 coordinates = coordinates,
                 isActive = true,

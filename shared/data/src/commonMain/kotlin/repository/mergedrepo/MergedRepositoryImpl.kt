@@ -4,7 +4,7 @@ import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
-import entities.MapArea
+import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -224,15 +224,15 @@ class MergedRepositoryImpl(
             resultList = resultList.filter { it.imageUrls?.isNotEmpty() == true }
         }
 
-        if (currentFilter.mapAreas.any { it.isActive }) {
-            resultList = filterFlatsInActiveArea(resultList, currentFilter.mapAreas)
+        if (currentFilter.userMapAreas.any { it.isActive }) {
+            resultList = filterFlatsInActiveArea(resultList, currentFilter.userMapAreas)
         }
 
         return resultList
     }
 
-    private fun filterFlatsInActiveArea(flats: List<AppFlat>, mapAreas: List<MapArea>): List<AppFlat> {
-        val activeAreas = mapAreas.filter { it.isActive }
+    private fun filterFlatsInActiveArea(flats: List<AppFlat>, userMapAreas: List<UserMapArea>): List<AppFlat> {
+        val activeAreas = userMapAreas.filter { it.isActive }
         if (activeAreas.isEmpty()) return flats
 
         val result = mutableSetOf<AppFlat>()
