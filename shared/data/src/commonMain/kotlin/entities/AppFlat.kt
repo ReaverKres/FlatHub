@@ -8,6 +8,10 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.utils.formatMainPrice
+import io.flatzen.commoncomponents.utils.formatPricePerSquare
+import io.flatzen.commoncomponents.utils.formatSecondPrice
 import kotlinx.datetime.Instant
 
 @Entity
@@ -74,6 +78,32 @@ data class AppFlat(
     val owner: Boolean?, // Собственник или агент
 ) {
     fun getAdTypeNonNull(): AdType = adType ?: AdType.RENT
+}
+
+fun AppFlat.getPricesText(): PriceText {
+    val bynMainPrice = this.priceUsd == null && this.priceByn != null
+    val mainPriceText = if (bynMainPrice) {
+        formatMainPrice(this.priceByn, "BYN")
+    } else if(this.priceUsd != null) {
+        formatMainPrice(this.priceUsd)
+    } else null
+
+    val localPriceText = if (this.adType != AdType.DAILY && !bynMainPrice) {
+        formatSecondPrice(this.priceByn, mainPriceText != null)
+    } else null
+    val priceLocalPerSquare = if(priceBynSquare != null) {
+        formatPricePerSquare(this.priceBynSquare, "BYN")
+    } else null
+
+    val priceMainPerSquare = if(priceUsdSquare != null) {
+        formatPricePerSquare(this.priceUsdSquare, "$")
+    } else null
+    return PriceText(
+        mainPrice = mainPriceText,
+        mainPerSquarePrice = priceMainPerSquare,
+        localPrice = localPriceText,
+        localPerSquarePrice = priceLocalPerSquare
+    )
 }
 
 data class FlatDevInfo(

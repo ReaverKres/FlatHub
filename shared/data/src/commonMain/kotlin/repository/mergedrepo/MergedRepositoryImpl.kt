@@ -76,12 +76,12 @@ class MergedRepositoryImpl(
                             val priceUsdSquare =
                                 if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
                                     net.priceUsd / net.totalArea
-                                } else null
+                                } else net.priceUsdSquare
 
                             val priceBynSquare =
                                 if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
                                     net.priceByn / net.totalArea
-                                } else null
+                                } else net.priceBynSquare
 
                             val updated = net.copy(
                                 adType = filter.adType,

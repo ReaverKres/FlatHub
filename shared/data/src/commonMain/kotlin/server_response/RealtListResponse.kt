@@ -156,7 +156,7 @@ class RealtListResponse {
                         @SerialName("paymentStatus")
                         val paymentStatus: Int?,
                         @SerialName("price")
-                        val price: Int?,
+                        val price: Double?,
                         @SerialName("priceChangeDate")
                         val priceChangeDate: String?,
                         @SerialName("priceChangeDirection")
@@ -168,11 +168,11 @@ class RealtListResponse {
                         @SerialName("priceMin")
                         val priceMin: Int?,
                         @SerialName("pricePerM2")
-                        val pricePerM2: Int?,
+                        val pricePerM2: Double?,
                         @SerialName("pricePerM2Max")
-                        val pricePerM2Max: Int?,
+                        val pricePerM2Max: Double?,
                         @SerialName("pricePerPerson")
-                        val pricePerPerson: Int?,
+                        val pricePerPerson: Double?,
                         @SerialName("rooms")
                         val rooms: Int?,
                         @SerialName("specialComment")

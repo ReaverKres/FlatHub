@@ -174,7 +174,11 @@ fun LocationScreen(
                                 imageVector = Icons.Default.Delete, // Можешь заменить на Close
                                 contentDescription = "Удалить",
                                 modifier = Modifier.clickable {
-                                    viewModel.onIntent(FilterScreenAction.UpdateAddressFilter(addresses - addr))
+                                    viewModel.onIntent(
+                                        FilterScreenAction.UpdateAddressFilter(
+                                            addresses - addr
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -259,7 +263,9 @@ fun CitySelectScreen(
                                     FilterScreenAction.UpdateFilter(
                                         state.filters.copy(
                                             location = state.filters.location?.copy(
-                                                selectedCity = LocationUiMapper.findSelectedCity(city.code)
+                                                selectedCity = LocationUiMapper.findSelectedCity(
+                                                    city.code
+                                                )
                                             )
                                         )
                                     )
@@ -392,11 +398,11 @@ fun DistrictSelectScreen(
     val districtsState by districtsViewModel.state.collectAsStateWithLifecycle()
 
     //Todo need Refactoring
-    val districts = if(filterState.filters.districtsArea.isNullOrEmpty()) {
+    val districts = if (filterState.filters.districtsArea.isNullOrEmpty()) {
         districtsState.districts
     } else {
         filterState.filters.districtsArea
-    } ?:emptyList()
+    } ?: emptyList()
 
     val filteredDistricts = districts.filter {
         it.nameLocal.lowercase().contains(query.text.lowercase(), true)
@@ -429,14 +435,17 @@ fun DistrictSelectScreen(
                 placeholder = { Text("Поиск района") }
             )
 
-            if(districtsState.isLoading) {
+            if (districtsState.isLoading) {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    repeat( 6) {
+                    repeat(6) {
                         ShimmerBox(
                             modifier = Modifier
-                                .padding(16.dp)
+                                .padding(
+                                    horizontal = 16.dp,
+                                    vertical = 10.dp
+                                )
                                 .fillMaxWidth()
-                                .height(20.dp),
+                                .height(30.dp),
                             shimmerProgress = shimmerProgress
                         )
                     }

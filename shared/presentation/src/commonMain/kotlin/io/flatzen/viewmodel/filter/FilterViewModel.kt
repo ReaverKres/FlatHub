@@ -546,7 +546,7 @@ class FilterViewModel(
         }
         if (list.find { it.selected } == null) {
             list = list.map {
-                if (it.commercialPropertyType == CommercialPropertyType.All) {
+                if (it.commercialPropertyType == CommercialPropertyType.Office) {
                     it.copy(selected = true)
                 } else {
                     it

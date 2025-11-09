@@ -49,10 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.utils.formatMainPrice
-import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -249,7 +246,7 @@ fun MapScreen(
                                         ) {
                                             Text(
                                                 text = "Сохранить",
-                                                color = Color.Black,
+                                                color = Color.DarkGray,
                                                 modifier = Modifier.padding(
                                                     horizontal = 10.dp,
                                                     vertical = 4.dp
@@ -266,13 +263,16 @@ fun MapScreen(
                 is MapEffect.MapAreaSavedEffect -> {
                     mapViewModel.mapState.removeCallout(savePathCalloutId)
                     mapViewModel.mapState.removeMarker(firstPointInPathMarker)
+                    mapViewModel.onIntent(MapAction.ClickOnMapArea)
 
-                    filterViewModel.onIntent(FilterScreenAction.ActivateMapArea(
-                        id = it.pathId,
-                        checked = true,
-                        doNetworkCall = true,
-                        savedAreasDialogIsVisible = false
-                    ))
+                    filterViewModel.onIntent(
+                        FilterScreenAction.ActivateMapArea(
+                            id = it.pathId,
+                            checked = true,
+                            doNetworkCall = true,
+                            savedAreasDialogIsVisible = false
+                        )
+                    )
                 }
             }
         }
@@ -345,8 +345,11 @@ fun MapScreen(
                 )
             }
         ) { paddingValues ->
-            Box(Modifier.fillMaxSize().padding(paddingValues)) {
-                MapUI(modifier = Modifier.fillMaxSize(), state = mapViewModel.mapState)
+            Box(Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding())) {
+                MapUI(
+                    modifier = Modifier.fillMaxSize(),
+                    state = mapViewModel.mapState
+                )
                 if (listState.isLoading || listState.isLoadingMore) {
                     LinearProgressIndicator(
                         Modifier
@@ -383,7 +386,7 @@ fun MapScreen(
                             .padding(bottom = 6.dp)
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
-                            if(mapModelState.undoBtnVisible) {
+                            if (mapModelState.undoBtnVisible) {
                                 ActionButton("Отменить") {
                                     mapViewModel.onIntent(MapAction.UndoLastPoint)
                                 }
@@ -612,24 +615,15 @@ fun FlatItemContent(
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val bynMainPrice = flat.priceUsd == null && flat.priceByn != null
-            val mainPriceText = if (bynMainPrice) {
-                formatMainPrice(flat.priceByn, "BYN")
-            } else if (flat.priceUsd != null) {
-                formatMainPrice(flat.priceUsd)
-            } else "Цена не указана"
 
-            val secondPriceText = if (flat.adType != AdType.DAILY && !bynMainPrice) {
-                formatSecondPrice(flat.priceByn, mainPriceText != null)
-            } else null
-            if (mainPriceText != null) {
-                Text(
-                    text = mainPriceText,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            val mainPriceText = flat.priceText.mainPriceText
+            val secondPriceText = flat.priceText.secondPriceText
+            Text(
+                text = mainPriceText,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             if (secondPriceText != null) {
                 Spacer(Modifier.width(8.dp))
                 Text(

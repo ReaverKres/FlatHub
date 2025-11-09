@@ -28,6 +28,7 @@ data class RealtGraphqlRequest(
                   code
                   title
                   price
+                  pricePerM2
                   priceCurrency
                   rooms
                   areaTotal
