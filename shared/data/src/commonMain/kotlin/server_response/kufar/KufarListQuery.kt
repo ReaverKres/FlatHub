@@ -5,6 +5,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import mappers.kufar.KufarPropertyTypes
 
 object KufarListQuery {
@@ -98,7 +99,8 @@ object KufarListQuery {
             val intToRange: Int? = commercialRoomRange?.toRange?.toInt()
 
             val commercialPropertyType = commercialRequestModel?.commercialPropertyType
-            if (commercialPropertyType != null && KufarPropertyTypes.asParam(commercialPropertyType) != null){
+            if (dealType.isCommercial &&
+                commercialPropertyType != null && KufarPropertyTypes.asParam(commercialPropertyType) != null){
                 params["prt"] = KufarPropertyTypes.asParam(commercialPropertyType).orEmpty()
             }
 

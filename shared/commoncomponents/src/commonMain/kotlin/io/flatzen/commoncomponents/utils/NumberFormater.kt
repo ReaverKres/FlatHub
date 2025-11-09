@@ -14,6 +14,10 @@ val onlyIntPredicate: (String) -> Boolean = { text ->
     text.isEmpty() || text.matches(intRegex)
 }
 
+fun formatPricePerSquare(price: Double, currency: String): String {
+    return "${price.asPriceFormat()} $currency/м²"
+}
+
 fun Double.asPriceFormat(): String {
     return this.roundToInt().toString().replace(priceRegex, "$1 ")
 }

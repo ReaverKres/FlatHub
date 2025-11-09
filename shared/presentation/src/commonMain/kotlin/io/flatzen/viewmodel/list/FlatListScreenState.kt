@@ -2,9 +2,11 @@ package io.flatzen.viewmodel.list
 
 import androidx.compose.runtime.Immutable
 import entities.AppFlat
+import entities.getPricesText
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.CommercialUiInfo
 import io.flatzen.viewmodel.PropertyTypeUi
@@ -37,8 +39,9 @@ data class UiFlat(
     val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
     val imageUrls: List<String>,
-    val priceUsd: Double?,
-    val priceByn: Double?,
+    val mainPrice: Double?,
+    val localPrice: Double?,
+    val priceText: PriceText,
     val numberOfRooms: String?,
     val publishedAt: String?,
     val metroStation: String?,
@@ -71,8 +74,9 @@ data class UiFlat(
                     savedInFavorite = it.savedInFavorites,
                     saveInFavoriteInProgress = false,
                     isViewed = it.isViewed,
-                    priceByn = it.priceByn,
-                    priceUsd = it.priceUsd,
+                    localPrice = it.priceByn,
+                    mainPrice = it.priceUsd,
+                    priceText = it.getPricesText(),
                     numberOfRooms = if (it.rooms != null) {
                         if (it.isStudio == true) "Студия" else "${it.rooms}"
                     } else if (it.commercialInfo?.numberOfRooms != null) {

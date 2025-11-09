@@ -76,8 +76,6 @@ import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
-import io.flatzen.commoncomponents.utils.formatMainPrice
-import io.flatzen.commoncomponents.utils.formatSecondPrice
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
@@ -803,24 +801,16 @@ private fun GridFlatCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val bynMainPrice = flat.priceUsd == null && flat.priceByn != null
-                val mainPriceText = if (bynMainPrice) {
-                    formatMainPrice(flat.priceByn, "BYN")
-                } else if(flat.priceUsd != null) {
-                    formatMainPrice(flat.priceUsd)
-                } else "Цена не указана"
 
-                val secondPriceText = if (flat.adType != AdType.DAILY && !bynMainPrice) {
-                    formatSecondPrice(flat.priceByn, mainPriceText != null)
-                } else null
-                if (mainPriceText != null) {
-                    Text(
-                        text = mainPriceText,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                val mainPriceText = flat.priceText.mainPriceText
+                val secondPriceText = flat.priceText.secondPriceText
+
+                Text(
+                    text = mainPriceText,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 if (secondPriceText != null) {
                     Spacer(Modifier.width(4.dp))
                     Text(

@@ -11,6 +11,7 @@ import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
+import io.flatzen.commoncomponents.utils.Const.USD_TO_EUR_RATE
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
@@ -20,13 +21,35 @@ import kotlin.time.ExperimentalTime
 class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat> {
 
     override fun map(response: RealtFlatResponse): AppFlat {
-        var priceUsd = response.price?.toDouble().takeIf {
-            response.priceCurrency == 840
+
+        var priceUsd: Double? = null
+        var priceByn: Double? = null
+        var priceUsdPerSquare: Double? = null
+        var priceBynPerSquare: Double? = null
+        val priceIsNotZero = response.price != 0.0
+        val priceSquareIsNotZero = response.pricePerM2 != 0.0
+        if(response.priceCurrency == 840 && priceIsNotZero) {
+            priceUsd = response.price
         }
-        if(response.priceCurrency == 978) {
+        if(response.priceCurrency == 978 && priceIsNotZero) {
             //TODO получить текущий курс
-            priceUsd = response.price?.times(1.16)
+            priceUsd = response.price?.times(USD_TO_EUR_RATE)
         }
+        if(response.priceCurrency == 933 && priceIsNotZero) {
+            priceByn = response.price
+        }
+
+        if(response.priceCurrency == 840 && priceSquareIsNotZero) {
+            priceUsdPerSquare = response.pricePerM2
+        }
+        if(response.priceCurrency == 978 && priceSquareIsNotZero) {
+            //TODO получить текущий курс
+            priceUsdPerSquare = response.pricePerM2?.times(USD_TO_EUR_RATE)
+        }
+        if(response.priceCurrency == 933 && priceSquareIsNotZero) {
+            priceBynPerSquare = response.pricePerM2
+        }
+
         val urlPath = when {
             response.adType == AdType.RENT -> "rent-flat-for-long"
             response.adType == AdType.DAILY -> "rent-flat-for-day"
@@ -71,12 +94,12 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
             ),
             imageUrls = response.images?.filterNotNull().orEmpty(),
             priceUsd = priceUsd,
-            priceByn = response.price?.toDouble().takeIf {
-                response.priceCurrency == 933
-            },
+            priceByn = priceByn,
+            priceBynSquare = priceBynPerSquare,
+            priceUsdSquare = priceUsdPerSquare,
             rooms = response.rooms,
             district = response.stateDistrictName,
-            address = listOfNotNull(response.streetName, response.buildingNumber).joinToString(" "),
+            address = "${response.streetName}, ${response.buildingNumber}",
             coordinates = response.location?.let { latLng ->
                 if (latLng.size >= 2) {
                     Coordinates(

@@ -2,13 +2,15 @@ package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
 import entities.AppFlat
+import entities.getPricesText
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.utils.asPriceFormat
+import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -51,6 +53,7 @@ data class UiDetailFlat(
     val imageUrls: List<String>,
     val priceUsd: Double?,
     val priceByn: Double?,
+    val priceText: PriceText,
     val priceUsdSquare: String?,
     val priceBynSquare: String?,
     val address: String,
@@ -268,6 +271,7 @@ class FlatDetailViewModel(
             imageUrls = appFlat.imageUrls.orEmpty(),
             priceUsd = appFlat.priceUsd,
             priceByn = appFlat.priceByn,
+            priceText = appFlat.getPricesText(),
             priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
             priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),
@@ -315,9 +319,5 @@ class FlatDetailViewModel(
 
     private fun formatArea(area: Double): String {
         return "${area.roundToInt()} м²"
-    }
-
-    private fun formatPricePerSquare(price: Double, currency: String): String {
-        return "${price.asPriceFormat()} $currency/м²"
     }
 }

@@ -110,11 +110,11 @@ data class CommonFilterRequestModel(
     ): Boolean {
         return when {
             propertyType1 == null && propertyType2 == null -> true
-            propertyType1 == null -> propertyType2 == CommercialPropertyType.All
-            propertyType2 == null -> propertyType1 == CommercialPropertyType.All
+            propertyType1 == null -> propertyType2 == CommercialPropertyType.Office
+            propertyType2 == null -> propertyType1 == CommercialPropertyType.Office
             else -> propertyType1 == propertyType2 ||
-                    (propertyType1 == CommercialPropertyType.All && propertyType2 == null) ||
-                    (propertyType1 == null && propertyType2 == CommercialPropertyType.All)
+                    (propertyType1 == CommercialPropertyType.Office && propertyType2 == null) ||
+                    (propertyType1 == null && propertyType2 == CommercialPropertyType.Office)
         }
     }
 
@@ -217,7 +217,7 @@ data class CommonFilterRequestModel(
 private fun normalizeCommercialForHashCode(commercial: CommercialRequestModel?): CommercialRequestModel? {
     return when {
         commercial == null -> null
-        commercial.commercialPropertyType == null || commercial.commercialPropertyType == CommercialPropertyType.All ->
+        commercial.commercialPropertyType == null || commercial.commercialPropertyType == CommercialPropertyType.Office ->
             commercial.copy(commercialPropertyType = null)
 
         else -> commercial

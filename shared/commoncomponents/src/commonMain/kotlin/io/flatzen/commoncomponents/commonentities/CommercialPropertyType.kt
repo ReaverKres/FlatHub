@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 sealed class CommercialPropertyType {
     companion object {
         val allInstances: List<CommercialPropertyType> = listOf(
-            All,
+//            All,
             Office,
             Retail,
             Services,
