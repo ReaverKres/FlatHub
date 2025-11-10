@@ -2,9 +2,12 @@ package io.flatzen
 
 import DetailScreen
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -33,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -147,7 +151,7 @@ fun App() {
                                 ListScreenDestination -> isRouteSelected(ListScreenDestination::class.qualifiedName)
                                 FavoritesScreenDestination -> isRouteSelected(FavoritesScreenDestination::class.qualifiedName)
                                 SettingsScreenDestination -> isRouteSelected(SettingsScreenDestination::class.qualifiedName)
-                                is MapScreenDestination -> currentDestination?.route?.startsWith(MapScreenDestination::class.qualifiedName!!) ?: false
+                                is MapScreenDestination -> currentDestination.route?.startsWith(MapScreenDestination::class.qualifiedName!!) ?: false
                                 else -> false
                             }
 
@@ -203,7 +207,18 @@ fun App() {
                 }
             }
         ) { innerPadding ->
-            Box {
+            val focusManager = LocalFocusManager.current
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        focusManager.clearFocus()
+                    }
+            ) {
                 var snackbarHeight by remember { mutableStateOf(0.dp) }
                 val additionalTopPadding = if (!isConnected) snackbarHeight else 0.dp
 

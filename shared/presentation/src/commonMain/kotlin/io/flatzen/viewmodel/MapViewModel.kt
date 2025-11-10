@@ -91,6 +91,11 @@ class MapViewModel(
             MapAction.ClickOnMapArea -> {
                 val event = if (currentState.isMapAreaActive) {
                     // Remove all paths when hiding map area
+                    val areaInFilter = filterRepository.areasInFilter(userMapAreaRepository)
+                    val isCurrentPathInDb = areaInFilter.find { it.pathId == currentPathId } != null
+                    if (isCurrentPathInDb.not()) {
+                        currentPathId?.let { id -> mapState.removePath(id) }
+                    }
                     HideMapArea
                 } else {
                     // Generate a new path ID when starting to draw

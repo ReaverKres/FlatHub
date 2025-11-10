@@ -1,8 +1,6 @@
 package io.flatzen.widgets
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -38,8 +36,8 @@ fun AppAsyncImage(
         ImageRequest.Builder(context)
             .data(imageUrl)
             .memoryCacheKey(imageUrl)
-            .diskCacheKey(imageUrl)
-            .diskCachePolicy(CachePolicy.ENABLED)
+//            .diskCacheKey(imageUrl)
+//            .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .build()
     } else {

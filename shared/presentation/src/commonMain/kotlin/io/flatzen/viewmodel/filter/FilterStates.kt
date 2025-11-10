@@ -15,6 +15,7 @@ import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
@@ -140,6 +141,12 @@ data class FilterState(
             is DAILY -> "Посуточно"
         }}")
 
+        if(adType.isCommercial) {
+            commercial.commercialPropertyType?.find { it.selected }?.let { type ->
+                activeFilters.add("Тип помещения: ${type.commercialPropertyTypeName}")
+            }
+        }
+
         // Полная цена
         priceFull?.let { price ->
             activeFilters.add("Цена: ${price.priceFrom?.let { "от $it" } ?: ""} ${price.priceTo?.let { "до $it" } ?: ""} ${
@@ -196,10 +203,21 @@ data class FilterState(
         location?.let {
             activeFilters.add("Локация: ${it.selectedCity.displayName}")
         }
+        val activeAreas = userMapAreas?.filter { it.isActive }
+        if(activeAreas.isNullOrEmpty().not()) {
+            val areasText = activeAreas.joinToString(", ") { it.name }
+            activeFilters.add("Активные области: $areasText")
+        }
+        val activeDistricts = districtsArea?.filter { it.isChecked }
+        if(activeDistricts.isNullOrEmpty().not()) {
+            val districtsText = activeDistricts.joinToString(", ") { it.nameLocal }
+            activeFilters.add("Районы: $districtsText")
+        }
 
         // Булевы фильтры
         if (fromOwnerOnly) activeFilters.add("Только от собственника")
         if (withPhotoOnly) activeFilters.add("Только с фото")
+        if (roomOnly) activeFilters.add("Только комната")
 
 //        activeFilters.add("Сортировка: ${getSortOptionName(sortOption)}")
 
