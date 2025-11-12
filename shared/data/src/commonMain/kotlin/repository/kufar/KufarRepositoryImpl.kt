@@ -13,7 +13,6 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.Location
 import io.flatzen.commoncomponents.date.toKufarDateDays
-import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
@@ -23,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.serialization.json.Json
@@ -42,7 +40,6 @@ import kotlin.enums.EnumEntries
 class KufarRepositoryImpl(
     private val api: KufarApi,
     private val ktorClient: HttpClient,
-    private val connectionMonitor: ConnectionMonitor,
     private val kufarDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>,
     private val kufarResponseMapper: ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFlat>,
     private val kufarDailyResponseMapper: ResponseToEntitiesFlatMapper<KufarDailyListResponse.RentalObject, AppFlat>,
@@ -269,7 +266,7 @@ class KufarRepositoryImpl(
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
         val flatFromDb = getFlatByIdFromDb(flatId, flatsDao)
-        if (connectionMonitor.isNetworkAvailable.first() && flatFromDb.flatDevInfo.isDetailData.not()) {
+        if (flatFromDb.flatDevInfo.isDetailData.not()) {
             val kufarDetailFlatHtml = getApartmentHtml(flatFromDb.flatDetailUrl)
             val kufarDetailFlat = kufarDetailHtmlMapper.map(flatFromDb, kufarDetailFlatHtml)
             emit(kufarDetailFlat)
