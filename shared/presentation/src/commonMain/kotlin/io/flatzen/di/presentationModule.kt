@@ -24,6 +24,7 @@ val flatSearchPresentationModule = module {
             mergedRepository = get(),
             filterRepository = get(),
             userPreferencesRepository = get(),
+            connectionMonitor = get(),
             analyticsManager = get(),
             configFieldsChecker = get()
         )

@@ -68,6 +68,7 @@ val dataModule = module {
         KufarRepositoryImpl(
             api = get(),
             ktorClient = get(),
+            connectionMonitor = get(),
             kufarDetailHtmlMapper = get(qualifier = DataQualifiers.KUFAR_DETAIL_FLAT_MAPPER),
             kufarResponseMapper = get(qualifier = DataQualifiers.KUFAR_FLAT_MAPPER),
             kufarDailyResponseMapper = get(qualifier = DataQualifiers.KUFAR_DAILY_FLAT_MAPPER),
@@ -102,6 +103,7 @@ val dataModule = module {
             onlinerDetailHtmlMapper = get(qualifier = DataQualifiers.ONLINER_DETAIL_FLAT_MAPPER),
             filterRepository = get(),
             flatsDao = get(),
+            connectionMonitor = get()
         )
     }
 

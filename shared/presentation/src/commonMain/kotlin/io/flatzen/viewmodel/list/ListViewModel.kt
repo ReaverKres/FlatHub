@@ -7,6 +7,7 @@ import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.error_handling.process
@@ -111,6 +112,7 @@ class FlatSearchViewModel(
     private val mergedRepository: MergedRepository,
     private val filterRepository: FilterRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val connectionMonitor: ConnectionMonitor,
     private val analyticsManager: AnalyticsManager,
     private val configFieldsChecker: ConfigFieldsChecker
 ) : BaseMviViewModel<FlatListScreenAction, FlatListScreenState, FlatListEvents, FlatListEffect>() {
@@ -129,11 +131,11 @@ class FlatSearchViewModel(
     )
 
     init {
-//        connectionMonitor.isNetworkAvailable.onEach {
-//            isNetworkAvailable = it
-//        }
-//            .flowOn(Dispatchers.Default)
-//            .launchIn(viewModelScope)
+        connectionMonitor.isNetworkAvailable.onEach {
+            isNetworkAvailable = it
+        }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
 
         filterRepository.cashedFilterFlow.onEach { newFilters ->
             noFlatsToLoadMore = false
@@ -211,9 +213,9 @@ class FlatSearchViewModel(
                     )
                 }
 
-//                if (connectionMonitor.isNetworkAvailable.first().not()) {
-//                    return flowOf()
-//                }
+                if (connectionMonitor.isNetworkAvailable.first().not()) {
+                    return flowOf()
+                }
 
                 if (configFieldsChecker.checkBoolean(ConfigFields.FreeVersionAvailable)
                         ?.not() == true
@@ -296,11 +298,11 @@ class FlatSearchViewModel(
         isRefreshing: Boolean
     ): Flow<FlatListEvents> {
         return when {
-//            connectionMonitor.isNetworkAvailable.first().not() -> {
-//                mergedRepository.getAllFlatsFromLocalDb()
-//                    .asLCE()
-//                    .map { AllFlatsLoaded(it, isLoadMore, isRefreshing) }
-//            }
+            connectionMonitor.isNetworkAvailable.first().not() -> {
+                mergedRepository.getAllFlatsFromLocalDb()
+                    .asLCE()
+                    .map { AllFlatsLoaded(it, isLoadMore, isRefreshing) }
+            }
 
             else -> {
                 mergedRepository.searchFlats()
