@@ -10,6 +10,7 @@ import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
@@ -18,16 +19,18 @@ import io.ktor.http.parsing.ParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
-import server_response.OnlinerListResponse
 import server_response.OnlinerSearchErrorResponses
+import server_response.OnlinerListResponse
 import kotlin.math.roundToInt
 
 class OnlinerRepositoryImpl(
@@ -37,6 +40,7 @@ class OnlinerRepositoryImpl(
     private val onlinerDetailHtmlMapper: AdditionalParamMapper<String, AppFlat>,
     private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
+    private val connectionMonitor: ConnectionMonitor
 ) : OnlinerRepository {
 
     override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
@@ -136,7 +140,7 @@ class OnlinerRepositoryImpl(
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
         val flatFromList = getFlatByIdFromDb(flatId, flatsDao)
-        if (flatFromList.flatDevInfo.isDetailData.not()) {
+        if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
             val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
             val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)
             emit(onlinerDetailFlat)
