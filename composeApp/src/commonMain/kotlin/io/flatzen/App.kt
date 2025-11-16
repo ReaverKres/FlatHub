@@ -58,7 +58,6 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.widgets.MessageSnackbar
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -111,9 +110,8 @@ fun App() {
     val connectionMonitor: ConnectionMonitor = koinInject()
     var isConnected by remember { mutableStateOf(true) }
 
-    // Monitor network connectivity
     LaunchedEffect(Unit) {
-        connectionMonitor.isNetworkAvailable.distinctUntilChanged().collect { connected ->
+        connectionMonitor.isNetworkAvailable.collect { connected ->
             isConnected = connected
         }
     }
