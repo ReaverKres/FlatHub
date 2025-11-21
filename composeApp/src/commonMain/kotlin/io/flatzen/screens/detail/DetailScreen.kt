@@ -386,7 +386,7 @@ private fun SourceLinkSection(
             onClick = {
                 shareLauncher.shareText(
                     text = url,
-                    subject = "Квартира была найдена на Locus"
+                    subject = "Квартира была найдена на FlatHub"
                 )
             }
         ) {
