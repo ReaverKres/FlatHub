@@ -182,7 +182,7 @@ fun MoreScreen(
                         image = Res.getUri("drawable/telegram.svg"),
                         text = "Написать разработчикам в Telegram",
                         onClick = {
-                            uriHandler.openUri("https://t.me/theLocus_bot")
+                            uriHandler.openUri("https://t.me/FlatHub_appbot")
                         }
                     )
                 }
