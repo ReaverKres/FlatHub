@@ -9,6 +9,7 @@ import api.createDomovitaApi
 import api.createKufarApi
 import api.createOnlinerApi
 import api.createRealtApi
+import api.createSubscriptionsApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
 import mappers.DomovitaFlatMapper

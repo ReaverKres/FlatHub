@@ -4,6 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.mmk.kmpnotifier.notification.NotifierManager
+import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
 import io.flatzen.commoncomponents.config.Config
@@ -32,6 +34,7 @@ class FlatZenApp : Application(), KoinComponent {
         }
 
         createDefaultNotificationChannel()
+        initKmpNotifier()
     }
     
     private fun initAppmetrica() {
@@ -52,5 +55,14 @@ class FlatZenApp : Application(), KoinComponent {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
+    }
+
+    private fun initKmpNotifier() {
+        NotifierManager.initialize(
+            configuration = NotificationPlatformConfiguration.Android(
+                notificationIconResId = R.mipmap.ic_launcher,
+                showPushNotification = true
+            )
+        )
     }
 }

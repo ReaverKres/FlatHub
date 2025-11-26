@@ -57,7 +57,8 @@ data class SaveDialogState(
     val isVisible: Boolean = false,
     val filterName: String = "",
     val isNameValid: Boolean = true,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val showNotification: Boolean = false
 )
 
 @Immutable

@@ -98,7 +98,7 @@ sealed interface FilterScreenAction : MviAction {
 data class FilterScreenState(
     val filters: FilterState,
     val savedFilters: List<SavedFilterState> = emptyList(),
-    val saveDialogState: SaveDialogState = SaveDialogState(),
+    val saveDialogState: SaveDialogState = SaveDialogState(showNotification = true),
     val savedAreasDialogState: SavedAreasDialogState = SavedAreasDialogState(),
 ) : MviState
 

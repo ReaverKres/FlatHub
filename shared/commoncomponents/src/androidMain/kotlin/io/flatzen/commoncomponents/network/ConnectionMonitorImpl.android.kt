@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @SuppressLint("MissingPermission")
-internal actual class ConnectionMonitorImpl(context: Context) : ConnectionMonitor {
+internal class ConnectionMonitorImpl(context: Context) : ConnectionMonitor {
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     override fun isWifiAvailable(): Boolean {
         val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)

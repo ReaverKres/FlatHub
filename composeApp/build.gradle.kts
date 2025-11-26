@@ -38,6 +38,7 @@ kotlin {
             isStatic = true
             export(project(":shared:presentation"))
             export(project(":shared:commoncomponents"))
+            export(libs.kmp.notifier)
         }
     }
 

@@ -1,12 +1,18 @@
 package io.flatzen.viewmodel.notifications
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import api.CreateSubscriptionRequest
+import com.mmk.kmpnotifier.notification.NotifierManager
 import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
+import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.notifications.NotificationsService
-import io.flatzen.viewmodel.base.BaseMviViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
@@ -16,10 +22,27 @@ class NotificationsViewModel(
     private val permissionsController: PermissionsController,
     private val notificationsService: NotificationsService,
     private val subscriptionsRepository: SubscriptionsRepository,
-    private val filterRepository: FilterRepository
-) : BaseMviViewModel<Unit, Unit, Unit, Unit>() {
+    private val filterRepository: FilterRepository,
+    private val devicePlatform: DevicePlatform
+) : ViewModel() {
 
-    override fun initialState(): Unit = Unit
+    init {
+        // Listen for token changes and forward to backend
+        NotifierManager.addListener(object : NotifierManager.Listener {
+            override fun onNewToken(token: String) {
+                super.onNewToken(token)
+                viewModelScope.launch(Dispatchers.IO) {
+                    runCatching {
+                        subscriptionsRepository.registerDevice(
+                            deviceToken = token,
+                            platform = devicePlatform.platformType.name,
+                            userId = null
+                        )
+                    }
+                }
+            }
+        })
+    }
 
     fun onToggleNotifications(enabled: Boolean) {
         viewModelScope.launch {
@@ -32,27 +55,28 @@ class NotificationsViewModel(
                     return@launch
                 }
                 val token = notificationsService.getOrCreateDeviceToken()
-                val platform = notificationsService.platform()
+                val platform = devicePlatform.platformType.name
                 if (token != null) {
-                    // Register device
-                    subscriptionsRepository.registerDevice(
-                        deviceToken = token,
-                        platform = platform,
-                        userId = null
-                    )
-                    // Send current filter
-                    val currentFilter = filterRepository.lastFilter().copy(isNotificationEnabled = true)
-                    subscriptionsRepository.saveAndList(
-                        CreateSubscriptionRequest(
-                            deviceId = token,
-                            name = null,
-                            filter = currentFilter
+                    try {
+                        // Register device
+                        subscriptionsRepository.registerDevice(
+                            deviceToken = token,
+                            platform = platform,
+                            userId = devicePlatform.deviceId
                         )
-                    )
+                        // Send current filter
+                        val currentFilter = filterRepository.lastFilter().copy(isNotificationEnabled = true)
+                        subscriptionsRepository.saveAndList(
+                            CreateSubscriptionRequest(
+                                deviceId = token,
+                                name = null,
+                                filter = currentFilter
+                            )
+                        )
+                    } catch (e: Exception) {
+                        println("onToggleNotifications Exception: ${e.message}")
+                    }
                 }
-            } else {
-                notificationsService.disable()
-                // If you track subscription IDs, call delete(id) here
             }
         }
     }
