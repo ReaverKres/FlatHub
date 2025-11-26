@@ -65,9 +65,9 @@ import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
 import io.flatzen.widgets.AppReadOnlyTextField
+import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.DateRangePickerDialog
-import io.flatzen.widgets.FilterSwitch
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
@@ -258,15 +258,15 @@ fun FilterScreen(
             }
 
             if(currentFilters.adType != AdType.DAILY) {
-                FilterSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
+                AppSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
                     currentFilters = currentFilters.copy(fromOwnerOnly = it)
                 }
             }
-            FilterSwitch(label = "Только с фото", state = currentFilters.withPhotoOnly) {
+            AppSwitch(label = "Только с фото", state = currentFilters.withPhotoOnly) {
                 currentFilters = currentFilters.copy(withPhotoOnly = it)
             }
             if (currentFilters.adType == AdType.RENT) {
-                FilterSwitch(label = "Снять комнату", state = currentFilters.roomOnly) {
+                AppSwitch(label = "Снять комнату", state = currentFilters.roomOnly) {
                     currentFilters = currentFilters.copy(roomOnly = it)
                 }
             }

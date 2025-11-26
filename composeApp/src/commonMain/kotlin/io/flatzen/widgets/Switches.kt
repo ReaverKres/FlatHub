@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterSwitch(
+fun AppSwitch(
     modifier: Modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
     label: String,
     state: Boolean,
