@@ -35,6 +35,11 @@ kotlin {
             // MapComposeMP для MapState и API
             implementation(libs.mp.maps)
         }
+
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.messaging)
+        }
     }
 }
 

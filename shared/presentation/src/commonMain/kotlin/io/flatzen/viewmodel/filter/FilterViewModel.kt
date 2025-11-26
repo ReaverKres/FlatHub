@@ -508,6 +508,7 @@ class FilterViewModel(
             fromOwnerOnly = model.fromOwnerOnly ?: false,
             withPhotoOnly = model.withPhotoOnly,
             roomOnly = model.roomOnly,
+            isNotificationEnabled = model.isNotificationEnabled,
             rooms = model.numberOfRooms ?: emptySet(),
             metroStationsState = MetroStationsMapper.allStationsOrderedForUi().map { uiStation ->
                 val sameStationFromRequest = model.metroStations.find { it.name == uiStation.name }
@@ -568,6 +569,7 @@ class FilterViewModel(
             fromOwnerOnly = filters.fromOwnerOnly,
             withPhotoOnly = filters.withPhotoOnly,
             roomOnly = filters.roomOnly,
+            isNotificationEnabled = filters.isNotificationEnabled,
             metroStations = MetroStations.allStationsRequest().map { requestStation ->
                 val sameStationFromUi =
                     filters.metroStationsState.find { it.name == requestStation.name }

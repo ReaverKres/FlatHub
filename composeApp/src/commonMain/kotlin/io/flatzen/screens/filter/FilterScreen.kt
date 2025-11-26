@@ -35,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
@@ -64,6 +68,7 @@ import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
+import io.flatzen.viewmodel.notifications.NotificationsViewModel
 import io.flatzen.widgets.AppReadOnlyTextField
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.AppTextField
@@ -72,9 +77,11 @@ import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,6 +92,17 @@ fun FilterScreen(
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
+
+    // Permissions controller for notifications
+    val factory = rememberPermissionsControllerFactory()
+    val permissionsController: PermissionsController = remember(factory) { factory.createPermissionsController() }
+    BindEffect(permissionsController)
+
+    // Build NotificationsViewModel with Koin deps
+    val notificationsViewModel: NotificationsViewModel = org.koin.compose.viewmodel.koinViewModel(
+        parameters = { parametersOf(permissionsController) }
+    )
+    val coroutineScope = rememberCoroutineScope()
     val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
         val uiPropertyTypes = currentFilters.commercial.commercialPropertyType?.mapNotNull {
             it.commercialPropertyType?.let { propertyType ->
@@ -255,6 +273,13 @@ fun FilterScreen(
                         onOpenLocation()
                     }
                 )
+            }
+
+            AppSwitch(label = "Уведомления", state = currentFilters.isNotificationEnabled) { enabled ->
+                currentFilters = currentFilters.copy(isNotificationEnabled = enabled)
+                coroutineScope.launch {
+                    notificationsViewModel.onToggleNotifications(enabled)
+                }
             }
 
             if(currentFilters.adType != AdType.DAILY) {

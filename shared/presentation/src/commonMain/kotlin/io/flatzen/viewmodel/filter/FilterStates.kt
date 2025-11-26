@@ -117,6 +117,7 @@ data class FilterState(
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
     val commercial: CommercialFilters = CommercialFilters(),
     val bookingDatesFilter: BookingDatesFilter? = null,
+    val isNotificationEnabled: Boolean = false,
 ) {
     fun isLocationFilterActive(): Boolean {
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }

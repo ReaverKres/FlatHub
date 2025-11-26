@@ -1,6 +1,7 @@
 package di
 
 import core.KtorConverterFactory
+import core.subscriptionsBaseUrl
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -110,6 +111,16 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(DOMOVITA_BASE_URL)
+            .converterFactories(KtorConverterFactory())
+            .build()
+    }
+
+    single<Ktorfit>(qualifier = DataQualifiers.SUBSCRIPTIONS_KTORFIT) {
+        val client: HttpClient = get()
+
+        Ktorfit.Builder()
+            .httpClient(client)
+            .baseUrl(subscriptionsBaseUrl())
             .converterFactories(KtorConverterFactory())
             .build()
     }
