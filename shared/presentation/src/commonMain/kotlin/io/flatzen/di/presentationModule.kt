@@ -1,5 +1,6 @@
 package io.flatzen.di
 
+import dev.icerock.moko.permissions.PermissionsController
 import di.dataModule
 import di.databaseModule
 import di.networkModule
@@ -12,6 +13,7 @@ import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
+import io.flatzen.viewmodel.notifications.NotificationsViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModel
@@ -74,6 +76,15 @@ val flatSearchPresentationModule = module {
     viewModel {
         FaqViewModel(configFieldsChecker = get())
     }
+
+    viewModel { (controller: PermissionsController) ->
+        NotificationsViewModel(
+            permissionsController = controller,
+            notificationsService = get(),
+            subscriptionsRepository = get(),
+            filterRepository = get()
+        )
+    }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
@@ -84,6 +95,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             networkModule,
             dataModule,
             firebaseModule(),
+            notificationsModule(),
             databaseModule(),
             dataUtilsModule(),
             analyticsModule()

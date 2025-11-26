@@ -4,6 +4,7 @@ import api.DomovitaApi
 import api.KufarApi
 import api.OnlinerApi
 import api.RealtApi
+import api.SubscriptionsApi
 import api.createDomovitaApi
 import api.createKufarApi
 import api.createOnlinerApi
@@ -39,6 +40,8 @@ import repository.osm.OsmRepository
 import repository.osm.OsmRepositoryImpl
 import repository.realt.RealtRepository
 import repository.realt.RealtRepositoryImpl
+import repository.subscriptions.SubscriptionsRepository
+import repository.subscriptions.SubscriptionsRepositoryImpl
 import repository.userpreferences.UserPreferencesRepository
 import repository.userpreferences.UserPreferencesRepositoryImpl
 import server_response.DomovitaListResponse
@@ -123,6 +126,9 @@ val dataModule = module {
     }
 
     single<DomovitaApi> { get<Ktorfit>(qualifier = DataQualifiers.DOMOVITA_KTORFIT).createDomovitaApi() }
+
+    single<SubscriptionsApi> { get<Ktorfit>(qualifier = DataQualifiers.SUBSCRIPTIONS_KTORFIT).createSubscriptionsApi() }
+    single<SubscriptionsRepository> { SubscriptionsRepositoryImpl(api = get()) }
     single<ResponseToEntitiesFlatMapper<DomovitaListResponse.DomovitaFlat, AppFlat>>(
         qualifier = DataQualifiers.DOMOVITA_FLAT_MAPPER
     ) {

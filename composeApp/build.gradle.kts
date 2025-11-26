@@ -75,6 +75,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.mp.maps)
+
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.compose)
         }
     }
 }

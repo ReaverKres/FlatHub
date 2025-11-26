@@ -68,7 +68,8 @@ data class CommonFilterRequestModel(
     val withPhotoOnly: Boolean = false,
     val sortOption: FlatSort = FlatSort.NEWEST_FIRST, // Added sort option
     val commercial: CommercialRequestModel? = null,
-    val bookingDatesFilter: BookingDatesFilter? = null
+    val bookingDatesFilter: BookingDatesFilter? = null,
+    val isNotificationEnabled: Boolean = false
 ) {
 
     val isRentType: Boolean

@@ -1,6 +1,9 @@
 package io.flatzen
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
 import io.flatzen.commoncomponents.config.Config
@@ -27,6 +30,8 @@ class FlatZenApp : Application(), KoinComponent {
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
+
+        createDefaultNotificationChannel()
     }
     
     private fun initAppmetrica() {
@@ -36,5 +41,16 @@ class FlatZenApp : Application(), KoinComponent {
             .build()
         AppMetrica.activate(this, config)
         AppMetrica.enableActivityAutoTracking(this)
+    }
+
+    private fun createDefaultNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "default"
+            val name = "Default"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, name, importance)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
     }
 }

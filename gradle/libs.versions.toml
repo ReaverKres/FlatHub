@@ -29,6 +29,8 @@ room = "2.7.2"
 sqlite = "2.5.2"
 appmetrica = "7.11.0"
 firebaseBomVer = "34.3.0"
+mokoPermissions = "0.20.1"
+kmpNotifierVer = "1.0.0"
 
 
 [libraries]
@@ -72,6 +74,11 @@ appmetrica-analytics = { module = "io.appmetrica.analytics:analytics", version.r
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBomVer", module = "com.google.firebase:firebase-bom" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "mokoPermissions" }
+moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "mokoPermissions" }
+moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
+kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifierVer" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
