@@ -1,8 +1,9 @@
 package io.flatzen.commoncomponents.utils
 
-expect class DevicePlatform() {
+interface DevicePlatform {
     val platformType: PlatformType
     val deviceInfo: String
+    val deviceId: String
 }
 
 enum class PlatformType {

@@ -1,7 +1,6 @@
 package di
 
 import core.KtorConverterFactory
-import core.subscriptionsBaseUrl
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -22,6 +21,7 @@ private const val KUFAR_BASE_URL: String = "https://api.kufar.by/"
 private const val ONLINER_BASE_URL: String = "https://r.onliner.by/"
 private const val REALT_BASE_URL: String = "https://realt.by/"
 private const val DOMOVITA_BASE_URL: String = "https://api.domovita.by/"
+private const val FLATHUB_BASE_URL: String = "https://flatzen-back.onrender.com/"
 
 val networkModule = module {
 
@@ -120,7 +120,7 @@ val networkModule = module {
 
         Ktorfit.Builder()
             .httpClient(client)
-            .baseUrl(subscriptionsBaseUrl())
+            .baseUrl(FLATHUB_BASE_URL)
             .converterFactories(KtorConverterFactory())
             .build()
     }

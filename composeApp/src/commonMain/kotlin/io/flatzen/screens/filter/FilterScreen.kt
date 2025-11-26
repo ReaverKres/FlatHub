@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -77,7 +76,6 @@ import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,10 +97,9 @@ fun FilterScreen(
     BindEffect(permissionsController)
 
     // Build NotificationsViewModel with Koin deps
-    val notificationsViewModel: NotificationsViewModel = org.koin.compose.viewmodel.koinViewModel(
+    val notificationsViewModel: NotificationsViewModel = koinViewModel(
         parameters = { parametersOf(permissionsController) }
     )
-    val coroutineScope = rememberCoroutineScope()
     val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
         val uiPropertyTypes = currentFilters.commercial.commercialPropertyType?.mapNotNull {
             it.commercialPropertyType?.let { propertyType ->
@@ -273,13 +270,6 @@ fun FilterScreen(
                         onOpenLocation()
                     }
                 )
-            }
-
-            AppSwitch(label = "Уведомления", state = currentFilters.isNotificationEnabled) { enabled ->
-                currentFilters = currentFilters.copy(isNotificationEnabled = enabled)
-                coroutineScope.launch {
-                    notificationsViewModel.onToggleNotifications(enabled)
-                }
             }
 
             if(currentFilters.adType != AdType.DAILY) {
@@ -540,7 +530,7 @@ fun FilterScreen(
                 onClick = {
                     viewModel.onIntent(FilterScreenAction.ShowSaveFilterDialog)
                 }) {
-                Text("Добавить в Мои фильтры")
+                Text("Сохранить фильтр")
             }
 
             Spacer(Modifier.height(32.dp))
@@ -554,7 +544,9 @@ fun FilterScreen(
             onNameChange = { name ->
                 viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
             },
-            onSave = {
+            onSave = { notificationEnabled ->
+                currentFilters = currentFilters.copy(isNotificationEnabled = notificationEnabled)
+                notificationsViewModel.onToggleNotifications(notificationEnabled)
                 viewModel.onIntent(FilterScreenAction.SaveFilter)
             },
             onCancel = {

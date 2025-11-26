@@ -82,7 +82,8 @@ val flatSearchPresentationModule = module {
             permissionsController = controller,
             notificationsService = get(),
             subscriptionsRepository = get(),
-            filterRepository = get()
+            filterRepository = get(),
+            devicePlatform = get()
         )
     }
 }

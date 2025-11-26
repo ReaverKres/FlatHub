@@ -46,6 +46,7 @@ import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
+import io.flatzen.widgets.AppSwitch
 
 @Composable
 fun SaveDialog(
@@ -56,9 +57,11 @@ fun SaveDialog(
     saveBtnText: String = "Сохранить",
     cancelBtnText: String = "Отменить",
     onNameChange: (String) -> Unit,
-    onSave: () -> Unit,
+    onSave: (isNotificationEnabled: Boolean) -> Unit,
     onCancel: () -> Unit
 ) {
+    var isNotificationEnabled by remember { mutableStateOf(false)}
+
     AlertDialog(
         onDismissRequest = onCancel,
         title = { Text(title) },
@@ -85,11 +88,17 @@ fun SaveDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
                 )
+
+                if (dialogState.showNotification) {
+                    AppSwitch(label = "Получать push уведомления", state = isNotificationEnabled) { enabled ->
+                        isNotificationEnabled = enabled
+                    }
+                }
             }
         },
         confirmButton = {
             Button(
-                onClick = onSave,
+                onClick = { onSave(isNotificationEnabled) },
                 enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
             ) {
                 Text(saveBtnText)

@@ -31,6 +31,9 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            api(libs.kmp.notifier)
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.notifications)
 
             // MapComposeMP для MapState и API
             implementation(libs.mp.maps)

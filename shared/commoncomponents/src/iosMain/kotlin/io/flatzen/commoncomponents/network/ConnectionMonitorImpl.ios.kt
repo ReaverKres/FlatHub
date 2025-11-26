@@ -21,7 +21,7 @@ import platform.darwin.dispatch_queue_create
 import platform.posix.QOS_CLASS_UTILITY
 
 @kotlinx.cinterop.ExperimentalForeignApi
-internal actual class ConnectionMonitorImpl : ConnectionMonitor {
+internal class ConnectionMonitorImpl : ConnectionMonitor {
 
     private enum class ConnectivityType {
         WiFi, Cellular, None, Unknown
