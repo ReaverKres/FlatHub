@@ -16,17 +16,17 @@ sealed class CommercialPropertyType {
         )
     }
     @Serializable
-    data object All: CommercialPropertyType()
+    object All: CommercialPropertyType()
     @Serializable
-    data object Office: CommercialPropertyType()
+    object Office: CommercialPropertyType()
     @Serializable
-    data object Retail: CommercialPropertyType()
+    object Retail: CommercialPropertyType()
     @Serializable
-    data object Services: CommercialPropertyType()
+    object Services: CommercialPropertyType()
     @Serializable
-    data object Industrial: CommercialPropertyType()
+    object Industrial: CommercialPropertyType()
     @Serializable
-    data object Warehouses: CommercialPropertyType()
+    object Warehouses: CommercialPropertyType()
     @Serializable
-    data object Other: CommercialPropertyType()
+    object Other: CommercialPropertyType()
 }
