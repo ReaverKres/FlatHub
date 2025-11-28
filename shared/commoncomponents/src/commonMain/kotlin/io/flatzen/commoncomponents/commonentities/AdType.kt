@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class AdType {
     @Serializable
-    data object RENT: AdType()
+    object RENT: AdType()
     @Serializable
-    data object SALE: AdType()
+    object SALE: AdType()
     @Serializable
-    data class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
+    class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
     @Serializable
-    data object DAILY: AdType()
+    object DAILY: AdType()
 }
 
 val AdType.isCommercial: Boolean

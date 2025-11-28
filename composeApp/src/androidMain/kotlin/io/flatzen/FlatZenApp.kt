@@ -22,16 +22,14 @@ class FlatZenApp : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        
-        // Initialize Config with hardcoded API key for now
-        Config.addAppMetricaApiKey("ff1c4b73-6829-46f8-82ff-6d3d94ad1774")
-        
-        // Initialize AppMetrica
-        initAppmetrica()
-//        ComposeApplication.initialize()
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
+        
+        // Initialize Config with hardcoded API key for now
+        Config.addAppMetricaApiKey("ff1c4b73-6829-46f8-82ff-6d3d94ad1774")
+        // Initialize AppMetrica
+        initAppmetrica()
 
         createDefaultNotificationChannel()
         initKmpNotifier()

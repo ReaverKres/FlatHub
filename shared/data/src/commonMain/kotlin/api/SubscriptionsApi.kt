@@ -4,12 +4,11 @@ import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
-import entities.CommonFilterRequestModel
 import kotlinx.serialization.Serializable
 
 interface SubscriptionsApi {
 
-    @POST("api/v1/subscriptions/register")
+    @POST("api/v1/devices/register")
     suspend fun register(@Body req: RegisterDeviceRequest): DeviceDocument
 
     @POST("api/v1/subscriptions/save-and-list")
@@ -30,7 +29,7 @@ data class RegisterDeviceRequest(
 data class CreateSubscriptionRequest(
     val deviceId: String? = null,
     val name: String? = null,
-    val filter: CommonFilterRequestModel
+    val filter: CommonFilterRequestDto
 )
 
 @Serializable
@@ -38,7 +37,6 @@ data class DeviceDocument(
     val deviceToken: String,
     val platform: String,
     val userId: String? = null,
-    val lastSeenAt: Long? = null
 )
 
 @Serializable
