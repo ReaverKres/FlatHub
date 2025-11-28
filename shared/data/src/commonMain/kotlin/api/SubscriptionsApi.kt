@@ -1,9 +1,7 @@
 package api
 
 import de.jensklingenberg.ktorfit.http.Body
-import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Path
 import kotlinx.serialization.Serializable
 
 interface SubscriptionsApi {
@@ -11,11 +9,8 @@ interface SubscriptionsApi {
     @POST("api/v1/devices/register")
     suspend fun register(@Body req: RegisterDeviceRequest): DeviceDocument
 
-    @POST("api/v1/subscriptions/save-and-list")
-    suspend fun saveAndList(@Body body: CreateSubscriptionRequest): List<SubscriptionDocument>
-
-    @DELETE("api/v1/subscriptions/{id}")
-    suspend fun delete(@Path("id") id: String)
+    @POST("api/v1/subscriptions/save-sub")
+    suspend fun saveSub(@Body body: CreateSubscriptionRequest)
 }
 
 @Serializable

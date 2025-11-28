@@ -9,7 +9,7 @@ sealed class AdType {
     @Serializable
     object SALE: AdType()
     @Serializable
-    class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
+    data class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
     @Serializable
     object DAILY: AdType()
 }

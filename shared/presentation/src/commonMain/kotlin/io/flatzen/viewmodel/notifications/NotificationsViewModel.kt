@@ -38,17 +38,11 @@ class NotificationsViewModel(
                 val platform = devicePlatform.platformType.name
                 if (token != null) {
                     try {
-//                        // Register device
-//                        subscriptionsRepository.registerDevice(
-//                            deviceToken = token,
-//                            platform = platform,
-//                            userId = devicePlatform.deviceId
-//                        )
                         // Send current filter
                         val currentFilter = filterRepository.lastFilter().copy(isNotificationEnabled = true)
-                        subscriptionsRepository.saveAndList(
+                        subscriptionsRepository.saveSub(
                             CreateSubscriptionRequest(
-                                deviceId = token,
+                                deviceId = devicePlatform.deviceId,
                                 name = null,
                                 filter = currentFilter.toSubscriptionDto()
                             )

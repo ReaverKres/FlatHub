@@ -3,7 +3,6 @@ package repository.subscriptions
 import api.CreateSubscriptionRequest
 import api.DeviceDocument
 import api.RegisterDeviceRequest
-import api.SubscriptionDocument
 import api.SubscriptionsApi
 
 class SubscriptionsRepositoryImpl(
@@ -23,12 +22,8 @@ class SubscriptionsRepositoryImpl(
         )
     }
 
-    override suspend fun saveAndList(request: CreateSubscriptionRequest): List<SubscriptionDocument> {
-        return api.saveAndList(request)
-    }
-
-    override suspend fun delete(id: String) {
-        api.delete(id)
+    override suspend fun saveSub(request: CreateSubscriptionRequest) {
+        api.saveSub(request)
     }
 }
 

@@ -50,6 +50,7 @@ import server_request.Currency
 
 @Serializable
 data class CommonFilterRequestModel(
+    val name: String? = null,
     val adType: AdType = AdType.RENT,
     val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
     val priceFull: Price? = null,
