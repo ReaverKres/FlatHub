@@ -100,6 +100,7 @@ data class MapAreasUi(
 
 @Immutable
 data class FilterState(
+    val name: String? = null,
     val adType: AdType = RENT,
     val lastCommercialAdType: AdType = COMMERCIAL(),
     val priceFull: Price? = null,

@@ -499,6 +499,7 @@ class FilterViewModel(
 
     private fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         return FilterState(
+            name = model.name,
             adType = model.adType,
             lastCommercialAdType = model.lastCommercialAdType,
             priceFull = model.priceFull,
@@ -559,6 +560,7 @@ class FilterViewModel(
 
     private fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel {
         return CommonFilterRequestModel(
+            name = filters.name,
             adType = filters.adType,
             lastCommercialAdType = filters.lastCommercialAdType,
             priceFull = filters.priceFull,

@@ -545,7 +545,10 @@ fun FilterScreen(
                 viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
             },
             onSave = { notificationEnabled ->
-                currentFilters = currentFilters.copy(isNotificationEnabled = notificationEnabled)
+                currentFilters = currentFilters.copy(
+                    name = state.saveDialogState.filterName,
+                    isNotificationEnabled = notificationEnabled
+                )
                 notificationsViewModel.onToggleNotifications(notificationEnabled)
                 viewModel.onIntent(FilterScreenAction.SaveFilter)
             },

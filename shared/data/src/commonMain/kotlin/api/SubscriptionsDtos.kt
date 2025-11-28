@@ -16,6 +16,7 @@ import server_request.Currency
 
 @Serializable
 data class CommonFilterRequestDto(
+    val name: String? = null,
     val adType: AdTypeDto? = null,
     val commercial: CommercialDto? = null,
     val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
@@ -53,5 +54,6 @@ data class CommercialDto(
 data class CommercialPropertyTypeDto(
     val type: String
 )
+
 
 

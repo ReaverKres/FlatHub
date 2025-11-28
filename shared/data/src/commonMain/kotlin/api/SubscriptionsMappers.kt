@@ -7,6 +7,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 
 fun CommonFilterRequestModel.toSubscriptionDto(): CommonFilterRequestDto {
     return CommonFilterRequestDto(
+        name = this.name,
         adType = this.adType.toDto(),
         commercial = this.commercial?.commercialPropertyType
             ?.toDto()
@@ -56,5 +57,3 @@ private fun CommercialPropertyType.toDto(): CommercialPropertyTypeDto =
         CommercialPropertyType.Other -> CommercialPropertyTypeDto("Other")
         is CommercialPropertyType.All -> CommercialPropertyTypeDto("Other")
     }
-
-
