@@ -16,7 +16,7 @@ import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.subscriptions.SubscriptionsRepository
 
-class NotificationsViewModel(
+class ToggleNotificationsViewModel(
     private val permissionsController: PermissionsController,
     private val notificationsService: NotificationsService,
     private val subscriptionsRepository: SubscriptionsRepository,
