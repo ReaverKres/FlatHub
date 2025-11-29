@@ -13,4 +13,5 @@
 
     <string name="no_data_available">Список пуст</string>
     <string name="favorite_is_empty">Квартир в избранном нет</string>
+    <string name="notifications_is_empty">Чтобы получать уведомления, настройте и затем сохраните фильтр</string>
 </resources>

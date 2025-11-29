@@ -13,7 +13,8 @@ import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
-import io.flatzen.viewmodel.notifications.NotificationsViewModel
+import io.flatzen.viewmodel.notifications.NotificationListViewModel
+import io.flatzen.viewmodel.notifications.ToggleNotificationsViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModel
@@ -44,6 +45,13 @@ val flatSearchPresentationModule = module {
             mergedRepository = get(),
         )
     }
+
+    viewModel { NotificationListViewModel(
+        mergedRepository = get(),
+        filterRepository = get(),
+        userPreferencesRepository = get()
+    ) }
+
     viewModel {
         FilterViewModel(
             filterRepository = get(),
@@ -78,7 +86,7 @@ val flatSearchPresentationModule = module {
     }
 
     viewModel { (controller: PermissionsController) ->
-        NotificationsViewModel(
+        ToggleNotificationsViewModel(
             permissionsController = controller,
             notificationsService = get(),
             subscriptionsRepository = get(),

@@ -50,6 +50,7 @@ import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
 import io.flatzen.screens.home.HomeScreen
+import io.flatzen.screens.home.NotificationsScreen
 import io.flatzen.screens.location.CitySelectScreen
 import io.flatzen.screens.location.DistrictSelectScreen
 import io.flatzen.screens.location.LocationScreen
@@ -58,7 +59,6 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.widgets.MessageSnackbar
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
@@ -79,6 +79,9 @@ data class DetailScreenDestination(val flatPlatform: String, val objectId: Long)
 
 @Serializable
 object FilterScreenDestination
+
+@Serializable
+object NotificationScreenDestination
 
 @Serializable
 object LocationScreenDestination
@@ -234,6 +237,9 @@ fun App() {
                             },
                             navigateToFilters = {
                                 navController.navigate(FilterScreenDestination)
+                            },
+                            navigateToNotifications = {
+                                navController.navigate(NotificationScreenDestination)
                             }
                         )
                     }
@@ -297,6 +303,15 @@ fun App() {
                                     }
                                     launchSingleTop = true
                                 }
+                            }
+                        )
+                    }
+
+                    animatedComposable<NotificationScreenDestination> {
+                        NotificationsScreen(
+                            navigateBack = { navController.popBackStack() },
+                            navigateToDetails = { platform, id ->
+                                navController.navigate(DetailScreenDestination(platform.name, id))
                             }
                         )
                     }

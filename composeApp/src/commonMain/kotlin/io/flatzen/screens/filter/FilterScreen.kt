@@ -67,7 +67,7 @@ import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
-import io.flatzen.viewmodel.notifications.NotificationsViewModel
+import io.flatzen.viewmodel.notifications.ToggleNotificationsViewModel
 import io.flatzen.widgets.AppReadOnlyTextField
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.AppTextField
@@ -97,7 +97,7 @@ fun FilterScreen(
     BindEffect(permissionsController)
 
     // Build NotificationsViewModel with Koin deps
-    val notificationsViewModel: NotificationsViewModel = koinViewModel(
+    val toggleNotificationsViewModel: ToggleNotificationsViewModel = koinViewModel(
         parameters = { parametersOf(permissionsController) }
     )
     val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
@@ -549,7 +549,7 @@ fun FilterScreen(
                     name = state.saveDialogState.filterName,
                     isNotificationEnabled = notificationEnabled
                 )
-                notificationsViewModel.onToggleNotifications(notificationEnabled)
+                toggleNotificationsViewModel.onToggleNotifications(notificationEnabled)
                 viewModel.onIntent(FilterScreenAction.SaveFilter)
             },
             onCancel = {

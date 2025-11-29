@@ -57,3 +57,4 @@ private fun CommercialPropertyType.toDto(): CommercialPropertyTypeDto =
         CommercialPropertyType.Other -> CommercialPropertyTypeDto("Other")
         is CommercialPropertyType.All -> CommercialPropertyTypeDto("Other")
     }
+

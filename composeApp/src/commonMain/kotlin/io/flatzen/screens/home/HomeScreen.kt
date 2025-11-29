@@ -108,6 +108,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
+    navigateToNotifications: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel = koinViewModel<FlatSearchViewModel>()
@@ -118,9 +119,9 @@ fun HomeScreen(
     var currentFilters by remember(filterScreenState.filters) { mutableStateOf(filterScreenState.filters) }
 
     val localDensity = LocalDensity.current
-    var resetFilterButtonSize by remember { mutableStateOf(DpSize.Zero) }
-    val resetFilterButtonHeight: Dp = remember(resetFilterButtonSize) {
-        resetFilterButtonSize.height
+    var topAppBarSize by remember { mutableStateOf(DpSize.Zero) }
+    val topAppBarHeight: Dp = remember(topAppBarSize) {
+        topAppBarSize.height
     }
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
 
@@ -201,29 +202,46 @@ fun HomeScreen(
                 )
             }
 
-            TextButton(
+            Row(
                 modifier = Modifier
                     .wrapContentHeight()
-                    .padding(6.dp)
                     .align(Alignment.TopEnd)
                     .onSizeChanged { size ->
-                        resetFilterButtonSize = localDensity.run {
+                        topAppBarSize = localDensity.run {
                             DpSize(
                                 size.width.toDp(),
                                 size.height.toDp()
                             )
                         }
-                        resetFilterButtonSize
                     },
-                onClick = {
-                    currentFilters = FilterState()
-                }) {
-                Text("Сбросить фильтр")
+                horizontalArrangement = Arrangement.Center, // Выравнивание по горизонтали
+                verticalAlignment = Alignment.CenterVertically // Выравнивание по вертикали
+            ) {
+                AsyncImage(
+                    model = Res.getUri("drawable/outline_notifications.svg"),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            navigateToNotifications()
+                        },
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                )
+
+                Spacer(Modifier.width(6.dp))
+
+                TextButton(
+                    onClick = {
+                        currentFilters = FilterState()
+                    }
+                ) {
+                    Text("Сбросить фильтр")
+                }
             }
 
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
-                    modifier = Modifier.padding(top = resetFilterButtonHeight),
+                    modifier = Modifier.padding(top = topAppBarHeight),
                     filterState = currentFilters,
                     isListView = state.isListView,
                     onToggleView = {
@@ -233,7 +251,7 @@ fun HomeScreen(
 
                 state.isLoading.not() && state.flatList.isEmpty() -> {
                     LazyColumn(
-                        modifier = modifier.fillMaxSize().padding(top = resetFilterButtonHeight),
+                        modifier = modifier.fillMaxSize().padding(top = topAppBarHeight),
                         contentPadding = PaddingValues(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
@@ -266,7 +284,7 @@ fun HomeScreen(
 
                 else -> {
                     FlatList(
-                        modifier = Modifier.padding(top = resetFilterButtonHeight),
+                        modifier = Modifier.padding(top = topAppBarHeight),
                         lazyListState = lazyListState,
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
