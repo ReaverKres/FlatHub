@@ -14,5 +14,8 @@ data class NotificationListScreenState(
     val flatList: List<UiFlat>,
     val currentSearchPage: Int,
     val isListView: Boolean = false,
-    val errorDialogState: SearchErrorDialogState? = null
+    val errorDialogState: SearchErrorDialogState? = null,
+    val subscriptions: List<SubscriptionUi> = emptyList(),
+    val paramsDialogText: String? = null,
+    val errorText: String? = null
 ) : MviState

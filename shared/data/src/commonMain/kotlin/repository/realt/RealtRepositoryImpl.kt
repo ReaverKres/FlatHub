@@ -14,6 +14,7 @@ import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
 import server_request.Currency
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
@@ -43,8 +43,8 @@ class RealtRepositoryImpl(
 
     private var lastEmitList: List<AppFlat>? = emptyList()
 
-    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
-        val filter = filterRepository.lastFilter()
+    override fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int?): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
+        val currentPage = currentPage ?: filterRepository.currentHomePage
         val onlyOwner = if (filter.fromOwnerOnly == true) true else null
 
         val townUUid = when (filter.location?.city) {
@@ -119,7 +119,7 @@ class RealtRepositoryImpl(
                                 priceType = priceType
                             ),
                             pagination = PaginationRequestRealt(
-                                page = filterRepository.currentAppPage, pageSize = 30
+                                page = currentPage, pageSize = 30
                             ),
                             sort = when (filter.sortOption) {
                                 FlatSort.NEWEST_FIRST -> listOf(

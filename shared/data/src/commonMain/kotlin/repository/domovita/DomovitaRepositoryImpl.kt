@@ -5,8 +5,9 @@ import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
-import io.flatzen.commoncomponents.commonentities.AdType
 import entities.AppFlat
+import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.ktor.client.statement.bodyAsText
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.take
 import kotlinx.serialization.json.Json
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
 import server_response.DomovitaErrorResponse
 import server_response.DomovitaListResponse.DomovitaFlat
@@ -33,8 +33,8 @@ class DomovitaRepositoryImpl(
 
     private var lastEmitList: List<AppFlat>? = emptyList()
 
-    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
-        val currentPage = filterRepository.currentAppPage
+    override fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int?): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
+        val currentPage = currentPage ?: filterRepository.currentHomePage
 
         // Если не первая страница и нет данных для загрузки, отправляем пустой список
 //        if (currentPage > 1 && lastEmitList.isNullOrEmpty()) {
@@ -42,7 +42,6 @@ class DomovitaRepositoryImpl(
 //            return@flow
 //        }
 
-        val filter = filterRepository.lastFilter()
         val metroIds: List<Int>? = null
 //            filter.metroStations.map { it.metroId }.takeIf { it.isNotEmpty() }
         val city = when (filter.location?.city) {

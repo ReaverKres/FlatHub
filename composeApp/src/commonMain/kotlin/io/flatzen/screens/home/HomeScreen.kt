@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -64,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -99,6 +101,7 @@ import io.flatzen.widgets.SortBottomSheet
 import io.flatzen.widgets.dialogs.ForceUpdateDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -277,7 +280,9 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            LoadMoreForce(state.currentSearchPage, viewModel)
+                            LoadMoreForce(state.currentSearchPage) {
+                                clickOnLoadMore(viewModel)
+                            }
                         }
                     }
                 }
@@ -322,7 +327,9 @@ fun HomeScreen(
                         bottomContent = {
                             if (state.noFlatsToLoadMore) {
                                 item {
-                                    LoadMoreForce(state.currentSearchPage, viewModel)
+                                    LoadMoreForce(state.currentSearchPage) {
+                                        clickOnLoadMore(viewModel)
+                                    }
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
                                     if (showScrollToTopBtn) {
@@ -335,62 +342,22 @@ fun HomeScreen(
                 }
             }
 
-            AnimatedVisibility(
-                visible = showScrollToTopBtn,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                IconButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            if (firstVisibleItemIndex < 8) {
-                                lazyListState.animateScrollToItem(0)
-                            } else {
-                                lazyListState.scrollToItem(8)
-                                lazyListState.animateScrollToItem(0)
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .size(scrollToTopBtnSize)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = "Scroll to top",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+            ScrollToTopBtn(
+                showScrollToTopBtn,
+                coroutineScope,
+                firstVisibleItemIndex,
+                lazyListState,
+                scrollToTopBtnSize
+            )
 
             if (state.noFlatsToLoadMore) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .padding(horizontal = 56.dp + 6.dp)
-                        .thenIf(showScrollToTopBtn) {
-                            padding(bottom = 72.dp)
+                NoFlatsToLoadMoreText(
+                    showScrollToTopBtn = showScrollToTopBtn,
+                    onSizeChanged = {
+                        noFlatsBoxHeight = with(localDensity) {
+                            it.height.toDp()
                         }
-                        .background(Color(0xFFbf4f1f), RoundedCornerShape(20.dp))
-                        .padding(vertical = 4.dp)
-                        .onSizeChanged { size ->
-                            noFlatsBoxHeight = with(localDensity) {
-                                size.height.toDp()
-                            }
-                        }
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 2.dp),
-                        text = "Квартиры с текущими фильтрами закончились",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                    })
             }
 
             if (showSortSheet) {
@@ -436,9 +403,87 @@ fun HomeScreen(
 }
 
 @Composable
-private fun LoadMoreForce(
+fun BoxScope.ScrollToTopBtn(
+    showScrollToTopBtn: Boolean,
+    coroutineScope: CoroutineScope,
+    firstVisibleItemIndex: Int,
+    lazyListState: LazyListState,
+    scrollToTopBtnSize: Dp
+) {
+    AnimatedVisibility(
+        visible = showScrollToTopBtn,
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .align(Alignment.BottomCenter)
+    ) {
+        IconButton(
+            onClick = {
+                coroutineScope.launch {
+                    if (firstVisibleItemIndex < 8) {
+                        lazyListState.animateScrollToItem(0)
+                    } else {
+                        lazyListState.scrollToItem(8)
+                        lazyListState.animateScrollToItem(0)
+                    }
+                }
+            },
+            modifier = Modifier
+                .size(scrollToTopBtnSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowUp,
+                contentDescription = "Scroll to top",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+    }
+}
+
+@Composable
+fun BoxScope.NoFlatsToLoadMoreText(
+    showScrollToTopBtn: Boolean,
+    onSizeChanged: (IntSize) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .padding(16.dp)
+            .padding(horizontal = 56.dp + 6.dp)
+            .thenIf(showScrollToTopBtn) {
+                padding(bottom = 72.dp)
+            }
+            .background(Color(0xFFbf4f1f), RoundedCornerShape(20.dp))
+            .padding(vertical = 4.dp)
+            .onSizeChanged { size ->
+                onSizeChanged(size)
+            }
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.Center).padding(horizontal = 2.dp),
+            text = "Квартиры с текущими фильтрами закончились",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+private fun clickOnLoadMore(viewModel: FlatSearchViewModel) {
+    viewModel.onIntent(
+        FlatListScreenAction.SearchFlats(
+            isLoadMore = true,
+            isLoadMoreForce = true
+        )
+    )
+}
+
+@Composable
+fun LoadMoreForce(
     currentSearchPage: Int,
-    viewModel: FlatSearchViewModel
+    loadMoreClick: () -> Unit
 ) {
     Spacer(Modifier.height(8.dp))
     Column(
@@ -451,12 +496,7 @@ private fun LoadMoreForce(
                 .wrapContentHeight()
                 .padding(6.dp),
             onClick = {
-                viewModel.onIntent(
-                    FlatListScreenAction.SearchFlats(
-                        isLoadMore = true,
-                        isLoadMoreForce = true
-                    )
-                )
+
             }) {
             Text("Загрузить больше")
         }
@@ -464,7 +504,7 @@ private fun LoadMoreForce(
 }
 
 @Composable
-fun LoadingContent(
+private fun LoadingContent(
     isListView: Boolean,
     filterState: FilterState,
     onToggleView: () -> Unit,
@@ -482,19 +522,23 @@ fun LoadingContent(
             updateFilters = {},
             onToggleView = onToggleView
         )
-        if (isListView) {
-            items(10) {
-                SkeletonFlatListItem()
-            }
-        } else {
-            items(10) { flatPair ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    SkeletonFlatGridItem(modifier = Modifier.weight(1f))
-                    SkeletonFlatGridItem(modifier = Modifier.weight(1f))
-                }
+        flatListSkeletons(isListView)
+    }
+}
+
+fun LazyListScope.flatListSkeletons(isListView: Boolean) {
+    if (isListView) {
+        items(10) {
+            SkeletonFlatListItem()
+        }
+    } else {
+        items(10) { flatPair ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SkeletonFlatGridItem(modifier = Modifier.weight(1f))
+                SkeletonFlatGridItem(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -614,23 +658,7 @@ private fun LazyListScope.topContentHeader(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = Res.getUri("drawable/grid.svg"),
-                contentDescription = null,
-                modifier = Modifier.size(22.dp).clickable {
-                    onToggleView()
-                },
-                colorFilter = ColorFilter.tint(if (isListView) unSelectedColor else activeColor)
-            )
-            Spacer(Modifier.width(16.dp))
-            AsyncImage(
-                model = Res.getUri("drawable/list.svg"),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp).clickable {
-                    onToggleView()
-                },
-                colorFilter = ColorFilter.tint(if (isListView) activeColor else unSelectedColor)
-            )
+            ListTypeSwitches(onToggleView, isListView, unSelectedColor, activeColor)
 
             filterState?.let {
                 Spacer(Modifier.width(12.dp))
@@ -650,6 +678,32 @@ private fun LazyListScope.topContentHeader(
             }
         }
     }
+}
+
+@Composable
+fun ListTypeSwitches(
+    onToggleView: () -> Unit,
+    isListView: Boolean,
+    unSelectedColor: Color,
+    activeColor: Color
+) {
+    AsyncImage(
+        model = Res.getUri("drawable/grid.svg"),
+        contentDescription = null,
+        modifier = Modifier.size(22.dp).clickable {
+            onToggleView()
+        },
+        colorFilter = ColorFilter.tint(if (isListView) unSelectedColor else activeColor)
+    )
+    Spacer(Modifier.width(16.dp))
+    AsyncImage(
+        model = Res.getUri("drawable/list.svg"),
+        contentDescription = null,
+        modifier = Modifier.size(24.dp).clickable {
+            onToggleView()
+        },
+        colorFilter = ColorFilter.tint(if (isListView) activeColor else unSelectedColor)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

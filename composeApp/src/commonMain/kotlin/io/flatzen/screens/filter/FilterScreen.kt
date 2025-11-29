@@ -142,7 +142,7 @@ fun FilterScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Фильтры") },
+                title = { Text("Фильтры", style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
@@ -549,7 +549,10 @@ fun FilterScreen(
                     name = state.saveDialogState.filterName,
                     isNotificationEnabled = notificationEnabled
                 )
-                toggleNotificationsViewModel.onToggleNotifications(notificationEnabled)
+                toggleNotificationsViewModel.onToggleNotifications(
+                    filterName = state.saveDialogState.filterName,
+                    enabled = notificationEnabled
+                )
                 viewModel.onIntent(FilterScreenAction.SaveFilter)
             },
             onCancel = {

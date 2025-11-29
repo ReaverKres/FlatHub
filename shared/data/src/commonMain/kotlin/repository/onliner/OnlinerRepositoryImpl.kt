@@ -7,6 +7,7 @@ import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -22,15 +23,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
-import server_response.OnlinerSearchErrorResponses
 import server_response.OnlinerListResponse
+import server_response.OnlinerSearchErrorResponses
 import kotlin.math.roundToInt
 
 class OnlinerRepositoryImpl(
@@ -43,8 +42,11 @@ class OnlinerRepositoryImpl(
     private val connectionMonitor: ConnectionMonitor
 ) : OnlinerRepository {
 
-    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
-        val filter = filterRepository.lastFilter()
+    override fun searchFlats(
+        filter: CommonFilterRequestModel,
+        currentPage: Int?
+    ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
+        val currentPage = currentPage ?: filterRepository.currentHomePage
         val metroLines =
             filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
         val cityBounds = when (filter.location?.city) {
@@ -73,7 +75,7 @@ class OnlinerRepositoryImpl(
             metroLines = metroLines,
             // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,
-            page = filterRepository.currentAppPage,
+            page = currentPage,
             boundsLbLng = cityBounds.southwest.longitude,
             boundsLbLat = cityBounds.southwest.latitude,
             boundsRtLng = cityBounds.northeast.longitude,

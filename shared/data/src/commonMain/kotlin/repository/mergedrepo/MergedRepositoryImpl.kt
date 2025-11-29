@@ -4,6 +4,7 @@ import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -43,24 +44,36 @@ class MergedRepositoryImpl(
 
     override fun searchFlats(): Flow<MergedFlatResponse> {
         val filter = filterRepository.lastFilter()
+        return searchByFilter(filter, null)
+    }
 
+    override fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int): Flow<MergedFlatResponse> {
+        return searchByFilter(filter, currentPage)
+    }
+
+    private fun searchByFilter(filter: CommonFilterRequestModel, currentPage: Int?): Flow<MergedFlatResponse> {
         val finalFlow = when {
             filter.isRoomForRent -> {
-                kufarRepository.searchFlats()
-                    .zip(onlinerRepository.searchFlats()) { kufarList, onlinerList ->
+                kufarRepository.searchFlats(filter, currentPage)
+                    .zip(onlinerRepository.searchFlats(
+                        filter,
+                        currentPage
+                    )) { kufarList, onlinerList ->
                         listOf(kufarList, onlinerList)
                     }
             }
+
             filter.isCommercial || filter.adType == AdType.DAILY -> {
-                kufarRepository.searchFlats()
-                    .zip(realtRepository.searchFlats()) { k, r -> listOf(k, r) }
+                kufarRepository.searchFlats(filter, currentPage)
+                    .zip(realtRepository.searchFlats(filter, currentPage)) { k, r -> listOf(k, r) }
             }
+
             else -> {
-                kufarRepository.searchFlats()
-                    .zip(onlinerRepository.searchFlats())
+                kufarRepository.searchFlats(filter, currentPage)
+                    .zip(onlinerRepository.searchFlats(filter, currentPage))
                     { kufarList, onlinerList -> listOf(kufarList, onlinerList) }
-                    .zip(domovitaRepository.searchFlats()) { kor, d -> kor + d }
-                    .zip(realtRepository.searchFlats()) { kOn, r -> kOn + r }
+                    .zip(domovitaRepository.searchFlats(filter, currentPage)) { kor, d -> kor + d }
+                    .zip(realtRepository.searchFlats(filter, currentPage)) { kOn, r -> kOn + r }
             }
         }
         return finalFlow.mapLatest { networkFlats ->
@@ -105,7 +118,7 @@ class MergedRepositoryImpl(
 
             flatsDao.upsertAll(appFlats)
 
-            val sortedFlatList = applyLocalSortOrFilters(appFlats)
+            val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
             lastEmittedFlats.emit(sortedFlatList)
 
             MergedFlatResponse(
@@ -148,8 +161,10 @@ class MergedRepositoryImpl(
         }
     }
 
-    private fun applyLocalSortOrFilters(flats: List<AppFlat>): List<AppFlat> {
-        val currentFilter = filterRepository.lastFilter()
+    private fun applyLocalSortOrFilters(
+        flats: List<AppFlat>,
+        currentFilter: CommonFilterRequestModel = filterRepository.lastFilter()
+    ): List<AppFlat> {
         var resultList = flats
 
         // Filter by full price

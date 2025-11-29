@@ -1,10 +1,8 @@
 package io.flatzen.screens.favorites
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -14,7 +12,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.favorite_is_empty
@@ -40,7 +37,7 @@ fun FavoritesScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Избранное", style = MaterialTheme.typography.headlineMedium) },
+                title = { Text("Избранное", style = MaterialTheme.typography.headlineSmall) },
             )
         }) { paddingValues ->
         Box(modifier.fillMaxSize().padding(paddingValues)) {

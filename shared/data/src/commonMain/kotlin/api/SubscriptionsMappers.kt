@@ -12,7 +12,32 @@ fun CommonFilterRequestModel.toSubscriptionDto(): CommonFilterRequestDto {
         commercial = this.commercial?.commercialPropertyType
             ?.toDto()
             ?.let { CommercialDto(commercialPropertyType = it) },
-        lastCommercialAdType = this.lastCommercialAdType,
+        lastCommercialAdType = this.lastCommercialAdType.toDto(),
+        priceFull = this.priceFull,
+        pricePerSquare = this.pricePerSquare,
+        totalArea = this.totalArea,
+        priceType = this.priceType,
+        currency = this.currency,
+        addressRequestModel = this.addressRequestModel,
+        numberOfRooms = this.numberOfRooms,
+        metroStations = this.metroStations,
+        districtsArea = this.districtsArea,
+        location = this.location,
+        userMapAreas = this.userMapAreas,
+        roomOnly = this.roomOnly,
+        fromOwnerOnly = this.fromOwnerOnly,
+        withPhotoOnly = this.withPhotoOnly,
+        sortOption = this.sortOption,
+        bookingDatesFilter = this.bookingDatesFilter,
+        isNotificationEnabled = this.isNotificationEnabled
+    )
+}
+
+fun CommonFilterRequestDto.toModel(): CommonFilterRequestModel {
+    return CommonFilterRequestModel(
+        name = this.name,
+        adType = this.adType?.toModel() ?: AdType.RENT,
+        lastCommercialAdType = this.lastCommercialAdType?.toModel() ?: AdType.COMMERCIAL(),
         priceFull = this.priceFull,
         pricePerSquare = this.pricePerSquare,
         totalArea = this.totalArea,
@@ -45,6 +70,21 @@ private fun AdType.toDto(): AdTypeDto =
                 CommercialAdType.SALE -> "SALE"
             }
         )
+    }
+
+private fun AdTypeDto.toModel(): AdType =
+    when (this.type) {
+        "RENT" -> AdType.RENT
+        "SALE" -> AdType.SALE
+        "DAILY" -> AdType.DAILY
+        "COMMERCIAL" -> AdType.COMMERCIAL(
+            commercialAdType = when (this.commercialAdType) {
+                "RENT" -> CommercialAdType.RENT
+                "SALE" -> CommercialAdType.SALE
+                else -> CommercialAdType.RENT
+            }
+        )
+        else -> AdType.RENT
     }
 
 private fun CommercialPropertyType.toDto(): CommercialPropertyTypeDto =

@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 class FilterRepositoryImpl(
     private val savedFiltersDao: SavedFiltersDao
@@ -19,7 +18,7 @@ class FilterRepositoryImpl(
     override val cashedFilterFlow: SharedFlow<FilterInfo> = _cashedFilterFlow
     override var lastNetworkFilter: CommonFilterRequestModel? = null
 
-    override var currentAppPage: Int = 1
+    override var currentHomePage: Int = 1
 
     override suspend fun updateFilter(
         commonFilterRequestModel: CommonFilterRequestModel,

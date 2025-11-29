@@ -72,7 +72,7 @@ fun MoreScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Ещё", style = MaterialTheme.typography.headlineMedium) },
+                title = { Text("Ещё", style = MaterialTheme.typography.headlineSmall) },
             )
         },
     ) { paddingValues ->
