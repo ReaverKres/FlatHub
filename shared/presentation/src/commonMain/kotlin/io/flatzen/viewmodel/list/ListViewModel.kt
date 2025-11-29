@@ -207,7 +207,7 @@ class FlatSearchViewModel(
                             parameters = mapOf(
                                 "is_load_more" to action.isLoadMore,
                                 "is_refreshing" to action.isRefreshing,
-                                "page" to filterRepository.currentAppPage
+                                "page" to filterRepository.currentHomePage
                             )
                         )
                     )
@@ -233,11 +233,11 @@ class FlatSearchViewModel(
                     return flowOf()
                 }
                 if (action.isRefreshing || action.isLoadMore.not()) {
-                    filterRepository.currentAppPage = 1
+                    filterRepository.currentHomePage = 1
                     mergedRepository.clearCashedFlats()
                 }
                 if (action.isLoadMore) {
-                    filterRepository.currentAppPage++
+                    filterRepository.currentHomePage++
                 }
                 if (action.isLoadMore.not()) {
                     onIntent(FlatListScreenAction.ScrollToTop)
@@ -497,7 +497,7 @@ class FlatSearchViewModel(
                     isLoading = false,
                     isLoadingMore = false,
                     flatList = currentState.flatList + uiFlatList,
-                    currentSearchPage = filterRepository.currentAppPage
+                    currentSearchPage = filterRepository.currentHomePage
                 )
             }
 
@@ -509,7 +509,7 @@ class FlatSearchViewModel(
                     isLoadingMore = false,
                     flatList = uiFlatList,
                     noFlatsToLoadMore = noFlatsToLoadMore,
-                    currentSearchPage = filterRepository.currentAppPage
+                    currentSearchPage = filterRepository.currentHomePage
                 )
             }
 
@@ -520,7 +520,7 @@ class FlatSearchViewModel(
                     isLoading = false,
                     isLoadingMore = false,
                     flatList = uiFlatList,
-                    currentSearchPage = filterRepository.currentAppPage
+                    currentSearchPage = filterRepository.currentHomePage
                 )
             }
         }

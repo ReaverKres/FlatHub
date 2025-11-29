@@ -221,6 +221,27 @@ fun SearchErrorDialog(
     }
 }
 
+@Composable
+fun SimpleAlertDialog(
+    title: String,
+    message: String,
+    onDismiss: () -> Unit
+){
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = title) },
+        text = {
+            Text(text = message)
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Ок")
+            }
+        },
+        dismissButton = {}
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> SingleChoiceDialog(

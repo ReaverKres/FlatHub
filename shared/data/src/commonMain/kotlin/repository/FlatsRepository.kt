@@ -3,6 +3,7 @@ package repository
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
+import entities.CommonFilterRequestModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.map
 
 interface FlatsRepository {
 
-    fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>>
+    fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int?): Flow<NetworkResponseWrapper<List<AppFlat>>>
 
     fun getFlatById(
         flatId: Long

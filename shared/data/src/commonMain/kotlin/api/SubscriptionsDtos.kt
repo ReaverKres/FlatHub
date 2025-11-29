@@ -5,7 +5,6 @@ import entities.LocationFilter
 import entities.MetroStation
 import entities.PriceType
 import entities.UserMapArea
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
@@ -19,7 +18,7 @@ data class CommonFilterRequestDto(
     val name: String? = null,
     val adType: AdTypeDto? = null,
     val commercial: CommercialDto? = null,
-    val lastCommercialAdType: AdType = AdType.COMMERCIAL(),
+    val lastCommercialAdType: AdTypeDto? = null,
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
@@ -54,6 +53,7 @@ data class CommercialDto(
 data class CommercialPropertyTypeDto(
     val type: String
 )
+
 
 
 

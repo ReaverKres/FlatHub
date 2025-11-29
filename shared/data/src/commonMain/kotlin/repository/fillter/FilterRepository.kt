@@ -11,7 +11,7 @@ interface FilterRepository {
 
     val cashedFilterFlow: SharedFlow<FilterInfo>
     val lastNetworkFilter: CommonFilterRequestModel?
-    var currentAppPage: Int
+    var currentHomePage: Int
 
     suspend fun updateFilter(
         commonFilterRequestModel: CommonFilterRequestModel,

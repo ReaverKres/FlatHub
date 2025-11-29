@@ -48,8 +48,9 @@ val flatSearchPresentationModule = module {
 
     viewModel { NotificationListViewModel(
         mergedRepository = get(),
-        filterRepository = get(),
-        userPreferencesRepository = get()
+        userPreferencesRepository = get(),
+        subscriptionsRepository = get(),
+        devicePlatform = get()
     ) }
 
     viewModel {

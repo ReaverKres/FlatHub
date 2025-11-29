@@ -30,7 +30,6 @@ import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import repository.getFlatByIdFromDb
 import server_response.KufarErrorResponse
 import server_response.kufar.KufarDailyListQuery
@@ -54,15 +53,15 @@ class KufarRepositoryImpl(
 
     private var pageCursor: String? = null
 
-    override fun searchFlats(): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
-        val filter = filterRepository.lastFilter()
+    override fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int?): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
 
-        if (filter.adType != AdType.DAILY && pageCursor == null && filterRepository.currentAppPage > 1) {
+        val currentPage = currentPage ?: filterRepository.currentHomePage
+        if (filter.adType != AdType.DAILY && pageCursor == null && currentPage > 1) {
             emit(networkEmptyList)
             return@flow
         }
 
-        if (filterRepository.currentAppPage == 1) {
+        if (currentPage == 1) {
             pageCursor = null
         }
 
@@ -89,9 +88,9 @@ class KufarRepositoryImpl(
         }
 
         if (dealType == AdType.DAILY) {
-            sendKufarDailyFlatRequest(categoryId, filter, metroIds, city)
+            sendKufarDailyFlatRequest(categoryId, filter, metroIds, city, currentPage)
         } else {
-            sendKufarFlatRequest(categoryId, dealType, filter, metroIds, city)
+            sendKufarFlatRequest(categoryId, dealType, filter, metroIds, city, currentPage)
         }
     }
 
@@ -101,6 +100,7 @@ class KufarRepositoryImpl(
         filter: CommonFilterRequestModel,
         metroIds: List<Int>?,
         city: String,
+        currentPage: Int,
     ) {
         val numberOfRoms = if (filter.roomOnly) null else filter.numberOfRooms
         val params = KufarListQuery.createQueryParams(
@@ -126,7 +126,7 @@ class KufarRepositoryImpl(
             when (request) {
                 is NetworkResponseWrapper.Success -> {
                     pageCursor = request.data.pagination?.pages
-                        ?.getOrNull(filterRepository.currentAppPage)
+                        ?.getOrNull(currentPage)
                         ?.token
 
                     val kufarFlatList = request.data.ads
@@ -176,6 +176,7 @@ class KufarRepositoryImpl(
         filter: CommonFilterRequestModel,
         metroIds: List<Int>?,
         city: String,
+        currentPage: Int
     ) {
         val currentCityCodes: EnumEntries<CityCode> = CityCode.entries
         val currentCityName = currentCityCodes.find { it == filter.location?.city }?.let {
@@ -184,7 +185,7 @@ class KufarRepositoryImpl(
         val numberOfRoms = if (filter.roomOnly) null else filter.numberOfRooms
         val params = KufarDailyListQuery.createQueryParams(
             categoryId = categoryId,
-            page = filterRepository.currentAppPage,
+            page = currentPage,
             metroIds = metroIds,
             rooms = numberOfRoms,
             priceFull = filter.priceFull,
@@ -259,7 +260,7 @@ class KufarRepositoryImpl(
     ): AppFlat = kufarDailyResponseMapper.map(
         rentalObject.copy(
             appCity = currentCityName,
-            currentPage = filterRepository.currentAppPage
+            currentPage = filterRepository.currentHomePage
         )
     )
 

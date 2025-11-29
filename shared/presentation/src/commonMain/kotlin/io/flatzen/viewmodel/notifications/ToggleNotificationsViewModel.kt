@@ -24,7 +24,7 @@ class ToggleNotificationsViewModel(
     private val devicePlatform: DevicePlatform
 ) : ViewModel() {
 
-    fun onToggleNotifications(enabled: Boolean) {
+    fun onToggleNotifications(filterName: String, enabled: Boolean) {
         viewModelScope.launch {
             if (enabled) {
                 try {
@@ -39,11 +39,13 @@ class ToggleNotificationsViewModel(
                 if (token != null) {
                     try {
                         // Send current filter
-                        val currentFilter = filterRepository.lastFilter().copy(isNotificationEnabled = true)
+                        val currentFilter = filterRepository.lastFilter().copy(
+                            isNotificationEnabled = true,
+                            name = filterName
+                        )
                         subscriptionsRepository.saveSub(
                             CreateSubscriptionRequest(
                                 deviceId = devicePlatform.deviceId,
-                                name = null,
                                 filter = currentFilter.toSubscriptionDto()
                             )
                         )
