@@ -11,6 +11,9 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
 import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.notifications.NotificationsService
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
@@ -24,12 +27,20 @@ class ToggleNotificationsViewModel(
     private val devicePlatform: DevicePlatform
 ) : ViewModel() {
 
+	sealed interface UiEvent {
+		data object ShowSettingsDialog : UiEvent
+	}
+
+	private val _events = MutableSharedFlow<UiEvent>(extraBufferCapacity = 1)
+	val events: SharedFlow<UiEvent> = _events.asSharedFlow()
+
     fun onToggleNotifications(filterName: String, enabled: Boolean) {
         viewModelScope.launch {
             if (enabled) {
                 try {
                     permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
-                } catch (_: DeniedAlwaysException) {
+				} catch (_: DeniedAlwaysException) {
+					_events.emit(UiEvent.ShowSettingsDialog)
                     return@launch
                 } catch (_: DeniedException) {
                     return@launch
