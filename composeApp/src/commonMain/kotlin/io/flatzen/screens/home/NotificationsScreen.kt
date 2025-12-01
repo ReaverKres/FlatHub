@@ -165,6 +165,7 @@ fun NotificationsScreen(
                         lazyListState = lazyListState,
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
+                        isListView = state.isListView,
                         onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
                         clickOnFavorite = {
                             viewModel.onIntent(
