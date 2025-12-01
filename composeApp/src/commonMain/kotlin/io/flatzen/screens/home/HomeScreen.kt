@@ -496,7 +496,7 @@ fun LoadMoreForce(
                 .wrapContentHeight()
                 .padding(6.dp),
             onClick = {
-
+                loadMoreClick()
             }) {
             Text("Загрузить больше")
         }

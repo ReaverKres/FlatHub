@@ -440,7 +440,7 @@ class NotificationListViewModel(
                         currentState.copy(
                             isRefreshing = false,
                             isLoadingMore = false,
-                            isLoading = false,
+                            isLoading = uiSubs.isNotEmpty(),
                             subscriptions = uiSubs
                         )
                     },
