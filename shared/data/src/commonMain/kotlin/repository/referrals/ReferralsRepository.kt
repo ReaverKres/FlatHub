@@ -7,6 +7,7 @@ import server_response.flathub.UseReferralCodeResponse
 sealed interface ReferralError {
     data object SameUserIds : ReferralError
     data object CodeAlreadyUsed : ReferralError
+    data object UserNotFound : ReferralError
     data object DuplicateLink : ReferralError
     data class Unknown(val message: String?) : ReferralError
 }

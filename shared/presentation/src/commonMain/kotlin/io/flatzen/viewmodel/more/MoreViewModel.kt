@@ -8,7 +8,6 @@ import io.flatzen.firebase.ConfigFieldsChecker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import repository.userpreferences.UserPreferencesRepository
 
@@ -20,7 +19,7 @@ class MoreScreenViewModel(
     private val _uiState = MutableStateFlow<MoreUiState>(MoreUiState.Loading)
     val uiState: StateFlow<MoreUiState> = _uiState
 
-    private val _isNotificationAvailable = MutableStateFlow<Boolean>(false)
+    private val _isNotificationAvailable = MutableStateFlow(false)
     val isNotificationAvailable: StateFlow<Boolean> = _isNotificationAvailable
 
     init {
@@ -30,8 +29,10 @@ class MoreScreenViewModel(
 
     fun checkNotificationAvailableStatus() {
         viewModelScope.launch(Dispatchers.Default) {
-            val userPreferences = userPreferencesRepository.getUserPreferences().first()
-            _isNotificationAvailable.value = userPreferences?.isNotificationAvailable == true
+            userPreferencesRepository.getUserPreferences().collect {
+                _isNotificationAvailable.value =
+                    it?.deviceDocumentResponse?.isNotificationAvailable == true
+            }
         }
     }
 

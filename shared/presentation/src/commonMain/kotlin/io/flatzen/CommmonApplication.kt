@@ -2,9 +2,9 @@ package io.flatzen
 
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.PayloadData
-import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.di.initKoin
 import io.flatzen.notifications.NotificationsService
+import io.flatzen.usecases.RegistrationUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -13,8 +13,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.koin.core.KoinApplication
 import org.koin.dsl.KoinAppDeclaration
-import repository.subscriptions.SubscriptionsRepository
-import repository.userpreferences.UserPreferencesRepository
 
 object CommonApplication {
     var di: KoinApplication? = null
@@ -26,27 +24,14 @@ object CommonApplication {
             di = initKoin(appDeclaration)
         }
 
-        val subscriptionsRepository: SubscriptionsRepository? = di?.koin?.get()
         val notificationsService: NotificationsService? = di?.koin?.get()
-        val devicePlatform: DevicePlatform? = di?.koin?.get()
-        val userPreferences: UserPreferencesRepository? = di?.koin?.get()
+        val registrationUseCase: RegistrationUseCase? = di?.koin?.get()
 
         // Startup registration if allowed (using cache, then refresh)
         appScope.launch(Dispatchers.IO) {
             try {
-                val userId = devicePlatform?.deviceId ?: "-1"
-
                 val token = notificationsService?.getOrCreateDeviceToken()
-                val platform = devicePlatform?.platformType?.name.orEmpty()
-                val registeredUser = subscriptionsRepository?.registerDevice(
-                    deviceToken = token,
-                    platform = platform,
-                    userId = userId
-                )
-                userPreferences?.setRegistrationStatus(isRegistered = true)
-                userPreferences?.setNotificationAvailable(
-                    registeredUser?.isNotificationAvailable == true
-                )
+                registrationUseCase?.registerUser(token)
             } catch (e: Exception) {
                 println("startup registerDevice Exception ${e.message}")
             }
@@ -58,11 +43,7 @@ object CommonApplication {
                 println("onNewToken $token")
                 appScope.launch(Dispatchers.IO) {
                     try {
-                        subscriptionsRepository?.registerDevice(
-                            deviceToken = token,
-                            platform = devicePlatform?.platformType?.name.orEmpty(),
-                            userId = devicePlatform?.deviceId ?: "-1"
-                        )
+                        registrationUseCase?.registerUser(token)
                     } catch (e: Exception) {
                         println("onNewToken Exception ${e.message}")
                     }

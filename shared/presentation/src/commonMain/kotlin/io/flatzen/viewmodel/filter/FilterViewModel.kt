@@ -27,6 +27,7 @@ import io.flatzen.viewmodel.filter.FilterScreenEvent.SavedFiltersLoaded
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -36,6 +37,7 @@ import repository.fillter.FilterRepository
 import repository.fillter.UserMapAreaRepository
 import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
+import repository.userpreferences.UserPreferencesRepository
 import server_request.Currency
 
 // Actions
@@ -48,7 +50,9 @@ sealed interface FilterScreenAction : MviAction {
     ) : FilterScreenAction
 
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
-    data class UpdateDistrictFilter(val allDistricts: List<UiDistrict>, val district: UiDistrict) : FilterScreenAction
+    data class UpdateDistrictFilter(val allDistricts: List<UiDistrict>, val district: UiDistrict) :
+        FilterScreenAction
+
     data class UpdateAddressFilter(val addressUiState: Set<AddressUiState>) : FilterScreenAction
     data class UpdateSortOption(val sortOption: FlatSort) :
         FilterScreenAction // Added sort option action
@@ -74,6 +78,7 @@ sealed interface FilterScreenAction : MviAction {
         FilterScreenAction
 
     data class UpdateFilterName(val name: String) : FilterScreenAction
+    data class NotificationEnable(val enabled: Boolean) : FilterScreenAction
     data object SaveFilter : FilterScreenAction
     data object LoadSavedFilters : FilterScreenAction
     data class ApplySavedFilter(val filterId: Long) : FilterScreenAction
@@ -110,12 +115,18 @@ sealed interface FilterScreenEvent : MviEvent {
     data class SavedFilterSelectionUpdated(val selectedFilterId: Long?) : FilterScreenEvent
     data class SavedAreasDialogStateUpdated(val dialogState: SavedAreasDialogState) :
         FilterScreenEvent
+    data object NavigateToReferralScreen: FilterScreenEvent
+}
+
+sealed interface FilterEffect : MviEffect {
+    data object NavigateToReferralEffect: FilterEffect
 }
 
 class FilterViewModel(
     private val filterRepository: FilterRepository,
     private val userMapAreaRepository: UserMapAreaRepository,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : BaseMviViewModel<FilterScreenAction, FilterScreenState, FilterScreenEvent, MviEffect>() {
 
     override fun initialState(): FilterScreenState = FilterScreenState(
@@ -200,7 +211,7 @@ class FilterViewModel(
             }
 
             is FilterScreenAction.UpdateDistrictFilter -> {
-                val allDistricts = if (currentState.filters.districtsArea.isNullOrEmpty()){
+                val allDistricts = if (currentState.filters.districtsArea.isNullOrEmpty()) {
                     action.allDistricts
                 } else {
                     currentState.filters.districtsArea
@@ -282,6 +293,22 @@ class FilterViewModel(
                         )
                     )
                 )
+            }
+
+            is FilterScreenAction.NotificationEnable -> {
+                if (userPreferencesRepository.getUserPreferences()
+                        .firstOrNull()?.deviceDocumentResponse?.isNotificationAvailable == true
+                ) {
+                    flowOf(
+                        SaveDialogStateUpdated(
+                            currentState.saveDialogState.copy(
+                                isNotificationEnabled = action.enabled,
+                            )
+                        )
+                    )
+                } else {
+                    flowOf(FilterScreenEvent.NavigateToReferralScreen)
+                }
             }
 
             is FilterScreenAction.SaveFilter -> {
@@ -424,11 +451,19 @@ class FilterViewModel(
         }
     }
 
+    override suspend fun onEvent(event: FilterScreenEvent): MviEffect? {
+        return when (event) {
+            is FilterScreenEvent.NavigateToReferralScreen -> FilterEffect.NavigateToReferralEffect
+            else -> super.onEvent(event)
+        }
+    }
+
     override suspend fun reduce(
         event: FilterScreenEvent,
         currentState: FilterScreenState
     ): FilterScreenState {
         return when (event) {
+            is FilterScreenEvent.NavigateToReferralScreen -> currentState
             is FiltersUpdated -> {
                 currentState.copy(filters = event.newFilterState).also {
                     val filterModel: CommonFilterRequestModel =

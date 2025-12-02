@@ -16,7 +16,7 @@ class ReferralsRepositoryImpl(
 ) : ReferralsRepository {
 
     override suspend fun getStats(userId: String): Flow<ReferralStatsResponse> = flow {
-        api.stats(userId)
+        emit(api.stats(userId))
     }
 
     override suspend fun useCode(hostUserId: String, invitedUserId: String): Result<UseReferralCodeResponse> {
@@ -32,6 +32,7 @@ class ReferralsRepositoryImpl(
                     when (t.response.status) {
                         HttpStatusCode.BadRequest -> throw ReferralException(ReferralError.SameUserIds)
                         HttpStatusCode.Conflict -> throw ReferralException(ReferralError.CodeAlreadyUsed)
+                        HttpStatusCode.NotAcceptable -> throw ReferralException(ReferralError.CodeAlreadyUsed)
                         else -> throw ReferralException(ReferralError.Unknown(t.message))
                     }
                 }

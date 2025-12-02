@@ -27,6 +27,7 @@ fun AppTextField(
     text: String,
     label: String,
     launchedKey: Any = Unit,
+    keyboardOptions: KeyboardOptions? = null,
     onChangePredicate: (String) -> Boolean = { true },
     onChange: (String) -> Unit,
 ) {
@@ -49,7 +50,7 @@ fun AppTextField(
         label = { Text(label) },
         singleLine = true,
         modifier = modifier.focusRequester(focusFromRequester),
-        keyboardOptions = KeyboardOptions(
+        keyboardOptions = keyboardOptions ?: KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),

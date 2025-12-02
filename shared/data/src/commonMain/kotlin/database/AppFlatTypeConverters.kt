@@ -1,6 +1,7 @@
 package database
 
 import androidx.room.TypeConverter
+import api.DeviceDocumentResponse
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
@@ -66,4 +67,12 @@ class RoomTypeConverter {
             Json.decodeFromString(ListSerializer(Coordinates.serializer()), it)
         }
     }
+
+    @TypeConverter
+    fun fromDeviceDocumentResponse(value: DeviceDocumentResponse?): String? =
+        value?.let { json.encodeToString(DeviceDocumentResponse.serializer(), it) }
+
+    @TypeConverter
+    fun toDeviceDocumentResponse(value: String?): DeviceDocumentResponse? =
+        value?.let { json.decodeFromString(DeviceDocumentResponse.serializer(), it) }
 }

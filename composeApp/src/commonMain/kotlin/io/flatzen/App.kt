@@ -328,7 +328,10 @@ fun App() {
                     animatedComposable<FilterScreenDestination> {
                         FilterScreen(
                             navigateBack = { navController.popBackStack() },
-                            onOpenLocation = { navController.navigate(LocationScreenDestination) }
+                            onOpenLocation = { navController.navigate(LocationScreenDestination) },
+                            onOpenReferralScreen = {
+                                navController.navigate(ReferralDestination)
+                            }
                         )
                     }
 
