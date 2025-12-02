@@ -57,10 +57,10 @@ fun SaveDialog(
     saveBtnText: String = "Сохранить",
     cancelBtnText: String = "Отменить",
     onNameChange: (String) -> Unit,
+    onNotificationChange: (Boolean) -> Unit = {},
     onSave: (isNotificationEnabled: Boolean) -> Unit,
     onCancel: () -> Unit
 ) {
-    var isNotificationEnabled by remember { mutableStateOf(false)}
 
     AlertDialog(
         onDismissRequest = onCancel,
@@ -90,15 +90,15 @@ fun SaveDialog(
                 )
 
                 if (dialogState.showNotification) {
-                    AppSwitch(label = "Получать push уведомления", state = isNotificationEnabled) { enabled ->
-                        isNotificationEnabled = enabled
+                    AppSwitch(label = "Получать push уведомления", state = dialogState.isNotificationEnabled) { enabled ->
+                        onNotificationChange(enabled)
                     }
                 }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onSave(isNotificationEnabled) },
+                onClick = { onSave(dialogState.isNotificationEnabled) },
                 enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
             ) {
                 Text(saveBtnText)

@@ -58,6 +58,7 @@ data class SaveDialogState(
     val filterName: String = "",
     val isNameValid: Boolean = true,
     val errorMessage: String? = null,
+    val isNotificationEnabled: Boolean = false,
     val showNotification: Boolean = false
 )
 

@@ -28,6 +28,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":shared:commoncomponents"))
             implementation(project(":shared:data"))
+            implementation(project(":shared:domain"))
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)

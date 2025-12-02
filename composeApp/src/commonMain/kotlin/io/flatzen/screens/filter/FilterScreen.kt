@@ -62,6 +62,7 @@ import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
+import io.flatzen.viewmodel.filter.FilterEffect
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
@@ -87,6 +88,7 @@ import org.koin.core.parameter.parametersOf
 fun FilterScreen(
     navigateBack: () -> Unit,
     onOpenLocation: () -> Unit = {},
+    onOpenReferralScreen: () -> Unit,
 ) {
     val viewModel: FilterViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -136,6 +138,16 @@ fun FilterScreen(
 			}
 		}
 	}
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect {
+            when(it) {
+                is FilterEffect.NavigateToReferralEffect -> {
+                    onOpenReferralScreen()
+                }
+            }
+        }
+    }
 
     LaunchedEffectOnce(Unit) {
         // Track screen view through MviAction
@@ -555,6 +567,9 @@ fun FilterScreen(
             dialogState = state.saveDialogState,
             onNameChange = { name ->
                 viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
+            },
+            onNotificationChange = { enabled ->
+                viewModel.onIntent(FilterScreenAction.NotificationEnable(enabled))
             },
             onSave = { notificationEnabled ->
                 currentFilters = currentFilters.copy(

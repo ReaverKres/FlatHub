@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "e9a17be5973ba676b55400c7e766d5b8",
+    "version": 5,
+    "identityHash": "d7d80d4c97311ce5f8c0988390e20bb8",
     "entities": [
       {
         "tableName": "AppFlat",
@@ -345,7 +345,7 @@
       },
       {
         "tableName": "user_preferences",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `isListView` INTEGER NOT NULL, `isNotificationAvailable` INTEGER, `isUserRegistered` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `isListView` INTEGER NOT NULL, `deviceDocumentResponse` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -360,14 +360,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "isNotificationAvailable",
-            "columnName": "isNotificationAvailable",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "isUserRegistered",
-            "columnName": "isUserRegistered",
-            "affinity": "INTEGER"
+            "fieldPath": "deviceDocumentResponse",
+            "columnName": "deviceDocumentResponse",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -380,7 +375,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e9a17be5973ba676b55400c7e766d5b8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd7d80d4c97311ce5f8c0988390e20bb8')"
     ]
   }
 }

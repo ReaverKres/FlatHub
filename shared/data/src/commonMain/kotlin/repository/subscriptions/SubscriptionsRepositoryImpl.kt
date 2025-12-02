@@ -1,7 +1,7 @@
 package repository.subscriptions
 
 import api.CreateSubscriptionRequest
-import api.DeviceDocument
+import api.DeviceDocumentResponse
 import api.RegisterDeviceRequest
 import api.SubscriptionDocument
 import api.SubscriptionsApi
@@ -19,7 +19,7 @@ class SubscriptionsRepositoryImpl(
         deviceToken: String?,
         platform: String,
         userId: String
-    ): DeviceDocument {
+    ): DeviceDocumentResponse {
         return api.register(
             RegisterDeviceRequest(
                 deviceToken = deviceToken, platform = platform, userId = userId

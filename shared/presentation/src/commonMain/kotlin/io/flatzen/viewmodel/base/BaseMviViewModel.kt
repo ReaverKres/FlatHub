@@ -1,12 +1,27 @@
 package io.flatzen.viewmodel.base
 
 import androidx.lifecycle.ViewModel
-import io.flatzen.mvi.MviState
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import io.flatzen.mvi.MviAction
 import io.flatzen.mvi.MviEffect
 import io.flatzen.mvi.MviEvent
+import io.flatzen.mvi.MviState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 abstract class BaseMviViewModel<A : MviAction, S : MviState,EV: MviEvent, EF : MviEffect>(
     private val dispatchers: CoroutineDispatcher = Dispatchers.Main.immediate
@@ -26,7 +41,7 @@ abstract class BaseMviViewModel<A : MviAction, S : MviState,EV: MviEvent, EF : M
     /** Обработка action -> Flow<Effect> */
     abstract suspend fun handleIntent(action: A, currentState: S): Flow<EV>
 
-    /** Сводим Effect в новое State */
+    /** Сводим Event в новое State */
     abstract suspend fun reduce(event: EV, currentState: S): S
 
     protected open suspend fun onEvent(event: EV): EF? {

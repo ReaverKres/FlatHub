@@ -15,9 +15,6 @@ interface UserPreferencesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUserPreferences(preferences: UserPreferences)
 
-    @Query("UPDATE user_preferences SET isNotificationAvailable = :isAvailable WHERE id = 0")
-    suspend fun setNotificationAvailable(isAvailable: Boolean)
-
-    @Query("UPDATE user_preferences SET isUserRegistered = :isUserRegistered WHERE id = 0")
-    suspend fun setRegistrationStatus(isUserRegistered: Boolean)
+//    @Query("UPDATE user_preferences SET deviceDocumentResponse = :userDocumentResponse WHERE id = 0")
+//    suspend fun setUser(userDocumentResponse: DeviceDocumentResponse)
 }

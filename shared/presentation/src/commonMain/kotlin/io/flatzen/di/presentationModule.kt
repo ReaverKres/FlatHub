@@ -58,7 +58,8 @@ val flatSearchPresentationModule = module {
         FilterViewModel(
             filterRepository = get(),
             userMapAreaRepository = get(),
-            analyticsManager = get()
+            analyticsManager = get(),
+            userPreferencesRepository = get()
         )
     }
 
@@ -92,6 +93,9 @@ val flatSearchPresentationModule = module {
 
     viewModel {
         ReferralViewModel(
+            registrationUseCase = get(),
+            notificationsService = get(),
+            prefsRepo = get(),
             referralRepo = get(),
             devicePlatform = get()
         )
@@ -115,6 +119,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             flatSearchPresentationModule,
             networkModule,
             dataModule,
+            domainModule,
             firebaseModule(),
             notificationsModule(),
             databaseModule(),

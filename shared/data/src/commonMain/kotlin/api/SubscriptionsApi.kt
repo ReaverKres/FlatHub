@@ -8,11 +8,12 @@ import de.jensklingenberg.ktorfit.http.Path
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import server_response.flathub.ReferralStatsResponse
 
 interface SubscriptionsApi {
 
     @POST("api/v1/devices/register")
-    suspend fun register(@Body req: RegisterDeviceRequest): DeviceDocument
+    suspend fun register(@Body req: RegisterDeviceRequest): DeviceDocumentResponse
 
     @POST("api/v1/subscriptions/save-sub")
     suspend fun saveSub(@Body body: CreateSubscriptionRequest)
@@ -40,11 +41,12 @@ data class CreateSubscriptionRequest(
 )
 
 @Serializable
-data class DeviceDocument(
-    val deviceToken: String,
-    val platform: String,
+data class DeviceDocumentResponse(
+    val deviceToken: String? = null,
+    val platform: String? = null,
     val userId: String? = null,
     val isNotificationAvailable: Boolean? = null,
+    val referralStats: ReferralStatsResponse? = null
 )
 
 @Serializable
