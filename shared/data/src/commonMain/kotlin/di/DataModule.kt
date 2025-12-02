@@ -4,11 +4,13 @@ import api.DomovitaApi
 import api.KufarApi
 import api.OnlinerApi
 import api.RealtApi
+import api.ReferralsApi
 import api.SubscriptionsApi
 import api.createDomovitaApi
 import api.createKufarApi
 import api.createOnlinerApi
 import api.createRealtApi
+import api.createReferralsApi
 import api.createSubscriptionsApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
@@ -41,6 +43,8 @@ import repository.osm.OsmRepository
 import repository.osm.OsmRepositoryImpl
 import repository.realt.RealtRepository
 import repository.realt.RealtRepositoryImpl
+import repository.referrals.ReferralsRepository
+import repository.referrals.ReferralsRepositoryImpl
 import repository.subscriptions.SubscriptionsRepository
 import repository.subscriptions.SubscriptionsRepositoryImpl
 import repository.userpreferences.UserPreferencesRepository
@@ -130,6 +134,11 @@ val dataModule = module {
 
     single<SubscriptionsApi> { get<Ktorfit>(qualifier = DataQualifiers.SUBSCRIPTIONS_KTORFIT).createSubscriptionsApi() }
     single<SubscriptionsRepository> { SubscriptionsRepositoryImpl(api = get()) }
+
+    // Referrals
+    single<ReferralsApi> { get<Ktorfit>(qualifier = DataQualifiers.SUBSCRIPTIONS_KTORFIT).createReferralsApi() }
+    single<ReferralsRepository> { ReferralsRepositoryImpl(get()) }
+
     single<ResponseToEntitiesFlatMapper<DomovitaListResponse.DomovitaFlat, AppFlat>>(
         qualifier = DataQualifiers.DOMOVITA_FLAT_MAPPER
     ) {

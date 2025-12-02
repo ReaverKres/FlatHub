@@ -13,6 +13,7 @@ import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqViewModel
 import io.flatzen.viewmodel.more.MoreScreenViewModel
+import io.flatzen.viewmodel.more.ReferralViewModel
 import io.flatzen.viewmodel.notifications.NotificationListViewModel
 import io.flatzen.viewmodel.notifications.ToggleNotificationsViewModel
 import org.koin.core.KoinApplication
@@ -79,11 +80,21 @@ val flatSearchPresentationModule = module {
     }
 
     viewModel {
-        MoreScreenViewModel(configFieldsChecker = get())
+        MoreScreenViewModel(
+            configFieldsChecker = get(),
+            userPreferencesRepository = get()
+        )
     }
 
     viewModel {
         FaqViewModel(configFieldsChecker = get())
+    }
+
+    viewModel {
+        ReferralViewModel(
+            referralRepo = get(),
+            devicePlatform = get()
+        )
     }
 
     viewModel { (controller: PermissionsController) ->

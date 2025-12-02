@@ -58,6 +58,7 @@ import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
+import io.flatzen.screens.more.ReferralScreen
 import io.flatzen.widgets.MessageSnackbar
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
@@ -97,6 +98,9 @@ object DistrictSelectScreenDestination
 
 @Serializable
 object FaqScreenDestination
+
+@Serializable
+object ReferralDestination
 
 // Определяем элементы для BottomBar
 val bottomNavItems = listOf(
@@ -258,6 +262,9 @@ fun App() {
                         MoreScreen(
                             navigateToFaq = {
                                 navController.navigate(FaqScreenDestination)
+                            },
+                            navigateToReferral = {
+                                navController.navigate(ReferralDestination)
                             }
                         )
                     }
@@ -354,6 +361,12 @@ fun App() {
 
                     animatedComposable<FaqScreenDestination> {
                         FaqScreen(
+                            navigateBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    animatedComposable<ReferralDestination> {
+                        ReferralScreen(
                             navigateBack = { navController.popBackStack() }
                         )
                     }

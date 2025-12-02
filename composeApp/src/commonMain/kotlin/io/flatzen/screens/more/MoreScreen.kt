@@ -51,11 +51,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MoreScreen(
     modifier: Modifier = Modifier,
-    navigateToFaq: () -> Unit = {}
+    navigateToFaq: () -> Unit,
+    navigateToReferral: () -> Unit
 ) {
 
     val viewModel: MoreScreenViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isNotificationAvailable by viewModel.isNotificationAvailable.collectAsStateWithLifecycle()
 
     val faqViewModel: FaqViewModel = koinViewModel()
     val faqState by faqViewModel.uiState.collectAsStateWithLifecycle()
@@ -103,6 +105,15 @@ fun MoreScreen(
                         text = "Часто задаваемые вопросы (FAQ)",
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
                         onClick = navigateToFaq
+                    )
+                }
+
+                if(isNotificationAvailable.not()) {
+                    AppTextButton(
+                        image = null,
+                        text = "Пригласительный код",
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
+                        onClick = navigateToReferral
                     )
                 }
                 
