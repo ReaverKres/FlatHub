@@ -275,14 +275,14 @@ class FlatSearchViewModel(
             is FlatListScreenAction.ToggleView -> {
                 val newIsListView = !currentState.isListView
                 viewModelScope.launch(Dispatchers.IO) {
-                    userPreferencesRepository.saveUserPreferences(newIsListView)
+                    userPreferencesRepository.saveListViewPreferences(newIsListView)
                 }
                 flowOf(ViewToggled(newIsListView))
             }
 
             is FlatListScreenAction.SetListView -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    userPreferencesRepository.saveUserPreferences(action.isListView)
+                    userPreferencesRepository.saveListViewPreferences(action.isListView)
                 }
                 flowOf(ViewToggled(action.isListView))
             }

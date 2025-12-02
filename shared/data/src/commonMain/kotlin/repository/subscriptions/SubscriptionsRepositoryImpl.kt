@@ -16,11 +16,10 @@ class SubscriptionsRepositoryImpl(
 ) : SubscriptionsRepository {
 
     override suspend fun registerDevice(
-        deviceToken: String,
+        deviceToken: String?,
         platform: String,
-        userId: String?
+        userId: String
     ): DeviceDocument {
-
         return api.register(
             RegisterDeviceRequest(
                 deviceToken = deviceToken, platform = platform, userId = userId

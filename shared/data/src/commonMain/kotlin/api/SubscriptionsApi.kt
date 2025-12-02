@@ -26,9 +26,9 @@ interface SubscriptionsApi {
 
 @Serializable
 data class RegisterDeviceRequest(
-    val deviceToken: String,
+    val deviceToken: String?,
     val platform: String, // android|ios
-    val userId: String? = null
+    val userId: String
 )
 
 @Serializable
@@ -44,6 +44,7 @@ data class DeviceDocument(
     val deviceToken: String,
     val platform: String,
     val userId: String? = null,
+    val isNotificationAvailable: Boolean? = null,
 )
 
 @Serializable

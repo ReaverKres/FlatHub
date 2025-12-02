@@ -260,7 +260,7 @@ class NotificationListViewModel(
 
             is PrivateNotificationAction.SetListView -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    userPreferencesRepository.saveUserPreferences(action.isListView)
+                    userPreferencesRepository.saveListViewPreferences(action.isListView)
                 }
                 flowOf(NotificationListEvents.NotifViewToggled(action.isListView))
             }
@@ -274,7 +274,7 @@ class NotificationListViewModel(
             NotificationListScreenAction.ToggleView -> {
                 val newIsListView = !currentState.isListView
                 viewModelScope.launch(Dispatchers.IO) {
-                    userPreferencesRepository.saveUserPreferences(newIsListView)
+                    userPreferencesRepository.saveListViewPreferences(newIsListView)
                 }
                 flowOf(NotificationListEvents.NotifViewToggled(newIsListView))
             }
