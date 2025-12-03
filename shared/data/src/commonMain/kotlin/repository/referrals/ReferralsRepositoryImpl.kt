@@ -32,7 +32,7 @@ class ReferralsRepositoryImpl(
                     when (t.response.status) {
                         HttpStatusCode.BadRequest -> throw ReferralException(ReferralError.SameUserIds)
                         HttpStatusCode.Conflict -> throw ReferralException(ReferralError.CodeAlreadyUsed)
-                        HttpStatusCode.NotAcceptable -> throw ReferralException(ReferralError.CodeAlreadyUsed)
+                        HttpStatusCode.NotAcceptable -> throw ReferralException(ReferralError.UserNotFound)
                         else -> throw ReferralException(ReferralError.Unknown(t.message))
                     }
                 }

@@ -33,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -187,7 +188,7 @@ class FlatSearchViewModel(
                 }
 
                 // Load user preferences for view type
-                userPreferencesRepository.getUserPreferences().first()?.let { preferences ->
+                userPreferencesRepository.getUserPreferences().firstOrNull()?.let { preferences ->
                     return flowOf(ViewToggled(preferences.isListView))
                 }
 

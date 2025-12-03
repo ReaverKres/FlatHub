@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -96,31 +97,35 @@ fun MoreScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
-                ) {
+            ) {
                 // FAQ Button at the top
-                if(faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()){
+                if (faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    AppTextButton(
-                        image = null,
-                        text = "Часто задаваемые вопросы (FAQ)",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
-                        onClick = navigateToFaq
-                    )
+                    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+                        AppTextButton(
+                            image = null,
+                            text = "Часто задаваемые вопросы (FAQ)",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                            onClick = navigateToFaq
+                        )
+                    }
                 }
 
-                if(isNotificationAvailable.not()) {
-                    AppTextButton(
-                        image = null,
-                        text = "Пригласительный код",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
-                        onClick = navigateToReferral
-                    )
+                if (isNotificationAvailable.not()) {
+                    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+                        AppTextButton(
+                            image = null,
+                            text = "Пригласительный код",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                            onClick = navigateToReferral
+                        )
+                    }
                 }
-                
+
                 if (state is MoreUiState.Success && (state as MoreUiState.Success).moreConfigData.isVisible == true) {
                     val moreConfigData = (state as MoreUiState.Success).moreConfigData
                     moreConfigData.telegramSupport?.let { telegram ->
-                        MoreDescription(
+                        DescriptionText(
                             text = telegramSupportDescription
                         )
                         AppTextButton(
@@ -133,7 +138,7 @@ fun MoreScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     if (moreConfigData.donateDescription != null) {
-                        MoreDescription(
+                        DescriptionText(
                             text = moreConfigData.donateDescription.orEmpty()
                         )
                     }
@@ -177,7 +182,8 @@ fun MoreScreen(
                                     AsyncImage(
                                         model = Res.getUri("drawable/copy.svg"),
                                         contentDescription = null,
-                                        modifier = Modifier.size(16.dp).clickable(onClick = onClick),
+                                        modifier = Modifier.size(16.dp)
+                                            .clickable(onClick = onClick),
                                         colorFilter = ColorFilter.tint(Color.LightGray)
                                     )
                                 }
@@ -186,7 +192,7 @@ fun MoreScreen(
                     }
 
                 } else {
-                    MoreDescription(
+                    DescriptionText(
                         text = telegramSupportDescription,
                     )
                     AppTextButton(
@@ -203,12 +209,11 @@ fun MoreScreen(
 }
 
 @Composable
-private fun MoreDescription(text: String) {
+fun DescriptionText(text: String) {
     Text(
         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
         text = text,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
     )
-
 }

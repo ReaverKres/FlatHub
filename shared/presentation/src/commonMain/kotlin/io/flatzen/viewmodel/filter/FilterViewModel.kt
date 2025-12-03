@@ -297,7 +297,7 @@ class FilterViewModel(
 
             is FilterScreenAction.NotificationEnable -> {
                 if (userPreferencesRepository.getUserPreferences()
-                        .firstOrNull()?.deviceDocumentResponse?.isNotificationAvailable == true
+                        .firstOrNull()?.deviceDocumentResponse?.referralStats?.isNotificationAvailable == true
                 ) {
                     flowOf(
                         SaveDialogStateUpdated(

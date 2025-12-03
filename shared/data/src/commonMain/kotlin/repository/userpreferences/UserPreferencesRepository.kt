@@ -4,12 +4,14 @@ import api.DeviceDocumentResponse
 import database.UserPreferencesDao
 import entities.UserPreferences
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import server_response.flathub.ReferralStatsResponse
 
 interface UserPreferencesRepository {
     fun getUserPreferences(): Flow<UserPreferences?>
     suspend fun saveListViewPreferences(isListView: Boolean)
     suspend fun setUser(deviceDocumentResponse: DeviceDocumentResponse)
+    suspend fun updateReferralStats(referralStats: ReferralStatsResponse?)
 }
 
 class UserPreferencesRepositoryImpl(
@@ -21,18 +23,19 @@ class UserPreferencesRepositoryImpl(
     }
 
     override suspend fun saveListViewPreferences(isListView: Boolean) {
-        val preferences = getUserPreferences().first()
-        preferences?.let {
-            userPreferencesDao.saveUserPreferences(it.copy(isListView = isListView))
-        }
+        val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
+        userPreferencesDao.saveUserPreferences(preferences.copy(isListView = isListView))
+
     }
 
     override suspend fun setUser(deviceDocumentResponse: DeviceDocumentResponse) {
-        val preferences = getUserPreferences().first()
-        preferences?.let {
-            userPreferencesDao.saveUserPreferences(it.copy(
-                deviceDocumentResponse = deviceDocumentResponse
-            ))
-        }
+        val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
+        userPreferencesDao.saveUserPreferences(
+            preferences.copy(deviceDocumentResponse = deviceDocumentResponse)
+        )
+    }
+
+    override suspend fun updateReferralStats(referralStats: ReferralStatsResponse?) {
+        userPreferencesDao.updateReferralStats(referralStats)
     }
 }

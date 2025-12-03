@@ -82,8 +82,9 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun FilterScreen(
     navigateBack: () -> Unit,
@@ -94,12 +95,10 @@ fun FilterScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
 
-    // Permissions controller for notifications
     val factory = rememberPermissionsControllerFactory()
     val permissionsController: PermissionsController = remember(factory) { factory.createPermissionsController() }
     BindEffect(permissionsController)
 
-    // Build NotificationsViewModel with Koin deps
     val toggleNotificationsViewModel: ToggleNotificationsViewModel = koinViewModel(
         parameters = { parametersOf(permissionsController) }
     )

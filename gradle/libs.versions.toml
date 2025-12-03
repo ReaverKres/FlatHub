@@ -5,8 +5,9 @@ androidx-activityCompose = "1.10.1"
 androidx-ui-tooling = "1.7.8"
 coil = "3.2.0"
 androidSplashScreen = "1.0.1"
-compose-multiplatform = "1.8.2"
-compose-multiplatform-backhandler = "1.8.2"
+compose-multiplatform = "1.9.3"
+compose-multiplatform-backhandler = "1.9.3"
+compose-confetti = "0.6.0"
 koin = "4.1.0"
 kotlin = "2.2.0"
 ktx-serialization = "1.9.0"
@@ -14,14 +15,10 @@ ktor = "3.2.1"
 ktorfit = "2.6.1"
 ksoup = "0.2.4"
 materialIconsCore = "1.7.3"
-navigationCompose = "2.9.0-beta03"
+navigationCompose = "2.9.1"
 mapComposeMP = "0.10.0"
 lifecycleCompose = "2.9.1"
 kotlinStdlib = "2.2.0"
-kotlinTest = "2.2.0"
-runner = "1.5.2"
-core = "1.5.0"
-junit = "1.1.5"
 jetbrainsKotlinJvm = "2.2.0"
 ksp = "2.2.0-2.0.2"
 dateTimeVer = "0.6.0"
@@ -64,6 +61,7 @@ lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name =
 material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 compose-multiplatform-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform-backhandler" }
+compose-confetti = { module = "io.github.vinceglb:confettikit", version.ref = "compose-confetti"}
 mp-maps = { module = "ovh.plrapps:mapcompose-mp", version.ref = "mapComposeMP"}
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTimeVer"}
@@ -76,7 +74,6 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "mokoPermissions" }
-moko-permissions-notification = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "mokoPermissions" }
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "mokoPermissions" }
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifierVer" }
