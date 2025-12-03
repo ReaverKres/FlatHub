@@ -45,7 +45,6 @@ data class DeviceDocumentResponse(
     val deviceToken: String? = null,
     val platform: String? = null,
     val userId: String? = null,
-    val isNotificationAvailable: Boolean? = null,
     val referralStats: ReferralStatsResponse? = null
 )
 

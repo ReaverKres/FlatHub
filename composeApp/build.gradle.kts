@@ -63,6 +63,7 @@ kotlin {
 
             implementation(libs.navigation.compose)
             implementation(libs.compose.multiplatform.backhandler)
+            implementation(libs.compose.confetti)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.material.icons.core)
 

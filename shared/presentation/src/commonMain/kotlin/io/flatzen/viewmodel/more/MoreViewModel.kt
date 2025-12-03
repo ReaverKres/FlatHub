@@ -31,7 +31,7 @@ class MoreScreenViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             userPreferencesRepository.getUserPreferences().collect {
                 _isNotificationAvailable.value =
-                    it?.deviceDocumentResponse?.isNotificationAvailable == true
+                    it?.deviceDocumentResponse?.referralStats?.isNotificationAvailable == true
             }
         }
     }

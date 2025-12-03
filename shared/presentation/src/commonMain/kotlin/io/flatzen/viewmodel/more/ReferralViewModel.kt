@@ -1,5 +1,6 @@
 package io.flatzen.viewmodel.more
 
+import io.flatzen.commoncomponents.extensions.substringBeforeAnyDelimiter
 import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import repository.referrals.ReferralError
 import repository.referrals.ReferralException
 import repository.referrals.ReferralsRepository
@@ -45,7 +47,7 @@ sealed interface ReferralAction : MviAction {
 
 private sealed interface PrivateReferralAction : ReferralAction {
     data object NotificationAvailable : PrivateReferralAction
-    data object UpdateUserId: PrivateReferralAction
+    data object UpdateUserId : PrivateReferralAction
 }
 
 sealed interface ReferralEvent : MviEvent {
@@ -91,8 +93,9 @@ class ReferralViewModel(
     ): Flow<ReferralEvent> {
         return when (action) {
             PrivateReferralAction.UpdateUserId -> {
-                flowOf(ReferralEvent.NotificationAvailable)
+                flowOf(ReferralEvent.UserIdUpdated)
             }
+
             PrivateReferralAction.NotificationAvailable -> {
                 flowOf(ReferralEvent.NotificationAvailable)
             }
@@ -105,7 +108,7 @@ class ReferralViewModel(
                     flow {
                         val token = notificationsService.getOrCreateDeviceToken()
                         val user = registrationUseCase.registerUser(token)
-                        if(user.referralStats != null) {
+                        if (user.referralStats != null) {
                             emit(user.referralStats!!)
                         }
                     }.asLCE().map { stats ->
@@ -167,6 +170,7 @@ class ReferralViewModel(
             is ReferralEvent.UserIdUpdated -> {
                 currentState.copy(myCode = devicePlatform.deviceId)
             }
+
             is ReferralEvent.NotificationAvailable -> currentState
             is ReferralEvent.SubmitLoading -> {
                 currentState.copy(codeIsLoading = true)
@@ -182,11 +186,15 @@ class ReferralViewModel(
                     currentState.copy(
                         isLoading = false,
                         statsErrorMessage = throwable.cause?.message
+                            ?: message?.substringBeforeAnyDelimiter()
                     )
                 },
                 onSuccess = {
                     if (it.isNotificationAvailable) {
-                        onIntent(PrivateReferralAction.NotificationAvailable)
+                        viewModelScope.launch {
+                            prefsRepo.updateReferralStats(it)
+                            onIntent(PrivateReferralAction.NotificationAvailable)
+                        }
                     }
                     currentState.copy(
                         isLoading = false,

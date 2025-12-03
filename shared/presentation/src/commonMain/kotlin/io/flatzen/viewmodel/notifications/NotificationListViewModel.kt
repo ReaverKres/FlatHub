@@ -20,7 +20,7 @@ import io.flatzen.viewmodel.notifications.NotificationListScreenAction.SearchFla
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -150,7 +150,7 @@ class NotificationListViewModel(
     ): Flow<NotificationListEvents> {
         return when (action) {
             is NotificationListScreenAction.ScreenVisible -> {
-                userPreferencesRepository.getUserPreferences().first()?.let { preferences ->
+                userPreferencesRepository.getUserPreferences().firstOrNull()?.let { preferences ->
                     flowOf(NotificationListEvents.NotifViewToggled(preferences.isListView))
                 } ?: flowOf()
             }

@@ -4,8 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import entities.UserPreferences
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import server_response.flathub.ReferralStatsResponse
 
 @Dao
 interface UserPreferencesDao {
@@ -15,6 +18,14 @@ interface UserPreferencesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveUserPreferences(preferences: UserPreferences)
 
-//    @Query("UPDATE user_preferences SET deviceDocumentResponse = :userDocumentResponse WHERE id = 0")
-//    suspend fun setUser(userDocumentResponse: DeviceDocumentResponse)
+    @Transaction
+    suspend fun updateReferralStats(referralStats: ReferralStatsResponse?) {
+        val currentPrefs = getUserPreferences().firstOrNull() ?: UserPreferences()
+
+        val currentResponse = currentPrefs.deviceDocumentResponse
+        val updatedResponse = currentResponse?.copy(referralStats = referralStats)
+        val updatedPrefs = currentPrefs.copy(deviceDocumentResponse = updatedResponse)
+
+        updatedPrefs.let { saveUserPreferences(updatedPrefs) }
+    }
 }
