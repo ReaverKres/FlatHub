@@ -81,10 +81,8 @@ sealed interface FilterScreenAction : MviAction {
     data class NotificationEnable(val enabled: Boolean) : FilterScreenAction
     data object SaveFilter : FilterScreenAction
     data object LoadSavedFilters : FilterScreenAction
-    data class ApplySavedFilter(val filterId: Long) : FilterScreenAction
     data class DeleteSavedFilter(val id: Long) : FilterScreenAction
     data class ToggleSavedFilterSelection(val filterId: Long) : FilterScreenAction
-    data class CheckFilterMatchesSelected(val currentFilter: FilterState) : FilterScreenAction
 
     // Analytics actions
     class TrackScreenView(
@@ -338,14 +336,6 @@ class FilterViewModel(
                 flowOf(SavedFiltersLoaded(savedFilterStates))
             }
 
-            is FilterScreenAction.ApplySavedFilter -> {
-                val savedFilter = filterRepository.getSavedFilterById(action.filterId)
-                savedFilter?.let {
-                    filterRepository.applySavedFilter(it, false)
-                    flowOf(FilterApplied(it))
-                } ?: flowOf()
-            }
-
             is FilterScreenAction.DeleteSavedFilter -> {
                 filterRepository.deleteSavedFilter(action.id)
                 flowOf(FilterDeleted(action.id))
@@ -366,23 +356,6 @@ class FilterViewModel(
                     }
                     flowOf(SavedFilterSelectionUpdated(action.filterId))
                 }
-            }
-
-            is FilterScreenAction.CheckFilterMatchesSelected -> {
-                val selectedFilter = currentState.savedFilters.find { it.selected }
-                selectedFilter?.let { selected ->
-                    val selectedFilterData =
-                        filterRepository.getSavedFilterById(selected.id)?.filterData
-                    val currentFilterData = mapFilterStateToFilterModel(action.currentFilter)
-
-                    if (selectedFilterData != currentFilterData) {
-                        // Current filter doesn't match selected saved filter, deselect it
-                        filterRepository.clearAllSavedFilterSelections()
-                        flowOf(SavedFilterSelectionUpdated(null))
-                    } else {
-                        flowOf() // No change needed
-                    }
-                } ?: flowOf()
             }
 
             is FilterScreenAction.TrackScreenView -> {

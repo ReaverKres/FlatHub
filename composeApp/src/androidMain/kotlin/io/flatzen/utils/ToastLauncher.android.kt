@@ -1,6 +1,5 @@
 package io.flatzen.utils
 
-import android.app.Application
 import android.widget.Toast
 import io.flatzen.FlatZenApp
 

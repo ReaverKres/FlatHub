@@ -22,6 +22,8 @@ class FlatZenApp : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        createDefaultNotificationChannel()
+        initKmpNotifier()
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
@@ -30,9 +32,6 @@ class FlatZenApp : Application(), KoinComponent {
         Config.addAppMetricaApiKey("ff1c4b73-6829-46f8-82ff-6d3d94ad1774")
         // Initialize AppMetrica
         initAppmetrica()
-
-        createDefaultNotificationChannel()
-        initKmpNotifier()
     }
     
     private fun initAppmetrica() {
