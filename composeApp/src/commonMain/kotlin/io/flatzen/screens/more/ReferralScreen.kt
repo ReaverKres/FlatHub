@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,12 +33,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -50,16 +51,7 @@ import io.flatzen.viewmodel.more.ReferralEffect
 import io.flatzen.viewmodel.more.ReferralViewModel
 import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
-import io.github.vinceglb.confettikit.compose.ConfettiKit
-import io.github.vinceglb.confettikit.core.Angle
-import io.github.vinceglb.confettikit.core.Party
-import io.github.vinceglb.confettikit.core.Position
-import io.github.vinceglb.confettikit.core.Spread
-import io.github.vinceglb.confettikit.core.emitter.Emitter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,13 +60,12 @@ fun ReferralScreen(
 ) {
     val viewModel: ReferralViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val toastLauncher = remember { ToastLauncher() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect {
             when (it) {
                 is ReferralEffect.NotificationAvailable -> {
-
+                    navigateBack()
                 }
 
                 else -> {}
@@ -101,6 +92,7 @@ fun ReferralScreen(
             )
         }
     ) { paddingValues ->
+        val toastLauncher = remember { ToastLauncher() }
         val copier = copyLauncher(
             onCopySuccess = { text ->
                 toastLauncher.showToast(
@@ -119,148 +111,111 @@ fun ReferralScreen(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
+        PullToRefreshBox(
+            onRefresh = {
+                if (state.isLoading.not()) {
+                    viewModel.onIntent(
+                        ReferralAction.Load
+                    )
+                }
+            },
+            isRefreshing = false,
+            modifier = Modifier.padding(paddingValues)
         ) {
-            PullToRefreshBox(
-                onRefresh = {
-                    if (state.isLoading.not()) {
-                        viewModel.onIntent(
-                            ReferralAction.Load
-                        )
-                    }
-                },
-                isRefreshing = false,
-                modifier = Modifier.fillMaxSize()
-            ) {
 
-                if (state.isLoading) {
-                    LinearProgressIndicator(
-                        Modifier
-                            .align(Alignment.TopCenter)
-                            .fillMaxWidth()
-                            .height(12.dp)
-                            .padding(4.dp)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // Ваш приглашительный код с копированием
-                    val onCopy: () -> Unit = { copier.copyText(text = state.myCode) }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 6.dp)
-                            .clickable(onClick = onCopy),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Ваш код: ${state.myCode}")
-                        Spacer(Modifier.width(12.dp))
-                        AsyncImage(
-                            model = Res.getUri("drawable/copy.svg"),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp).clickable(onClick = onCopy),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.outline)
-                        )
-                    }
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "Осталось пригласить: ${state.remainingInvites}"
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    DescriptionText(
-                        text = "Чтобы получить доступ к уведомлениям, ваш пригласительный код" +
-                                " должны использовать несколько пользователей.\nПоделитесь приложением с друзьями!"
-                    )
-
-                    Spacer(Modifier.height(12.dp))
-
-                    if (!state.usedReferralCode) {
-                        AppTextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            text = state.inputCode,
-                            label = "Введите пригласительный код",
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Done
-                            ),
-                            onChange = { viewModel.onIntent(ReferralAction.UpdateInput(it)) }
-                        )
-                        state.submitErrorMessage?.let {
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = it,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Button(
-                                modifier = Modifier.align(Alignment.Center),
-                                onClick = { viewModel.onIntent(ReferralAction.SubmitCode) },
-                                enabled = state.inputCode.isNotBlank() && state.isLoading.not() && state.codeIsLoading.not()
-                            ) {
-                                Text("Активировать")
-                            }
-                        }
-                        Spacer(Modifier.height(12.dp))
-                    }
-
-                    Spacer(Modifier.height(24.dp))
-                }
+            if (state.isLoading) {
+                LinearProgressIndicator(
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .padding(4.dp)
+                )
             }
 
-            if (state.isNotificationAvailable) {
-                rememberCoroutineScope().launch {
-                    delay(2000)
-                    navigateBack()
-                }
-                toastLauncher.showToast(
-                    "Вам доступны уведомления",
-                    ToastDurationType.LONG
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
 
-                val parties = remember {
-                    listOf(
-                        Party(
-                            speed = 0f,
-                            maxSpeed = 15f,
-                            damping = 0.9f,
-                            angle = Angle.BOTTOM,
-                            spread = Spread.ROUND,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                            emitter = Emitter(duration = 2.seconds).perSecond(100),
-                            position = Position.Relative(0.0, 0.0)
-                                .between(Position.Relative(1.0, 0.0))
+                Spacer(Modifier.height(16.dp))
+
+                // Ваш приглашительный код с копированием
+                val onCopy: () -> Unit = { copier.copyText(text = state.myCode) }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(
+                            horizontal = ButtonDefaults.TextButtonContentPadding.calculateLeftPadding(
+                                LayoutDirection.Ltr
+                            )
                         )
+                        .padding(bottom = 6.dp)
+                        .clickable(onClick = onCopy),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(text = "Ваш код: ${state.myCode}")
+                    Spacer(Modifier.width(12.dp))
+                    AsyncImage(
+                        model = Res.getUri("drawable/copy.svg"),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp).clickable(onClick = onCopy),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.outline)
                     )
                 }
-                ConfettiKit(
-                    modifier = Modifier.fillMaxSize(),
-                    parties = parties
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = "Осталось пригласить: ${state.remainingInvites}"
                 )
+
+                Spacer(Modifier.height(12.dp))
+
+                if (!state.usedReferralCode) {
+                    AppTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        text = state.inputCode,
+                        label = "Введите пригласительный код",
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        onChange = { viewModel.onIntent(ReferralAction.UpdateInput(it)) }
+                    )
+                    state.submitErrorMessage?.let {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = it,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Button(
+                            modifier = Modifier.align(Alignment.Center),
+                            onClick = { viewModel.onIntent(ReferralAction.SubmitCode) },
+                            enabled = state.inputCode.isNotBlank() && state.isLoading.not() && state.codeIsLoading.not()
+                        ) {
+                            Text("Активировать")
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                }
+
+                Spacer(Modifier.height(24.dp))
             }
         }
     }

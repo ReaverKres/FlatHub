@@ -5,7 +5,7 @@ fun Any?.toNullableString(): String? = if(this == null) null else this.toString(
 fun String?.substringBeforeAnyDelimiter(): String? {
     if (this.isNullOrEmpty()) return null
 
-    val delimiters = listOf("-", "_", "(", ")", ":", "http")
+    val delimiters = listOf("-", "_", "(", ")", ":", "http", ".pro")
 
     var minIndex = this.length
     var found = false

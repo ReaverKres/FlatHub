@@ -21,7 +21,7 @@ private const val KUFAR_BASE_URL: String = "https://api.kufar.by/"
 private const val ONLINER_BASE_URL: String = "https://r.onliner.by/"
 private const val REALT_BASE_URL: String = "https://realt.by/"
 private const val DOMOVITA_BASE_URL: String = "https://api.domovita.by/"
-private const val FLATHUB_BASE_URL: String = "https://flatzen-back.onrender.com/"
+private const val FLATHUB_BASE_URL: String = "https://flathub.pro/"
 
 val networkModule = module {
 
