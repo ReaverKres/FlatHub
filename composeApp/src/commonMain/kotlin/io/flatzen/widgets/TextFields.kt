@@ -26,13 +26,16 @@ fun AppTextField(
     modifier: Modifier = Modifier,
     text: String,
     label: String,
-    launchedKey: Any = Unit,
     keyboardOptions: KeyboardOptions? = null,
     onChangePredicate: (String) -> Boolean = { true },
     onChange: (String) -> Unit,
 ) {
-    var textValue by remember(launchedKey) {
-        mutableStateOf(TextFieldValue(text = text))
+    var textValue by remember { mutableStateOf(TextFieldValue()) }
+
+    LaunchedEffect(text) {
+        if (textValue.text != text) {
+            textValue = TextFieldValue(text = text)
+        }
     }
 
     val focusFromRequester = remember { FocusRequester() }
@@ -68,13 +71,16 @@ fun AppReadOnlyTextField(
     modifier: Modifier = Modifier,
     text: String,
     label: String,
-    launchedKey: Any = Unit,
     onChangePredicate: (String) -> Boolean = { true },
     onChange: (String) -> Unit,
     onClick: () -> Unit = {},
 ) {
-    var textValue by remember(launchedKey) {
-        mutableStateOf(TextFieldValue(text = text))
+    var textValue by remember { mutableStateOf(TextFieldValue()) }
+
+    LaunchedEffect(text) {
+        if (textValue.text != text) {
+            textValue = TextFieldValue(text = text)
+        }
     }
 
     OutlinedTextField(

@@ -118,8 +118,6 @@ fun FilterScreen(
         mutableStateOf(selectedItem)
     }
 
-    var clearAllEffectKey by remember { mutableStateOf(0) }
-    var dateTextEffectKey by remember { mutableStateOf(0) }
     var showCommercialAdTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showCommercialPropertyTypeDialog by rememberSaveable { mutableStateOf(false) }
 	var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
@@ -173,8 +171,6 @@ fun FilterScreen(
                 },
                 actions = {
                     TextButton(onClick = {
-                        clearAllEffectKey = clearAllEffectKey + 1
-                        dateTextEffectKey = dateTextEffectKey + 1
                         viewModel.onIntent(FilterScreenAction.ClearAllFilters)
                     }) {
                         Text("Сбросить")
@@ -333,7 +329,6 @@ fun FilterScreen(
                 Spacer(Modifier.height(6.dp))
                 NumberRange(
                     title = "Количество помещений",
-                    launchedKey = clearAllEffectKey,
                     rangeFrom = currentFilters.commercial.roomRange?.fromRange?.toInt()?.toString()
                         .orEmpty(),
                     fromOnChange = {
@@ -425,14 +420,12 @@ fun FilterScreen(
                         modifier = Modifier.weight(1f),
                         text = formattedDateRange,
                         label = "Дата бронирования",
-                        launchedKey = dateTextEffectKey,
                         onChange = {},
                         onClick = { showDatePicker = true }
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     IconButton(onClick = {
                         currentFilters = currentFilters.copy(bookingDatesFilter = null)
-                        dateTextEffectKey++
                     }) {
                         Icon(Icons.Default.Clear, contentDescription = "Удалить дату")
                     }
@@ -451,7 +444,6 @@ fun FilterScreen(
                                     timeZone = TimeZone.currentSystemDefault()
                                 )
                                 currentFilters = currentFilters.copy(bookingDatesFilter = bookingDatesFilter)
-                                dateTextEffectKey++
                             }
                             showDatePicker = false
                         },
@@ -470,7 +462,6 @@ fun FilterScreen(
             }
             NumberRange(
                 title = priceTitle,
-                launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -496,7 +487,6 @@ fun FilterScreen(
                 Spacer(Modifier.height(10.dp))
                 NumberRange(
                     title = "Цена за м2 $currencyText",
-                    launchedKey = clearAllEffectKey,
                     rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
                     fromOnChange = {
                         currentFilters = currentFilters.copy(
@@ -523,7 +513,6 @@ fun FilterScreen(
             Spacer(Modifier.height(10.dp))
             NumberRange(
                 title = "Площадь",
-                launchedKey = clearAllEffectKey,
                 rangeFrom = currentFilters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -553,7 +542,7 @@ fun FilterScreen(
                 onClick = {
                     viewModel.onIntent(FilterScreenAction.ShowSaveFilterDialog)
                 }) {
-                Text("Сохранить фильтр")
+                Text("Добавить в Мои фильтры")
             }
 
             Spacer(Modifier.height(32.dp))
@@ -738,7 +727,6 @@ private fun LocationItem(
 @Composable
 private fun NumberRange(
     title: String,
-    launchedKey: Any = Unit,
     rangeFrom: String,
     fromOnChange: (String) -> Unit,
     rangeTo: String,
@@ -750,7 +738,6 @@ private fun NumberRange(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         AppTextField(
             modifier = Modifier.weight(1f),
-            launchedKey = launchedKey,
             text = rangeFrom,
             label = "От",
             onChangePredicate = onlyIntPredicate,
@@ -758,7 +745,6 @@ private fun NumberRange(
         )
         AppTextField(
             modifier = Modifier.weight(1f),
-            launchedKey = launchedKey,
             text = rangeTo,
             label = "До",
             onChangePredicate = onlyIntPredicate,
