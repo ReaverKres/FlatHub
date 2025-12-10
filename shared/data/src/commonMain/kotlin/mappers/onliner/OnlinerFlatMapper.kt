@@ -44,8 +44,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             publishedAt = flatDateInstant,
             publishedAtServer = data.lastTimeUp,
             publishedAtUi = publishedAtUi,
-            priceUsd = priceUsd ?: Double.NaN,
-            priceByn = priceByn ?: Double.NaN,
+            priceUsd = priceUsd,
+            priceByn = priceByn,
             imageUrls = images,
             rooms = data.numberOfRooms ?: rooms,
             district = null, // Отсутствует в Onliner

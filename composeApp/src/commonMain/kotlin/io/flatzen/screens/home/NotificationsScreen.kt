@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -38,14 +39,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.notifications_is_empty
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -54,8 +62,11 @@ import io.flatzen.viewmodel.notifications.NotificationListEffect
 import io.flatzen.viewmodel.notifications.NotificationListScreenAction
 import io.flatzen.viewmodel.notifications.NotificationListScreenState
 import io.flatzen.viewmodel.notifications.NotificationListViewModel
+import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
+import io.flatzen.widgets.dialogs.SystemSettingsDialog
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,8 +74,16 @@ fun NotificationsScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    filterFromNotification: String? = null
 ) {
-    val viewModel = koinViewModel<NotificationListViewModel>()
+
+    val factory = rememberPermissionsControllerFactory()
+    val permissionsController: PermissionsController =
+        remember(factory) { factory.createPermissionsController() }
+    BindEffect(permissionsController)
+    val viewModel: NotificationListViewModel = koinViewModel(
+        parameters = { parametersOf(permissionsController, filterFromNotification) }
+    )
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
@@ -80,15 +99,41 @@ fun NotificationsScreen(
     val localDensity = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
 
+    var notifPermSnackBarIsVisible by remember { mutableStateOf(false) }
+    var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.onIntent(NotificationListScreenAction.IsNotificationPermissionGranted)
+    }
+
     LaunchedEffect(Unit) {
-        viewModel.onIntent(NotificationListScreenAction.ScreenVisible)
+        viewModel.onIntent(NotificationListScreenAction.ListViewCheck)
         viewModel.effect.collect {
             when (it) {
                 is NotificationListEffect.ScrollToTopEffect -> {
                     lazyListState.scrollToItem(0)
                 }
+
+                is NotificationListEffect.NotifPermGrantedEffect -> {
+                    notifPermSnackBarIsVisible = it.isGranted.not()
+                }
+
+                is NotificationListEffect.ShowSettingsEffect -> {
+                    showNotificationsSettingsDialog = true
+                }
             }
         }
+    }
+
+    if (showNotificationsSettingsDialog) {
+        SystemSettingsDialog(
+            onDismissRequest = { showNotificationsSettingsDialog = false },
+            onConfirmClick = {
+                showNotificationsSettingsDialog = false
+                permissionsController.openAppSettings()
+            },
+            onCloseClick = { showNotificationsSettingsDialog = false }
+        )
     }
 
     Scaffold(
@@ -120,7 +165,6 @@ fun NotificationsScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             Box(Modifier.fillMaxSize()) {
-
                 if (state.errorText != null) {
                     SimpleAlertDialog(
                         title = "Ошибка",
@@ -143,6 +187,18 @@ fun NotificationsScreen(
                             modifier = modifier.fillMaxSize()
                                 .padding(12.dp)
                         ) {
+                            if (notifPermSnackBarIsVisible) {
+                                NotifPermissionSnackbar(
+                                    onCloseSnackbarBtnClick = {
+                                        notifPermSnackBarIsVisible = false
+                                        viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                    },
+                                    onActionSnackbarBtnClick = {
+                                        viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                    }
+                                )
+                            }
+
                             EmptyScreenContent(
                                 modifier = Modifier.fillMaxSize(),
                                 Res.string.notifications_is_empty
@@ -156,6 +212,20 @@ fun NotificationsScreen(
                             contentPadding = PaddingValues(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            item {
+                                if (notifPermSnackBarIsVisible) {
+                                    NotifPermissionSnackbar(
+                                        onCloseSnackbarBtnClick = {
+                                            notifPermSnackBarIsVisible = false
+                                            viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                        },
+                                        onActionSnackbarBtnClick = {
+                                            viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                        }
+                                    )
+                                }
+                            }
+
                             flatListSkeletons(state.isListView)
                         }
                     }
@@ -181,6 +251,7 @@ fun NotificationsScreen(
                         topContent = {
                             topSubscriptionsContent(
                                 state = state,
+                                notifPermSnackBarIsVisible = notifPermSnackBarIsVisible,
                                 onSelect = { id ->
                                     viewModel.onIntent(
                                         NotificationListScreenAction.SelectSubscription(
@@ -202,7 +273,14 @@ fun NotificationsScreen(
                                 },
                                 onToggleView = {
                                     viewModel.onIntent(NotificationListScreenAction.ToggleView)
-                                }
+                                },
+                                onCloseSnackbarBtnClick = {
+                                    notifPermSnackBarIsVisible = false
+                                    viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                },
+                                onActionSnackbarBtnClick = {
+                                    viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                },
                             )
                         },
                         bottomContent = {
@@ -255,11 +333,20 @@ private fun clickOnLoadMore(viewModel: NotificationListViewModel) {
 
 private fun LazyListScope.topSubscriptionsContent(
     state: NotificationListScreenState,
+    notifPermSnackBarIsVisible: Boolean,
     onToggleView: () -> Unit,
     onSelect: (String) -> Unit,
     onShowParams: (String) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onCloseSnackbarBtnClick: () -> Unit = {},
+    onActionSnackbarBtnClick: () -> Unit = {},
 ) {
+    item {
+        if (notifPermSnackBarIsVisible) {
+            NotifPermissionSnackbar(onCloseSnackbarBtnClick, onActionSnackbarBtnClick)
+        }
+    }
+
     item {
         FlowRow(
             modifier = Modifier
@@ -317,4 +404,22 @@ private fun LazyListScope.topSubscriptionsContent(
             ListTypeSwitches(onToggleView, state.isListView, unSelectedColor, activeColor)
         }
     }
+}
+
+@Composable
+private fun NotifPermissionSnackbar(
+    onCloseSnackbarBtnClick: () -> Unit,
+    onActionSnackbarBtnClick: () -> Unit
+) {
+    MessageSnackbar(
+        modifier = Modifier
+            .padding(horizontal = 6.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        color = Color(0xFF2b64ad).copy(alpha = 0.8f),
+        message = "Предоставьте доступ к уведомлениям",
+        closeBtnText = "Закрыть",
+        actionBtnText = "Разрешить",
+        onCloseBtnClick = onCloseSnackbarBtnClick,
+        onActionBtnClick = onActionSnackbarBtnClick
+    )
 }

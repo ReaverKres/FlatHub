@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -919,10 +920,22 @@ private fun GridFlatCard(
             } else {
                 "комн"
             }
-            Text(
-                text = "${flat.numberOfRooms} $roomSuffix",
-                style = MaterialTheme.typography.bodyMedium
-            )
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = "${flat.numberOfRooms} $roomSuffix,",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                if (flat.totalArea.isNullOrEmpty().not()) {
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = "${flat.totalArea} м²",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
             Text(
                 text = flat.metroStation.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,

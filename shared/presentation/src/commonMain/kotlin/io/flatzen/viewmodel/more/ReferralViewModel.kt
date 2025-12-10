@@ -30,8 +30,9 @@ data class ReferralUiState(
     val myCode: String = "",
     val inputCode: String = "",
     val usedReferralCode: Boolean = false,
-    val requiredInvites: Int = 3,
-    val remainingInvites: Int = 3,
+    val requiredInvites: Int = 2,
+    val remainingInvites: Int = 2,
+    val remainingInvitesIsVisible: Boolean = true,
     val isNotificationAvailable: Boolean = false,
     val submitErrorMessage: String? = null,
     val statsErrorMessage: String? = null
@@ -202,6 +203,7 @@ class ReferralViewModel(
                         usedReferralCode = it.usedReferralCode,
                         requiredInvites = it.requiredInvites,
                         remainingInvites = it.remainingInvites,
+                        remainingInvitesIsVisible = it.remainingInvites != 0,
                         isNotificationAvailable = it.isNotificationAvailable,
                         submitErrorMessage = null
                     )

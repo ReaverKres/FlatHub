@@ -56,12 +56,20 @@ object CommonApplication {
                 data: PayloadData
             ) {
                 super.onPushNotificationWithPayloadData(title, body, data)
-                println("onPushNotificationWithPayloadData\n title $title\ndata $data")
+                println("myapplication onPushNotificationWithPayloadData\n title $title\ndata $data")
             }
 
             override fun onPushNotification(title: String?, body: String?) {
                 super.onPushNotification(title, body)
-                println("onPushNotification\n title $title\n")
+                println("myapplication onPushNotification\n title $title\n")
+            }
+
+            override fun onNotificationClicked(data: PayloadData) {
+                super.onNotificationClicked(data)
+                println("myapplication onNotificationClicked\n data = $data\n")
+                appScope.launch {
+                    notificationsService?.notificationClickListener?.emit(true)
+                }
             }
         })
     }

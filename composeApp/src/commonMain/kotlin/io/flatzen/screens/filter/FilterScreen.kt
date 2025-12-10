@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -78,6 +77,7 @@ import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
+import io.flatzen.widgets.dialogs.SystemSettingsDialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
@@ -577,24 +577,14 @@ fun FilterScreen(
     }
 
 	if (showNotificationsSettingsDialog) {
-		AlertDialog(
-			onDismissRequest = { showNotificationsSettingsDialog = false },
-			title = { Text("Включить уведомления") },
-			text = { Text("Разрешение на уведомления отключено. Вы можете включить его в настройках приложения.") },
-			confirmButton = {
-				TextButton(onClick = {
-					showNotificationsSettingsDialog = false
-					permissionsController.openAppSettings()
-				}) {
-					Text("Открыть настройки")
-				}
-			},
-			dismissButton = {
-				TextButton(onClick = { showNotificationsSettingsDialog = false }) {
-					Text("Отмена")
-				}
-			}
-		)
+        SystemSettingsDialog(
+            onDismissRequest = { showNotificationsSettingsDialog = false },
+            onConfirmClick ={
+                showNotificationsSettingsDialog = false
+                permissionsController.openAppSettings()
+            },
+            onCloseClick = { showNotificationsSettingsDialog = false }
+        )
 	}
 }
 

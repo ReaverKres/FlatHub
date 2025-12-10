@@ -47,6 +47,7 @@ import androidx.navigation.toRoute
 import io.flatzen.animations.animatedComposable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.notifications.NotificationsService
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
 import io.flatzen.screens.home.HomeScreen
@@ -82,7 +83,7 @@ data class DetailScreenDestination(val flatPlatform: String, val objectId: Long)
 object FilterScreenDestination
 
 @Serializable
-object NotificationScreenDestination
+data class NotificationScreenDestination(val filterInNotification: String? = null)
 
 @Serializable
 object LocationScreenDestination
@@ -125,6 +126,7 @@ fun App() {
     }
 
     val density = LocalDensity.current
+    val notificationsService: NotificationsService = koinInject()
 
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
@@ -132,6 +134,27 @@ fun App() {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
+
+
+        LaunchedEffect(Unit) {
+            notificationsService.notificationClickListener.collect { clickOnNotification ->
+
+                if (clickOnNotification == null) {
+                    return@collect
+                }
+
+                val isAlreadyOnNotifications =
+                    navController.currentBackStackEntry?.destination?.route
+                        ?.startsWith(NotificationScreenDestination::class.qualifiedName!!) == true
+
+                if (!isAlreadyOnNotifications) {
+                    navController.navigate(NotificationScreenDestination()) {
+                        launchSingleTop = true
+                    }
+                    notificationsService.notificationClickListener.emit(null)
+                }
+            }
+        }
 
         // Helper function to safely compare routes
         fun isRouteSelected(routeName: String?): Boolean {
@@ -142,9 +165,9 @@ fun App() {
         val showBottomBar = currentDestination?.route?.let { route ->
             // Показываем BottomBar только на основных экранах вкладок
             route == ListScreenDestination::class.qualifiedName ||
-            route == FavoritesScreenDestination::class.qualifiedName ||
-            route == SettingsScreenDestination::class.qualifiedName ||
-            route.startsWith(MapScreenDestination::class.qualifiedName!!)
+                    route == FavoritesScreenDestination::class.qualifiedName ||
+                    route == SettingsScreenDestination::class.qualifiedName ||
+                    route.startsWith(MapScreenDestination::class.qualifiedName!!)
         } ?: false
 
         Scaffold(
@@ -155,9 +178,18 @@ fun App() {
                         bottomNavItems.forEach { item ->
                             val isSelected = when (item.route) {
                                 ListScreenDestination -> isRouteSelected(ListScreenDestination::class.qualifiedName)
-                                FavoritesScreenDestination -> isRouteSelected(FavoritesScreenDestination::class.qualifiedName)
-                                SettingsScreenDestination -> isRouteSelected(SettingsScreenDestination::class.qualifiedName)
-                                is MapScreenDestination -> currentDestination.route?.startsWith(MapScreenDestination::class.qualifiedName!!) ?: false
+                                FavoritesScreenDestination -> isRouteSelected(
+                                    FavoritesScreenDestination::class.qualifiedName
+                                )
+
+                                SettingsScreenDestination -> isRouteSelected(
+                                    SettingsScreenDestination::class.qualifiedName
+                                )
+
+                                is MapScreenDestination -> currentDestination.route?.startsWith(
+                                    MapScreenDestination::class.qualifiedName!!
+                                ) ?: false
+
                                 else -> false
                             }
 
@@ -243,7 +275,7 @@ fun App() {
                                 navController.navigate(FilterScreenDestination)
                             },
                             navigateToNotifications = {
-                                navController.navigate(NotificationScreenDestination)
+                                navController.navigate(NotificationScreenDestination())
                             }
                         )
                     }
@@ -314,12 +346,14 @@ fun App() {
                         )
                     }
 
-                    animatedComposable<NotificationScreenDestination> {
+                    animatedComposable<NotificationScreenDestination> { backStackEntry ->
+                        val args = backStackEntry.toRoute<NotificationScreenDestination>()
                         NotificationsScreen(
                             navigateBack = { navController.popBackStack() },
                             navigateToDetails = { platform, id ->
                                 navController.navigate(DetailScreenDestination(platform.name, id))
-                            }
+                            },
+                            filterFromNotification = args.filterInNotification
                         )
                     }
 
@@ -340,7 +374,7 @@ fun App() {
                             navigateBack = { navController.popBackStack() },
                             openCity = { navController.navigate(CitySelectScreenDestination) },
                             openMetro = { navController.navigate(MetroSelectScreenDestination) },
-                            openDistricts = { navController.navigate(DistrictSelectScreenDestination)}
+                            openDistricts = { navController.navigate(DistrictSelectScreenDestination) }
                         )
                     }
 
@@ -375,7 +409,7 @@ fun App() {
                     }
                 }
 
-                if(isConnected.not()) {
+                if (isConnected.not()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

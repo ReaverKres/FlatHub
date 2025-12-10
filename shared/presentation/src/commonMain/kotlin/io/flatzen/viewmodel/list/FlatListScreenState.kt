@@ -7,6 +7,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.extensions.toNullableString
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.CommercialUiInfo
 import io.flatzen.viewmodel.PropertyTypeUi
@@ -43,6 +44,7 @@ data class UiFlat(
     val localPrice: Double?,
     val priceText: PriceText,
     val numberOfRooms: String?,
+    val totalArea: String?,
     val publishedAt: String?,
     val metroStation: String?,
     val address: String,
@@ -84,6 +86,7 @@ data class UiFlat(
                     } else {
                         "Не указано"
                     },
+                    totalArea = it.totalArea?.toInt().toNullableString(),
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
                     metroStation = if (it.metroStation.isNullOrBlank()) {
