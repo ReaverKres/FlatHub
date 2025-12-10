@@ -343,3 +343,26 @@ fun <T> SingleChoiceItem(
         }
     }
 }
+
+@Composable
+fun SystemSettingsDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmClick: () -> Unit,
+    onCloseClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Включить уведомления") },
+        text = { Text("Разрешение на уведомления отключено. Вы можете включить его в настройках приложения.") },
+        confirmButton = {
+            TextButton(onClick = onConfirmClick) {
+                Text("Открыть настройки")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCloseClick) {
+                Text("Отмена")
+            }
+        }
+    )
+}

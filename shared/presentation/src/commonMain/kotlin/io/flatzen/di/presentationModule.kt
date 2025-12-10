@@ -47,12 +47,16 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel { NotificationListViewModel(
-        mergedRepository = get(),
-        userPreferencesRepository = get(),
-        subscriptionsRepository = get(),
-        devicePlatform = get()
-    ) }
+    viewModel { (controller: PermissionsController, filter: String?) ->
+        NotificationListViewModel(
+            mergedRepository = get(),
+            userPreferencesRepository = get(),
+            subscriptionsRepository = get(),
+            permissionsController = controller,
+            devicePlatform = get(),
+            filterFromNotification = filter
+        )
+    }
 
     viewModel {
         FilterViewModel(
@@ -63,10 +67,12 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel { DistrictsViewModel(
-        osmRepository = get(),
-        filterRepository = get()
-    ) }
+    viewModel {
+        DistrictsViewModel(
+            osmRepository = get(),
+            filterRepository = get()
+        )
+    }
 
     viewModel {
         MapViewModel(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -370,7 +371,6 @@ fun MapScreen(
                 }
 
                 if (mapModelState.isMapAreaActive) {
-                    Column(Modifier.fillMaxWidth().wrapContentHeight()) {
                         MessageSnackbar(
                             modifier = Modifier
                                 .padding(horizontal = 6.dp)
@@ -378,7 +378,6 @@ fun MapScreen(
                             message = "Кликай по карте, рисуя контур, замкни его нажав на первую точку\nЧтобы сохранить нажми на маркер",
                             color = Color(0xFF2b64ad).copy(alpha = 0.8f)
                         )
-                    }
                     Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -665,11 +664,21 @@ fun FlatItemContent(
             "комн"
         }
         // Комнаты
-        Text(
-            text = "${flat.numberOfRooms} $roomSuffix",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = "${flat.numberOfRooms} $roomSuffix,",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+            if (flat.totalArea.isNullOrEmpty().not()) {
+                Text(
+                    text = "${flat.totalArea} м²",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
 
         // Метро
         if (flat.metroStation?.isNotBlank() == true) {

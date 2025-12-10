@@ -167,12 +167,14 @@ fun ReferralScreen(
                     )
                 }
 
-                Spacer(Modifier.height(12.dp))
+                if(state.remainingInvitesIsVisible) {
+                    Spacer(Modifier.height(12.dp))
 
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = "Осталось пригласить: ${state.remainingInvites}"
-                )
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = "Осталось пригласить: ${state.remainingInvites}"
+                    )
+                }
 
                 Spacer(Modifier.height(12.dp))
 

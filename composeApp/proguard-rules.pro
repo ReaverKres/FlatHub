@@ -3,3 +3,4 @@
 -keepnames class io.flatzen.FavoritesScreenDestination
 -keepnames class io.flatzen.SettingsScreenDestination
 -keepnames class io.flatzen.MapScreenDestination
+-keepnames class io.flatzen.NotificationScreenDestination

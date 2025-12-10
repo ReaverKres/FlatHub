@@ -2,6 +2,11 @@ package io.flatzen.viewmodel.notifications
 
 import api.SubscriptionDocument
 import api.toModel
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
 import entities.AppFlat
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -32,9 +37,17 @@ import repository.mergedrepo.MergedRepository
 import repository.subscriptions.SubscriptionsRepository
 import repository.userpreferences.UserPreferencesRepository
 
+object NotifPermissionMessageVisibility{
+    var isShown: Boolean = false
+}
+
 sealed interface NotificationListScreenAction : MviAction {
     data object ScrollToTop : NotificationListScreenAction
-    data object ScreenVisible : NotificationListScreenAction
+    data object ListViewCheck : NotificationListScreenAction
+    data object IsNotificationPermissionGranted : NotificationListScreenAction
+    data object ProvideNotifPermission : NotificationListScreenAction
+    data object CloseNotifPermMessage: NotificationListScreenAction
+
     class SearchFlats(
         val isLoadMore: Boolean,
         val isLoadMoreForce: Boolean = false,
@@ -64,8 +77,10 @@ private sealed interface PrivateNotificationAction : NotificationListScreenActio
 }
 
 sealed interface NotificationListEvents : MviEvent {
-    data object SubsIsEmptyEvent: NotificationListEvents
+    data object SubsIsEmptyEvent : NotificationListEvents
     data object ScrollToTopNotifEvent : NotificationListEvents
+    data object NotifPermGrantedEvent : NotificationListEvents
+    data object ShowSettingsEvent : NotificationListEvents
     data class AllFlatsLoaded(
         val allFlats: LCE<List<AppFlat>>,
         val isLoadMore: Boolean,
@@ -96,13 +111,17 @@ sealed interface NotificationListEvents : MviEvent {
 
 sealed interface NotificationListEffect : MviEffect {
     data object ScrollToTopEffect : NotificationListEffect
+    data class NotifPermGrantedEffect(val isGranted: Boolean) : NotificationListEffect
+    data object ShowSettingsEffect : NotificationListEffect
 }
 
 class NotificationListViewModel(
     private val mergedRepository: MergedRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val subscriptionsRepository: SubscriptionsRepository,
-    private val devicePlatform: DevicePlatform
+    private val permissionsController: PermissionsController,
+    private val devicePlatform: DevicePlatform,
+    private val filterFromNotification: String?
 ) : BaseMviViewModel<NotificationListScreenAction, NotificationListScreenState, NotificationListEvents, NotificationListEffect>() {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -149,11 +168,35 @@ class NotificationListViewModel(
         currentState: NotificationListScreenState
     ): Flow<NotificationListEvents> {
         return when (action) {
-            is NotificationListScreenAction.ScreenVisible -> {
+            is NotificationListScreenAction.IsNotificationPermissionGranted -> {
+                if(NotifPermissionMessageVisibility.isShown.not()) {
+                    flowOf(NotificationListEvents.NotifPermGrantedEvent)
+                } else {
+                    flowOf()
+                }
+            }
+
+            is NotificationListScreenAction.ProvideNotifPermission -> {
+                var event: Flow<NotificationListEvents> = flowOf()
+                try {
+                    permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+                } catch (_: DeniedAlwaysException) {
+                    event = flowOf(NotificationListEvents.ShowSettingsEvent)
+                } catch (_: DeniedException) { }
+                event
+            }
+
+            is NotificationListScreenAction.CloseNotifPermMessage -> {
+                NotifPermissionMessageVisibility.isShown = true
+                flowOf()
+            }
+
+            is NotificationListScreenAction.ListViewCheck -> {
                 userPreferencesRepository.getUserPreferences().firstOrNull()?.let { preferences ->
                     flowOf(NotificationListEvents.NotifViewToggled(preferences.isListView))
                 } ?: flowOf()
             }
+
             is NotificationListScreenAction.ClickOnFavorite -> {
                 mergedRepository.saveFlatToFavorite(action.flatPlatform, action.adId)
                     .asLCE()
@@ -342,6 +385,7 @@ class NotificationListViewModel(
             is NotificationListEvents.SubsIsEmptyEvent -> {
                 initialState().copy(isLoading = false)
             }
+
             is NotificationListEvents.AllFlatsLoaded -> event.allFlats.process(
                 onLoading = {
                     currentState.copy(
@@ -418,6 +462,8 @@ class NotificationListViewModel(
             )
 
             is NotificationListEvents.ScrollToTopNotifEvent -> currentState
+            is NotificationListEvents.NotifPermGrantedEvent -> currentState
+            is NotificationListEvents.ShowSettingsEvent -> currentState
 
             is NotificationListEvents.SubscriptionsLoaded -> {
                 event.list.process(
@@ -530,6 +576,16 @@ class NotificationListViewModel(
     override suspend fun onEvent(event: NotificationListEvents): NotificationListEffect? {
         return when (event) {
             NotificationListEvents.ScrollToTopNotifEvent -> NotificationListEffect.ScrollToTopEffect
+            NotificationListEvents.NotifPermGrantedEvent -> {
+                NotificationListEffect.NotifPermGrantedEffect(
+                    permissionsController.isPermissionGranted(
+                        Permission.REMOTE_NOTIFICATION
+                    )
+                )
+            }
+
+            NotificationListEvents.ShowSettingsEvent -> NotificationListEffect.ShowSettingsEffect
+
             else -> super.onEvent(event)
         }
     }
