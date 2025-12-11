@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package io.flatzen.widgets
 
 import androidx.compose.foundation.layout.Column
@@ -10,7 +12,6 @@ import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
@@ -18,11 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.todayIn
+import kotlin.time.ExperimentalTime
 
 /**
  * Диалог выбора диапазона дат с настраиваемыми параметрами.
@@ -42,7 +39,6 @@ fun DateRangePickerDialog(
     onDismissRequest: () -> Unit,
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     modifier: Modifier = Modifier,
-    selectableDates: SelectableDates = FutureOrPresentSelectableDates,
     title: @Composable (() -> Unit)? = {
         Text("Выберите диапазон дат", style = MaterialTheme.typography.headlineSmall)
     },
@@ -66,7 +62,6 @@ fun DateRangePickerDialog(
     initialSelectedEndDateMillis: Long? = null,
 ) {
     val dateRangePickerState = rememberDateRangePickerState(
-        selectableDates = selectableDates,
         initialSelectedStartDateMillis = initialSelectedStartDateMillis,
         initialSelectedEndDateMillis = initialSelectedEndDateMillis
     )
@@ -97,16 +92,16 @@ fun DateRangePickerDialog(
 }
 
 // Вспомогательный объект для ограничения выбора только будущими датами (для примера)
-@OptIn(ExperimentalMaterial3Api::class)
-private val FutureOrPresentSelectableDates = object : SelectableDates {
-    private val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-
-    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-        val date = Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
-        return date >= today
-    }
-
-    override fun isSelectableYear(year: Int): Boolean {
-        return year >= today.year
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//private val FutureOrPresentSelectableDates = object : SelectableDates {
+//    private val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+//
+//    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+//        val date = Instant.fromEpochMilliseconds(utcTimeMillis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+//        return date >= today
+//    }
+//
+//    override fun isSelectableYear(year: Int): Boolean {
+//        return year >= today.year
+//    }
+//}
