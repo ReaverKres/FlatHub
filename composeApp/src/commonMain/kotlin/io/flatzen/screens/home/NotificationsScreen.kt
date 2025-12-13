@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -184,7 +186,9 @@ fun NotificationsScreen(
                 when {
                     state.isLoading.not() && state.flatList.isEmpty() && state.subscriptions.isEmpty() -> {
                         Column(
-                            modifier = modifier.fillMaxSize()
+                            modifier = modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
                                 .padding(12.dp)
                         ) {
                             if (notifPermSnackBarIsVisible) {
