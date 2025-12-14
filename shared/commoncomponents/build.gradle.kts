@@ -5,6 +5,9 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
+    }
 
     androidLibrary {
         namespace = "io.flatzen.commoncomponents"

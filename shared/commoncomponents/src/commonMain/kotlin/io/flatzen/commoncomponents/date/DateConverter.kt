@@ -1,11 +1,9 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
 package io.flatzen.commoncomponents.date
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
@@ -25,25 +23,18 @@ object DateConverter {
             val dateComponents = datePart.split("-").map { it.toInt() }
             val timeComponents = timePart.split(":").map { it.toInt() }
 
-            val localDateTime = LocalDateTime(
-                year = dateComponents[0],
-                monthNumber = dateComponents[1],
-                dayOfMonth = dateComponents[2],
-                hour = timeComponents[0],
-                minute = timeComponents[1],
-                second = timeComponents[2],
-                nanosecond = 0
-            )
-            localDateTime.toInstant(TimeZone.UTC)
+            // Преобразуем в ISO 8601 формат и парсим через Instant.parse()
+            fun Int.pad(): String = this.toString().padStart(2, '0')
+            val isoString = "${dateComponents[0]}-${dateComponents[1].pad()}-${dateComponents[2].pad()}T${timeComponents[0].pad()}:${timeComponents[1].pad()}:${timeComponents[2].pad()}Z"
+            Instant.parse(isoString)
         } else {
             // Парсим как LocalDate (без времени) - "2025-08-26"
             val dateComponents = dateString.split("-").map { it.toInt() }
-            val localDate = LocalDate(
-                year = dateComponents[0],
-                monthNumber = dateComponents[1],
-                dayOfMonth = dateComponents[2]
-            )
-            localDate.atTime(hour = 0, minute = 0).toInstant(TimeZone.UTC)
+            
+            // Преобразуем в ISO 8601 формат и парсим через Instant.parse()
+            fun Int.pad(): String = this.toString().padStart(2, '0')
+            val isoString = "${dateComponents[0]}-${dateComponents[1].pad()}-${dateComponents[2].pad()}T00:00:00Z"
+            Instant.parse(isoString)
         }
     }
 
