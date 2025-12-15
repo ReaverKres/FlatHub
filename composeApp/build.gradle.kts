@@ -54,6 +54,7 @@ kotlin {
             api(project(":shared:presentation"))
             api(project(":shared:commoncomponents"))
 
+            api(libs.kmp.notifier)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

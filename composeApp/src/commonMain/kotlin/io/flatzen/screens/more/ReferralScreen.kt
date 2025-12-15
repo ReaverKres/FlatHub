@@ -30,11 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,11 +48,19 @@ import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.copyLauncher
 import io.flatzen.viewmodel.more.ReferralAction
-import io.flatzen.viewmodel.more.ReferralEffect
 import io.flatzen.viewmodel.more.ReferralViewModel
 import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
+import io.github.vinceglb.confettikit.compose.ConfettiKit
+import io.github.vinceglb.confettikit.core.Angle
+import io.github.vinceglb.confettikit.core.Party
+import io.github.vinceglb.confettikit.core.Position
+import io.github.vinceglb.confettikit.core.Spread
+import io.github.vinceglb.confettikit.core.emitter.Emitter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,18 +69,6 @@ fun ReferralScreen(
 ) {
     val viewModel: ReferralViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect {
-            when (it) {
-                is ReferralEffect.NotificationAvailable -> {
-                    navigateBack()
-                }
-
-                else -> {}
-            }
-        }
-    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -157,17 +154,21 @@ fun ReferralScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(Modifier.width(8.dp))
-                    Text(text = "Ваш код: ${state.myCode}")
+                    Text(
+                        text = "Ваш код: ${state.myCode}",
+                        modifier = Modifier.weight(1f)
+                    )
                     Spacer(Modifier.width(12.dp))
                     AsyncImage(
                         model = Res.getUri("drawable/copy.svg"),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp).clickable(onClick = onCopy),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.outline)
+                        colorFilter = ColorFilter.tint(Color.LightGray)
                     )
+                    Spacer(Modifier.width(8.dp))
                 }
 
-                if(state.remainingInvitesIsVisible) {
+                if (state.remainingInvitesIsVisible) {
                     Spacer(Modifier.height(12.dp))
 
                     Text(
@@ -219,6 +220,45 @@ fun ReferralScreen(
 
                 Spacer(Modifier.height(24.dp))
             }
+            if (state.isNotificationAvailable) {
+                OnNotificationAvailable(navigateBack, toastLauncher)
+            }
         }
     }
+}
+
+@Composable
+private fun OnNotificationAvailable(
+    navigateBack: () -> Unit,
+    toastLauncher: ToastLauncher
+) {
+
+    rememberCoroutineScope().launch {
+        delay(2000)
+        navigateBack()
+    }
+    toastLauncher.showToast(
+        "Вам доступны уведомления",
+        ToastDurationType.LONG
+    )
+
+    val parties = remember {
+        listOf(
+            Party(
+                speed = 0f,
+                maxSpeed = 15f,
+                damping = 0.9f,
+                angle = Angle.BOTTOM,
+                spread = Spread.ROUND,
+                colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                emitter = Emitter(duration = 2.seconds).perSecond(100),
+                position = Position.Relative(0.0, 0.0)
+                    .between(Position.Relative(1.0, 0.0))
+            )
+        )
+    }
+    ConfettiKit(
+        modifier = Modifier.fillMaxSize(),
+        parties = parties
+    )
 }
