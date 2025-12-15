@@ -10,6 +10,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class SubscriptionsRepositoryImpl(
     private val api: SubscriptionsApi
@@ -20,20 +21,22 @@ class SubscriptionsRepositoryImpl(
         platform: String,
         userId: String
     ): DeviceDocumentResponse {
-        return api.register(
-            RegisterDeviceRequest(
-                deviceToken = deviceToken, platform = platform, userId = userId
+        return withContext(Dispatchers.IO) {
+            api.register(
+                RegisterDeviceRequest(
+                    deviceToken = deviceToken, platform = platform, userId = userId
+                )
             )
-        )
+        }
     }
 
     override suspend fun saveSub(request: CreateSubscriptionRequest) {
-        api.saveSub(request)
+        withContext(Dispatchers.IO) { api.saveSub(request) }
     }
 
     override fun listByDevice(deviceId: String): Flow<List<SubscriptionDocument>> {
         return flow {
-            val result  = api.listByDevice(deviceId)
+            val result = api.listByDevice(deviceId)
             emit(result)
         }.flowOn(Dispatchers.IO)
     }
