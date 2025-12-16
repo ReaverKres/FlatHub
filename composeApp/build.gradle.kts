@@ -92,8 +92,8 @@ android {
         applicationId = "io.flatzen"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.1.01"
+        versionCode = 10
+        versionName = "1.1.02"
     }
 
     signingConfigs {

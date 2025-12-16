@@ -175,6 +175,12 @@ fun ReferralScreen(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         text = "Осталось пригласить: ${state.remainingInvites}"
                     )
+
+                    Spacer(Modifier.height(2.dp))
+                    DescriptionText(
+                        text = "Чтобы получить доступ к уведомлениям, ваш пригласительный код" +
+                                " должны активировать несколько пользователей.\nПоделитесь приложением с друзьями!"
+                    )
                 }
 
                 Spacer(Modifier.height(12.dp))
