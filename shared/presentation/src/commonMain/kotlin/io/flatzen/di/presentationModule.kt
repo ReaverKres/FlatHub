@@ -14,7 +14,7 @@ import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralContainer
-import io.flatzen.viewmodel.notifications.NotificationListViewModel
+import io.flatzen.viewmodel.notifications.NotificationListContainer
 import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +42,8 @@ val flatSearchPresentationModule = module {
     container { new(::FlatDetailContainer) }
     container { new(::FavoritesContainer) }
 
-    viewModel { (controller: PermissionsController, filter: String?) ->
-        NotificationListViewModel(
+    container { (controller: PermissionsController, filter: String?) ->
+        NotificationListContainer(
             mergedRepository = get(),
             userPreferencesRepository = get(),
             subscriptionsRepository = get(),
