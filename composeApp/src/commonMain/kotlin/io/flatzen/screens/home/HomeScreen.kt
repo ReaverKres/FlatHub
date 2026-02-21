@@ -90,9 +90,9 @@ import io.flatzen.utils.text
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.FilterViewModel
-import io.flatzen.viewmodel.list.FlatListEffect
-import io.flatzen.viewmodel.list.FlatListScreenAction
-import io.flatzen.viewmodel.list.FlatSearchViewModel
+import io.flatzen.viewmodel.list.FlatListAction
+import io.flatzen.viewmodel.list.FlatListIntent
+import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
@@ -102,10 +102,11 @@ import io.flatzen.widgets.SortBottomSheet
 import io.flatzen.widgets.dialogs.ForceUpdateDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,8 +116,16 @@ fun HomeScreen(
     navigateToNotifications: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel = koinViewModel<FlatSearchViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val flatSearchContainer: FlatSearchContainer = koinInject()
+    val lazyListState: LazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val state by flatSearchContainer.store.subscribe { action ->
+        when (action) {
+            is FlatListAction.ScrollToTopEffect -> {
+                coroutineScope.launch { lazyListState.scrollToItem(0) }
+            }
+        }
+    }
 
     val filterViewModel = koinViewModel<FilterViewModel>()
     val filterScreenState by filterViewModel.state.collectAsStateWithLifecycle()
@@ -136,9 +145,6 @@ fun HomeScreen(
         filterViewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, true))
     }
 
-    val lazyListState: LazyListState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
     val firstVisibleItemIndex by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex }
     }
@@ -150,19 +156,12 @@ fun HomeScreen(
     val scrollToTopBtnSize: Dp = 48.dp
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(FlatListScreenAction.ScreenVisible)
-        viewModel.effect.collect {
-            when (it) {
-                is FlatListEffect.ScrollToTopEffect -> {
-                    lazyListState.scrollToItem(0)
-                }
-            }
-        }
+        flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
     }
 
     LaunchedEffectOnce(Unit) {
-        viewModel.onIntent(
-            FlatListScreenAction.TrackScreenView(
+        flatSearchContainer.store.intent(
+            FlatListIntent.TrackScreenView(
                 screenName = AppMetrcica.Screens.LIST,
                 parameters = mapOf(
                     AppMetrcica.Parameters.SCREEN_TYPE to AppMetrcica.ScreenTypes.MAIN
@@ -183,8 +182,8 @@ fun HomeScreen(
         PullToRefreshBox(
             onRefresh = {
                 if (state.isLoading.not()) {
-                    viewModel.onIntent(
-                        FlatListScreenAction.SearchFlats(
+                    flatSearchContainer.store.intent(
+                        FlatListIntent.SearchFlats(
                             isLoadMore = false,
                             isRefreshing = true
                         )
@@ -201,7 +200,7 @@ fun HomeScreen(
                 SearchErrorDialog(
                     dialogState = state.errorDialogState!!,
                     onDismiss = {
-                        viewModel.onIntent(FlatListScreenAction.HideNetworkErrorDialog)
+                        flatSearchContainer.store.intent(FlatListIntent.HideNetworkErrorDialog)
                     }
                 )
             }
@@ -249,7 +248,7 @@ fun HomeScreen(
                     filterState = currentFilters,
                     isListView = state.isListView,
                     onToggleView = {
-                        viewModel.onIntent(FlatListScreenAction.ToggleView)
+                        flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                     }
                 )
 
@@ -266,7 +265,7 @@ fun HomeScreen(
                                 currentFilters = it
                             },
                             onToggleView = {
-                                viewModel.onIntent(FlatListScreenAction.ToggleView)
+                                flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                             }
                         )
                         item {
@@ -282,7 +281,7 @@ fun HomeScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             LoadMoreForce(state.currentSearchPage) {
-                                clickOnLoadMore(viewModel)
+                                clickOnLoadMore(flatSearchContainer)
                             }
                         }
                     }
@@ -297,15 +296,15 @@ fun HomeScreen(
                         isListView = state.isListView,
                         onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
                         clickOnFavorite = {
-                            viewModel.onIntent(
-                                FlatListScreenAction.ClickOnFavorite(
+                            flatSearchContainer.store.intent(
+                                FlatListIntent.ClickOnFavorite(
                                     it.flatPlatform,
                                     it.adId
                                 )
                             )
                         },
                         onLoadMore = {
-                            viewModel.onIntent(FlatListScreenAction.SearchFlats(true))
+                            flatSearchContainer.store.intent(FlatListIntent.SearchFlats(true))
                         },
                         topContent = {
                             topContentHeader(
@@ -315,7 +314,7 @@ fun HomeScreen(
                                     currentFilters = it
                                 },
                                 onToggleView = {
-                                    viewModel.onIntent(FlatListScreenAction.ToggleView)
+                                    flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                                 },
                                 showSortSheet = {
                                     showSortSheet = true
@@ -329,7 +328,7 @@ fun HomeScreen(
                             if (state.noFlatsToLoadMore) {
                                 item {
                                     LoadMoreForce(state.currentSearchPage) {
-                                        clickOnLoadMore(viewModel)
+                                        clickOnLoadMore(flatSearchContainer)
                                     }
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
@@ -345,7 +344,6 @@ fun HomeScreen(
 
             ScrollToTopBtn(
                 showScrollToTopBtn,
-                coroutineScope,
                 firstVisibleItemIndex,
                 lazyListState,
                 scrollToTopBtnSize
@@ -406,11 +404,11 @@ fun HomeScreen(
 @Composable
 fun BoxScope.ScrollToTopBtn(
     showScrollToTopBtn: Boolean,
-    coroutineScope: CoroutineScope,
     firstVisibleItemIndex: Int,
     lazyListState: LazyListState,
     scrollToTopBtnSize: Dp
 ) {
+    val scope = rememberCoroutineScope()
     AnimatedVisibility(
         visible = showScrollToTopBtn,
         modifier = Modifier
@@ -419,7 +417,7 @@ fun BoxScope.ScrollToTopBtn(
     ) {
         IconButton(
             onClick = {
-                coroutineScope.launch {
+                scope.launch {
                     if (firstVisibleItemIndex < 8) {
                         lazyListState.animateScrollToItem(0)
                     } else {
@@ -472,9 +470,9 @@ fun BoxScope.NoFlatsToLoadMoreText(
     }
 }
 
-private fun clickOnLoadMore(viewModel: FlatSearchViewModel) {
-    viewModel.onIntent(
-        FlatListScreenAction.SearchFlats(
+private fun clickOnLoadMore(container: io.flatzen.viewmodel.list.FlatSearchContainer) {
+    container.store.intent(
+        FlatListIntent.SearchFlats(
             isLoadMore = true,
             isLoadMoreForce = true
         )

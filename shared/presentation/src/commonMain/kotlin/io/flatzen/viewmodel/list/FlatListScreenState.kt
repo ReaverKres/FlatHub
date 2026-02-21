@@ -14,6 +14,7 @@ import io.flatzen.viewmodel.detailad.PropertyTypeUi
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
+import pro.respawn.flowmvi.api.MVIState
 
 @Immutable
 data class FlatListScreenState(
@@ -27,7 +28,19 @@ data class FlatListScreenState(
     val isListView: Boolean = false,
     val infoDialogState: InfoDialogState? = null,
     val errorDialogState: SearchErrorDialogState? = null
-) : MviState
+) : MviState, MVIState {
+    companion object {
+        val Initial = FlatListScreenState(
+            isLoading = true,
+            isRefreshing = false,
+            isLoadingMore = false,
+            flatList = emptyList(),
+            noFlatsToLoadMore = false,
+            isAnyFilterApplied = false,
+            currentSearchPage = 1
+        )
+    }
+}
 
 @Immutable
 data class UiFlat(
