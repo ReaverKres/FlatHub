@@ -51,12 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.di.container
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
-import io.flatzen.viewmodel.MapAction.AddPointToPath
-import io.flatzen.viewmodel.MapEffect
-import io.flatzen.viewmodel.MapViewModel
+import io.flatzen.viewmodel.MapContainer
+import io.flatzen.viewmodel.MapIntent
+import io.flatzen.viewmodel.MapIntent.AddPointToPath
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListScreenAction
@@ -85,6 +86,7 @@ import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
@@ -92,7 +94,7 @@ import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 )
 @Composable
 fun MapScreen(
-    mapViewModel: MapViewModel = koinViewModel(),
+    mapViewModel: MapContainer = container(),
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
     navigateBack: () -> Unit,
@@ -113,11 +115,74 @@ fun MapScreen(
 
     val filterViewModel = koinViewModel<FilterViewModel>()
     val filterState by filterViewModel.state.collectAsStateWithLifecycle()
-
-    val mapModelState by mapViewModel.state.collectAsStateWithLifecycle()
-
     val savePathCalloutId = "savePathCalloutId"
     val firstPointInPathMarker = "pathid1"
+
+    val mapModelState by mapViewModel.store.subscribe { action ->
+        when (action) {
+            is MapAction.FirstPointInPath -> {
+                mapViewModel.mapState.addMarker(
+                    id = firstPointInPathMarker,
+                    x = action.x,
+                    y = action.y,
+                    clickableAreaScale = Offset(1.3f, 1.3f),
+                ) {
+                    RoomMarker(
+                        rooms = null,
+                        pinColor = Color.Blue,
+                        textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                mapViewModel.mapState.onMarkerClick { id, x, y ->
+                    mapViewModel.mapState.getPathData(action.pathId)?.size?.let { size ->
+                        if (size > 2) {
+                            mapViewModel.store.intent(AddPointToPath(x, y))
+                            mapViewModel.mapState.addCallout(
+                                id = savePathCalloutId,
+                                x = x,
+                                y = y,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .padding(vertical = 4.dp, horizontal = 4.dp)
+                                        .clickable {
+                                            mapViewModel.store.intent(MapIntent.ShowSaveAreaDialog)
+                                        }
+                                        .background(Color.White)
+                                        .clip(RoundedCornerShape(4.dp)),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        text = "Сохранить",
+                                        color = Color.DarkGray,
+                                        modifier = Modifier.padding(
+                                            horizontal = 10.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            is MapAction.MapAreaSaved -> {
+                mapViewModel.mapState.removeCallout(savePathCalloutId)
+                mapViewModel.mapState.removeMarker(firstPointInPathMarker)
+                mapViewModel.store.intent(MapIntent.ClickOnMapArea)
+                filterViewModel.onIntent(
+                    FilterScreenAction.ActivateMapArea(
+                        id = action.pathId,
+                        checked = true,
+                        doNetworkCall = true,
+                        savedAreasDialogIsVisible = false
+                    )
+                )
+            }
+        }
+    }
 
     BackHandler {
         navigateBack()
@@ -184,7 +249,7 @@ fun MapScreen(
     LaunchedEffect(mapModelState.isMapAreaActive) {
         mapViewModel.mapState.onTap { x, y ->
             if (mapModelState.isMapAreaActive) {
-                mapViewModel.onIntent(MapAction.AddPointToPath(x, y))
+                mapViewModel.store.intent(MapIntent.AddPointToPath(x, y))
             }
         }
     }
@@ -204,79 +269,9 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffectOnce(Unit) { mapViewModel.onIntent(MapAction.Initialize) }
+    LaunchedEffectOnce(Unit) { mapViewModel.store.intent(MapIntent.Initialize) }
     LaunchedEffect(Unit) {
         listViewModel.onIntent(FlatListScreenAction.ScreenVisible)
-    }
-    LaunchedEffect(Unit) {
-        mapViewModel.effect.collect {
-            when (it) {
-                is MapEffect.FirstPointInPathEffect -> {
-                    mapViewModel.mapState.apply {
-                        addMarker(
-                            id = firstPointInPathMarker,
-                            x = it.x,
-                            y = it.y,
-                            clickableAreaScale = Offset(1.3f, 1.3f),
-                        ) {
-                            RoomMarker(
-                                rooms = null,
-                                pinColor = Color.Blue,
-                                textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        onMarkerClick { id, x, y ->
-                            mapViewModel.mapState.getPathData(it.pathId)?.size?.let { size ->
-                                if (size > 2) {
-                                    mapViewModel.onIntent(AddPointToPath(x, y))
-                                    mapViewModel.mapState.addCallout(
-                                        id = savePathCalloutId,
-                                        x = x,
-                                        y = y,
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .wrapContentSize()
-                                                .padding(vertical = 4.dp, horizontal = 4.dp)
-                                                .clickable {
-                                                    mapViewModel.onIntent(MapAction.ShowSaveAreaDialog)
-                                                }
-                                                .background(Color.White)
-                                                .clip(RoundedCornerShape(4.dp)),
-                                            contentAlignment = Alignment.Center,
-                                        ) {
-                                            Text(
-                                                text = "Сохранить",
-                                                color = Color.DarkGray,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 10.dp,
-                                                    vertical = 4.dp
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                is MapEffect.MapAreaSavedEffect -> {
-                    mapViewModel.mapState.removeCallout(savePathCalloutId)
-                    mapViewModel.mapState.removeMarker(firstPointInPathMarker)
-                    mapViewModel.onIntent(MapAction.ClickOnMapArea)
-
-                    filterViewModel.onIntent(
-                        FilterScreenAction.ActivateMapArea(
-                            id = it.pathId,
-                            checked = true,
-                            doNetworkCall = true,
-                            savedAreasDialogIsVisible = false
-                        )
-                    )
-                }
-            }
-        }
     }
 
     if (mapModelState.saveAreaDialogState.isVisible) {
@@ -286,13 +281,13 @@ fun MapScreen(
             validationHint = "Название области не должно превышать 25 символов",
             dialogState = mapModelState.saveAreaDialogState,
             onNameChange = { name ->
-                mapViewModel.onIntent(MapAction.UpdateAreaName(name))
+                mapViewModel.store.intent(MapIntent.UpdateAreaName(name))
             },
             onSave = {
-                mapViewModel.onIntent(MapAction.SaveArea)
+                mapViewModel.store.intent(MapIntent.SaveArea)
             },
             onCancel = {
-                mapViewModel.onIntent(MapAction.HideSaveAreaDialog)
+                mapViewModel.store.intent(MapIntent.HideSaveAreaDialog)
             }
         )
     }
@@ -387,12 +382,12 @@ fun MapScreen(
                         Row(horizontalArrangement = Arrangement.Center) {
                             if (mapModelState.undoBtnVisible) {
                                 ActionButton("Отменить") {
-                                    mapViewModel.onIntent(MapAction.UndoLastPoint)
+                                    mapViewModel.store.intent(MapIntent.UndoLastPoint)
                                 }
                             }
                             Spacer(Modifier.width(8.dp))
                             ActionButton("Выход") {
-                                mapViewModel.onIntent(MapAction.ClickOnMapArea)
+                                mapViewModel.store.intent(MapIntent.ClickOnMapArea)
                             }
                         }
                     }
@@ -415,7 +410,7 @@ fun MapScreen(
                                     modifier = Modifier
                                         .size(60.dp)
                                         .clickable {
-                                            mapViewModel.onIntent(MapAction.ClickOnMapArea)
+                                            mapViewModel.store.intent(MapIntent.ClickOnMapArea)
                                         }
                                 )
                                 Spacer(Modifier.height(10.dp))

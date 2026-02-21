@@ -12,15 +12,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.favorite_is_empty
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.home.FlatList
-import io.flatzen.viewmodel.FavoritesScreenAction
-import io.flatzen.viewmodel.FavoritesViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import io.flatzen.viewmodel.FavoritesContainer
+import io.flatzen.viewmodel.FavoritesIntent
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,8 +28,8 @@ fun FavoritesScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = koinViewModel<FavoritesViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val container: FavoritesContainer = container()
+    val state by container.store.subscribe { }
 
     Scaffold(
         modifier = modifier,
@@ -52,8 +52,8 @@ fun FavoritesScreen(
                     flats = state.flatList,
                     onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
                     clickOnFavorite = {
-                        viewModel.onIntent(
-                            FavoritesScreenAction.ClickOnFavorite(
+                        container.store.intent(
+                            FavoritesIntent.ClickOnFavorite(
                                 it.flatPlatform,
                                 it.adId
                             )

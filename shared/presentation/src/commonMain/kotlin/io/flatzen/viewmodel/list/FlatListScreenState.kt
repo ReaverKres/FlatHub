@@ -9,8 +9,8 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.commoncomponents.extensions.toNullableString
 import io.flatzen.mvi.MviState
-import io.flatzen.viewmodel.CommercialUiInfo
-import io.flatzen.viewmodel.PropertyTypeUi
+import io.flatzen.viewmodel.detailad.CommercialUiInfo
+import io.flatzen.viewmodel.detailad.PropertyTypeUi
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState

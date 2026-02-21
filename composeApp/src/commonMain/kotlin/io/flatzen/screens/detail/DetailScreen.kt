@@ -35,28 +35,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.formatMainPrice
 import io.flatzen.commoncomponents.utils.priceWithCurrency
+import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.shareLauncher
-import io.flatzen.viewmodel.ContactInformationUi
-import io.flatzen.viewmodel.FlatDetailScreenAction
-import io.flatzen.viewmodel.FlatDetailViewModel
-import io.flatzen.viewmodel.UiDetailFlat
+import io.flatzen.viewmodel.detailad.ContactInformationUi
+import io.flatzen.viewmodel.detailad.FlatDetailContainer
+import io.flatzen.viewmodel.detailad.FlatDetailIntent
+import io.flatzen.viewmodel.detailad.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.OpenInMapButton
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,14 +67,13 @@ fun DetailScreen(
     navigateToMap: (flatId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel = koinViewModel<FlatDetailViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val container: FlatDetailContainer = container()
+    val state by container.store.subscribe()
 
     LaunchedEffectOnce(objectId) {
-        viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(flatPlatform, objectId))
-        // Track screen view through MviAction
-        viewModel.onIntent(
-            FlatDetailScreenAction.TrackScreenView(
+        container.store.intent(FlatDetailIntent.LoadFlatDetails(flatPlatform, objectId))
+        container.store.intent(
+            FlatDetailIntent.TrackScreenView(
                 screenName = AppMetrcica.Screens.DETAIL,
                 parameters = mapOf(
                     AppMetrcica.Parameters.FLAT_PLATFORM to flatPlatform.name,
@@ -115,11 +114,11 @@ fun DetailScreen(
             state.flat != null -> {
                 FlatDetailContent(
                     flat = state.flat!!,
-                    mapState = viewModel.mapState,
+                    mapState = container.mapState,
                     modifier = Modifier.fillMaxSize(),
                     clickOnFavorite = {
-                        viewModel.onIntent(
-                            FlatDetailScreenAction.ClickOnFavorite(
+                        container.store.intent(
+                            FlatDetailIntent.ClickOnFavorite(
                                 state.flat!!.platform,
                                 state.flat!!.adId
                             )

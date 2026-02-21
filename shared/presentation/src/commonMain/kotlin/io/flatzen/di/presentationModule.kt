@@ -4,16 +4,16 @@ import dev.icerock.moko.permissions.PermissionsController
 import di.dataModule
 import di.databaseModule
 import di.networkModule
-import io.flatzen.viewmodel.DistrictsViewModel
-import io.flatzen.viewmodel.FavoritesViewModel
-import io.flatzen.viewmodel.FlatDetailViewModel
-import io.flatzen.viewmodel.MapViewModel
+import io.flatzen.viewmodel.DistrictsContainer
+import io.flatzen.viewmodel.FavoritesContainer
+import io.flatzen.viewmodel.MapContainer
 import io.flatzen.viewmodel.SplashContainer
+import io.flatzen.viewmodel.detailad.FlatDetailContainer
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.MoreContainer
-import io.flatzen.viewmodel.more.ReferralViewModel
+import io.flatzen.viewmodel.more.ReferralContainer
 import io.flatzen.viewmodel.notifications.NotificationListViewModel
 import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
 import org.koin.core.KoinApplication
@@ -34,19 +34,8 @@ val flatSearchPresentationModule = module {
             configFieldsChecker = get()
         )
     }
-    viewModel {
-        FlatDetailViewModel(
-            filterRepository = get(),
-            mergedRepository = get(),
-            tileStreamProvider = get(),
-            analyticsManager = get()
-        )
-    }
-    viewModel {
-        FavoritesViewModel(
-            mergedRepository = get(),
-        )
-    }
+    container { new(::FlatDetailContainer) }
+    container { new(::FavoritesContainer) }
 
     viewModel { (controller: PermissionsController, filter: String?) ->
         NotificationListViewModel(
@@ -68,34 +57,15 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel {
-        DistrictsViewModel(
-            osmRepository = get(),
-            filterRepository = get()
-        )
-    }
+    container { new(::DistrictsContainer) }
 
-    viewModel {
-        MapViewModel(
-            tileStreamProvider = get(),
-            userMapAreaRepository = get(),
-            filterRepository = get()
-        )
-    }
+    container { new(::MapContainer) }
 
     container { new(::SplashContainer) }
     container { new(::MoreContainer) }
     container { new(::FaqContainer) }
 
-    viewModel {
-        ReferralViewModel(
-            registrationUseCase = get(),
-            notificationsService = get(),
-            prefsRepo = get(),
-            referralRepo = get(),
-            devicePlatform = get()
-        )
-    }
+    container { new(::ReferralContainer) }
 
     container { (controller: PermissionsController) ->
         ToggleNotificationsContainer(
