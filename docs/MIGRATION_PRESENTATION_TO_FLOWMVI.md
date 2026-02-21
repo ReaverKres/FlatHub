@@ -111,6 +111,9 @@ viewmodel/filter/
 
 ### 5.3 Миграция init-блока
 
+import pro.respawn.flowmvi.plugins.init
+import pro.respawn.flowmvi.plugins.reduce
+
 **Было:**
 ```kotlin
 init {

@@ -37,16 +37,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
+import io.flatzen.di.container
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.copyLauncher
-import io.flatzen.viewmodel.more.FaqUiState
-import io.flatzen.viewmodel.more.FaqViewModel
+import io.flatzen.viewmodel.more.FaqContainer
+import io.flatzen.viewmodel.more.FaqState
 import io.flatzen.viewmodel.more.MoreScreenViewModel
 import io.flatzen.viewmodel.more.MoreUiState
 import io.flatzen.widgets.AppTextButton
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
@@ -60,8 +62,8 @@ fun MoreScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val isNotificationAvailable by viewModel.isNotificationAvailable.collectAsStateWithLifecycle()
 
-    val faqViewModel: FaqViewModel = koinViewModel()
-    val faqState by faqViewModel.uiState.collectAsStateWithLifecycle()
+    val faqContainer: FaqContainer = container()
+    val faqState by faqContainer.store.subscribe { }
 
     val telegramSupportDescription: String = remember {
         "Здесь вы можете:\n" +
@@ -99,7 +101,7 @@ fun MoreScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 // FAQ Button at the top
-                if (faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()) {
+                if (faqState is FaqState.Success && (faqState as FaqState.Success).faqConfigData.faqItems.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                         AppTextButton(

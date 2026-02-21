@@ -32,6 +32,7 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.flowmvi.core)
             api(libs.kmp.notifier)
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.notifications)

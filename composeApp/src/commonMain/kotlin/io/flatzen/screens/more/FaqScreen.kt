@@ -29,18 +29,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.flatzen.viewmodel.more.FaqUiState
-import io.flatzen.viewmodel.more.FaqViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import io.flatzen.di.container
+import io.flatzen.viewmodel.more.FaqContainer
+import io.flatzen.viewmodel.more.FaqState
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FaqScreen(
     navigateBack: () -> Unit
 ) {
-    val faqViewModel: FaqViewModel = koinViewModel()
-    val faqState by faqViewModel.uiState.collectAsStateWithLifecycle()
+    val container: FaqContainer = container()
+    val state by container.store.subscribe { }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -65,8 +65,8 @@ fun FaqScreen(
             // Добавляем отступ сверху
             Spacer(modifier = Modifier.height(16.dp))
 
-            if(faqState is FaqUiState.Success && (faqState as FaqUiState.Success).faqConfigData.faqItems.isNotEmpty()){
-                val faqItems = (faqState as FaqUiState.Success).faqConfigData.faqItems
+            if (state is FaqState.Success && (state as FaqState.Success).faqConfigData.faqItems.isNotEmpty()) {
+                val faqItems = (state as FaqState.Success).faqConfigData.faqItems
                 // Отображаем все FAQ элементы
                 faqItems.forEach { faqItem ->
                     ExpandableFaqItem(

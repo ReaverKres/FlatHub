@@ -195,7 +195,7 @@ fun App() {
                                 navigator.navigate(Route.Detail(platform.name, id))
                             },
                             navigateToFilters = { navigator.navigate(Route.Filter) },
-                            navigateBack = { navigator.navigate(Route.List) }
+                            navigateBack = { navigator.goBack() }
                         )
                     }
                     entry<Route.Detail> { key ->
