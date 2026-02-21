@@ -8,14 +8,14 @@ import io.flatzen.viewmodel.DistrictsViewModel
 import io.flatzen.viewmodel.FavoritesViewModel
 import io.flatzen.viewmodel.FlatDetailViewModel
 import io.flatzen.viewmodel.MapViewModel
-import io.flatzen.viewmodel.SplashScreenViewModel
+import io.flatzen.viewmodel.SplashContainer
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatSearchViewModel
 import io.flatzen.viewmodel.more.FaqContainer
-import io.flatzen.viewmodel.more.MoreScreenViewModel
+import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralViewModel
 import io.flatzen.viewmodel.notifications.NotificationListViewModel
-import io.flatzen.viewmodel.notifications.ToggleNotificationsViewModel
+import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.new
@@ -83,17 +83,8 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel {
-        SplashScreenViewModel(configManager = get())
-    }
-
-    viewModel {
-        MoreScreenViewModel(
-            configFieldsChecker = get(),
-            userPreferencesRepository = get()
-        )
-    }
-
+    container { new(::SplashContainer) }
+    container { new(::MoreContainer) }
     container { new(::FaqContainer) }
 
     viewModel {
@@ -106,8 +97,8 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel { (controller: PermissionsController) ->
-        ToggleNotificationsViewModel(
+    container { (controller: PermissionsController) ->
+        ToggleNotificationsContainer(
             permissionsController = controller,
             notificationsService = get(),
             subscriptionsRepository = get(),

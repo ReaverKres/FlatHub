@@ -57,6 +57,7 @@ import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
+import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.UiDistrict
@@ -68,7 +69,9 @@ import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
 import io.flatzen.viewmodel.filter.SavedFilterState
-import io.flatzen.viewmodel.notifications.ToggleNotificationsViewModel
+import io.flatzen.viewmodel.notifications.ToggleNotificationsAction
+import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
+import io.flatzen.viewmodel.notifications.ToggleNotificationsIntent
 import io.flatzen.widgets.AppReadOnlyTextField
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.AppTextField
@@ -82,6 +85,8 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pro.respawn.flowmvi.compose.dsl.subscribe
+import pro.respawn.flowmvi.dsl.intent
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -99,9 +104,18 @@ fun FilterScreen(
     val permissionsController: PermissionsController = remember(factory) { factory.createPermissionsController() }
     BindEffect(permissionsController)
 
-    val toggleNotificationsViewModel: ToggleNotificationsViewModel = koinViewModel(
-        parameters = { parametersOf(permissionsController) }
-    )
+    var showCommercialAdTypeDialog by rememberSaveable { mutableStateOf(false) }
+    var showCommercialPropertyTypeDialog by rememberSaveable { mutableStateOf(false) }
+    var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
+
+    val toggleNotificationsContainer: ToggleNotificationsContainer = container {
+        parametersOf(permissionsController)
+    }
+    toggleNotificationsContainer.store.subscribe { action ->
+        when (action) {
+            is ToggleNotificationsAction.ShowSettingsDialog -> showNotificationsSettingsDialog = true
+        }
+    }
     val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
         val uiPropertyTypes = currentFilters.commercial.commercialPropertyType?.mapNotNull {
             it.commercialPropertyType?.let { propertyType ->
@@ -118,23 +132,9 @@ fun FilterScreen(
         mutableStateOf(selectedItem)
     }
 
-    var showCommercialAdTypeDialog by rememberSaveable { mutableStateOf(false) }
-    var showCommercialPropertyTypeDialog by rememberSaveable { mutableStateOf(false) }
-	var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
-
     LaunchedEffect(currentFilters) {
         viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
     }
-
-	LaunchedEffect(Unit) {
-		toggleNotificationsViewModel.events.collect { event ->
-			when (event) {
-				is ToggleNotificationsViewModel.UiEvent.ShowSettingsDialog -> {
-					showNotificationsSettingsDialog = true
-				}
-			}
-		}
-	}
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect {
@@ -564,9 +564,11 @@ fun FilterScreen(
                     name = state.saveDialogState.filterName,
                     isNotificationEnabled = notificationEnabled
                 )
-                toggleNotificationsViewModel.onToggleNotifications(
-                    filterName = state.saveDialogState.filterName,
-                    enabled = notificationEnabled
+                toggleNotificationsContainer.intent(
+                    ToggleNotificationsIntent.ToggleNotifications(
+                        filterName = state.saveDialogState.filterName,
+                        enabled = notificationEnabled
+                    )
                 )
                 viewModel.onIntent(FilterScreenAction.SaveFilter)
             },

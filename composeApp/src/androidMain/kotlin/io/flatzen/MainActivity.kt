@@ -12,13 +12,13 @@ import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.mmk.kmpnotifier.extensions.onCreateOrOnNewIntent
 import com.mmk.kmpnotifier.notification.NotifierManager
+import io.flatzen.di.container
 import io.flatzen.navigation.DeepLinkRouter
-import io.flatzen.viewmodel.SplashScreenViewModel
-import io.flatzen.viewmodel.SplashUiState
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import io.flatzen.viewmodel.SplashContainer
+import io.flatzen.viewmodel.SplashState
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 class MainActivity : ComponentActivity() {
-    val splashScreenViewModel by viewModel<SplashScreenViewModel>()
     private var isSplashVisible by mutableStateOf(true)
 
     override fun onNewIntent(intent: Intent) {
@@ -40,10 +40,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            LaunchedEffect(Unit) {
-                splashScreenViewModel.uiState.collect {
-                    isSplashVisible = it is SplashUiState.Loading
-                }
+            val splashContainer: SplashContainer = container()
+            val splashState by splashContainer.store.subscribe { }
+            LaunchedEffect(splashState) {
+                isSplashVisible = splashState is SplashState.Loading
             }
 
             App()
