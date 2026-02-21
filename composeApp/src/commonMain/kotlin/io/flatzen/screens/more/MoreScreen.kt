@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
@@ -43,11 +42,10 @@ import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.copyLauncher
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.FaqState
-import io.flatzen.viewmodel.more.MoreScreenViewModel
-import io.flatzen.viewmodel.more.MoreUiState
+import io.flatzen.viewmodel.more.MoreConfigState
+import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.widgets.AppTextButton
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.koin.compose.viewmodel.koinViewModel
 import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
@@ -58,9 +56,8 @@ fun MoreScreen(
     navigateToReferral: () -> Unit
 ) {
 
-    val viewModel: MoreScreenViewModel = koinViewModel()
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val isNotificationAvailable by viewModel.isNotificationAvailable.collectAsStateWithLifecycle()
+    val moreContainer: MoreContainer = container()
+    val moreState by moreContainer.store.subscribe { }
 
     val faqContainer: FaqContainer = container()
     val faqState by faqContainer.store.subscribe { }
@@ -113,7 +110,7 @@ fun MoreScreen(
                     }
                 }
 
-                if (isNotificationAvailable.not()) {
+                if (moreState.isNotificationAvailable.not()) {
                     Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                         AppTextButton(
                             image = null,
@@ -124,8 +121,8 @@ fun MoreScreen(
                     }
                 }
 
-                if (state is MoreUiState.Success && (state as MoreUiState.Success).moreConfigData.isVisible == true) {
-                    val moreConfigData = (state as MoreUiState.Success).moreConfigData
+                if (moreState.configState is MoreConfigState.Success && (moreState.configState as MoreConfigState.Success).moreConfigData.isVisible == true) {
+                    val moreConfigData = (moreState.configState as MoreConfigState.Success).moreConfigData
                     moreConfigData.telegramSupport?.let { telegram ->
                         DescriptionText(
                             text = telegramSupportDescription

@@ -617,6 +617,7 @@ val state by container.store.subscribe { action -> /* effect handling */ }
 - [ ] Создать FilterContainer с `store { }`
 - [ ] Перенести `init` логику в `whileSubscribed`
 - [ ] Перенести `handleIntent` в `reduce`, заменив Event на прямые `updateState` / `action`
+- [ ] там где в Intent обрабатывется набор текста для обновления state используй `updateStateImmediate`
 - [ ] Удалить `reduce(event, state)` — логика в reduce
 - [ ] Удалить `onEvent` — side effects через `action()`
 - [ ] **DI:** Зарегистрировать в модуле: `container { new(::FilterContainer) }` или с `get()`
