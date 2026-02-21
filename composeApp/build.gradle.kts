@@ -62,7 +62,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.navigation.compose)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.jetbrains.lifecycle.viewmodel.nav3)
+            // navigation-compose (Navigation 2) removed - migrated to Navigation 3
             implementation(libs.compose.multiplatform.backhandler)
             implementation(libs.compose.confetti)
             implementation(libs.lifecycle.runtime.compose)

@@ -1,0 +1,54 @@
+package io.flatzen.navigation
+
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+/**
+ * All navigation routes in the app.
+ * Sealed interface for type-safe navigation and polymorphic serialization (KMP).
+ */
+@Serializable
+sealed interface Route : NavKey {
+
+    // Bottom tab routes
+    @Serializable
+    data object List : Route
+
+    @Serializable
+    data object Favorites : Route
+
+    @Serializable
+    data object Settings : Route
+
+    @Serializable
+    data class Map(val selectedMarker: Long? = null) : Route
+
+    // Detail
+    @Serializable
+    data class Detail(val flatPlatform: String, val objectId: Long) : Route
+
+    // Modals / nested screens
+    @Serializable
+    data object Filter : Route
+
+    @Serializable
+    data object Location : Route
+
+    @Serializable
+    data object CitySelect : Route
+
+    @Serializable
+    data object MetroSelect : Route
+
+    @Serializable
+    data object DistrictSelect : Route
+
+    @Serializable
+    data object Faq : Route
+
+    @Serializable
+    data object Referral : Route
+
+    @Serializable
+    data class Notifications(val filterInNotification: String? = null) : Route
+}
