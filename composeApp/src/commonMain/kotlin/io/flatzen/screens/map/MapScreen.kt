@@ -60,8 +60,8 @@ import io.flatzen.viewmodel.MapIntent
 import io.flatzen.viewmodel.MapIntent.AddPointToPath
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
-import io.flatzen.viewmodel.list.FlatListScreenAction
-import io.flatzen.viewmodel.list.FlatSearchViewModel
+import io.flatzen.viewmodel.list.FlatListIntent
+import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.ActionButton
 import io.flatzen.widgets.FilterActionButton
@@ -71,6 +71,7 @@ import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addCallout
@@ -87,6 +88,7 @@ import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import pro.respawn.flowmvi.dsl.intent
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
@@ -100,8 +102,8 @@ fun MapScreen(
     navigateBack: () -> Unit,
     selectedMarker: Long?,
 ) {
-    val listViewModel = koinViewModel<FlatSearchViewModel>()
-    val listState by listViewModel.state.collectAsStateWithLifecycle()
+    val flatSearchContainer: FlatSearchContainer = koinInject()
+    val listState by flatSearchContainer.store.subscribe { }
     var selectedFlatId by remember { mutableStateOf<Long?>(null) }
     val selectedFlat = selectedFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
@@ -271,7 +273,7 @@ fun MapScreen(
 
     LaunchedEffectOnce(Unit) { mapViewModel.store.intent(MapIntent.Initialize) }
     LaunchedEffect(Unit) {
-        listViewModel.onIntent(FlatListScreenAction.ScreenVisible)
+        flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
     }
 
     if (mapModelState.saveAreaDialogState.isVisible) {
@@ -313,8 +315,8 @@ fun MapScreen(
             selectedFlatId = flat?.adId
         },
         clickOnFavorite = {
-            listViewModel.onIntent(
-                FlatListScreenAction.ClickOnFavorite(
+            flatSearchContainer.intent(
+                FlatListIntent.ClickOnFavorite(
                     it.flatPlatform,
                     it.adId
                 )
@@ -360,7 +362,7 @@ fun MapScreen(
                     SearchErrorDialog(
                         dialogState = listState.errorDialogState!!,
                         onDismiss = {
-                            listViewModel.onIntent(FlatListScreenAction.HideNetworkErrorDialog)
+                            flatSearchContainer.intent(FlatListIntent.HideNetworkErrorDialog)
                         }
                     )
                 }
@@ -434,8 +436,8 @@ fun MapScreen(
                                 Button(
                                     contentPadding = ButtonDefaults.TextButtonContentPadding,
                                     onClick = {
-                                        listViewModel.onIntent(
-                                            FlatListScreenAction.SearchFlats(
+                                        flatSearchContainer.intent(
+                                            FlatListIntent.SearchFlats(
                                                 isLoadMore = false,
                                                 isRefreshing = true
                                             )
@@ -456,8 +458,8 @@ fun MapScreen(
                                         )
                                     ),
                                     onClick = {
-                                        listViewModel.onIntent(
-                                            FlatListScreenAction.SearchFlats(
+                                        flatSearchContainer.intent(
+                                            FlatListIntent.SearchFlats(
                                                 isLoadMore = true,
                                                 isLoadMoreForce = true
                                             )

@@ -55,4 +55,3 @@ inline fun <reified T : Container<S, I, A>, S : MVIState, I : MVIIntent, A : MVI
     viewModelStoreOwner = viewModelStoreOwner,
     extras = extras
 ).container
-

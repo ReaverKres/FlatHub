@@ -304,7 +304,6 @@ fun NotificationsScreen(
             }
             ScrollToTopBtn(
                 showScrollToTopBtn,
-                coroutineScope,
                 firstVisibleItemIndex,
                 lazyListState,
                 scrollToTopBtnSize
