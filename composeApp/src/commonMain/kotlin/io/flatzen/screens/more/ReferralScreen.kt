@@ -41,14 +41,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import io.flatzen.di.container
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.copyLauncher
 import io.flatzen.viewmodel.more.ReferralAction
-import io.flatzen.viewmodel.more.ReferralViewModel
+import io.flatzen.viewmodel.more.ReferralContainer
+import io.flatzen.viewmodel.more.ReferralIntent
 import io.flatzen.widgets.AppTextField
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
 import io.github.vinceglb.confettikit.compose.ConfettiKit
@@ -59,7 +60,7 @@ import io.github.vinceglb.confettikit.core.Spread
 import io.github.vinceglb.confettikit.core.emitter.Emitter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
+import pro.respawn.flowmvi.compose.dsl.subscribe
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,8 +68,29 @@ import kotlin.time.Duration.Companion.seconds
 fun ReferralScreen(
     navigateBack: () -> Unit
 ) {
-    val viewModel: ReferralViewModel = koinViewModel()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val toastLauncher = remember { ToastLauncher() }
+    val copier = copyLauncher(
+        onCopySuccess = { text ->
+            toastLauncher.showToast(
+                "Скопировано: $text",
+                ToastDurationType.LONG
+            )
+        },
+        onCopyError = { _ -> }
+    )
+    val container: ReferralContainer = container()
+    val state by container.store.subscribe { action ->
+        when (action) {
+            is ReferralAction.Copy -> copier.copyText(text = action.text)
+            is ReferralAction.ShowMessage -> toastLauncher.showToast(
+                action.text,
+                ToastDurationType.LONG
+            )
+
+            is ReferralAction.NotificationAvailable -> { /* handled by state.isNotificationAvailable */
+            }
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -89,31 +111,18 @@ fun ReferralScreen(
             )
         }
     ) { paddingValues ->
-        val toastLauncher = remember { ToastLauncher() }
-        val copier = copyLauncher(
-            onCopySuccess = { text ->
-                toastLauncher.showToast(
-                    "Скопировано: $text",
-                    ToastDurationType.LONG
-                )
-            },
-            onCopyError = { _ -> }
-        )
-
         if (state.statsErrorMessage != null) {
             SimpleAlertDialog(
                 title = "Ошибка",
                 message = state.statsErrorMessage ?: "",
-                onDismiss = { viewModel.onIntent(ReferralAction.HideStatsErrorDialog) }
+                onDismiss = { container.store.intent(ReferralIntent.HideStatsErrorDialog) }
             )
         }
 
         PullToRefreshBox(
             onRefresh = {
                 if (state.isLoading.not()) {
-                    viewModel.onIntent(
-                        ReferralAction.Load
-                    )
+                    container.store.intent(ReferralIntent.Load)
                 }
             },
             isRefreshing = false,
@@ -139,7 +148,7 @@ fun ReferralScreen(
                 Spacer(Modifier.height(16.dp))
 
                 // Ваш приглашительный код с копированием
-                val onCopy: () -> Unit = { copier.copyText(text = state.myCode) }
+                val onCopy: () -> Unit = { container.store.intent(ReferralIntent.CopyMyCode) }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -196,7 +205,7 @@ fun ReferralScreen(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         ),
-                        onChange = { viewModel.onIntent(ReferralAction.UpdateInput(it)) }
+                        onChange = { container.store.intent(ReferralIntent.UpdateInput(it)) }
                     )
                     state.submitErrorMessage?.let {
                         Spacer(Modifier.height(8.dp))
@@ -215,7 +224,7 @@ fun ReferralScreen(
                     ) {
                         Button(
                             modifier = Modifier.align(Alignment.Center),
-                            onClick = { viewModel.onIntent(ReferralAction.SubmitCode) },
+                            onClick = { container.store.intent(ReferralIntent.SubmitCode) },
                             enabled = state.inputCode.isNotBlank() && state.isLoading.not() && state.codeIsLoading.not()
                         ) {
                             Text("Активировать")

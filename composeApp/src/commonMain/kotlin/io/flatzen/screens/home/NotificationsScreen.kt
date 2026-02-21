@@ -87,9 +87,10 @@ fun NotificationsScreen(
         parameters = { parametersOf(permissionsController, filterFromNotification) }
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
     val lazyListState = rememberLazyListState()
+    var notifPermSnackBarIsVisible by remember { mutableStateOf(false) }
+    var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
     val firstVisibleItemIndex by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex }
     }
@@ -100,9 +101,6 @@ fun NotificationsScreen(
     val scrollToTopBtnSize: Dp = 48.dp
     val localDensity = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
-
-    var notifPermSnackBarIsVisible by remember { mutableStateOf(false) }
-    var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.onIntent(NotificationListScreenAction.IsNotificationPermissionGranted)

@@ -8,7 +8,7 @@ import pro.respawn.flowmvi.dsl.store
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.reduce
 
-private typealias Ctx = PipelineContext<SplashState, SplashIntent, SplashAction>
+private typealias SplashCtx = PipelineContext<SplashState, SplashIntent, SplashAction>
 
 class SplashContainer(
     private val configManager: ConfigManager
@@ -24,7 +24,7 @@ class SplashContainer(
         }
     }
 
-    private suspend fun Ctx.fetchRemoteConfig() {
+    private suspend fun SplashCtx.fetchRemoteConfig() {
         val result = configManager.fetchAndActivate().last()
         if (result.isSuccess) {
             updateState { SplashState.Success }

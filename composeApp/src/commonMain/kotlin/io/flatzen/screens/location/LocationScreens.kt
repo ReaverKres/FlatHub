@@ -52,17 +52,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.utils.LaunchedEffectOnce
-import io.flatzen.viewmodel.DistrictsAction
-import io.flatzen.viewmodel.DistrictsViewModel
+import io.flatzen.viewmodel.DistrictsContainer
+import io.flatzen.viewmodel.DistrictsIntent
 import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.koin.compose.viewmodel.koinViewModel
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -395,8 +397,8 @@ fun DistrictSelectScreen(
     val filterState by filterViewModel.state.collectAsStateWithLifecycle()
 
 
-    val districtsViewModel: DistrictsViewModel = koinViewModel()
-    val districtsState by districtsViewModel.state.collectAsStateWithLifecycle()
+    val districtsContainer: DistrictsContainer = container()
+    val districtsState by districtsContainer.store.subscribe { }
 
     //Todo need Refactoring
     val districts = if (filterState.filters.districtsArea.isNullOrEmpty()) {
@@ -412,7 +414,7 @@ fun DistrictSelectScreen(
     val shimmerProgress by rememberShimmerProgress()
 
     LaunchedEffectOnce(Unit) {
-        districtsViewModel.onIntent(DistrictsAction.LoadDistricts)
+        districtsContainer.store.intent(DistrictsIntent.LoadDistricts)
     }
 
     Scaffold(
