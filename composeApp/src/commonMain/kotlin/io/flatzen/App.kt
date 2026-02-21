@@ -38,15 +38,17 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import io.flatzen.animations.animatedComposable
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.navigation.DeepLinkParser
+import io.flatzen.navigation.DeepLinkRouter
+import io.flatzen.navigation.Navigator
+import io.flatzen.navigation.Route
+import io.flatzen.navigation.rememberExitApp
+import io.flatzen.navigation.rememberNavigationState
+import io.flatzen.navigation.toEntries
 import io.flatzen.notifications.NotificationsService
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
@@ -61,57 +63,16 @@ import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.ReferralScreen
 import io.flatzen.widgets.MessageSnackbar
-import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
-@Serializable
-object ListScreenDestination
-
-@Serializable
-object FavoritesScreenDestination
-
-@Serializable
-object SettingsScreenDestination
-
-@Serializable
-data class MapScreenDestination(val selectedMarker: Long? = null)
-
-@Serializable
-data class DetailScreenDestination(val flatPlatform: String, val objectId: Long)
-
-@Serializable
-object FilterScreenDestination
-
-@Serializable
-data class NotificationScreenDestination(val filterInNotification: String? = null)
-
-@Serializable
-object LocationScreenDestination
-
-@Serializable
-object CitySelectScreenDestination
-
-@Serializable
-object MetroSelectScreenDestination
-
-@Serializable
-object DistrictSelectScreenDestination
-
-@Serializable
-object FaqScreenDestination
-
-@Serializable
-object ReferralDestination
-
-// Определяем элементы для BottomBar
 val bottomNavItems = listOf(
-    BottomNavItem(ListScreenDestination, "Главная", Icons.Default.Home),
-    BottomNavItem(FavoritesScreenDestination, "Избранное", Icons.Default.Favorite),
-    BottomNavItem(MapScreenDestination(), "Карта", Icons.Default.LocationOn),
-    BottomNavItem(SettingsScreenDestination, "Ещё", Icons.Default.Menu)
+    BottomNavItem(Route.List, "Главная", Icons.Default.Home),
+    BottomNavItem(Route.Favorites, "Избранное", Icons.Default.Favorite),
+    BottomNavItem(Route.Map(), "Карта", Icons.Default.LocationOn),
+    BottomNavItem(Route.Settings, "Ещё", Icons.Default.Menu)
 )
 
-data class BottomNavItem(val route: Any, val label: String, val icon: ImageVector)
+data class BottomNavItem(val route: Route, val label: String, val icon: ImageVector)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,48 +88,39 @@ fun App() {
 
     val density = LocalDensity.current
     val notificationsService: NotificationsService = koinInject()
+    val exitApp = rememberExitApp()
 
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
     ) {
-        val navController = rememberNavController()
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-
+        val topLevelRoutes = remember { setOf(Route.List, Route.Favorites, Route.Map(), Route.Settings) }
+        val navigationState = rememberNavigationState(
+            startRoute = Route.List,
+            topLevelRoutes = topLevelRoutes
+        )
+        val navigator = remember(navigationState) { Navigator(navigationState) }
 
         LaunchedEffect(Unit) {
             notificationsService.notificationClickListener.collect { clickOnNotification ->
+                if (clickOnNotification == null) return@collect
+                navigator.navigate(Route.Notifications())
+                notificationsService.notificationClickListener.emit(null)
+            }
+        }
 
-                if (clickOnNotification == null) {
-                    return@collect
-                }
-
-                val isAlreadyOnNotifications =
-                    navController.currentBackStackEntry?.destination?.route
-                        ?.startsWith(NotificationScreenDestination::class.qualifiedName!!) == true
-
-                if (!isAlreadyOnNotifications) {
-                    navController.navigate(NotificationScreenDestination()) {
-                        launchSingleTop = true
-                    }
-                    notificationsService.notificationClickListener.emit(null)
+        LaunchedEffect(Unit) {
+            DeepLinkRouter.deepLinks.collect { uri ->
+                DeepLinkParser.parse(uri)?.let { route ->
+                    navigator.navigate(route)
                 }
             }
         }
 
-        // Helper function to safely compare routes
-        fun isRouteSelected(routeName: String?): Boolean {
-            return currentDestination?.route == routeName
-        }
-
-        // Определяем, является ли текущий маршрут одним из главных экранов.
-        val showBottomBar = currentDestination?.route?.let { route ->
-            // Показываем BottomBar только на основных экранах вкладок
-            route == ListScreenDestination::class.qualifiedName ||
-                    route == FavoritesScreenDestination::class.qualifiedName ||
-                    route == SettingsScreenDestination::class.qualifiedName ||
-                    route.startsWith(MapScreenDestination::class.qualifiedName!!)
-        } ?: false
+        val currentTopLevelRoute = navigationState.topLevelRoute
+        val currentStack = navigationState.backStacks[currentTopLevelRoute]
+        val currentRoute = currentStack?.lastOrNull()
+        val isRootRoute = currentRoute == currentTopLevelRoute
+        val showBottomBar = currentTopLevelRoute in topLevelRoutes && isRootRoute
 
         Scaffold(
             contentWindowInsets = WindowInsets.statusBars,
@@ -177,64 +129,18 @@ fun App() {
                     NavigationBar {
                         bottomNavItems.forEach { item ->
                             val isSelected = when (item.route) {
-                                ListScreenDestination -> isRouteSelected(ListScreenDestination::class.qualifiedName)
-                                FavoritesScreenDestination -> isRouteSelected(
-                                    FavoritesScreenDestination::class.qualifiedName
-                                )
-
-                                SettingsScreenDestination -> isRouteSelected(
-                                    SettingsScreenDestination::class.qualifiedName
-                                )
-
-                                is MapScreenDestination -> currentDestination.route?.startsWith(
-                                    MapScreenDestination::class.qualifiedName!!
-                                ) ?: false
-
+                                Route.List -> currentTopLevelRoute == Route.List
+                                Route.Favorites -> currentTopLevelRoute == Route.Favorites
+                                Route.Settings -> currentTopLevelRoute == Route.Settings
+                                is Route.Map -> currentTopLevelRoute is Route.Map
                                 else -> false
                             }
 
                             NavigationBarItem(
                                 selected = isSelected,
                                 onClick = {
-                                    when (item.route) {
-                                        ListScreenDestination -> {
-                                            navController.navigate(ListScreenDestination) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
-
-                                        FavoritesScreenDestination -> {
-                                            navController.navigate(FavoritesScreenDestination) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
-
-                                        SettingsScreenDestination -> {
-                                            navController.navigate(SettingsScreenDestination) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
-
-                                        is MapScreenDestination -> {
-                                            navController.navigate(MapScreenDestination()) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                            }
-                                        }
+                                    if (currentTopLevelRoute != item.route) {
+                                        navigator.navigate(item.route)
                                     }
                                 },
                                 icon = { Icon(item.icon, contentDescription = item.label) },
@@ -246,6 +152,8 @@ fun App() {
             }
         ) { innerPadding ->
             val focusManager = LocalFocusManager.current
+            var snackbarHeight by remember { mutableStateOf(0.dp) }
+            val additionalTopPadding = if (!isConnected) snackbarHeight else 0.dp
 
             Box(
                 modifier = Modifier
@@ -257,170 +165,120 @@ fun App() {
                         focusManager.clearFocus()
                     }
             ) {
-                var snackbarHeight by remember { mutableStateOf(0.dp) }
-                val additionalTopPadding = if (!isConnected) snackbarHeight else 0.dp
-
-                NavHost(
-                    navController = navController,
-                    startDestination = ListScreenDestination, // Начинаем с конкретного экрана
-                    modifier = Modifier.padding(innerPadding).padding(top = additionalTopPadding)
-                ) {
-                    // Экран списка (основной)
-                    composable<ListScreenDestination> {
+                val entryProvider = entryProvider<Route> {
+                    entry<Route.List> {
                         HomeScreen(
                             navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform.name, id))
+                                navigator.navigate(Route.Detail(platform.name, id))
                             },
-                            navigateToFilters = {
-                                navController.navigate(FilterScreenDestination)
-                            },
-                            navigateToNotifications = {
-                                navController.navigate(NotificationScreenDestination())
-                            }
+                            navigateToFilters = { navigator.navigate(Route.Filter) },
+                            navigateToNotifications = { navigator.navigate(Route.Notifications()) }
                         )
                     }
-
-                    // Экран избранного
-                    composable<FavoritesScreenDestination> {
+                    entry<Route.Favorites> {
                         FavoritesScreen(
                             navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform.name, id))
+                                navigator.navigate(Route.Detail(platform.name, id))
                             }
                         )
                     }
-
-                    // Экран настроек
-                    composable<SettingsScreenDestination> {
+                    entry<Route.Settings> {
                         MoreScreen(
-                            navigateToFaq = {
-                                navController.navigate(FaqScreenDestination)
-                            },
-                            navigateToReferral = {
-                                navController.navigate(ReferralDestination)
-                            }
+                            navigateToFaq = { navigator.navigate(Route.Faq) },
+                            navigateToReferral = { navigator.navigate(Route.Referral) }
                         )
                     }
-
-                    // Экран карты
-                    composable<MapScreenDestination> { backStackEntry ->
-                        val args = backStackEntry.toRoute<MapScreenDestination>()
+                    entry<Route.Map> { key ->
                         MapScreen(
-                            selectedMarker = args.selectedMarker,
+                            selectedMarker = key.selectedMarker,
                             navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform.name, id))
+                                navigator.navigate(Route.Detail(platform.name, id))
                             },
-                            navigateToFilters = {
-                                navController.navigate(FilterScreenDestination)
-                            },
-                            navigateBack = {
-                                navController.navigate(ListScreenDestination) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
+                            navigateToFilters = { navigator.navigate(Route.Filter) },
+                            navigateBack = { navigator.navigate(Route.List) }
                         )
                     }
-
-                    // DetailScreen (общий для всех)
-                    animatedComposable<DetailScreenDestination> { backStackEntry ->
-                        val args = backStackEntry.toRoute<DetailScreenDestination>()
-                        val platform =
-                            FlatPlatform.entries.firstOrNull { it.name == args.flatPlatform || it.value == args.flatPlatform }
-                                ?: error("Unknown flatPlatform: ${'$'}{args.flatPlatform}")
+                    entry<Route.Detail> { key ->
+                        val platform = FlatPlatform.entries.firstOrNull { it.name == key.flatPlatform || it.value == key.flatPlatform }
+                            ?: error("Unknown flatPlatform: ${key.flatPlatform}")
                         DetailScreen(
                             flatPlatform = platform,
-                            objectId = args.objectId,
-                            navigateBack = { navController.popBackStack() },
+                            objectId = key.objectId,
+                            navigateBack = { navigator.goBack() },
                             navigateToMap = { flatId ->
-                                // Навигация к карте с выбранным маркером
-                                navController.navigate(MapScreenDestination(selectedMarker = flatId)) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                }
+                                navigator.navigate(Route.Map(selectedMarker = flatId))
                             }
                         )
                     }
-
-                    animatedComposable<NotificationScreenDestination> { backStackEntry ->
-                        val args = backStackEntry.toRoute<NotificationScreenDestination>()
-                        NotificationsScreen(
-                            navigateBack = { navController.popBackStack() },
-                            navigateToDetails = { platform, id ->
-                                navController.navigate(DetailScreenDestination(platform.name, id))
-                            },
-                            filterFromNotification = args.filterInNotification
-                        )
-                    }
-
-                    // Общие экраны (фильтры, локация и т.д.) - Not in BottomNav
-                    // Экран Фильтров (открывается поверх)
-                    animatedComposable<FilterScreenDestination> {
+                    entry<Route.Filter> {
                         FilterScreen(
-                            navigateBack = { navController.popBackStack() },
-                            onOpenLocation = { navController.navigate(LocationScreenDestination) },
-                            onOpenReferralScreen = {
-                                navController.navigate(ReferralDestination)
-                            }
+                            navigateBack = { navigator.goBack() },
+                            onOpenLocation = { navigator.navigate(Route.Location) },
+                            onOpenReferralScreen = { navigator.navigate(Route.Referral) }
                         )
                     }
-
-                    animatedComposable<LocationScreenDestination> {
+                    entry<Route.Location> {
                         LocationScreen(
-                            navigateBack = { navController.popBackStack() },
-                            openCity = { navController.navigate(CitySelectScreenDestination) },
-                            openMetro = { navController.navigate(MetroSelectScreenDestination) },
-                            openDistricts = { navController.navigate(DistrictSelectScreenDestination) }
+                            navigateBack = { navigator.goBack() },
+                            openCity = { navigator.navigate(Route.CitySelect) },
+                            openMetro = { navigator.navigate(Route.MetroSelect) },
+                            openDistricts = { navigator.navigate(Route.DistrictSelect) }
                         )
                     }
-
-                    animatedComposable<CitySelectScreenDestination> {
-                        CitySelectScreen(
-                            navigateBack = { navController.popBackStack() }
-                        )
+                    entry<Route.CitySelect> {
+                        CitySelectScreen(navigateBack = { navigator.goBack() })
                     }
-
-                    animatedComposable<MetroSelectScreenDestination> {
-                        MetroSelectScreen(
-                            navigateBack = { navController.popBackStack() }
-                        )
+                    entry<Route.MetroSelect> {
+                        MetroSelectScreen(navigateBack = { navigator.goBack() })
                     }
-
-                    animatedComposable<DistrictSelectScreenDestination> {
-                        DistrictSelectScreen(
-                            navigateBack = { navController.popBackStack() }
-                        )
+                    entry<Route.DistrictSelect> {
+                        DistrictSelectScreen(navigateBack = { navigator.goBack() })
                     }
-
-                    animatedComposable<FaqScreenDestination> {
-                        FaqScreen(
-                            navigateBack = { navController.popBackStack() }
-                        )
+                    entry<Route.Faq> {
+                        FaqScreen(navigateBack = { navigator.goBack() })
                     }
-
-                    animatedComposable<ReferralDestination> {
-                        ReferralScreen(
-                            navigateBack = { navController.popBackStack() }
+                    entry<Route.Referral> {
+                        ReferralScreen(navigateBack = { navigator.goBack() })
+                    }
+                    entry<Route.Notifications> { key ->
+                        NotificationsScreen(
+                            navigateBack = { navigator.goBack() },
+                            navigateToDetails = { platform, id ->
+                                navigator.navigate(Route.Detail(platform.name, id))
+                            },
+                            filterFromNotification = key.filterInNotification
                         )
                     }
                 }
 
-                if (isConnected.not()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .animateContentSize()
-                            .onSizeChanged { layout ->
-                                snackbarHeight = with(density) { layout.height.toDp() }
-                            }
-                    ) {
-                        MessageSnackbar(message = "Нет подключения к интернету")
-                    }
+                @Suppress("UNCHECKED_CAST")
+                val provider = entryProvider as (androidx.navigation3.runtime.NavKey) -> androidx.navigation3.runtime.NavEntry<androidx.navigation3.runtime.NavKey>
+                NavDisplay(
+                    entries = navigationState.toEntries(provider),
+                    onBack = {
+                        if (navigator.isAtRootOfStartRoute()) {
+                            exitApp()
+                        } else {
+                            navigator.goBack()
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(top = additionalTopPadding)
+                )
+            }
+
+            if (isConnected.not()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .animateContentSize()
+                        .onSizeChanged { layout ->
+                            snackbarHeight = with(density) { layout.height.toDp() }
+                        }
+                ) {
+                    MessageSnackbar(message = "Нет подключения к интернету")
                 }
             }
         }
