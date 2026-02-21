@@ -79,6 +79,8 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.flowmvi.core)
+            implementation(libs.flowmvi.compose)
             implementation(libs.mp.maps)
 
             implementation(libs.moko.permissions)
