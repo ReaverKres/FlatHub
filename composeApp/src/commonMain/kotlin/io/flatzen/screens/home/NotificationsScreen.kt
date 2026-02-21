@@ -52,23 +52,24 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.notifications_is_empty
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
-import io.flatzen.viewmodel.notifications.NotificationListEffect
-import io.flatzen.viewmodel.notifications.NotificationListScreenAction
+import io.flatzen.viewmodel.notifications.NotificationListAction
+import io.flatzen.viewmodel.notifications.NotificationListContainer
+import io.flatzen.viewmodel.notifications.NotificationListIntent
 import io.flatzen.viewmodel.notifications.NotificationListScreenState
-import io.flatzen.viewmodel.notifications.NotificationListViewModel
 import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,14 +84,29 @@ fun NotificationsScreen(
     val permissionsController: PermissionsController =
         remember(factory) { factory.createPermissionsController() }
     BindEffect(permissionsController)
-    val viewModel: NotificationListViewModel = koinViewModel(
-        parameters = { parametersOf(permissionsController, filterFromNotification) }
-    )
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val container: NotificationListContainer = container {
+        parametersOf(permissionsController, filterFromNotification)
+    }
     var noFlatsBoxHeight by remember { mutableStateOf(0.dp) }
     val lazyListState = rememberLazyListState()
     var notifPermSnackBarIsVisible by remember { mutableStateOf(false) }
     var showNotificationsSettingsDialog by rememberSaveable { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val state by container.store.subscribe { action ->
+        when (action) {
+            NotificationListAction.ScrollToTopEffect -> {
+                coroutineScope.launch { lazyListState.scrollToItem(0) }
+            }
+
+            is NotificationListAction.NotifPermGrantedEffect -> {
+                notifPermSnackBarIsVisible = !action.isGranted
+            }
+
+            NotificationListAction.ShowSettingsEffect -> {
+                showNotificationsSettingsDialog = true
+            }
+        }
+    }
     val firstVisibleItemIndex by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex }
     }
@@ -100,29 +116,14 @@ fun NotificationsScreen(
     }
     val scrollToTopBtnSize: Dp = 48.dp
     val localDensity = LocalDensity.current
-    val coroutineScope = rememberCoroutineScope()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.onIntent(NotificationListScreenAction.IsNotificationPermissionGranted)
+        container.store.intent(NotificationListIntent.IsNotificationPermissionGranted)
     }
 
     LaunchedEffect(Unit) {
-        viewModel.onIntent(NotificationListScreenAction.ListViewCheck)
-        viewModel.effect.collect {
-            when (it) {
-                is NotificationListEffect.ScrollToTopEffect -> {
-                    lazyListState.scrollToItem(0)
-                }
-
-                is NotificationListEffect.NotifPermGrantedEffect -> {
-                    notifPermSnackBarIsVisible = it.isGranted.not()
-                }
-
-                is NotificationListEffect.ShowSettingsEffect -> {
-                    showNotificationsSettingsDialog = true
-                }
-            }
-        }
+        container.store.intent(NotificationListIntent.LoadSubscriptions)
+        container.store.intent(NotificationListIntent.ListViewCheck)
     }
 
     if (showNotificationsSettingsDialog) {
@@ -153,8 +154,8 @@ fun NotificationsScreen(
         PullToRefreshBox(
             onRefresh = {
                 if (state.isLoading.not()) {
-                    viewModel.onIntent(
-                        NotificationListScreenAction.SearchFlats(
+                    container.store.intent(
+                        NotificationListIntent.SearchFlats(
                             isLoadMore = false,
                             isRefreshing = true
                         )
@@ -169,7 +170,7 @@ fun NotificationsScreen(
                     SimpleAlertDialog(
                         title = "Ошибка",
                         message = state.errorText ?: "",
-                        onDismiss = { viewModel.onIntent(NotificationListScreenAction.HideNetworkErrorDialog) }
+                        onDismiss = { container.store.intent(NotificationListIntent.HideNetworkErrorDialog) }
                     )
                 }
 
@@ -177,7 +178,7 @@ fun NotificationsScreen(
                     SimpleAlertDialog(
                         title = "Параметры фильтра",
                         message = state.paramsDialogText ?: "",
-                        onDismiss = { viewModel.onIntent(NotificationListScreenAction.HideParams) }
+                        onDismiss = { container.store.intent(NotificationListIntent.HideParams) }
                     )
                 }
 
@@ -193,10 +194,10 @@ fun NotificationsScreen(
                                 NotifPermissionSnackbar(
                                     onCloseSnackbarBtnClick = {
                                         notifPermSnackBarIsVisible = false
-                                        viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                        container.store.intent(NotificationListIntent.CloseNotifPermMessage)
                                     },
                                     onActionSnackbarBtnClick = {
-                                        viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                        container.store.intent(NotificationListIntent.ProvideNotifPermission)
                                     }
                                 )
                             }
@@ -219,10 +220,10 @@ fun NotificationsScreen(
                                     NotifPermissionSnackbar(
                                         onCloseSnackbarBtnClick = {
                                             notifPermSnackBarIsVisible = false
-                                            viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                            container.store.intent(NotificationListIntent.CloseNotifPermMessage)
                                         },
                                         onActionSnackbarBtnClick = {
-                                            viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                            container.store.intent(NotificationListIntent.ProvideNotifPermission)
                                         }
                                     )
                                 }
@@ -240,48 +241,48 @@ fun NotificationsScreen(
                         isListView = state.isListView,
                         onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
                         clickOnFavorite = {
-                            viewModel.onIntent(
-                                NotificationListScreenAction.ClickOnFavorite(
+                            container.store.intent(
+                                NotificationListIntent.ClickOnFavorite(
                                     it.flatPlatform,
                                     it.adId
                                 )
                             )
                         },
                         onLoadMore = {
-                            viewModel.onIntent(NotificationListScreenAction.SearchFlats(true))
+                            container.store.intent(NotificationListIntent.SearchFlats(true))
                         },
                         topContent = {
                             topSubscriptionsContent(
                                 state = state,
                                 notifPermSnackBarIsVisible = notifPermSnackBarIsVisible,
                                 onSelect = { id ->
-                                    viewModel.onIntent(
-                                        NotificationListScreenAction.SelectSubscription(
+                                    container.store.intent(
+                                        NotificationListIntent.SelectSubscription(
                                             id
                                         )
                                     )
                                 },
                                 onShowParams = { id ->
-                                    viewModel.onIntent(
-                                        NotificationListScreenAction.ShowParams(id)
+                                    container.store.intent(
+                                        NotificationListIntent.ShowParams(id)
                                     )
                                 },
                                 onDelete = { id ->
-                                    viewModel.onIntent(
-                                        NotificationListScreenAction.DeleteSubscription(
+                                    container.store.intent(
+                                        NotificationListIntent.DeleteSubscription(
                                             id
                                         )
                                     )
                                 },
                                 onToggleView = {
-                                    viewModel.onIntent(NotificationListScreenAction.ToggleView)
+                                    container.store.intent(NotificationListIntent.ToggleView)
                                 },
                                 onCloseSnackbarBtnClick = {
                                     notifPermSnackBarIsVisible = false
-                                    viewModel.onIntent(NotificationListScreenAction.CloseNotifPermMessage)
+                                    container.store.intent(NotificationListIntent.CloseNotifPermMessage)
                                 },
                                 onActionSnackbarBtnClick = {
-                                    viewModel.onIntent(NotificationListScreenAction.ProvideNotifPermission)
+                                    container.store.intent(NotificationListIntent.ProvideNotifPermission)
                                 },
                             )
                         },
@@ -289,7 +290,7 @@ fun NotificationsScreen(
                             if (state.noFlatsToLoadMore) {
                                 item {
                                     LoadMoreForce(state.currentSearchPage) {
-                                        clickOnLoadMore(viewModel)
+                                        clickOnLoadMore(container)
                                     }
                                     Spacer(Modifier.height(noFlatsBoxHeight))
                                     Spacer(Modifier.height(16.dp))
@@ -322,9 +323,9 @@ fun NotificationsScreen(
     }
 }
 
-private fun clickOnLoadMore(viewModel: NotificationListViewModel) {
-    viewModel.onIntent(
-        NotificationListScreenAction.SearchFlats(
+private fun clickOnLoadMore(container: NotificationListContainer) {
+    container.store.intent(
+        NotificationListIntent.SearchFlats(
             isLoadMore = true,
             isLoadMoreForce = true
         )
