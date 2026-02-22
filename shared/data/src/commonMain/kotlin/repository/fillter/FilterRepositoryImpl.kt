@@ -16,6 +16,10 @@ class FilterRepositoryImpl(
         replay = 1
     )
     override val cashedFilterFlow: SharedFlow<FilterInfo> = _cashedFilterFlow
+    private val _forceReloadFlow = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1
+    )
+    override val forceReloadFlow: SharedFlow<Unit> = _forceReloadFlow
     override var lastNetworkFilter: CommonFilterRequestModel? = null
 
     override var currentHomePage: Int = 1
@@ -26,8 +30,9 @@ class FilterRepositoryImpl(
     ) {
         if (doNetworkCall) {
             lastNetworkFilter = commonFilterRequestModel
+            _forceReloadFlow.tryEmit(Unit)
         }
-        _cashedFilterFlow.emit(FilterInfo(commonFilterRequestModel, doNetworkCall))
+        _cashedFilterFlow.emit(FilterInfo(commonFilterRequestModel))
     }
 
     override suspend fun saveFilter(name: String, filter: CommonFilterRequestModel): Long {
@@ -72,6 +77,5 @@ class FilterRepositoryImpl(
 }
 
 class FilterInfo(
-    val commonFilterRequestModel: CommonFilterRequestModel,
-    val doNetworkCall: Boolean
+    val commonFilterRequestModel: CommonFilterRequestModel
 )

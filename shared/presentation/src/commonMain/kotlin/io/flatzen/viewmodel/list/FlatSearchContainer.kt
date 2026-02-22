@@ -59,9 +59,12 @@ class FlatSearchContainer(
                 .collect { newFilters ->
                     noFlatsToLoadMore = false
                     updateState { copy(isAnyFilterApplied = newFilters.commonFilterRequestModel != CommonFilterRequestModel()) }
-                    if (newFilters.doNetworkCall) {
-                        loadAllFlatsFromFilterUpdate()
-                    }
+                }
+        }
+        whileSubscribed {
+            filterRepository.forceReloadFlow
+                .collect {
+                    loadAllFlatsFromFilterUpdate()
                 }
         }
         whileSubscribed {
