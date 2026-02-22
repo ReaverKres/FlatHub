@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.first
 interface FilterRepository {
 
     val cashedFilterFlow: SharedFlow<FilterInfo>
+    val forceReloadFlow: SharedFlow<Unit>
     val lastNetworkFilter: CommonFilterRequestModel?
     var currentHomePage: Int
 

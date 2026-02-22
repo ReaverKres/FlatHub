@@ -134,7 +134,7 @@ class FilterViewModel(
     init {
         filterRepository.cashedFilterFlow.onEach { newFilters ->
             val filterState = mapFilterModelToFilterState(newFilters.commonFilterRequestModel)
-            onIntent(FilterScreenAction.UpdateFilter(filterState, newFilters.doNetworkCall))
+            onIntent(FilterScreenAction.UpdateFilter(filterState, false))
         }.launchIn(viewModelScope)
 
         // Load saved filters
