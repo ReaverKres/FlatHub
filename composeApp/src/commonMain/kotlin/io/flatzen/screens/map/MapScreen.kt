@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -58,8 +57,8 @@ import io.flatzen.viewmodel.MapAction
 import io.flatzen.viewmodel.MapContainer
 import io.flatzen.viewmodel.MapIntent
 import io.flatzen.viewmodel.MapIntent.AddPointToPath
+import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
-import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListIntent
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
@@ -72,7 +71,6 @@ import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -115,8 +113,8 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
 
-    val filterViewModel = koinViewModel<FilterViewModel>()
-    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
+    val filterContainer: FilterContainer = container()
+    val filterState by filterContainer.store.subscribe { }
     val savePathCalloutId = "savePathCalloutId"
     val firstPointInPathMarker = "pathid1"
 
@@ -174,7 +172,7 @@ fun MapScreen(
                 mapViewModel.mapState.removeCallout(savePathCalloutId)
                 mapViewModel.mapState.removeMarker(firstPointInPathMarker)
                 mapViewModel.store.intent(MapIntent.ClickOnMapArea)
-                filterViewModel.onIntent(
+                filterContainer.intent(
                     FilterScreenAction.ActivateMapArea(
                         id = action.pathId,
                         checked = true,
@@ -298,13 +296,13 @@ fun MapScreen(
         SavedAreasDialog(
             state = filterState.savedAreasDialogState,
             onCheckArea = { id, isChecked ->
-                filterViewModel.onIntent(FilterScreenAction.ActivateMapArea(id, isChecked, true))
+                filterContainer.intent(FilterScreenAction.ActivateMapArea(id, isChecked, true))
             },
             onDeleteArea = {
-                filterViewModel.onIntent(FilterScreenAction.DeleteMapArea(it, true))
+                filterContainer.intent(FilterScreenAction.DeleteMapArea(it, true))
             },
             onDismiss = {
-                filterViewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
+                filterContainer.intent(FilterScreenAction.HideSavedAreaListDialog)
             }
         )
     }
@@ -423,7 +421,7 @@ fun MapScreen(
                                         .padding(start = 6.dp)
                                         .size(32.dp)
                                         .clickable {
-                                            filterViewModel.onIntent(FilterScreenAction.ShowSavedAreaListDialog)
+                                            filterContainer.intent(FilterScreenAction.ShowSavedAreaListDialog)
                                         }
                                 )
                             }

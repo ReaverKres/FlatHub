@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
@@ -79,6 +78,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
@@ -87,9 +87,9 @@ import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.text
+import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterState
-import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.list.FlatListAction
 import io.flatzen.viewmodel.list.FlatListIntent
 import io.flatzen.viewmodel.list.FlatSearchContainer
@@ -105,8 +105,8 @@ import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import pro.respawn.flowmvi.dsl.intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,8 +127,8 @@ fun HomeScreen(
         }
     }
 
-    val filterViewModel = koinViewModel<FilterViewModel>()
-    val filterScreenState by filterViewModel.state.collectAsStateWithLifecycle()
+    val filterContainer: FilterContainer = container()
+    val filterScreenState by filterContainer.store.subscribe { }
     var currentFilters by remember(filterScreenState.filters) { mutableStateOf(filterScreenState.filters) }
 
     val localDensity = LocalDensity.current
@@ -142,7 +142,7 @@ fun HomeScreen(
     var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(currentFilters) {
-        filterViewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, true))
+        filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, true))
     }
 
     val firstVisibleItemIndex by remember {

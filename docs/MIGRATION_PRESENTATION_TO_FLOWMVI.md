@@ -88,7 +88,14 @@
 
 ---
 
-## 5. План миграции FilterViewModel
+## 5. Миграция FilterViewModel (выполнено)
+
+Статус на текущем этапе:
+
+- `FilterViewModel` заменён на `FilterContainer` (FlowMVI `Container` + `store`).
+- Подписка на `cashedFilterFlow` используется только для синхронизации state фильтра.
+- One-shot сетевой reload вынесен в отдельный `forceReloadFlow` (без replay), чтобы исключить
+  повторные network calls при восстановлении подписки.
 
 ### 5.1 Структура файлов после миграции
 
@@ -119,7 +126,7 @@ import pro.respawn.flowmvi.plugins.reduce
 init {
     filterRepository.cashedFilterFlow.onEach { newFilters ->
         val filterState = mapFilterModelToFilterState(newFilters.commonFilterRequestModel)
-        onIntent(FilterScreenAction.UpdateFilter(filterState, newFilters.doNetworkCall))
+        onIntent(FilterScreenAction.UpdateFilter(filterState, false))
     }.launchIn(viewModelScope)
 
     filterRepository.getAllSavedFilters().onEach { savedFilters ->
@@ -134,7 +141,7 @@ store(FilterState.Initial) {
     whileSubscribed {
         filterRepository.cashedFilterFlow.collect { newFilters ->
             val filterState = mapFilterModelToFilterState(newFilters.commonFilterRequestModel)
-            applyFiltersUpdate(filterState, newFilters.doNetworkCall)
+            applyFiltersUpdate(filterState, false)
         }
     }
     whileSubscribed {
@@ -157,7 +164,7 @@ whileSubscribed {
     filterRepository.cashedFilterFlow.collect { newFilters ->
         store.intent(FilterIntent.UpdateFilter(
             mapFilterModelToFilterState(newFilters.commonFilterRequestModel),
-            newFilters.doNetworkCall
+            false
         ))
     }
 }
@@ -306,7 +313,7 @@ class FilterContainer(
                 filterRepository.cashedFilterFlow.collect { newFilters ->
                     intent(FilterIntent.UpdateFilter(
                         mapFilterModelToFilterState(newFilters.commonFilterRequestModel),
-                        newFilters.doNetworkCall
+                        false
                     ))
                 }
             }
@@ -596,9 +603,8 @@ fun AllWorkoutsScreen(onBack: () -> Unit) {
 
 **Было (ViewModel):**
 ```kotlin
-val viewModel: FilterViewModel = viewModel()
-val state by viewModel.state.collectAsState()
-LaunchedEffect(viewModel.effect) { viewModel.effect.collect { effect -> ... } }
+val container: FilterContainer = container()
+val state by container.store.subscribe { action -> /* handle actions */ }
 ```
 
 **Стало (FlowMVI):**
@@ -636,7 +642,7 @@ val state by container.store.subscribe { action -> /* effect handling */ }
 1. Простые экраны без flow-подписок (например, экран с одной кнопкой)
 2. Экраны с `init { loadData() }`
 3. Экраны с подписками на Flow (`whileSubscribed`)
-4. FilterViewModel — самый сложный, много Intent и связь с repository
+4. FlatSearchViewModel — самый сложный, много Intent и связь с repository
 
 ---
 
