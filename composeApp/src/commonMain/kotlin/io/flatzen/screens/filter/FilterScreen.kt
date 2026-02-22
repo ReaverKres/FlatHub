@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -62,9 +61,9 @@ import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
+import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterEffect
 import io.flatzen.viewmodel.filter.FilterScreenAction
-import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
@@ -83,7 +82,6 @@ import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
@@ -96,8 +94,12 @@ fun FilterScreen(
     onOpenLocation: () -> Unit = {},
     onOpenReferralScreen: () -> Unit,
 ) {
-    val viewModel: FilterViewModel = koinViewModel()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val filterContainer: FilterContainer = container()
+    val state by filterContainer.store.subscribe { action ->
+        when (action) {
+            is FilterEffect.NavigateToReferralEffect -> onOpenReferralScreen()
+        }
+    }
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
 
     val factory = rememberPermissionsControllerFactory()
@@ -133,22 +135,12 @@ fun FilterScreen(
     }
 
     LaunchedEffect(currentFilters) {
-        viewModel.onIntent(FilterScreenAction.UpdateFilter(currentFilters, false))
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect {
-            when(it) {
-                is FilterEffect.NavigateToReferralEffect -> {
-                    onOpenReferralScreen()
-                }
-            }
-        }
+        filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, false))
     }
 
     LaunchedEffectOnce(Unit) {
         // Track screen view through MviAction
-        viewModel.onIntent(
+        filterContainer.intent(
             FilterScreenAction.TrackScreenView(
                 screenName = AppMetrcica.Screens.FILTER,
                 parameters = mapOf(
@@ -171,7 +163,7 @@ fun FilterScreen(
                 },
                 actions = {
                     TextButton(onClick = {
-                        viewModel.onIntent(FilterScreenAction.ClearAllFilters)
+                        filterContainer.intent(FilterScreenAction.ClearAllFilters)
                     }) {
                         Text("Сбросить")
                     }
@@ -188,7 +180,7 @@ fun FilterScreen(
                     showCommercialPropertyTypeDialog = false
                 },
                 onSelected = { selectedPropertyType ->
-                    viewModel.onIntent(
+                    filterContainer.intent(
                         FilterScreenAction.UpdateSelectedCommercialPropertyType(
                             selectedPropertyType
                         )
@@ -242,10 +234,10 @@ fun FilterScreen(
                 SavedFiltersChips(
                     savedFilters = state.savedFilters,
                     onFilterClick = { filter ->
-                        viewModel.onIntent(FilterScreenAction.ToggleSavedFilterSelection(filter.id))
+                        filterContainer.intent(FilterScreenAction.ToggleSavedFilterSelection(filter.id))
                     },
                     onDeleteClick = { filterId ->
-                        viewModel.onIntent(FilterScreenAction.DeleteSavedFilter(filterId))
+                        filterContainer.intent(FilterScreenAction.DeleteSavedFilter(filterId))
                     }
                 )
                 HorizontalDivider()
@@ -270,7 +262,7 @@ fun FilterScreen(
             // Сортировка
             FilterSectionTitle(title = "Сортировка")
             SortOptionRadioButtons(state.filters.sortOption) { sortOption ->
-                viewModel.onIntent(FilterScreenAction.UpdateSortOption(sortOption))
+                filterContainer.intent(FilterScreenAction.UpdateSortOption(sortOption))
             }
             Spacer(Modifier.height(8.dp))
             // Расположение
@@ -540,7 +532,7 @@ fun FilterScreen(
             TextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
-                    viewModel.onIntent(FilterScreenAction.ShowSaveFilterDialog)
+                    filterContainer.intent(FilterScreenAction.ShowSaveFilterDialog)
                 }) {
                 Text("Добавить в Мои фильтры")
             }
@@ -554,10 +546,10 @@ fun FilterScreen(
         SaveDialog(
             dialogState = state.saveDialogState,
             onNameChange = { name ->
-                viewModel.onIntent(FilterScreenAction.UpdateFilterName(name))
+                filterContainer.intent(FilterScreenAction.UpdateFilterName(name))
             },
             onNotificationChange = { enabled ->
-                viewModel.onIntent(FilterScreenAction.NotificationEnable(enabled))
+                filterContainer.intent(FilterScreenAction.NotificationEnable(enabled))
             },
             onSave = { notificationEnabled ->
                 currentFilters = currentFilters.copy(
@@ -570,10 +562,10 @@ fun FilterScreen(
                         enabled = notificationEnabled
                     )
                 )
-                viewModel.onIntent(FilterScreenAction.SaveFilter)
+                filterContainer.intent(FilterScreenAction.SaveFilter)
             },
             onCancel = {
-                viewModel.onIntent(FilterScreenAction.HideSaveFilterDialog)
+                filterContainer.intent(FilterScreenAction.HideSaveFilterDialog)
             }
         )
     }

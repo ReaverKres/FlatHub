@@ -363,8 +363,7 @@ class FlatSearchContainer(
         isRefreshing: Boolean
     ) {
         val uiFlatList = UiFlat.appFlatListToUiFlatList(flats)
-        if (isLoadMore && uiFlatList.isEmpty()) noFlatsToLoadMore = true
-        if (uiFlatList.isEmpty() && !isLoadMore) noFlatsToLoadMore = true
+        if (uiFlatList.isEmpty()) noFlatsToLoadMore = true
         updateState {
             when {
                 isLoadMore -> copy(

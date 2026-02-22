@@ -49,7 +49,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.di.container
@@ -59,12 +58,12 @@ import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.DistrictsIntent
 import io.flatzen.viewmodel.filter.AddressUiState
+import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
-import io.flatzen.viewmodel.filter.FilterViewModel
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.widgets.dialogs.SavedAreasDialog
-import org.koin.compose.viewmodel.koinViewModel
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import pro.respawn.flowmvi.dsl.intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,8 +73,8 @@ fun LocationScreen(
     openMetro: () -> Unit,
     openDistricts: () -> Unit,
 ) {
-    val viewModel: FilterViewModel = koinViewModel()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val filterContainer: FilterContainer = container()
+    val state by filterContainer.store.subscribe { }
 
 
     var addressInput by remember { mutableStateOf("") }
@@ -85,13 +84,13 @@ fun LocationScreen(
         SavedAreasDialog(
             state = state.savedAreasDialogState,
             onCheckArea = { id, isChecked ->
-                viewModel.onIntent(FilterScreenAction.ActivateMapArea(id, isChecked))
+                filterContainer.intent(FilterScreenAction.ActivateMapArea(id, isChecked))
             },
             onDeleteArea = {
-                viewModel.onIntent(FilterScreenAction.DeleteMapArea(it))
+                filterContainer.intent(FilterScreenAction.DeleteMapArea(it))
             },
             onDismiss = {
-                viewModel.onIntent(FilterScreenAction.HideSavedAreaListDialog)
+                filterContainer.intent(FilterScreenAction.HideSavedAreaListDialog)
             }
         )
     }
@@ -108,7 +107,7 @@ fun LocationScreen(
                 },
                 actions = {
                     TextButton(onClick = {
-                        viewModel.onIntent(FilterScreenAction.ClearLocationFilters)
+                        filterContainer.intent(FilterScreenAction.ClearLocationFilters)
                     }) {
                         Text("Сбросить")
                     }
@@ -143,7 +142,7 @@ fun LocationScreen(
                 IconButton(
                     onClick = {
                         if (addressInput.isNotBlank()) {
-                            viewModel.onIntent(
+                            filterContainer.intent(
                                 FilterScreenAction.UpdateAddressFilter(
                                     addresses + AddressUiState(addressInput.trim())
                                 )
@@ -177,7 +176,7 @@ fun LocationScreen(
                                 imageVector = Icons.Default.Delete, // Можешь заменить на Close
                                 contentDescription = "Удалить",
                                 modifier = Modifier.clickable {
-                                    viewModel.onIntent(
+                                    filterContainer.intent(
                                         FilterScreenAction.UpdateAddressFilter(
                                             addresses - addr
                                         )
@@ -217,7 +216,7 @@ fun LocationScreen(
             }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
-                viewModel.onIntent(FilterScreenAction.ShowSavedAreaListDialog)
+                filterContainer.intent(FilterScreenAction.ShowSavedAreaListDialog)
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {
@@ -237,9 +236,9 @@ fun LocationScreen(
 @Composable
 fun CitySelectScreen(
     navigateBack: () -> Unit,
-    viewModel: FilterViewModel = koinViewModel()
+    filterContainer: FilterContainer = container()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by filterContainer.store.subscribe { }
     val cities = state.filters.location?.availableCities.orEmpty()
     Scaffold(
         topBar = {
@@ -262,7 +261,7 @@ fun CitySelectScreen(
                         val checked = state.filters.location?.selectedCity?.code == city.code
                         Checkbox(checked = checked, onCheckedChange = {
                             if (!checked) {
-                                viewModel.onIntent(
+                                filterContainer.intent(
                                     FilterScreenAction.UpdateFilter(
                                         state.filters.copy(
                                             location = state.filters.location?.copy(
@@ -280,7 +279,7 @@ fun CitySelectScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.onIntent(
+                            filterContainer.intent(
                                 FilterScreenAction.UpdateFilter(
                                     state.filters.copy(
                                         location = state.filters.location?.copy(
@@ -303,10 +302,10 @@ fun CitySelectScreen(
 @Composable
 fun MetroSelectScreen(
     navigateBack: () -> Unit,
-    viewModel: FilterViewModel = koinViewModel()
+    filterContainer: FilterContainer = container()
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by filterContainer.store.subscribe { }
 
     val filteredStation = state.filters.metroStationsState.filter {
         it.name.lowercase().contains(query.text.lowercase(), true)
@@ -352,7 +351,7 @@ fun MetroSelectScreen(
                                 Checkbox(
                                     checked = station.selected,
                                     onCheckedChange = {
-                                        viewModel.onIntent(
+                                        filterContainer.intent(
                                             FilterScreenAction.UpdateMetroFilter(
                                                 station.copy(selected = it)
                                             )
@@ -371,7 +370,7 @@ fun MetroSelectScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.onIntent(
+                                filterContainer.intent(
                                     FilterScreenAction.UpdateMetroFilter(
                                         station.copy(selected = station.selected.not())
                                     )
@@ -393,8 +392,8 @@ fun DistrictSelectScreen(
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
 
-    val filterViewModel: FilterViewModel = koinViewModel()
-    val filterState by filterViewModel.state.collectAsStateWithLifecycle()
+    val filterContainer: FilterContainer = container()
+    val filterState by filterContainer.store.subscribe { }
 
 
     val districtsContainer: DistrictsContainer = container()
@@ -468,7 +467,7 @@ fun DistrictSelectScreen(
                                     Checkbox(
                                         checked = district.isChecked,
                                         onCheckedChange = {
-                                            filterViewModel.onIntent(
+                                            filterContainer.intent(
                                                 FilterScreenAction.UpdateDistrictFilter(
                                                     districtsState.districts,
                                                     district.copy(isChecked = it)
@@ -481,7 +480,7 @@ fun DistrictSelectScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    filterViewModel.onIntent(
+                                    filterContainer.intent(
                                         FilterScreenAction.UpdateDistrictFilter(
                                             districtsState.districts,
                                             district.copy(isChecked = district.isChecked.not())

@@ -15,7 +15,7 @@
 | 9  | FlatDetailViewModel          | BaseMviViewModel | Medium     | ✅ Migrated |
 | 10 | NotificationListViewModel    | BaseMviViewModel | Medium     | ✅ Migrated |
 | 11 | FlatSearchViewModel          | BaseMviViewModel | High       | ⏳ Pending  |
-| 12 | FilterViewModel              | BaseMviViewModel | High       | ⏳ Pending  |
+| 12 | FilterViewModel              | BaseMviViewModel | High       | ✅ Migrated |
 
 ## Migrated to FlowMVI (Containers)
 
@@ -30,8 +30,8 @@
 | MapViewModel                 | MapContainer                 | 2025-02-22 |
 | FavoritesViewModel           | FavoritesContainer           | 2025-02-22 |
 | FlatDetailViewModel          | FlatDetailContainer          | 2025-02-22 |
+| FilterViewModel              | FilterContainer              | 2026-02-22 |
 ## Remaining (Not Yet Migrated)
 
 | ViewModel | Notes |
 | FlatSearchViewModel | |
-| FilterViewModel | |

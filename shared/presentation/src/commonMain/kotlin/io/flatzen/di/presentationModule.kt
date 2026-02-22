@@ -9,7 +9,7 @@ import io.flatzen.viewmodel.FavoritesContainer
 import io.flatzen.viewmodel.MapContainer
 import io.flatzen.viewmodel.SplashContainer
 import io.flatzen.viewmodel.detailad.FlatDetailContainer
-import io.flatzen.viewmodel.filter.FilterViewModel
+import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.MoreContainer
@@ -22,7 +22,6 @@ import kotlinx.coroutines.SupervisorJob
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.new
-import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
@@ -53,14 +52,7 @@ val flatSearchPresentationModule = module {
         )
     }
 
-    viewModel {
-        FilterViewModel(
-            filterRepository = get(),
-            userMapAreaRepository = get(),
-            analyticsManager = get(),
-            userPreferencesRepository = get()
-        )
-    }
+    container { new(::FilterContainer) }
 
     container { new(::DistrictsContainer) }
 
