@@ -1,30 +1,9 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    id("io.flatzen.base-shared-module")
     alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
-    android {
-        namespace = "io.flatzen.domain"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    val xcfName = "shared:domainKit"
-
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {
@@ -36,11 +15,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.serialization)
-            }
-        }
-
-        iosMain {
-            dependencies {
             }
         }
     }

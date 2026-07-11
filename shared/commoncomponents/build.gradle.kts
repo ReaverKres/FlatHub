@@ -1,30 +1,9 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    id("io.flatzen.base-shared-module")
     alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
-    android {
-        namespace = "io.flatzen.commoncomponents"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    val xcfName = "shared:commoncomponentsKit"
-
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
-
     sourceSets {
         commonMain {
             dependencies {
@@ -42,11 +21,6 @@ kotlin {
                 implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.config)
                 implementation(libs.firebase.analytics)
-            }
-        }
-
-        iosMain {
-            dependencies {
             }
         }
     }
