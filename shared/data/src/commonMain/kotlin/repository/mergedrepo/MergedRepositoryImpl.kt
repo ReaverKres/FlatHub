@@ -393,7 +393,7 @@ class MergedRepositoryImpl(
 
     override suspend fun cleanupOldFlats() {
         val threshold = Clock.System.now()
-            .minus(30, DateTimeUnit.DAY, TimeZone.UTC)
+            .minus(7, DateTimeUnit.DAY, TimeZone.UTC)
             .toEpochMilliseconds()
         withContext(Dispatchers.IO) {
             flatsDao.deleteNonFavoritesOlderThan(threshold)

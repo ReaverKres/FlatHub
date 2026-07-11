@@ -50,7 +50,7 @@ class FlatSearchContainer(
     private var noFlatsToLoadMore: Boolean = false
     private var isNetworkAvailable: Boolean = true
 
-    override val store = store<FlatListScreenState, FlatListIntent, FlatListAction>(
+    override val store = store(
         initial = FlatListScreenState.Initial
     ) {
         whileSubscribed {
