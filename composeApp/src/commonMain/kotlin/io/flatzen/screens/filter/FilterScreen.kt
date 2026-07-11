@@ -45,6 +45,38 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.add
+import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.delete
+import flatzen.composeapp.generated.resources.filter_active_areas_prefix
+import flatzen.composeapp.generated.resources.filter_address_prefix
+import flatzen.composeapp.generated.resources.filter_add_to_my_filters
+import flatzen.composeapp.generated.resources.filter_area
+import flatzen.composeapp.generated.resources.filter_booking_date
+import flatzen.composeapp.generated.resources.filter_deal_type
+import flatzen.composeapp.generated.resources.filter_districts_prefix
+import flatzen.composeapp.generated.resources.filter_location
+import flatzen.composeapp.generated.resources.filter_metro_prefix
+import flatzen.composeapp.generated.resources.filter_my_filters
+import flatzen.composeapp.generated.resources.filter_owner_only
+import flatzen.composeapp.generated.resources.filter_photo_only
+import flatzen.composeapp.generated.resources.filter_price
+import flatzen.composeapp.generated.resources.filter_price_daily
+import flatzen.composeapp.generated.resources.filter_price_per_square
+import flatzen.composeapp.generated.resources.filter_property_type
+import flatzen.composeapp.generated.resources.filter_rent
+import flatzen.composeapp.generated.resources.filter_room_only
+import flatzen.composeapp.generated.resources.filter_rooms_count
+import flatzen.composeapp.generated.resources.filter_rooms_in_apartment
+import flatzen.composeapp.generated.resources.filter_sale
+import flatzen.composeapp.generated.resources.filter_selected_date_range
+import flatzen.composeapp.generated.resources.filter_sorting
+import flatzen.composeapp.generated.resources.filters_title
+import flatzen.composeapp.generated.resources.from
+import flatzen.composeapp.generated.resources.reset
+import flatzen.composeapp.generated.resources.to
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
@@ -82,6 +114,7 @@ import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
@@ -118,17 +151,15 @@ fun FilterScreen(
             is ToggleNotificationsAction.ShowSettingsDialog -> showNotificationsSettingsDialog = true
         }
     }
-    val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> by remember(Unit) {
-        val uiPropertyTypes = currentFilters.commercial.commercialPropertyType?.mapNotNull {
+    val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> =
+        currentFilters.commercial.commercialPropertyType?.mapNotNull {
             it.commercialPropertyType?.let { propertyType ->
                 SingleChoiceEntity(
-                    title = it.commercialPropertyTypeName.orEmpty(),
+                    title = it.commercialPropertyTypeName?.let { key -> localizedStringResource(key) }.orEmpty(),
                     type = propertyType
                 )
             }
         } ?: listOf()
-        mutableStateOf(uiPropertyTypes)
-    }
     val selectedCommercialPropertyType: CommercialPropertyTypeInfo? by remember(state.filters) {
         val selectedItem = state.filters.commercial.commercialPropertyType?.find { it.selected }
         mutableStateOf(selectedItem)
@@ -155,17 +186,17 @@ fun FilterScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Фильтры", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.filters_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
                     }
                 },
                 actions = {
                     TextButton(onClick = {
                         filterContainer.intent(FilterScreenAction.ClearAllFilters)
                     }) {
-                        Text("Сбросить")
+                        Text(stringResource(Res.string.reset))
                     }
                 }
             )
@@ -173,7 +204,7 @@ fun FilterScreen(
     ) { paddingValues ->
         if (showCommercialPropertyTypeDialog) {
             SingleChoiceDialog(
-                title = "Тип помещения",
+                title = stringResource(Res.string.filter_property_type),
                 items = propertyTypes,
                 selectedItem = selectedCommercialPropertyType?.commercialPropertyType,
                 onDismissRequest = {
@@ -192,15 +223,15 @@ fun FilterScreen(
 
         if (showCommercialAdTypeDialog) {
             SingleChoiceDialog(
-                title = "Тип сделки",
+                title = stringResource(Res.string.filter_deal_type),
                 items = listOf(
                     SingleChoiceEntity(
-                        title = "Продажа", AdType.COMMERCIAL(
+                        title = stringResource(Res.string.filter_sale), AdType.COMMERCIAL(
                             CommercialAdType.SALE
                         )
                     ),
                     SingleChoiceEntity(
-                        title = "Аренда", AdType.COMMERCIAL(
+                        title = stringResource(Res.string.filter_rent), AdType.COMMERCIAL(
                             CommercialAdType.RENT
                         )
                     )
@@ -228,7 +259,7 @@ fun FilterScreen(
             if (state.savedFilters.isNotEmpty()) {
                 HorizontalDivider()
                 FilterSectionTitle(
-                    title = "Мои фильтры",
+                    title = stringResource(Res.string.filter_my_filters),
                     style = MaterialTheme.typography.titleMedium
                 )
                 SavedFiltersChips(
@@ -260,13 +291,13 @@ fun FilterScreen(
             Spacer(Modifier.height(8.dp))
 
             // Сортировка
-            FilterSectionTitle(title = "Сортировка")
+            FilterSectionTitle(title = stringResource(Res.string.filter_sorting))
             SortOptionRadioButtons(state.filters.sortOption) { sortOption ->
                 filterContainer.intent(FilterScreenAction.UpdateSortOption(sortOption))
             }
             Spacer(Modifier.height(8.dp))
             // Расположение
-            FilterSectionTitle(title = "Расположение")
+            FilterSectionTitle(title = stringResource(Res.string.filter_location))
             Spacer(Modifier.height(4.dp))
             Card {
                 LocationItem(
@@ -284,22 +315,22 @@ fun FilterScreen(
             }
 
             if(currentFilters.adType != AdType.DAILY) {
-                AppSwitch(label = "Только от собственника", state = currentFilters.fromOwnerOnly) {
+                AppSwitch(label = stringResource(Res.string.filter_owner_only), state = currentFilters.fromOwnerOnly) {
                     currentFilters = currentFilters.copy(fromOwnerOnly = it)
                 }
             }
-            AppSwitch(label = "Только с фото", state = currentFilters.withPhotoOnly) {
+            AppSwitch(label = stringResource(Res.string.filter_photo_only), state = currentFilters.withPhotoOnly) {
                 currentFilters = currentFilters.copy(withPhotoOnly = it)
             }
             if (currentFilters.adType == AdType.RENT) {
-                AppSwitch(label = "Снять комнату", state = currentFilters.roomOnly) {
+                AppSwitch(label = stringResource(Res.string.filter_room_only), state = currentFilters.roomOnly) {
                     currentFilters = currentFilters.copy(roomOnly = it)
                 }
             }
 
             if (currentFilters.adType.isCommercial.not() && currentFilters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
-                FilterSectionTitle(title = "Комнат в квартире")
+                FilterSectionTitle(title = stringResource(Res.string.filter_rooms_in_apartment))
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Room.entries.forEach {
@@ -320,7 +351,7 @@ fun FilterScreen(
             } else if(currentFilters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
                 NumberRange(
-                    title = "Количество помещений",
+                    title = stringResource(Res.string.filter_rooms_count),
                     rangeFrom = currentFilters.commercial.roomRange?.fromRange?.toInt()?.toString()
                         .orEmpty(),
                     fromOnChange = {
@@ -359,12 +390,12 @@ fun FilterScreen(
                             modifier = Modifier
                                 .wrapContentSize()
                                 .padding(vertical = 6.dp),
-                            text = "Тип помещения",
+                            text = stringResource(Res.string.filter_property_type),
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         selectedCommercialPropertyType?.commercialPropertyTypeName?.let {
                             Text(
-                                text = it,
+                                text = localizedStringResource(it),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
@@ -384,24 +415,22 @@ fun FilterScreen(
                 val endDateMillis = currentFilters.bookingDatesFilter?.dateTo?.toEpochMilliseconds()
                 
                 // Format the date range for display
-                val formattedDateRange = remember(startDateMillis, endDateMillis) {
-                    if (startDateMillis != null && endDateMillis != null) {
-                        val dateFrom = Instant.fromEpochMilliseconds(startDateMillis)
-                        val dateFromText = DateConverter.formatInstant(
-                            instant = dateFrom,
-                            timeZone = TimeZone.currentSystemDefault(),
-                            onlyDayAndMonth = true
-                        )
-                        val dateTo = Instant.fromEpochMilliseconds(endDateMillis)
-                        val dateToText = DateConverter.formatInstant(
-                            instant = dateTo,
-                            timeZone = TimeZone.currentSystemDefault(),
-                            onlyDayAndMonth = true
-                        )
-                        "Выбрано: $dateFromText - $dateToText"
-                    } else {
-                        ""
-                    }
+                val formattedDateRange = if (startDateMillis != null && endDateMillis != null) {
+                    val dateFrom = Instant.fromEpochMilliseconds(startDateMillis)
+                    val dateFromText = DateConverter.formatInstant(
+                        instant = dateFrom,
+                        timeZone = TimeZone.currentSystemDefault(),
+                        onlyDayAndMonth = true
+                    )
+                    val dateTo = Instant.fromEpochMilliseconds(endDateMillis)
+                    val dateToText = DateConverter.formatInstant(
+                        instant = dateTo,
+                        timeZone = TimeZone.currentSystemDefault(),
+                        onlyDayAndMonth = true
+                    )
+                    stringResource(Res.string.filter_selected_date_range, dateFromText, dateToText)
+                } else {
+                    ""
                 }
 
                 Row(
@@ -411,7 +440,7 @@ fun FilterScreen(
                     AppReadOnlyTextField(
                         modifier = Modifier.weight(1f),
                         text = formattedDateRange,
-                        label = "Дата бронирования",
+                        label = stringResource(Res.string.filter_booking_date),
                         onChange = {},
                         onClick = { showDatePicker = true }
                     )
@@ -419,7 +448,7 @@ fun FilterScreen(
                     IconButton(onClick = {
                         currentFilters = currentFilters.copy(bookingDatesFilter = null)
                     }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Удалить дату")
+                        Icon(Icons.Default.Clear, contentDescription = stringResource(Res.string.delete))
                     }
                 }
 
@@ -448,9 +477,9 @@ fun FilterScreen(
 
             val currencyText = if(currentFilters.adType == AdType.DAILY) "(BYN)" else "($)"
             val priceTitle = if(currentFilters.adType == AdType.DAILY) {
-                "Цена за сутки $currencyText"
+                stringResource(Res.string.filter_price_daily, currencyText)
             } else {
-                "Цена $currencyText"
+                stringResource(Res.string.filter_price, currencyText)
             }
             NumberRange(
                 title = priceTitle,
@@ -478,7 +507,7 @@ fun FilterScreen(
             if(currentFilters.adType != AdType.DAILY) {
                 Spacer(Modifier.height(10.dp))
                 NumberRange(
-                    title = "Цена за м2 $currencyText",
+                    title = stringResource(Res.string.filter_price_per_square, currencyText),
                     rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
                     fromOnChange = {
                         currentFilters = currentFilters.copy(
@@ -504,7 +533,7 @@ fun FilterScreen(
 
             Spacer(Modifier.height(10.dp))
             NumberRange(
-                title = "Площадь",
+                title = stringResource(Res.string.filter_area),
                 rangeFrom = currentFilters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
                     currentFilters = currentFilters.copy(
@@ -534,7 +563,7 @@ fun FilterScreen(
                 onClick = {
                     filterContainer.intent(FilterScreenAction.ShowSaveFilterDialog)
                 }) {
-                Text("Добавить в Мои фильтры")
+                Text(stringResource(Res.string.filter_add_to_my_filters))
             }
 
             Spacer(Modifier.height(32.dp))
@@ -617,7 +646,7 @@ private fun SavedFiltersChips(
                     ) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Удалить фильтр",
+                            contentDescription = stringResource(Res.string.delete),
                             modifier = Modifier.size(12.dp)
                         )
                     }
@@ -659,7 +688,7 @@ private fun LocationItem(
 
             if (selectedMetro.isNotEmpty()) {
                 Text(
-                    text = "Метро: $selectedMetro",
+                    text = "${stringResource(Res.string.filter_metro_prefix)}: $selectedMetro",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
@@ -669,7 +698,7 @@ private fun LocationItem(
 
             if (!selectedAddress.isNullOrEmpty()) {
                 Text(
-                    text = "Адрес: $selectedAddress",
+                    text = "${stringResource(Res.string.filter_address_prefix)}: $selectedAddress",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -679,7 +708,7 @@ private fun LocationItem(
             if (!selectedDistricts.isNullOrEmpty()) {
                 val areasText = selectedDistricts.joinToString(separator = ", ") { it.nameLocal }
                 Text(
-                    text = "Районы: $areasText",
+                    text = "${stringResource(Res.string.filter_districts_prefix)}: $areasText",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -689,7 +718,7 @@ private fun LocationItem(
             if (!selectedUserAreas.isNullOrEmpty()) {
                 val areasText = selectedUserAreas.joinToString(separator = ", ") { it.name }
                 Text(
-                    text = "Активные области: $areasText",
+                    text = "${stringResource(Res.string.filter_active_areas_prefix)}: $areasText",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -723,14 +752,14 @@ private fun NumberRange(
         AppTextField(
             modifier = Modifier.weight(1f),
             text = rangeFrom,
-            label = "От",
+            label = stringResource(Res.string.from),
             onChangePredicate = onlyIntPredicate,
             onChange = fromOnChange
         )
         AppTextField(
             modifier = Modifier.weight(1f),
             text = rangeTo,
-            label = "До",
+            label = stringResource(Res.string.to),
             onChangePredicate = onlyIntPredicate,
             onChange = toOnChange
         )

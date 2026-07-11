@@ -20,11 +20,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +36,21 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.copy_success
+import flatzen.composeapp.generated.resources.faq_title
+import flatzen.composeapp.generated.resources.more_title
+import flatzen.composeapp.generated.resources.referral_code
+import flatzen.composeapp.generated.resources.telegram_support
+import flatzen.composeapp.generated.resources.telegram_support_description
+import flatzen.composeapp.generated.resources.theme_dark
+import flatzen.composeapp.generated.resources.theme_light
+import flatzen.composeapp.generated.resources.theme_system
+import flatzen.composeapp.generated.resources.theme_title
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
+import io.flatzen.commoncomponents.theme.ThemeMode
 import io.flatzen.di.container
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -45,8 +60,12 @@ import io.flatzen.viewmodel.more.FaqState
 import io.flatzen.viewmodel.more.MoreConfigState
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.widgets.AppTextButton
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import repository.userpreferences.UserPreferencesRepository
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
@@ -55,39 +74,44 @@ fun MoreScreen(
     navigateToFaq: () -> Unit,
     navigateToReferral: () -> Unit
 ) {
-
     val moreContainer: MoreContainer = container()
     val moreState by moreContainer.store.subscribe { }
 
     val faqContainer: FaqContainer = container()
     val faqState by faqContainer.store.subscribe { }
 
-    val telegramSupportDescription: String = remember {
-        "Здесь вы можете:\n" +
-                "• 🐞 Сообщить об ошибке или проблеме \n" +
-                "  (Если нашли ошибку прикрепите запись экрана и ссылку на объявление)\n" +
-                "• 💡 Предложить идею для улучшения приложения"
-    }
+    val userPreferences: UserPreferencesRepository = koinInject()
+    val themeMode by userPreferences.observeThemeMode()
+        .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val scope = rememberCoroutineScope()
+
+    val telegramSupportDescription = stringResource(Res.string.telegram_support_description)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Ещё", style = MaterialTheme.typography.headlineSmall) },
+                title = {
+                    Text(
+                        stringResource(Res.string.more_title),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
             )
         },
     ) { paddingValues ->
-
         val uriHandler = LocalUriHandler.current
         val toastLauncher = ToastLauncher()
+        val copySuccessTemplate = stringResource(Res.string.copy_success)
         val copyLauncher = copyLauncher(
             onCopySuccess = { text: String ->
-                toastLauncher.showToast("Скопировано: $text", ToastDurationType.LONG)
+                toastLauncher.showToast(
+                    copySuccessTemplate.replace("%1\$s", text),
+                    ToastDurationType.LONG
+                )
             },
-            onCopyError = { exception: Exception ->
-                // Handle error if needed
-            }
+            onCopyError = { }
         )
 
         Box {
@@ -97,13 +121,22 @@ fun MoreScreen(
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
             ) {
-                // FAQ Button at the top
-                if (faqState is FaqState.Success && (faqState as FaqState.Success).faqConfigData.faqItems.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                ThemeModeSelector(
+                    currentMode = themeMode,
+                    onModeSelected = { mode ->
+                        scope.launch { userPreferences.setThemeMode(mode) }
+                    }
+                )
+
+                if (faqState is FaqState.Success &&
+                    (faqState as FaqState.Success).faqConfigData.faqItems.isNotEmpty()
+                ) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                         AppTextButton(
                             image = null,
-                            text = "Часто задаваемые вопросы (FAQ)",
+                            text = stringResource(Res.string.faq_title),
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                             onClick = navigateToFaq
                         )
@@ -114,32 +147,29 @@ fun MoreScreen(
                     Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
                         AppTextButton(
                             image = null,
-                            text = "Пригласительный код",
+                            text = stringResource(Res.string.referral_code),
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                             onClick = navigateToReferral
                         )
                     }
                 }
 
-                if (moreState.configState is MoreConfigState.Success && (moreState.configState as MoreConfigState.Success).moreConfigData.isVisible == true) {
-                    val moreConfigData = (moreState.configState as MoreConfigState.Success).moreConfigData
+                if (moreState.configState is MoreConfigState.Success &&
+                    (moreState.configState as MoreConfigState.Success).moreConfigData.isVisible == true
+                ) {
+                    val moreConfigData =
+                        (moreState.configState as MoreConfigState.Success).moreConfigData
                     moreConfigData.telegramSupport?.let { telegram ->
-                        DescriptionText(
-                            text = telegramSupportDescription
-                        )
+                        DescriptionText(text = telegramSupportDescription)
                         AppTextButton(
                             image = telegram.imageUrl,
                             text = telegram.text,
-                            onClick = {
-                                uriHandler.openUri(telegram.value)
-                            }
+                            onClick = { uriHandler.openUri(telegram.value) }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     if (moreConfigData.donateDescription != null) {
-                        DescriptionText(
-                            text = moreConfigData.donateDescription.orEmpty()
-                        )
+                        DescriptionText(text = moreConfigData.donateDescription.orEmpty())
                     }
                     moreConfigData.donateItems.forEach { item ->
                         when {
@@ -147,9 +177,7 @@ fun MoreScreen(
                                 AppTextButton(
                                     image = item.imageUrl,
                                     text = item.text,
-                                    onClick = {
-                                        uriHandler.openUri(item.value)
-                                    }
+                                    onClick = { uriHandler.openUri(item.value) }
                                 )
                             }
 
@@ -162,9 +190,8 @@ fun MoreScreen(
                                         .fillMaxWidth()
                                         .wrapContentHeight()
                                         .padding(
-                                            horizontal = ButtonDefaults.TextButtonContentPadding.calculateLeftPadding(
-                                                LayoutDirection.Ltr
-                                            )
+                                            horizontal = ButtonDefaults.TextButtonContentPadding
+                                                .calculateLeftPadding(LayoutDirection.Ltr)
                                         )
                                         .padding(bottom = 6.dp)
                                         .clickable(onClick = onClick),
@@ -181,26 +208,58 @@ fun MoreScreen(
                                     AsyncImage(
                                         model = Res.getUri("drawable/copy.svg"),
                                         contentDescription = null,
-                                        modifier = Modifier.size(16.dp)
-                                            .clickable(onClick = onClick),
+                                        modifier = Modifier.size(16.dp).clickable(onClick = onClick),
                                         colorFilter = ColorFilter.tint(Color.LightGray)
                                     )
                                 }
                             }
                         }
                     }
-
                 } else {
-                    DescriptionText(
-                        text = telegramSupportDescription,
-                    )
+                    DescriptionText(text = telegramSupportDescription)
                     AppTextButton(
                         image = Res.getUri("drawable/telegram.svg"),
-                        text = "Написать разработчикам в Telegram",
-                        onClick = {
-                            uriHandler.openUri("https://t.me/FlatHub_appbot")
-                        }
+                        text = stringResource(Res.string.telegram_support),
+                        onClick = { uriHandler.openUri("https://t.me/FlatHub_appbot") }
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ThemeModeSelector(
+    currentMode: ThemeMode,
+    onModeSelected: (ThemeMode) -> Unit,
+) {
+    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(Res.string.theme_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.height(8.dp))
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                ThemeMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
+                        selected = currentMode == mode,
+                        onClick = { onModeSelected(mode) },
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = ThemeMode.entries.size
+                        ),
+                    ) {
+                        Text(
+                            text = stringResource(
+                                when (mode) {
+                                    ThemeMode.SYSTEM -> Res.string.theme_system
+                                    ThemeMode.LIGHT -> Res.string.theme_light
+                                    ThemeMode.DARK -> Res.string.theme_dark
+                                }
+                            )
+                        )
+                    }
                 }
             }
         }

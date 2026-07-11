@@ -18,11 +18,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.cancel
+import flatzen.composeapp.generated.resources.filter_booking_date
+import flatzen.composeapp.generated.resources.ok
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Диалог выбора диапазона дат с настраиваемыми параметрами.
@@ -44,7 +49,7 @@ fun DateRangePickerDialog(
     modifier: Modifier = Modifier,
     selectableDates: SelectableDates = FutureOrPresentSelectableDates,
     title: @Composable (() -> Unit)? = {
-        Text("Выберите диапазон дат", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(Res.string.filter_booking_date), style = MaterialTheme.typography.headlineSmall)
     },
     confirmButton: @Composable ((DateRangePickerState) -> Unit) = { state ->
         TextButton(
@@ -54,12 +59,12 @@ fun DateRangePickerDialog(
             },
             enabled = state.selectedEndDateMillis != null
         ) {
-            Text("ОК")
+            Text(stringResource(Res.string.ok))
         }
     },
     dismissButton: @Composable (() -> Unit)? = {
         TextButton(onClick = onDismissRequest) {
-            Text("Отмена")
+            Text(stringResource(Res.string.cancel))
         }
     },
     initialSelectedStartDateMillis: Long? = null,

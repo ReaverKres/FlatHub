@@ -41,56 +41,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.cancel
+import flatzen.composeapp.generated.resources.close
+import flatzen.composeapp.generated.resources.filter_push_notifications
+import flatzen.composeapp.generated.resources.filter_save_hint
+import flatzen.composeapp.generated.resources.filter_save_title
+import flatzen.composeapp.generated.resources.filter_save_validation
+import flatzen.composeapp.generated.resources.ok
+import flatzen.composeapp.generated.resources.save
+import flatzen.composeapp.generated.resources.system_notifications_description
+import flatzen.composeapp.generated.resources.system_notifications_title
+import flatzen.composeapp.generated.resources.system_open_settings
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import io.flatzen.widgets.AppSwitch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SaveDialog(
     dialogState: SaveDialogState,
-    title: String = "Сохранить фильтр",
-    textFieldHint: String = "Название фильтра",
-    validationHint: String = "Название фильтра не должно превышать 25 символов",
-    saveBtnText: String = "Сохранить",
-    cancelBtnText: String = "Отменить",
+    title: String? = null,
+    textFieldHint: String? = null,
+    validationHint: String? = null,
+    saveBtnText: String? = null,
+    cancelBtnText: String? = null,
     onNameChange: (String) -> Unit,
     onNotificationChange: (Boolean) -> Unit = {},
     onSave: (isNotificationEnabled: Boolean) -> Unit,
     onCancel: () -> Unit
 ) {
+    val resolvedTitle = title ?: stringResource(Res.string.filter_save_title)
+    val resolvedTextFieldHint = textFieldHint ?: stringResource(Res.string.filter_save_hint)
+    val resolvedValidationHint = validationHint ?: stringResource(Res.string.filter_save_validation)
+    val resolvedSaveBtnText = saveBtnText ?: stringResource(Res.string.save)
+    val resolvedCancelBtnText = cancelBtnText ?: stringResource(Res.string.cancel)
 
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text(title) },
+        title = { Text(resolvedTitle) },
         text = {
             Column {
                 OutlinedTextField(
                     value = dialogState.filterName,
                     onValueChange = onNameChange,
-                    label = { Text(textFieldHint) },
+                    label = { Text(resolvedTextFieldHint) },
                     isError = !dialogState.isNameValid,
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (dialogState.errorMessage != null) {
                     Text(
-                        text = dialogState.errorMessage.orEmpty(),
+                        text = dialogState.errorMessage?.let { localizedStringResource(it) }.orEmpty(),
                         color = Color.Red,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
                 Text(
-                    text = validationHint,
+                    text = resolvedValidationHint,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
                 if (dialogState.showNotification) {
-                    AppSwitch(label = "Получать push уведомления", state = dialogState.isNotificationEnabled) { enabled ->
+                    AppSwitch(label = stringResource(Res.string.filter_push_notifications), state = dialogState.isNotificationEnabled) { enabled ->
                         onNotificationChange(enabled)
                     }
                 }
@@ -101,12 +120,12 @@ fun SaveDialog(
                 onClick = { onSave(dialogState.isNotificationEnabled) },
                 enabled = dialogState.isNameValid && dialogState.filterName.isNotBlank()
             ) {
-                Text(saveBtnText)
+                Text(resolvedSaveBtnText)
             }
         },
         dismissButton = {
             TextButton(onClick = onCancel) {
-                Text(cancelBtnText)
+                Text(resolvedCancelBtnText)
             }
         }
     )
@@ -116,8 +135,8 @@ fun SaveDialog(
 fun ForceUpdateDialog(infoDialogState: InfoDialogState) {
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(text = infoDialogState.title) },
-        text = { Text(text = infoDialogState.description) },
+        title = { Text(text = localizedStringResource(infoDialogState.title)) },
+        text = { Text(text = localizedStringResource(infoDialogState.description)) },
         confirmButton = {},
         dismissButton = null
     )
@@ -144,7 +163,7 @@ fun SearchErrorDialog(
             ) {
                 // Title
                 Text(
-                    text = dialogState.title,
+                    text = localizedStringResource(dialogState.title),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -213,7 +232,7 @@ fun SearchErrorDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Закрыть")
+                        Text(stringResource(Res.string.close))
                     }
                 }
             }
@@ -235,7 +254,7 @@ fun SimpleAlertDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Ок")
+                Text(stringResource(Res.string.ok))
             }
         },
         dismissButton = {}
@@ -303,7 +322,7 @@ fun <T> SingleChoiceDialog(
                         onClick = onDismissRequest,
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Text("Отмена")
+                        Text(stringResource(Res.string.cancel))
                     }
                 }
             }
@@ -352,16 +371,16 @@ fun SystemSettingsDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Включить уведомления") },
-        text = { Text("Разрешение на уведомления отключено. Вы можете включить его в настройках приложения.") },
+        title = { Text(stringResource(Res.string.system_notifications_title)) },
+        text = { Text(stringResource(Res.string.system_notifications_description)) },
         confirmButton = {
             TextButton(onClick = onConfirmClick) {
-                Text("Открыть настройки")
+                Text(stringResource(Res.string.system_open_settings))
             }
         },
         dismissButton = {
             TextButton(onClick = onCloseClick) {
-                Text("Отмена")
+                Text(stringResource(Res.string.cancel))
             }
         }
     )

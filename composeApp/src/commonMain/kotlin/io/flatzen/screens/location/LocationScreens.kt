@@ -49,6 +49,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.add
+import flatzen.composeapp.generated.resources.delete
+import flatzen.composeapp.generated.resources.location_address_hint
+import flatzen.composeapp.generated.resources.location_city
+import flatzen.composeapp.generated.resources.location_districts
+import flatzen.composeapp.generated.resources.location_metro
+import flatzen.composeapp.generated.resources.location_saved_areas
+import flatzen.composeapp.generated.resources.location_search_district
+import flatzen.composeapp.generated.resources.location_search_station
+import flatzen.composeapp.generated.resources.location_title
+import flatzen.composeapp.generated.resources.reset
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.di.container
@@ -62,6 +74,7 @@ import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.widgets.dialogs.SavedAreasDialog
+import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 
@@ -99,7 +112,7 @@ fun LocationScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Расположение", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.location_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -109,7 +122,7 @@ fun LocationScreen(
                     TextButton(onClick = {
                         filterContainer.intent(FilterScreenAction.ClearLocationFilters)
                     }) {
-                        Text("Сбросить")
+                        Text(stringResource(Res.string.reset))
                     }
                 }
             )
@@ -135,7 +148,7 @@ fun LocationScreen(
                     value = addressInput,
                     onValueChange = { addressInput = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Введите адрес/улицу") },
+                    placeholder = { Text(stringResource(Res.string.location_address_hint)) },
                     maxLines = 1,
                     singleLine = true
                 )
@@ -156,7 +169,7 @@ fun LocationScreen(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Добавить"
+                        contentDescription = stringResource(Res.string.add)
                     ) // Можешь заменить на Add
                 }
             }
@@ -174,7 +187,7 @@ fun LocationScreen(
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Delete, // Можешь заменить на Close
-                                contentDescription = "Удалить",
+                                contentDescription = stringResource(Res.string.delete),
                                 modifier = Modifier.clickable {
                                     filterContainer.intent(
                                         FilterScreenAction.UpdateAddressFilter(
@@ -196,7 +209,7 @@ fun LocationScreen(
                             val count = state.filters.metroStationsState.filter { it.selected }.size
                             if (count > 0) Badge { Text(count.toString()) }
                         }) {
-                            Text("Метро")
+                            Text(stringResource(Res.string.location_metro))
                         }
                     }
                 }
@@ -210,7 +223,7 @@ fun LocationScreen(
                         val count = 0
                         if (count > 0) Badge { Text(count.toString()) }
                     }) {
-                        Text("Районы")
+                        Text(stringResource(Res.string.location_districts))
                     }
                 }
             }
@@ -223,7 +236,7 @@ fun LocationScreen(
                         val count = state.filters.userMapAreas?.filter { it.isActive }?.size ?: 0
                         if (count > 0) Badge { Text(count.toString()) }
                     }) {
-                        Text("Сохранённые области")
+                        Text(stringResource(Res.string.location_saved_areas))
                     }
                 }
             }
@@ -244,7 +257,7 @@ fun CitySelectScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Город", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.location_city), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -315,7 +328,7 @@ fun MetroSelectScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Метро", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.location_metro), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }
                 }
@@ -329,7 +342,7 @@ fun MetroSelectScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                placeholder = { Text("Поиск станции") }
+                placeholder = { Text(stringResource(Res.string.location_search_station)) }
             )
 
             LazyColumn {
@@ -420,7 +433,7 @@ fun DistrictSelectScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Районы", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.location_districts), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }
                 }
@@ -434,7 +447,7 @@ fun DistrictSelectScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                placeholder = { Text("Поиск района") }
+                placeholder = { Text(stringResource(Res.string.location_search_district)) }
             )
 
             if (districtsState.isLoading) {

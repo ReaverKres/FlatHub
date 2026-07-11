@@ -36,6 +36,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.no_internet
+import flatzen.composeapp.generated.resources.tab_favorites
+import flatzen.composeapp.generated.resources.tab_home
+import flatzen.composeapp.generated.resources.tab_map
+import flatzen.composeapp.generated.resources.tab_more
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.notifications.NotificationsService
@@ -55,14 +61,16 @@ import io.flatzen.widgets.MessageSnackbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
-private data class BottomNavItem(val route: Route, val label: String, val icon: ImageVector)
+private data class BottomNavItem(val route: Route, val label: StringResource, val icon: ImageVector)
 
 private val bottomNavItems = listOf(
-    BottomNavItem(Route.List, "Главная", Icons.Default.Home),
-    BottomNavItem(Route.Favorites, "Избранное", Icons.Default.Favorite),
-    BottomNavItem(Route.Map(), "Карта", Icons.Default.LocationOn),
-    BottomNavItem(Route.Settings, "Ещё", Icons.Default.Menu)
+    BottomNavItem(Route.List, Res.string.tab_home, Icons.Default.Home),
+    BottomNavItem(Route.Favorites, Res.string.tab_favorites, Icons.Default.Favorite),
+    BottomNavItem(Route.Map(), Res.string.tab_map, Icons.Default.LocationOn),
+    BottomNavItem(Route.Settings, Res.string.tab_more, Icons.Default.Menu)
 )
 
 @Composable
@@ -131,6 +139,7 @@ fun MainGraphNavigation(
                             else -> false
                         }
 
+                        val label = stringResource(item.label)
                         NavigationBarItem(
                             selected = isSelected,
                             onClick = {
@@ -138,8 +147,8 @@ fun MainGraphNavigation(
                                     navigator.navigate(item.route)
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                            icon = { Icon(item.icon, contentDescription = label) },
+                            label = { Text(label) }
                         )
                     }
                 }
@@ -275,7 +284,7 @@ fun MainGraphNavigation(
                         snackbarHeight = with(density) { layout.height.toDp() }
                     }
             ) {
-                MessageSnackbar(message = "Нет подключения к интернету")
+                MessageSnackbar(message = stringResource(Res.string.no_internet))
             }
         }
     }

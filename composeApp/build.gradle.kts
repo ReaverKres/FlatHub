@@ -51,6 +51,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":shared:presentation"))
             api(project(":shared:commoncomponents"))
+            implementation(project(":shared:data"))
 
             api(libs.kmp.notifier)
             implementation(compose.runtime)

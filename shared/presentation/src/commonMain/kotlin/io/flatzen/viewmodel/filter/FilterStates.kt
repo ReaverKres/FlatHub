@@ -16,6 +16,7 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
@@ -57,7 +58,7 @@ data class SaveDialogState(
     val isVisible: Boolean = false,
     val filterName: String = "",
     val isNameValid: Boolean = true,
-    val errorMessage: String? = null,
+    val errorMessage: LocalizationKeys? = null,
     val isNotificationEnabled: Boolean = false,
     val showNotification: Boolean = false
 )
@@ -132,28 +133,34 @@ data class FilterState(
     fun getSelectedAddress(): String =
         address?.joinToString(separator = ", ") { it.address }.orEmpty()
 
-    fun getActiveFiltersText(): String {
+    fun getActiveFiltersText(): String = getActiveFiltersText(::defaultRussianString)
+
+    fun getActiveFiltersText(resolve: (LocalizationKeys) -> String): String {
         val activeFilters = mutableListOf<String>()
+        val fromText = resolve(LocalizationKeys.FROM).lowercase()
+        val toText = resolve(LocalizationKeys.TO).lowercase()
 
         // Тип объявления
-        activeFilters.add("Тип: ${when (adType) {
-            RENT -> "Аренда"
-            SALE -> "Продажа"
-            COMMERCIAL(CommercialAdType.SALE) -> "Коммерческая (купить)"
-            COMMERCIAL(CommercialAdType.RENT) -> "Коммерческая (снять)"
-            is COMMERCIAL -> "Коммерческая"
-            is DAILY -> "Посуточно"
+        activeFilters.add("${resolve(LocalizationKeys.FILTER_TYPE_PREFIX)}: ${when (adType) {
+            RENT -> resolve(LocalizationKeys.FILTER_RENT)
+            SALE -> resolve(LocalizationKeys.FILTER_SALE)
+            COMMERCIAL(CommercialAdType.SALE) -> resolve(LocalizationKeys.FILTER_COMMERCIAL_SALE)
+            COMMERCIAL(CommercialAdType.RENT) -> resolve(LocalizationKeys.FILTER_COMMERCIAL_RENT)
+            is COMMERCIAL -> resolve(LocalizationKeys.FILTER_COMMERCIAL)
+            is DAILY -> resolve(LocalizationKeys.FILTER_DAILY)
         }}")
 
         if(adType.isCommercial) {
             commercial.commercialPropertyType?.find { it.selected }?.let { type ->
-                activeFilters.add("Тип помещения: ${type.commercialPropertyTypeName}")
+                type.commercialPropertyTypeName?.let { key ->
+                    activeFilters.add("${resolve(LocalizationKeys.FILTER_PROPERTY_TYPE)}: ${resolve(key)}")
+                }
             }
         }
 
         // Полная цена
         priceFull?.let { price ->
-            activeFilters.add("Цена: ${price.priceFrom?.let { "от $it" } ?: ""} ${price.priceTo?.let { "до $it" } ?: ""} ${
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_PRICE_LABEL)}: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
                 when (currency) {
                     Currency.USD -> "$"
                     Currency.EUR -> "€"
@@ -164,7 +171,7 @@ data class FilterState(
 
         // Цена за м²
         pricePerSquare?.let { price ->
-            activeFilters.add("Цена за м²: ${price.priceFrom?.let { "от $it" } ?: ""} ${price.priceTo?.let { "до $it" } ?: ""} ${
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL)}: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
                 when (currency) {
                     Currency.USD -> "$"
                     Currency.EUR -> "€"
@@ -175,7 +182,7 @@ data class FilterState(
 
         // Общая площадь
         totalArea?.let { area ->
-            activeFilters.add("Общая площадь: ${area.fromRange?.let { "от $it" } ?: ""} ${area.toRange?.let { "до $it" } ?: ""} м²".trim())
+            activeFilters.add("${resolve(LocalizationKeys.DETAIL_TOTAL_AREA)}: ${area.fromRange?.let { "$fromText $it" } ?: ""} ${area.toRange?.let { "$toText $it" } ?: ""} м²".trim())
         }
 
         // Комнаты
@@ -187,48 +194,48 @@ data class FilterState(
                     else -> "$it ${getRoomWord(it)}"
                 }
             }
-            activeFilters.add("Комнаты: $roomsText")
+            activeFilters.add("${resolve(LocalizationKeys.DETAIL_ROOMS_COUNT)}: $roomsText")
         }
 
         // Метро
         val selectedMetro = metroStationsState.filter { it.selected }
         if (selectedMetro.isNotEmpty()) {
             val metroText = selectedMetro.joinToString(", ") { it.name }
-            activeFilters.add("Метро: $metroText")
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_METRO_PREFIX)}: $metroText")
         }
 
         // Адрес
         if (!address.isNullOrEmpty()) {
             val addressText = address.joinToString(", ") { it.address }
-            activeFilters.add("Адрес: $addressText")
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_ADDRESS_PREFIX)}: $addressText")
         }
 
         // Локация
         location?.let {
-            activeFilters.add("Локация: ${it.selectedCity.displayName}")
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_CITY_PREFIX)}: ${it.selectedCity.displayName}")
         }
         val activeAreas = userMapAreas?.filter { it.isActive }
         if(activeAreas.isNullOrEmpty().not()) {
             val areasText = activeAreas.joinToString(", ") { it.name }
-            activeFilters.add("Активные области: $areasText")
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_ACTIVE_AREAS_PREFIX)}: $areasText")
         }
         val activeDistricts = districtsArea?.filter { it.isChecked }
         if(activeDistricts.isNullOrEmpty().not()) {
             val districtsText = activeDistricts.joinToString(", ") { it.nameLocal }
-            activeFilters.add("Районы: $districtsText")
+            activeFilters.add("${resolve(LocalizationKeys.FILTER_DISTRICTS_PREFIX)}: $districtsText")
         }
 
         // Булевы фильтры
-        if (fromOwnerOnly) activeFilters.add("Только от собственника")
-        if (withPhotoOnly) activeFilters.add("Только с фото")
-        if (roomOnly) activeFilters.add("Только комната")
+        if (fromOwnerOnly) activeFilters.add(resolve(LocalizationKeys.FILTER_OWNER_ONLY))
+        if (withPhotoOnly) activeFilters.add(resolve(LocalizationKeys.FILTER_PHOTO_ONLY))
+        if (roomOnly) activeFilters.add(resolve(LocalizationKeys.FILTER_ROOM_ONLY))
 
 //        activeFilters.add("Сортировка: ${getSortOptionName(sortOption)}")
 
         return if (activeFilters.isEmpty()) {
-            "Активные фильтры не выбраны"
+            resolve(LocalizationKeys.FILTER_ACTIVE_NONE)
         } else {
-            "Активные фильтры:\n" + activeFilters.joinToString("\n• ", "• ")
+            "${resolve(LocalizationKeys.FILTER_ACTIVE_TITLE)}\n" + activeFilters.joinToString("\n• ", "• ")
         }
     }
 
@@ -240,12 +247,41 @@ data class FilterState(
             else -> "комнат"
         }
     }
+}
 
-    private fun getSortOptionName(sortOption: FlatSort): String {
-        return when (sortOption) {
-            FlatSort.NEWEST_FIRST -> "сначала новые"
-            FlatSort.CHEAPEST_FIRST -> "сначала дешёвые"
-            FlatSort.MOST_EXPENSIVE_FIRST -> "сначала дорогие"
-        }
+private fun defaultRussianString(key: LocalizationKeys): String {
+    return when (key) {
+        LocalizationKeys.FILTER_RENT -> "Аренда"
+        LocalizationKeys.FILTER_SALE -> "Продажа"
+        LocalizationKeys.FILTER_COMMERCIAL_SALE -> "Коммерческая (Купить)"
+        LocalizationKeys.FILTER_COMMERCIAL_RENT -> "Коммерческая (Снять)"
+        LocalizationKeys.FILTER_COMMERCIAL -> "Коммерческая"
+        LocalizationKeys.FILTER_DAILY -> "Посуточно"
+        LocalizationKeys.FILTER_PROPERTY_TYPE -> "Тип помещения"
+        LocalizationKeys.FILTER_PRICE_LABEL -> "Цена"
+        LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL -> "Цена за м²"
+        LocalizationKeys.DETAIL_TOTAL_AREA -> "Общая площадь"
+        LocalizationKeys.DETAIL_ROOMS_COUNT -> "Количество комнат"
+        LocalizationKeys.FILTER_METRO_PREFIX -> "Метро"
+        LocalizationKeys.FILTER_ADDRESS_PREFIX -> "Адрес"
+        LocalizationKeys.FILTER_CITY_PREFIX -> "Локация"
+        LocalizationKeys.FILTER_ACTIVE_AREAS_PREFIX -> "Активные области"
+        LocalizationKeys.FILTER_DISTRICTS_PREFIX -> "Районы"
+        LocalizationKeys.FILTER_OWNER_ONLY -> "Только от собственника"
+        LocalizationKeys.FILTER_PHOTO_ONLY -> "Только с фото"
+        LocalizationKeys.FILTER_ROOM_ONLY -> "Только комната"
+        LocalizationKeys.FILTER_ACTIVE_NONE -> "Активные фильтры не выбраны"
+        LocalizationKeys.FILTER_ACTIVE_TITLE -> "Активные фильтры:"
+        LocalizationKeys.FILTER_TYPE_PREFIX -> "Тип"
+        LocalizationKeys.FROM -> "От"
+        LocalizationKeys.TO -> "До"
+        LocalizationKeys.COMMERCIAL_PROPERTY_ALL -> "Все"
+        LocalizationKeys.COMMERCIAL_PROPERTY_INDUSTRIAL -> "Промышленные помещения"
+        LocalizationKeys.COMMERCIAL_PROPERTY_OFFICE -> "Офис"
+        LocalizationKeys.COMMERCIAL_PROPERTY_RETAIL -> "Торговые помещения"
+        LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES -> "Сфера услуг"
+        LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES -> "Склады"
+        LocalizationKeys.COMMERCIAL_PROPERTY_OTHER -> "Прочая коммерческая"
+        else -> key.name
     }
 }

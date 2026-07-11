@@ -35,6 +35,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.detail_about_apartment
+import flatzen.composeapp.generated.resources.detail_about_commercial
+import flatzen.composeapp.generated.resources.detail_address
+import flatzen.composeapp.generated.resources.detail_agent
+import flatzen.composeapp.generated.resources.detail_amenities
+import flatzen.composeapp.generated.resources.detail_balcony
+import flatzen.composeapp.generated.resources.detail_bathroom
+import flatzen.composeapp.generated.resources.detail_building
+import flatzen.composeapp.generated.resources.detail_contact_info
+import flatzen.composeapp.generated.resources.detail_contact_on_source
+import flatzen.composeapp.generated.resources.detail_contact_person
+import flatzen.composeapp.generated.resources.detail_description
+import flatzen.composeapp.generated.resources.detail_district
+import flatzen.composeapp.generated.resources.detail_floor
+import flatzen.composeapp.generated.resources.detail_for_whom
+import flatzen.composeapp.generated.resources.detail_in_apartment
+import flatzen.composeapp.generated.resources.detail_in_kitchen
+import flatzen.composeapp.generated.resources.detail_infrastructure
+import flatzen.composeapp.generated.resources.detail_kitchen_area
+import flatzen.composeapp.generated.resources.detail_living_area
+import flatzen.composeapp.generated.resources.detail_living_conditions
+import flatzen.composeapp.generated.resources.detail_location
+import flatzen.composeapp.generated.resources.detail_metro
+import flatzen.composeapp.generated.resources.detail_open_source
+import flatzen.composeapp.generated.resources.detail_owner
+import flatzen.composeapp.generated.resources.detail_parking
+import flatzen.composeapp.generated.resources.detail_phone
+import flatzen.composeapp.generated.resources.detail_prepayment
+import flatzen.composeapp.generated.resources.detail_repair
+import flatzen.composeapp.generated.resources.detail_rooms_count
+import flatzen.composeapp.generated.resources.detail_share
+import flatzen.composeapp.generated.resources.detail_share_subject
+import flatzen.composeapp.generated.resources.detail_sleeping_places
+import flatzen.composeapp.generated.resources.detail_total_area
+import flatzen.composeapp.generated.resources.detail_total_floors
+import flatzen.composeapp.generated.resources.detail_windows
+import flatzen.composeapp.generated.resources.detail_year_built
+import flatzen.composeapp.generated.resources.detail_year_suffix
+import flatzen.composeapp.generated.resources.filter_property_type
+import flatzen.composeapp.generated.resources.filter_rooms_count
+import flatzen.composeapp.generated.resources.list_rooms_suffix
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.formatMainPrice
@@ -52,6 +96,7 @@ import io.flatzen.viewmodel.detailad.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.OpenInMapButton
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
@@ -91,7 +136,7 @@ fun DetailScreen(
             title = { },
             navigationIcon = {
                 IconButton(onClick = navigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    Icon(Icons.Default.ArrowBack, contentDescription = stringResource(Res.string.back))
                 }
             }
         )
@@ -179,7 +224,7 @@ private fun FlatDetailContent(
                     ContactInfoSection(contactInfo = flat.contactInformation)
                 } else {
                     Text(
-                        text = "Для связи перейдите на сайт объявления",
+                        text = stringResource(Res.string.detail_contact_on_source),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium
                         )
@@ -196,10 +241,10 @@ private fun FlatDetailContent(
             )
 
             val propertyName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
-            if (propertyName.isNullOrEmpty().not()) {
+            propertyName?.let { name ->
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = propertyName,
+                    text = localizedStringResource(name),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.Medium
                     )
@@ -344,7 +389,7 @@ private fun PublicationInfo(
         }
         isOwner?.let {
             Text(
-                text = if (it) "Собственник" else "Агент",
+                text = if (it) stringResource(Res.string.detail_owner) else stringResource(Res.string.detail_agent),
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -361,6 +406,7 @@ private fun SourceLinkSection(
 ) {
     val uriHandler = LocalUriHandler.current
     val shareLauncher = shareLauncher()
+    val shareSubject = stringResource(Res.string.detail_share_subject)
 
     Row(
         modifier = modifier
@@ -370,7 +416,7 @@ private fun SourceLinkSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Посмотреть объявление на ${platform.value.capitalize()}",
+            text = stringResource(Res.string.detail_open_source, platform.value.capitalize()),
             modifier = Modifier
                 .weight(1f)
                 .clickable {
@@ -385,13 +431,13 @@ private fun SourceLinkSection(
             onClick = {
                 shareLauncher.shareText(
                     text = url,
-                    subject = "Квартира была найдена на FlatHub"
+                    subject = shareSubject
                 )
             }
         ) {
             Icon(
                 imageVector = Icons.Default.Share,
-                contentDescription = "Поделиться"
+                contentDescription = stringResource(Res.string.detail_share)
             )
         }
     }
@@ -482,10 +528,10 @@ private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
 
     val uriHandler = LocalUriHandler.current
 
-    SectionCard(title = "Контактная информация") {
+    SectionCard(title = stringResource(Res.string.detail_contact_info)) {
         // Display the owner's name if available
         contactInfo.ownerName?.takeIf { it.isNotBlank() }?.let { name ->
-            InfoRow(label = "Контактное лицо", value = name)
+            InfoRow(label = stringResource(Res.string.detail_contact_person), value = name)
         }
 
         // Display each phone number, making it clickable
@@ -495,7 +541,7 @@ private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Телефон",
+                    text = stringResource(Res.string.detail_phone),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
@@ -521,22 +567,22 @@ private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
 
 @Composable
 private fun LocationSection(district: String?, address: String?, metroStation: String?) {
-    SectionCard(title = "Местоположение") {
+    SectionCard(title = stringResource(Res.string.detail_location)) {
         district?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Район", it)
+            InfoRow(stringResource(Res.string.detail_district), it)
         }
         address?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Адрес", it)
+            InfoRow(stringResource(Res.string.detail_address), it)
         }
         metroStation?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Метро", it)
+            InfoRow(stringResource(Res.string.detail_metro), it)
         }
     }
 }
 
 @Composable
 private fun DescriptionSection(description: String) {
-    SectionCard(title = "Описание") {
+    SectionCard(title = stringResource(Res.string.detail_description)) {
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
@@ -596,18 +642,18 @@ private fun InfoRow(label: String, value: String) {
 
 @Composable
 private fun AboutBuildingSection(flat: UiDetailFlat) {
-    SectionCard(title = "О доме") {
+    SectionCard(title = stringResource(Res.string.detail_building)) {
         flat.totalFloors?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Этажность дома", it)
+            InfoRow(stringResource(Res.string.detail_total_floors), it)
         }
         flat.yearBuilt?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Год постройки", it)
+            InfoRow(stringResource(Res.string.detail_year_built), it)
         }
         flat.parkingInfo?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Парковка", it)
+            InfoRow(stringResource(Res.string.detail_parking), it)
         }
         if (flat.buildingImprovements.isNotEmpty()) {
-            InfoRow("Инфраструктура", flat.buildingImprovements.joinToString(", "))
+            InfoRow(stringResource(Res.string.detail_infrastructure), flat.buildingImprovements.joinToString(", "))
         }
     }
 }
@@ -620,47 +666,47 @@ private fun AboutApartmentSection(flat: UiDetailFlat) {
     val roomNumberTitle: String
     val roomNumber: String
     if (isCommercialRoom) {
-        roomTitle = "о помещении"
-        roomNumberTitle = "Количество помещений"
+        roomTitle = stringResource(Res.string.detail_about_commercial)
+        roomNumberTitle = stringResource(Res.string.filter_rooms_count)
         roomNumber = flat.commercialUiInfo?.numberOfRooms.orEmpty()
     } else {
-        roomTitle = "о квартире"
-        roomNumberTitle = "Количество комнат"
+        roomTitle = stringResource(Res.string.detail_about_apartment)
+        roomNumberTitle = stringResource(Res.string.detail_rooms_count)
         roomNumber = flat.numberOfRooms
     }
     SectionCard(title = roomTitle) {
-        if(propertyTypeName.isNullOrEmpty().not()) {
-            InfoRow("Тип помещения", propertyTypeName)
+        propertyTypeName?.let { name ->
+            InfoRow(stringResource(Res.string.filter_property_type), localizedStringResource(name))
         }
         if (flat.numberOfRooms.isNotBlank()) {
             InfoRow(roomNumberTitle, roomNumber)
         }
         flat.totalArea?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Общая площадь", it)
+            InfoRow(stringResource(Res.string.detail_total_area), it)
         }
         flat.livingArea?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Жилая площадь", it)
+            InfoRow(stringResource(Res.string.detail_living_area), it)
         }
         flat.kitchenArea?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Площадь кухни", it)
+            InfoRow(stringResource(Res.string.detail_kitchen_area), it)
         }
         flat.floor?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Этаж", it)
+            InfoRow(stringResource(Res.string.detail_floor), it)
         }
         flat.bathroomType?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Санузел", it)
+            InfoRow(stringResource(Res.string.detail_bathroom), it)
         }
         flat.balcony?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Балкон/лоджия", it)
+            InfoRow(stringResource(Res.string.detail_balcony), it)
         }
         flat.repairType?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Ремонт", it)
+            InfoRow(stringResource(Res.string.detail_repair), it)
         }
         if (flat.windowDirection.isNotEmpty()) {
-            InfoRow("Окна выходят", flat.windowDirection.joinToString(", "))
+            InfoRow(stringResource(Res.string.detail_windows), flat.windowDirection.joinToString(", "))
         }
         flat.sleepingPlaces?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Спальных мест", it)
+            InfoRow(stringResource(Res.string.detail_sleeping_places), it)
         }
     }
 }
@@ -670,12 +716,12 @@ private fun AmenitiesSection(
     amenities: List<String>,
     kitchenEquipment: List<String>
 ) {
-    SectionCard(title = "Удобства и оборудование") {
+    SectionCard(title = stringResource(Res.string.detail_amenities)) {
         if (amenities.isNotEmpty()) {
-            InfoRow("В квартире", amenities.joinToString(", "))
+            InfoRow(stringResource(Res.string.detail_in_apartment), amenities.joinToString(", "))
         }
         if (kitchenEquipment.isNotEmpty()) {
-            InfoRow("На кухне", kitchenEquipment.joinToString(", "))
+            InfoRow(stringResource(Res.string.detail_in_kitchen), kitchenEquipment.joinToString(", "))
         }
     }
 }
@@ -685,12 +731,12 @@ private fun ConditionsSection(
     forWhom: List<String>?,
     prepaymentType: String?
 ) {
-    SectionCard(title = "Условия проживания") {
+    SectionCard(title = stringResource(Res.string.detail_living_conditions)) {
         forWhom?.takeIf { it.isNotEmpty() }?.let {
-            InfoRow("Для кого", it.joinToString(", "))
+            InfoRow(stringResource(Res.string.detail_for_whom), it.joinToString(", "))
         }
         prepaymentType?.takeIf { it.isNotBlank() }?.let {
-            InfoRow("Предоплата", it)
+            InfoRow(stringResource(Res.string.detail_prepayment), it)
         }
     }
 }
@@ -702,14 +748,16 @@ private fun QuickInfoSection(
     area: String?,
     condition: String?
 ) {
+    val roomsSuffix = stringResource(Res.string.list_rooms_suffix)
+    val yearSuffix = stringResource(Res.string.detail_year_suffix)
     val info = buildString {
         if (rooms.isNotBlank()) {
             append(rooms)
-            if (rooms != "Студия") append(" комн")
+            if (rooms != "Студия") append(" $roomsSuffix")
         }
         year?.takeIf { it.isNotBlank() }?.let {
             if (isNotEmpty()) append(" • ")
-            append("$it год")
+            append("$it $yearSuffix")
         }
         area?.takeIf { it.isNotBlank() }?.let {
             if (isNotEmpty()) append(" • ")
