@@ -123,6 +123,17 @@
     <string name="list_page">Страница: %1$s</string>
     <string name="list_rooms_suffix">комн</string>
     <string name="list_commercial_rooms_suffix">помещений</string>
+    <string name="list_area_format">%1$s м²</string>
+    <string name="list_rooms_one">%1$d комната</string>
+    <string name="list_rooms_few">%1$d комнаты</string>
+    <string name="list_rooms_many">%1$d комнат</string>
+    <string name="chip_from_owner">От собственника</string>
+    <string name="chip_with_photo">С фото</string>
+    <string name="chip_new">Новое</string>
+    <string name="scroll_to_top">Наверх</string>
+    <string name="detail_tab_description">Описание</string>
+    <string name="detail_tab_conditions">Условия</string>
+    <string name="detail_tab_location">Локация</string>
 
     <string name="detail_contact_on_source">Для связи перейдите на сайт объявления</string>
     <string name="detail_owner">Собственник</string>

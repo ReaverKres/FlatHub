@@ -5,6 +5,9 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.add
 import flatzen.composeapp.generated.resources.back
 import flatzen.composeapp.generated.resources.cancel
+import flatzen.composeapp.generated.resources.chip_from_owner
+import flatzen.composeapp.generated.resources.chip_new
+import flatzen.composeapp.generated.resources.chip_with_photo
 import flatzen.composeapp.generated.resources.close
 import flatzen.composeapp.generated.resources.commercial_property_all
 import flatzen.composeapp.generated.resources.commercial_property_industrial
@@ -49,6 +52,9 @@ import flatzen.composeapp.generated.resources.detail_rooms_count
 import flatzen.composeapp.generated.resources.detail_share
 import flatzen.composeapp.generated.resources.detail_share_subject
 import flatzen.composeapp.generated.resources.detail_sleeping_places
+import flatzen.composeapp.generated.resources.detail_tab_conditions
+import flatzen.composeapp.generated.resources.detail_tab_description
+import flatzen.composeapp.generated.resources.detail_tab_location
 import flatzen.composeapp.generated.resources.detail_total_area
 import flatzen.composeapp.generated.resources.detail_total_floors
 import flatzen.composeapp.generated.resources.detail_windows
@@ -99,10 +105,14 @@ import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.force_update_description
 import flatzen.composeapp.generated.resources.force_update_title
 import flatzen.composeapp.generated.resources.from
+import flatzen.composeapp.generated.resources.list_area_format
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
 import flatzen.composeapp.generated.resources.list_page
+import flatzen.composeapp.generated.resources.list_rooms_few
+import flatzen.composeapp.generated.resources.list_rooms_many
+import flatzen.composeapp.generated.resources.list_rooms_one
 import flatzen.composeapp.generated.resources.list_rooms_suffix
 import flatzen.composeapp.generated.resources.location_address_hint
 import flatzen.composeapp.generated.resources.location_city
@@ -140,6 +150,7 @@ import flatzen.composeapp.generated.resources.referral_notifications_available
 import flatzen.composeapp.generated.resources.referral_remaining_invites
 import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.save
+import flatzen.composeapp.generated.resources.scroll_to_top
 import flatzen.composeapp.generated.resources.search_error_title
 import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
@@ -157,7 +168,7 @@ import flatzen.composeapp.generated.resources.theme_dark
 import flatzen.composeapp.generated.resources.theme_light
 import flatzen.composeapp.generated.resources.theme_system
 import flatzen.composeapp.generated.resources.theme_title
-import flatzen.composeapp.generated.resources.`to`
+import flatzen.composeapp.generated.resources.to
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -171,6 +182,10 @@ private val formattedLocalizationKeys = setOf(
     LocalizationKeys.REFERRAL_MY_CODE,
     LocalizationKeys.REFERRAL_REMAINING_INVITES,
     LocalizationKeys.LIST_PAGE,
+    LocalizationKeys.LIST_AREA_FORMAT,
+    LocalizationKeys.LIST_ROOMS_ONE,
+    LocalizationKeys.LIST_ROOMS_FEW,
+    LocalizationKeys.LIST_ROOMS_MANY,
     LocalizationKeys.DETAIL_OPEN_SOURCE,
 )
 
@@ -308,6 +323,17 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.LIST_PAGE -> Res.string.list_page
         LocalizationKeys.LIST_ROOMS_SUFFIX -> Res.string.list_rooms_suffix
         LocalizationKeys.LIST_COMMERCIAL_ROOMS_SUFFIX -> Res.string.list_commercial_rooms_suffix
+        LocalizationKeys.LIST_AREA_FORMAT -> Res.string.list_area_format
+        LocalizationKeys.LIST_ROOMS_ONE -> Res.string.list_rooms_one
+        LocalizationKeys.LIST_ROOMS_FEW -> Res.string.list_rooms_few
+        LocalizationKeys.LIST_ROOMS_MANY -> Res.string.list_rooms_many
+        LocalizationKeys.CHIP_FROM_OWNER -> Res.string.chip_from_owner
+        LocalizationKeys.CHIP_WITH_PHOTO -> Res.string.chip_with_photo
+        LocalizationKeys.CHIP_NEW -> Res.string.chip_new
+        LocalizationKeys.SCROLL_TO_TOP -> Res.string.scroll_to_top
+        LocalizationKeys.DETAIL_TAB_DESCRIPTION -> Res.string.detail_tab_description
+        LocalizationKeys.DETAIL_TAB_CONDITIONS -> Res.string.detail_tab_conditions
+        LocalizationKeys.DETAIL_TAB_LOCATION -> Res.string.detail_tab_location
         LocalizationKeys.DETAIL_CONTACT_ON_SOURCE -> Res.string.detail_contact_on_source
         LocalizationKeys.DETAIL_OWNER -> Res.string.detail_owner
         LocalizationKeys.DETAIL_AGENT -> Res.string.detail_agent

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,6 +85,7 @@ import io.flatzen.commoncomponents.utils.priceWithCurrency
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
+import io.flatzen.themes.FlatHubTheme
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.shareLauncher
@@ -135,6 +136,8 @@ fun DetailScreen(
         )
     }
 
+    val flat = state.flat
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -143,50 +146,47 @@ fun DetailScreen(
             title = { },
             navigationIcon = {
                 IconButton(onClick = navigateBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = stringResource(Res.string.back))
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(Res.string.back),
+                    )
                 }
-            }
+            },
         )
 
         when {
             state.isLoading -> {
-
+                Box(Modifier.fillMaxSize())
             }
 
             state.error != null -> {
-                // ErrorContent(
-                //     error = state.error,
-                //     onRetry = {
-                //         viewModel.onIntent(FlatDetailScreenAction.LoadFlatDetails(flatPlatform, objectId))
-                //     },
-                //     modifier = Modifier.fillMaxSize()
-                // )
+                Box(Modifier.fillMaxSize())
             }
 
-            state.flat != null -> {
+            flat != null -> {
                 FlatDetailContent(
-                    flat = state.flat!!,
+                    flat = flat,
                     mapState = container.mapState,
                     modifier = Modifier.fillMaxSize(),
                     clickOnFavorite = {
                         container.store.intent(
                             FlatDetailIntent.ClickOnFavorite(
-                                state.flat!!.platform,
-                                state.flat!!.adId
+                                flat.platform,
+                                flat.adId,
                             )
                         )
                     },
                     clickOnClearDislike = {
                         container.store.intent(
                             FlatDetailIntent.ClearDislike(
-                                state.flat!!.platform,
-                                state.flat!!.adId
+                                flat.platform,
+                                flat.adId,
                             )
                         )
                     },
                     navigateToMap = {
-                        navigateToMap(state.flat!!.adId)
-                    }
+                        navigateToMap(flat.adId)
+                    },
                 )
             }
 
@@ -224,8 +224,8 @@ private fun FlatDetailContent(
 
         // Основная информация
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(FlatHubTheme.dimens.screenHorizontal),
+            verticalArrangement = Arrangement.spacedBy(FlatHubTheme.dimens.listItemSpacing)
         ) {
             // Информация о публикации
             if (flat.publishedAt != null || flat.isOwner != null) {
@@ -434,7 +434,10 @@ private fun SourceLinkSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(Res.string.detail_open_source, platform.value.capitalize()),
+            text = stringResource(
+                Res.string.detail_open_source,
+                platform.value.replaceFirstChar { it.uppercase() },
+            ),
             modifier = Modifier
                 .weight(1f)
                 .clickable {
@@ -476,10 +479,8 @@ private fun PriceSection(
                 Text(
                     modifier = Modifier.alignByBaseline(),
                     text = usdPriceText,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             priceUsdSquare?.let {

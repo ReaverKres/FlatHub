@@ -15,16 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.close
 import flatzen.composeapp.generated.resources.premium_upsell_banner
+import io.flatzen.themes.FlatHubTheme
 import org.jetbrains.compose.resources.stringResource
-
-/** Same orange as «квартиры закончились» banner: 0xFFbf4f1f */
-private val UpsellOrange = Color(0xFFbf4f1f)
 
 @Composable
 fun PremiumUpsellBanner(
@@ -32,12 +29,13 @@ fun PremiumUpsellBanner(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val semantic = FlatHubTheme.semantic
     Box(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(vertical = 4.dp)
-            .background(UpsellOrange)
+            .background(semantic.upsellBanner)
             .clickable(onClick = onClick),
     ) {
         Row(
@@ -48,7 +46,7 @@ fun PremiumUpsellBanner(
         ) {
             Text(
                 text = stringResource(Res.string.premium_upsell_banner),
-                color = Color.White,
+                color = semantic.onUpsellBanner,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
@@ -57,7 +55,7 @@ fun PremiumUpsellBanner(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(Res.string.close),
-                    tint = Color.White,
+                    tint = semantic.onUpsellBanner,
                 )
             }
         }

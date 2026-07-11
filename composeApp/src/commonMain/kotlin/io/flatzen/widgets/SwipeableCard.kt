@@ -52,14 +52,11 @@ fun SwipeableCard(
                                         when {
                                             offsetX.value > threshold -> {
                                                 offsetX.animateTo(screenWidthPx * 1.2f)
-                                                onSwipeProgress(0f)
-                                                // Leave off-screen; parent replaces the card.
                                                 onSwipedRight()
                                             }
 
                                             offsetX.value < -threshold -> {
                                                 offsetX.animateTo(-screenWidthPx * 1.2f)
-                                                onSwipeProgress(0f)
                                                 onSwipedLeft()
                                             }
 

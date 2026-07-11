@@ -1,6 +1,5 @@
 package io.flatzen.screens.swipe
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,15 +15,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -61,6 +59,8 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
+import io.flatzen.common.localization.localizedArea
+import io.flatzen.common.localization.localizedRoomsLabel
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
@@ -69,11 +69,14 @@ import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.monetization.ads.AdService
 import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.monetization.tier.UserTierProvider
+import io.flatzen.themes.FlatHubTheme
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatListIntent
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
+import io.flatzen.widgets.FlatZenFloatingActionButton
+import io.flatzen.widgets.FlatZenOverlayChip
 import io.flatzen.widgets.RememberPremiumUpsellBanner
 import io.flatzen.widgets.SwipeableCard
 import kotlinx.coroutines.launch
@@ -81,8 +84,28 @@ import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import kotlin.math.abs
 
 private fun UiFlat.deckKey(): String = "${flatPlatform.name}:$adId"
+
+private const val STACK_SCALE_STEP = 0.04f
+private const val STACK_Y_STEP = 10f
+private const val STACK_ALPHA_STEP = 0.08f
+
+private fun stackCardTransform(depth: Int, promoteProgress: Float): StackCardTransform {
+    val effectiveDepth = (depth - promoteProgress).coerceAtLeast(0f)
+    return StackCardTransform(
+        scale = 1f - effectiveDepth * STACK_SCALE_STEP,
+        translationY = effectiveDepth * STACK_Y_STEP,
+        alpha = 1f - effectiveDepth * STACK_ALPHA_STEP,
+    )
+}
+
+private data class StackCardTransform(
+    val scale: Float,
+    val translationY: Float,
+    val alpha: Float,
+)
 
 private enum class SwipeOutcome { Liked, Disliked }
 
@@ -107,6 +130,8 @@ fun SwipeScreen(
     val filterRepository: FilterRepository = koinInject()
     val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
     var swipeCount by remember { mutableIntStateOf(0) }
+    var swipeProgress by remember { mutableFloatStateOf(0f) }
+    var stackPromoteProgress by remember { mutableFloatStateOf(0f) }
     val userTierProvider: UserTierProvider = koinInject()
     val monetizationConfig: MonetizationRemoteConfig = koinInject()
     val adService: AdService = koinInject()
@@ -171,16 +196,20 @@ fun SwipeScreen(
         }
     }
 
-    val top = deck.firstOrNull()
-    LaunchedEffect(top?.adId, top?.flatPlatform) {
-        val card = top ?: return@LaunchedEffect
-        flatSearchContainer.store.intent(
-            FlatListIntent.PrefetchDetail(
-                flatPlatform = card.flatPlatform,
-                adId = card.adId,
-                markAsViewed = false,
+    LaunchedEffect(
+        deck.getOrNull(0)?.deckKey(),
+        deck.getOrNull(1)?.deckKey(),
+        deck.getOrNull(2)?.deckKey(),
+    ) {
+        deck.take(3).forEach { card ->
+            flatSearchContainer.store.intent(
+                FlatListIntent.PrefetchDetail(
+                    flatPlatform = card.flatPlatform,
+                    adId = card.adId,
+                    markAsViewed = false,
+                )
             )
-        )
+        }
     }
 
     PrefetchDeckImages(deck = deck.take(3))
@@ -218,6 +247,8 @@ fun SwipeScreen(
         undoStack = undoStack.dropLast(1)
         pendingDismissKeys = pendingDismissKeys - entry.deckKey()
         pinnedFrontKey = entry.deckKey()
+        swipeProgress = 0f
+        stackPromoteProgress = 0f
         when (entry.outcome) {
             SwipeOutcome.Disliked -> flatSearchContainer.store.intent(
                 FlatListIntent.ClearDislike(entry.flatPlatform, entry.adId)
@@ -266,41 +297,55 @@ fun SwipeScreen(
             }
 
             else -> {
-                var swipeProgress by remember { mutableFloatStateOf(0f) }
+                val premiumTopPad = if (premiumBanner != null) {
+                    FlatHubTheme.dimens.stickyBarHeight
+                } else {
+                    0.dp
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(12.dp),
+                        .padding(top = premiumTopPad),
                 ) {
                     val visible = deck.take(3)
+                    val frontKey = visible.firstOrNull()?.deckKey()
+                    LaunchedEffect(frontKey) {
+                        swipeProgress = 0f
+                        stackPromoteProgress = 0f
+                    }
                     for (i in visible.lastIndex downTo 0) {
                         val flat = visible[i]
                         val isFront = i == 0
-                        val depth = i
-                        val scale = 1f - depth * 0.04f
+                        val stackTransform = stackCardTransform(
+                            depth = i,
+                            promoteProgress = stackPromoteProgress,
+                        )
                         key(flat.deckKey()) {
                             SwipeableCard(
                                 enabled = isFront,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .graphicsLayer {
-                                        if (!isFront) {
-                                            scaleX = scale
-                                            scaleY = scale
-                                            translationY = depth * 10f
-                                            alpha = 1f - depth * 0.08f
-                                        }
+                                        scaleX = stackTransform.scale
+                                        scaleY = stackTransform.scale
+                                        translationY = stackTransform.translationY
+                                        alpha = stackTransform.alpha
                                     },
                                 onSwipedLeft = {
+                                    stackPromoteProgress = 1f
                                     swipeProgress = 0f
                                     dismissCard(flat, SwipeOutcome.Disliked)
                                 },
                                 onSwipedRight = {
+                                    stackPromoteProgress = 1f
                                     swipeProgress = 0f
                                     dismissCard(flat, SwipeOutcome.Liked)
                                 },
                                 onSwipeProgress = { progress ->
-                                    if (isFront) swipeProgress = progress
+                                    if (isFront) {
+                                        swipeProgress = progress
+                                        stackPromoteProgress = abs(progress.coerceIn(-1f, 1f))
+                                    }
                                 },
                             ) {
                                 TwinbyCardFace(
@@ -321,25 +366,26 @@ fun SwipeScreen(
             }
         }
 
+        val fabMargin = FlatHubTheme.dimens.fabMargin
         if (undoStack.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(8.dp),
+                    .navigationBarsPadding()
+                    .padding(fabMargin),
             ) {
-                FloatingActionButton(onClick = ::undoLastSwipe) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = null,
-                    )
-                }
+                FlatZenFloatingActionButton(
+                    onClick = ::undoLastSwipe,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                )
             }
         }
 
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(8.dp),
+                .navigationBarsPadding()
+                .padding(fabMargin),
         ) {
             FilterActionButton(
                 onClick = navigateToFilters,
@@ -433,11 +479,11 @@ private fun TwinbyCardFace(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
-        shadowElevation = 4.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = FlatHubTheme.shapes.none,
+        color = Color.Transparent,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        border = null,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (photos.isNotEmpty()) {
@@ -507,7 +553,8 @@ private fun TwinbyCardFace(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopStart)
-                    .padding(12.dp),
+                    .statusBarsPadding()
+                    .padding(FlatHubTheme.dimens.screenHorizontalCompact),
             ) {
                 if (showSearchProgress) {
                     SwipeSearchProgressBar()
@@ -518,41 +565,59 @@ private fun TwinbyCardFace(
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                val primaryChipStyle = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp)
+                val primaryChipStyle = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp)
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        flat.priceText.mainPriceText.takeIf { it.isNotBlank() }?.let {
-                            MetaChip(text = it, style = primaryChipStyle)
-                        }
-                        flat.numberOfRooms?.let { rooms ->
-                            MetaChip(text = roomsLabel(rooms), style = primaryChipStyle)
-                        }
-                        flat.totalArea?.let { MetaChip(text = "$it м²", style = primaryChipStyle) }
-                    }
                     FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        MetaChip(cityName)
-                        if (flat.address.isNotBlank()) MetaChip(flat.address)
-                        flat.metroStation?.let { MetaChip(it) }
+                        flat.priceText.mainPriceText.takeIf { it.isNotBlank() }?.let {
+                            FlatZenOverlayChip(text = it, textStyle = primaryChipStyle)
+                        }
+                        flat.publishedAt?.takeIf { it.isNotBlank() }?.let {
+                            FlatZenOverlayChip(text = it, textStyle = primaryChipStyle)
+                        }
+                        flat.numberOfRooms?.let { rooms ->
+                            FlatZenOverlayChip(
+                                text = localizedRoomsLabel(rooms),
+                                textStyle = primaryChipStyle,
+                            )
+                        }
+                        flat.totalArea?.let {
+                            FlatZenOverlayChip(
+                                text = localizedArea(it),
+                                textStyle = primaryChipStyle,
+                            )
+                        }
+                    }
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        FlatZenOverlayChip(cityName)
+                        if (flat.address.isNotBlank()) FlatZenOverlayChip(flat.address)
+                        flat.metroStation?.let { FlatZenOverlayChip(it) }
                     }
                 }
             }
 
             if (flat.description.isNotBlank()) {
+                val semantic = FlatHubTheme.semantic
+                val fabSafe = FlatHubTheme.dimens.fabSafeZone
                 Text(
                     text = flat.description,
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        // Keep text clear of undo (start) and filter (end) FABs.
-                        .padding(start = 56.dp, end = 56.dp, bottom = 56.dp, top = 12.dp)
-                        .background(Color.Black.copy(alpha = 0.35f), RoundedCornerShape(8.dp))
+                        .navigationBarsPadding()
+                        .padding(start = fabSafe, end = fabSafe, bottom = fabSafe, top = 12.dp)
+                        .background(semantic.photoOverlayScrim, FlatHubTheme.shapes.extraSmall)
                         .padding(8.dp),
                 )
             }
@@ -563,7 +628,7 @@ private fun TwinbyCardFace(
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = null,
-                    tint = Color.Red.copy(alpha = likeAlpha),
+                    tint = FlatHubTheme.semantic.swipeLike.copy(alpha = likeAlpha),
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(96.dp)
@@ -574,7 +639,7 @@ private fun TwinbyCardFace(
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = dislikeAlpha),
+                    tint = FlatHubTheme.semantic.swipeDislike.copy(alpha = dislikeAlpha),
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(96.dp)
@@ -665,17 +730,6 @@ private fun swipePhotoContentScale(
     }
 }
 
-private fun roomsLabel(rooms: String): String {
-    val trimmed = rooms.trim()
-    val count = trimmed.toIntOrNull() ?: return trimmed
-    val word = when {
-        count % 10 == 1 && count % 100 != 11 -> "комната"
-        count % 10 in 2..4 && count % 100 !in 12..14 -> "комнаты"
-        else -> "комнат"
-    }
-    return "$count $word"
-}
-
 @Composable
 private fun PhotoStepBar(count: Int, activeIndex: Int) {
     Row(
@@ -687,7 +741,7 @@ private fun PhotoStepBar(count: Int, activeIndex: Int) {
                 modifier = Modifier
                     .weight(1f)
                     .height(3.dp)
-                    .clip(RoundedCornerShape(2.dp))
+                    .clip(FlatHubTheme.shapes.extraSmall)
                     .background(
                         if (index <= activeIndex) Color.White
                         else Color.White.copy(alpha = 0.35f)
@@ -695,21 +749,4 @@ private fun PhotoStepBar(count: Int, activeIndex: Int) {
             )
         }
     }
-}
-
-@Composable
-private fun MetaChip(
-    text: String,
-    style: TextStyle = MaterialTheme.typography.labelMedium,
-) {
-    Text(
-        text = text,
-        style = style,
-        color = Color.White,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
-            .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-    )
 }

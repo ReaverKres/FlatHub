@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -50,6 +52,7 @@ import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.themes.FlatHubTheme
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -232,7 +235,7 @@ fun BoxScope.AddToFavoriteIcon(
     if (disliked) {
         SwipeCardsIcon(
             contentDescription = null,
-            tint = Color.Blue.copy(alpha = 0.7f),
+            tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .clickable { clickOnClearDislike() }
@@ -289,11 +292,40 @@ fun BoxScope.EyeIcon() {
 }
 
 @Composable
+fun FlatZenFloatingActionButton(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null,
+) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onSecondary,
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = FlatHubTheme.dimens.elevationFab,
+            pressedElevation = FlatHubTheme.dimens.elevationFab,
+            focusedElevation = FlatHubTheme.dimens.elevationFab,
+            hoveredElevation = FlatHubTheme.dimens.elevationFab,
+        ),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.onSecondary,
+        )
+    }
+}
+
+@Composable
 fun FilterActionButton(onClick: () -> Unit, isAnyFilterApplied: Boolean) {
     Box {
-        FloatingActionButton(onClick = onClick) {
-            Icon(Icons.Default.Build, contentDescription = stringResource(Res.string.filters_title))
-        }
+        FlatZenFloatingActionButton(
+            onClick = onClick,
+            icon = Icons.Default.Build,
+            contentDescription = stringResource(Res.string.filters_title),
+        )
 
         if (isAnyFilterApplied) {
             Box(

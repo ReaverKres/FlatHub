@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
@@ -27,7 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -46,6 +44,7 @@ import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.themes.FlatHubTheme
 import io.flatzen.utils.mapLauncher
 import org.jetbrains.compose.resources.stringResource
 
@@ -64,8 +63,8 @@ fun OpenInMapButton(
         },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Blue.copy(alpha = 0.8f),
-            contentColor = Color.White.copy(alpha = 0.9f)
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
         )
     ) {
         Text(text = buttonText ?: stringResource(Res.string.detail_open_in_map))
@@ -171,10 +170,10 @@ fun ActionButton(
 ) {
     Button(
         onClick = onClick,
-        shape = RoundedCornerShape(10.dp),
+        shape = FlatHubTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2b64ad).copy(alpha = 0.8f),
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
         )
     ) {
 //            Icon(
@@ -199,31 +198,25 @@ private fun AdTypeButton(
         onClick = {
             onClick(adType)
         },
-        shape = RoundedCornerShape(10.dp),
+        shape = FlatHubTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (selectedAdType == adType) {
-                Color(0xFF2b64ad).copy(alpha = 0.8f)
+                MaterialTheme.colorScheme.secondary
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
             },
-            contentColor = if (selectedAdType == AdType) {
-                Color.White
+            contentColor = if (selectedAdType == adType) {
+                MaterialTheme.colorScheme.onSecondary
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             }
         )
     ) {
-//            Icon(
-//                imageVector = rentIcon,
-//                contentDescription = null,
-//                modifier = Modifier.padding(end = 8.dp)
-//            )
-//            Spacer(Modifier.width(6.dp))
         Text(
             text = adTypeBtnText,
             maxLines = 1,
-            color = if (selectedAdType == AdType) {
-                Color(0xFFFFFFFF)
+            color = if (selectedAdType == adType) {
+                MaterialTheme.colorScheme.onSecondary
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             }

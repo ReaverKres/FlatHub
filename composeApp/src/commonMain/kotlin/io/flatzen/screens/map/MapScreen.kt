@@ -63,6 +63,7 @@ import flatzen.composeapp.generated.resources.map_too_many_objects
 import flatzen.composeapp.generated.resources.map_undo
 import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
+import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.monetization.tier.UserTier
@@ -158,7 +159,7 @@ fun MapScreen(
                 ) {
                     RoomMarker(
                         rooms = null,
-                        pinColor = Color.Blue,
+                        pinColor = MaterialTheme.colorScheme.secondary,
                         textColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -409,7 +410,7 @@ fun MapScreen(
                                 .padding(horizontal = 6.dp)
                                 .clip(RoundedCornerShape(10.dp)),
                             message = stringResource(Res.string.map_draw_instructions),
-                            color = Color(0xFF2b64ad).copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                         )
                     Column(
                         modifier = Modifier
@@ -655,6 +656,7 @@ fun FlatItemContent(
             Text(
                 text = mainPriceText,
                 style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -663,6 +665,7 @@ fun FlatItemContent(
                 Text(
                     text = secondPriceText,
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -676,6 +679,7 @@ fun FlatItemContent(
             Text(
                 text = date,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
@@ -709,7 +713,7 @@ fun FlatItemContent(
             )
             if (flat.totalArea.isNullOrEmpty().not()) {
                 Text(
-                    text = "${flat.totalArea} м²",
+                    text = localizedArea(flat.totalArea!!),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
