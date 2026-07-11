@@ -127,6 +127,19 @@ data class FilterState(
         return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
     }
 
+    fun hasPaidLocationFilters(): Boolean =
+        metroStationsState.any { it.selected } ||
+                !address.isNullOrEmpty() ||
+                districtsArea?.any { it.isChecked } == true ||
+                userMapAreas?.any { it.isActive } == true
+
+    fun stripPaidLocationFilters(): FilterState = copy(
+        metroStationsState = metroStationsState.map { it.copy(selected = false) },
+        address = null,
+        districtsArea = districtsArea?.map { it.copy(isChecked = false) },
+        userMapAreas = userMapAreas?.map { it.copy(isActive = false) },
+    )
+
     fun getSelectedMetroStation(): String =
         metroStationsState.filter { it.selected }.joinToString(separator = ", ") { it.name }
 

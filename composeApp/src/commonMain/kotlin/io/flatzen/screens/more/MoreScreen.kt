@@ -46,6 +46,7 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.copy_success
 import flatzen.composeapp.generated.resources.faq_title
 import flatzen.composeapp.generated.resources.more_title
+import flatzen.composeapp.generated.resources.premium_menu
 import flatzen.composeapp.generated.resources.referral_code
 import flatzen.composeapp.generated.resources.telegram_support
 import flatzen.composeapp.generated.resources.telegram_support_description
@@ -77,6 +78,7 @@ fun MoreScreen(
     modifier: Modifier = Modifier,
     navigateToFaq: () -> Unit,
     navigateToReferral: () -> Unit,
+    navigateToPremium: () -> Unit = {},
 ) {
     val moreContainer: MoreContainer = container()
     val moreState by moreContainer.store.subscribe { }
@@ -147,6 +149,16 @@ fun MoreScreen(
                             onClick = navigateToFaq
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+                    AppTextButton(
+                        image = null,
+                        text = stringResource(Res.string.premium_menu),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                        onClick = navigateToPremium
+                    )
                 }
 
                 if (moreState.isNotificationAvailable.not()) {

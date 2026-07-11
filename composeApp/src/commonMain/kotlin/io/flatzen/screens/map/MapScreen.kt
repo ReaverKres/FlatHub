@@ -65,6 +65,8 @@ import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
+import io.flatzen.monetization.tier.UserTier
+import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -81,6 +83,7 @@ import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
 import io.flatzen.widgets.MessageSnackbar
+import io.flatzen.widgets.RememberPremiumUpsellBanner
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
@@ -115,9 +118,19 @@ fun MapScreen(
     navigateToFilters: () -> Unit,
     navigateBack: () -> Unit,
     selectedMarker: Long?,
+    navigateToPremium: () -> Unit = {},
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
+    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
+    val userTierProvider: UserTierProvider = koinInject()
+    val openMapAreaOrPremium: () -> Unit = {
+        if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+            mapViewModel.store.intent(MapIntent.ClickOnMapArea)
+        } else {
+            navigateToPremium()
+        }
+    }
     var selectedFlatId by remember { mutableStateOf<Long?>(null) }
     val selectedFlat = selectedFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
@@ -346,6 +359,7 @@ fun MapScreen(
         },
         navigateToDetails = navigateToDetails
     ) {
+        premiumBanner?.let { banner -> banner() }
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -434,7 +448,7 @@ fun MapScreen(
                                     modifier = Modifier
                                         .size(60.dp)
                                         .clickable {
-                                            mapViewModel.store.intent(MapIntent.ClickOnMapArea)
+                                            openMapAreaOrPremium()
                                         }
                                 )
                                 Spacer(Modifier.height(10.dp))

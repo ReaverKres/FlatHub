@@ -61,6 +61,7 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.ReferralScreen
+import io.flatzen.screens.premium.PremiumScreen
 import io.flatzen.screens.swipe.SwipeScreen
 import io.flatzen.themes.LocalThemeRevealController
 import io.flatzen.themes.ThemeRevealHost
@@ -237,7 +238,8 @@ private fun MainGraphScaffold(
                             navigator.navigate(Route.Detail(platform.name, id))
                         },
                         navigateToFilters = { navigator.navigate(Route.Filter) },
-                        navigateToNotifications = { navigator.navigate(Route.Notifications()) }
+                        navigateToNotifications = { navigator.navigate(Route.Notifications()) },
+                        navigateToPremium = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.Favorites> {
@@ -259,12 +261,14 @@ private fun MainGraphScaffold(
                             )
                         },
                         navigateToFilters = { navigator.navigate(Route.Filter) },
+                        navigateToPremium = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.Settings> {
                     MoreScreen(
                         navigateToFaq = { navigator.navigate(Route.Faq) },
-                        navigateToReferral = { navigator.navigate(Route.Referral) }
+                        navigateToReferral = { navigator.navigate(Route.Referral) },
+                        navigateToPremium = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.Map> { key ->
@@ -274,7 +278,8 @@ private fun MainGraphScaffold(
                             navigator.navigate(Route.Detail(platform.name, id))
                         },
                         navigateToFilters = { navigator.navigate(Route.Filter) },
-                        navigateBack = { navigator.goBack() }
+                        navigateBack = { navigator.goBack() },
+                        navigateToPremium = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.Detail> { key ->
@@ -295,7 +300,8 @@ private fun MainGraphScaffold(
                     FilterScreen(
                         navigateBack = { navigator.goBack() },
                         onOpenLocation = { navigator.navigate(Route.Location) },
-                        onOpenReferralScreen = { navigator.navigate(Route.Referral) }
+                        onOpenReferralScreen = { navigator.navigate(Route.Referral) },
+                        onOpenPremiumScreen = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.Location> {
@@ -303,7 +309,8 @@ private fun MainGraphScaffold(
                         navigateBack = { navigator.goBack() },
                         openCity = { navigator.navigate(Route.CitySelect) },
                         openMetro = { navigator.navigate(Route.MetroSelect) },
-                        openDistricts = { navigator.navigate(Route.DistrictSelect) }
+                        openDistricts = { navigator.navigate(Route.DistrictSelect) },
+                        openPremium = { navigator.navigate(Route.Premium) },
                     )
                 }
                 entry<Route.CitySelect> {
@@ -320,6 +327,9 @@ private fun MainGraphScaffold(
                 }
                 entry<Route.Referral> {
                     ReferralScreen(navigateBack = { navigator.goBack() })
+                }
+                entry<Route.Premium> {
+                    PremiumScreen(navigateBack = { navigator.goBack() })
                 }
                 entry<Route.Notifications> { key ->
                     NotificationsScreen(

@@ -4,6 +4,9 @@ import dev.icerock.moko.permissions.PermissionsController
 import di.dataModule
 import di.databaseModule
 import di.networkModule
+import io.flatzen.monetization.di.monetizationModules
+import io.flatzen.navigation.FlatHubNavigator
+import io.flatzen.navigation.FlatHubNavigatorDelegate
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.FavoritesContainer
 import io.flatzen.viewmodel.MapContainer
@@ -16,8 +19,7 @@ import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralContainer
 import io.flatzen.viewmodel.notifications.NotificationListContainer
 import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
-import io.flatzen.navigation.FlatHubNavigator
-import io.flatzen.navigation.FlatHubNavigatorDelegate
+import io.flatzen.viewmodel.premium.PremiumContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -37,7 +39,8 @@ val flatSearchPresentationModule = module {
             userPreferencesRepository = get(),
             connectionMonitor = get(),
             analyticsManager = get(),
-            configFieldsChecker = get()
+            configFieldsChecker = get(),
+            userTierProvider = get(),
         ).apply {
             store.start(CoroutineScope(Dispatchers.Main.immediate + SupervisorJob()))
         }
@@ -67,6 +70,13 @@ val flatSearchPresentationModule = module {
     container { new(::FaqContainer) }
 
     container { new(::ReferralContainer) }
+    container {
+        PremiumContainer(
+            subscriptionService = get(),
+            adService = get(),
+            monetizationRemoteConfig = get(),
+        )
+    }
 
     container { (controller: PermissionsController) ->
         ToggleNotificationsContainer(
@@ -91,7 +101,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             notificationsModule(),
             databaseModule(),
             dataUtilsModule(),
-            analyticsModule()
+            analyticsModule(),
+            *monetizationModules().toTypedArray(),
         )
     }
 }

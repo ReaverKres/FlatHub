@@ -11,6 +11,8 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.mappers.MetroStationsMapper
+import io.flatzen.monetization.tier.UserTier
+import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.first
@@ -98,13 +100,16 @@ data class FilterScreenState(
 
 sealed interface FilterEffect : MVIAction {
     data object NavigateToReferralEffect : FilterEffect
+    data object NavigateToPremiumEffect : FilterEffect
+    data class ShowToastEffect(val message: String) : FilterEffect
 }
 
 class FilterContainer(
     private val filterRepository: FilterRepository,
     private val userMapAreaRepository: UserMapAreaRepository,
     private val analyticsManager: AnalyticsManager,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val userTierProvider: UserTierProvider,
 ) : Container<FilterScreenState, FilterScreenAction, FilterEffect> {
 
     override val store = store<FilterScreenState, FilterScreenAction, FilterEffect>(
@@ -307,15 +312,29 @@ class FilterContainer(
 
                 is FilterScreenAction.ToggleSavedFilterSelection -> {
                     var selectedFilterId: Long? = null
+                    var showPaidLocationToast = false
                     withState {
                         val currentlySelected = savedFilters.find { it.selected }
                         selectedFilterId = if (currentlySelected?.id == intent.filterId) {
                             filterRepository.clearAllSavedFilterSelections()
                             null
                         } else {
-                            filterRepository.updateSavedFilterSelection(intent.filterId)
-                            filterRepository.getSavedFilterById(intent.filterId)?.let {
-                                filterRepository.applySavedFilter(it, false)
+                            filterRepository.getSavedFilterById(intent.filterId)?.let { saved ->
+                                val filterState = mapFilterModelToFilterState(saved.filterData)
+                                if (userTierProvider.currentTier() == UserTier.FREE &&
+                                    filterState.hasPaidLocationFilters()
+                                ) {
+                                    val stripped = filterState.stripPaidLocationFilters()
+                                    filterRepository.updateFilter(
+                                        mapFilterStateToFilterModel(stripped),
+                                        false,
+                                    )
+                                    // Re-select after cashedFilterFlow apply may have cleared selection
+                                    filterRepository.updateSavedFilterSelection(intent.filterId)
+                                    showPaidLocationToast = true
+                                } else {
+                                    filterRepository.applySavedFilter(saved, false)
+                                }
                             }
                             intent.filterId
                         }
@@ -326,6 +345,13 @@ class FilterContainer(
                             savedFilters = savedFilters.map { filter ->
                                 filter.copy(selected = filter.id == selectedId)
                             }
+                        )
+                    }
+                    if (showPaidLocationToast) {
+                        action(
+                            FilterEffect.ShowToastEffect(
+                                "Фильтры местоположения без Premium недоступны"
+                            )
                         )
                     }
                 }
@@ -349,28 +375,32 @@ class FilterContainer(
                 }
 
                 is FilterScreenAction.ActivateMapArea -> {
-                    var currentAreas = filterRepository.areasInFilter(userMapAreaRepository)
-                    currentAreas = if (intent.checked) {
-                        currentAreas.map {
-                            if (it.pathId == intent.id) it.copy(isActive = true) else it
-                        }
+                    if (intent.checked && userTierProvider.currentTier() == UserTier.FREE) {
+                        action(FilterEffect.NavigateToPremiumEffect)
                     } else {
-                        currentAreas.map {
-                            if (it.pathId == intent.id) it.copy(isActive = false) else it
+                        var currentAreas = filterRepository.areasInFilter(userMapAreaRepository)
+                        currentAreas = if (intent.checked) {
+                            currentAreas.map {
+                                if (it.pathId == intent.id) it.copy(isActive = true) else it
+                            }
+                        } else {
+                            currentAreas.map {
+                                if (it.pathId == intent.id) it.copy(isActive = false) else it
+                            }
                         }
-                    }
-                    val currentAreasUi = MapAreasUi.mapFromModelToUi(currentAreas)
-                    var currentState = FilterScreenState.Initial
-                    withState { currentState = this }
-                    val newState = currentState.filters.copy(userMapAreas = currentAreasUi)
-                    applyFiltersUpdate(newState, intent.doNetworkCall)
-                    updateState {
-                        copy(
-                            savedAreasDialogState = getUpdatedMapAreaDialogState(
-                                currentAreas = currentAreasUi,
-                                isVisible = intent.savedAreasDialogIsVisible
+                        val currentAreasUi = MapAreasUi.mapFromModelToUi(currentAreas)
+                        var currentState = FilterScreenState.Initial
+                        withState { currentState = this }
+                        val newState = currentState.filters.copy(userMapAreas = currentAreasUi)
+                        applyFiltersUpdate(newState, intent.doNetworkCall)
+                        updateState {
+                            copy(
+                                savedAreasDialogState = getUpdatedMapAreaDialogState(
+                                    currentAreas = currentAreasUi,
+                                    isVisible = intent.savedAreasDialogIsVisible
+                                )
                             )
-                        )
+                        }
                     }
                 }
 

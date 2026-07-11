@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -95,6 +94,10 @@ import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.monetization.ads.FeedItem
+import io.flatzen.monetization.ads.buildFeedItems
+import io.flatzen.monetization.config.MonetizationRemoteConfig
+import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.screens.map.FlatItemContent
 import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
@@ -109,6 +112,7 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
+import io.flatzen.widgets.RememberPremiumUpsellBanner
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortBottomSheet
 import io.flatzen.widgets.dialogs.ForceUpdateDialog
@@ -128,6 +132,7 @@ fun HomeScreen(
     navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     navigateToFilters: () -> Unit,
     navigateToNotifications: () -> Unit,
+    navigateToPremium: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
@@ -155,6 +160,7 @@ fun HomeScreen(
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
     var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
     val filterSummaryStrings = filterSummaryStrings()
+    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
 
     LaunchedEffect(currentFilters) {
         filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -332,6 +338,9 @@ fun HomeScreen(
                             flatSearchContainer.store.intent(FlatListIntent.SearchFlats(true))
                         },
                         topContent = {
+                            premiumBanner?.let { banner ->
+                                item { banner() }
+                            }
                             topContentHeader(
                                 isListView = state.isListView,
                                 filterState = currentFilters,
@@ -791,6 +800,18 @@ fun FlatList(
     topContent: LazyListScope.() -> Unit = {},
     bottomContent: LazyListScope.() -> Unit = {}
 ) {
+    val userTierProvider: UserTierProvider = koinInject()
+    val monetizationConfig: MonetizationRemoteConfig = koinInject()
+    val feedItems =
+        remember(flats, monetizationConfig.homeListAdInterval, userTierProvider.shouldShowAds()) {
+            buildFeedItems(
+                flats = flats,
+                interval = monetizationConfig.homeListAdInterval,
+                showAds = userTierProvider.shouldShowAds(),
+            )
+        }
+    val gridRows = remember(feedItems) { buildGridRows(feedItems) }
+
     LaunchedEffect(flats, isListView, isLoadingMore) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
@@ -821,58 +842,68 @@ fun FlatList(
         topContent()
 
         if (isListView == true) {
-            // List view - one item per row
-            items(flats, key = { it.adId }) { flat ->
-                ListFlatCard(
-                    flat = flat,
-                    onClick = { onFlatClick(flat) },
-                    clickOnFavorite = {
-                        clickOnFavorite(flat)
-                    },
-                    clickOnClearDislike = {
-                        clickOnClearDislike(flat)
+            items(
+                count = feedItems.size,
+                key = { index ->
+                    when (val item = feedItems[index]) {
+                        is FeedItem.Flat -> "flat-${item.value.adId}"
+                        FeedItem.Ad -> "ad-$index"
                     }
-                )
+                }
+            ) { index ->
+                when (val item = feedItems[index]) {
+                    is FeedItem.Flat -> {
+                        val flat = item.value
+                        ListFlatCard(
+                            flat = flat,
+                            onClick = { onFlatClick(flat) },
+                            clickOnFavorite = { clickOnFavorite(flat) },
+                            clickOnClearDislike = { clickOnClearDislike(flat) },
+                        )
+                    }
+
+                    FeedItem.Ad -> {
+                        FeedAdPlaceholder(isGrid = false)
+                    }
+                }
             }
         } else {
-            // Grid view - two items per row
+            // Grid: Ad spans full width
             items(
-                items = flats.chunked(2),
-                key = { it.firstOrNull()?.adId ?: it.hashCode() }
-            ) { flatPair ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // First item
-                    flatPair.getOrNull(0)?.let { flat ->
-                        GridFlatCard(
-                            flat = flat,
-                            onClick = { onFlatClick(flat) },
-                            clickOnFavorite = {
-                                clickOnFavorite(flat)
-                            },
-                            clickOnClearDislike = {
-                                clickOnClearDislike(flat)
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                    } ?: Spacer(Modifier.weight(1f))
+                count = gridRows.size,
+                key = { index ->
+                    when (val row = gridRows[index]) {
+                        is GridRow.Pair -> "row-${row.first.adId}"
+                        is GridRow.Ad -> "ad-row-$index"
+                    }
+                }
+            ) { index ->
+                when (val row = gridRows[index]) {
+                    is GridRow.Pair -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            GridFlatCard(
+                                flat = row.first,
+                                onClick = { onFlatClick(row.first) },
+                                clickOnFavorite = { clickOnFavorite(row.first) },
+                                clickOnClearDislike = { clickOnClearDislike(row.first) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            row.second?.let { second ->
+                                GridFlatCard(
+                                    flat = second,
+                                    onClick = { onFlatClick(second) },
+                                    clickOnFavorite = { clickOnFavorite(second) },
+                                    clickOnClearDislike = { clickOnClearDislike(second) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            } ?: Spacer(Modifier.weight(1f))
+                        }
+                    }
 
-                    // Second item
-                    flatPair.getOrNull(1)?.let { flat ->
-                        GridFlatCard(
-                            flat = flat,
-                            onClick = { onFlatClick(flat) },
-                            clickOnFavorite = {
-                                clickOnFavorite(flat)
-                            },
-                            clickOnClearDislike = {
-                                clickOnClearDislike(flat)
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                    } ?: Spacer(Modifier.weight(1f))
+                    is GridRow.Ad -> FeedAdPlaceholder(isGrid = true)
                 }
             }
         }
@@ -892,7 +923,61 @@ fun FlatList(
                 }
             }
         }
+
         bottomContent()
+    }
+}
+
+private sealed class GridRow {
+    data class Pair(val first: UiFlat, val second: UiFlat?) : GridRow()
+    data object Ad : GridRow()
+}
+
+private fun buildGridRows(feedItems: List<FeedItem<UiFlat>>): List<GridRow> {
+    val rows = mutableListOf<GridRow>()
+    var pending: UiFlat? = null
+    feedItems.forEach { item ->
+        when (item) {
+            is FeedItem.Ad -> {
+                pending?.let {
+                    rows += GridRow.Pair(it, null)
+                    pending = null
+                }
+                rows += GridRow.Ad
+            }
+
+            is FeedItem.Flat -> {
+                val flat = item.value
+                if (pending == null) {
+                    pending = flat
+                } else {
+                    rows += GridRow.Pair(pending!!, flat)
+                    pending = null
+                }
+            }
+        }
+    }
+    pending?.let { rows += GridRow.Pair(it, null) }
+    return rows
+}
+
+@Composable
+private fun FeedAdPlaceholder(isGrid: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(if (isGrid) 280.dp else 120.dp)
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(12.dp)
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "Ad",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelLarge,
+        )
     }
 }
 
