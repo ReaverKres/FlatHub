@@ -27,11 +27,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -52,6 +56,7 @@ import flatzen.composeapp.generated.resources.theme_title
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
 import io.flatzen.commoncomponents.theme.ThemeMode
 import io.flatzen.di.container
+import io.flatzen.themes.LocalThemeRevealController
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.copyLauncher
@@ -60,7 +65,6 @@ import io.flatzen.viewmodel.more.FaqState
 import io.flatzen.viewmodel.more.MoreConfigState
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.widgets.AppTextButton
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -72,7 +76,7 @@ import repository.userpreferences.UserPreferencesRepository
 fun MoreScreen(
     modifier: Modifier = Modifier,
     navigateToFaq: () -> Unit,
-    navigateToReferral: () -> Unit
+    navigateToReferral: () -> Unit,
 ) {
     val moreContainer: MoreContainer = container()
     val moreState by moreContainer.store.subscribe { }
@@ -83,9 +87,22 @@ fun MoreScreen(
     val userPreferences: UserPreferencesRepository = koinInject()
     val themeMode by userPreferences.observeThemeMode()
         .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
-    val scope = rememberCoroutineScope()
+    val revealController = LocalThemeRevealController.current
+    val displayMode = revealController.pendingMode ?: themeMode
 
     val telegramSupportDescription = stringResource(Res.string.telegram_support_description)
+    val uriHandler = LocalUriHandler.current
+    val toastLauncher = remember { ToastLauncher() }
+    val copySuccessTemplate = stringResource(Res.string.copy_success)
+    val copyLauncher = copyLauncher(
+        onCopySuccess = { text: String ->
+            toastLauncher.showToast(
+                copySuccessTemplate.replace("%1\$s", text),
+                ToastDurationType.LONG
+            )
+        },
+        onCopyError = { },
+    )
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -101,19 +118,6 @@ fun MoreScreen(
             )
         },
     ) { paddingValues ->
-        val uriHandler = LocalUriHandler.current
-        val toastLauncher = ToastLauncher()
-        val copySuccessTemplate = stringResource(Res.string.copy_success)
-        val copyLauncher = copyLauncher(
-            onCopySuccess = { text: String ->
-                toastLauncher.showToast(
-                    copySuccessTemplate.replace("%1\$s", text),
-                    ToastDurationType.LONG
-                )
-            },
-            onCopyError = { }
-        )
-
         Box {
             Column(
                 modifier = Modifier
@@ -123,10 +127,12 @@ fun MoreScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 ThemeModeSelector(
-                    currentMode = themeMode,
-                    onModeSelected = { mode ->
-                        scope.launch { userPreferences.setThemeMode(mode) }
-                    }
+                    currentMode = displayMode,
+                    onModeSelected = { mode, originInRoot ->
+                        if (mode != themeMode && !revealController.isAnimating) {
+                            revealController.start(originInRoot = originInRoot, targetMode = mode)
+                        }
+                    },
                 )
 
                 if (faqState is FaqState.Success &&
@@ -154,11 +160,11 @@ fun MoreScreen(
                     }
                 }
 
-                if (moreState.configState is MoreConfigState.Success &&
-                    (moreState.configState as MoreConfigState.Success).moreConfigData.isVisible == true
+                val configState = moreState.configState
+                if (configState is MoreConfigState.Success &&
+                    configState.moreConfigData.isVisible == true
                 ) {
-                    val moreConfigData =
-                        (moreState.configState as MoreConfigState.Success).moreConfigData
+                    val moreConfigData = configState.moreConfigData
                     moreConfigData.telegramSupport?.let { telegram ->
                         DescriptionText(text = telegramSupportDescription)
                         AppTextButton(
@@ -231,8 +237,12 @@ fun MoreScreen(
 @Composable
 private fun ThemeModeSelector(
     currentMode: ThemeMode,
-    onModeSelected: (ThemeMode) -> Unit,
+    onModeSelected: (ThemeMode, Offset) -> Unit,
 ) {
+    val buttonCenters = remember {
+        mutableStateOf(List(ThemeMode.entries.size) { Offset.Zero })
+    }
+
     Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -243,8 +253,23 @@ private fun ThemeModeSelector(
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 ThemeMode.entries.forEachIndexed { index, mode ->
                     SegmentedButton(
+                        modifier = Modifier.onGloballyPositioned { coords ->
+                            val centerLocal = Offset(
+                                x = coords.size.width / 2f,
+                                y = coords.size.height / 2f,
+                            )
+                            val rootPos = coords.positionInRoot()
+                            val root = Offset(rootPos.x + centerLocal.x, rootPos.y + centerLocal.y)
+                            val updated = buttonCenters.value.toMutableList()
+                            if (updated[index] != root) {
+                                updated[index] = root
+                                buttonCenters.value = updated
+                            }
+                        },
                         selected = currentMode == mode,
-                        onClick = { onModeSelected(mode) },
+                        onClick = {
+                            onModeSelected(mode, buttonCenters.value[index])
+                        },
                         shape = SegmentedButtonDefaults.itemShape(
                             index = index,
                             count = ThemeMode.entries.size

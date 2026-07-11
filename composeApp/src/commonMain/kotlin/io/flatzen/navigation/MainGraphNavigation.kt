@@ -4,6 +4,7 @@ import DetailScreen
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +34,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import flatzen.composeapp.generated.resources.Res
@@ -44,6 +47,7 @@ import flatzen.composeapp.generated.resources.tab_map
 import flatzen.composeapp.generated.resources.tab_more
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.commoncomponents.theme.ThemeMode
 import io.flatzen.notifications.NotificationsService
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
@@ -57,12 +61,16 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.ReferralScreen
+import io.flatzen.themes.LocalThemeRevealController
+import io.flatzen.themes.ThemeRevealHost
+import io.flatzen.themes.resolveDark
 import io.flatzen.widgets.MessageSnackbar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.compose.koinInject
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
+import repository.userpreferences.UserPreferencesRepository
 
 private data class BottomNavItem(val route: Route, val label: StringResource, val icon: ImageVector)
 
@@ -118,6 +126,39 @@ fun MainGraphNavigation(
         }
     }
 
+    val userPreferences: UserPreferencesRepository = koinInject()
+    val themeMode by userPreferences.observeThemeMode()
+        .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val systemDark = isSystemInDarkTheme()
+    val revealController = LocalThemeRevealController.current
+
+    ThemeRevealHost(
+        controller = revealController,
+        committedMode = themeMode,
+        isDark = themeMode.resolveDark(systemDark),
+        onCommit = { mode -> userPreferences.setThemeMode(mode) },
+        modifier = modifier,
+    ) {
+        MainGraphScaffold(
+            navigationState = navigationState,
+            navigator = navigator,
+            topLevelRoutes = topLevelRoutes,
+            isConnected = isConnected,
+            density = density,
+            onExitApp = onExitApp,
+        )
+    }
+}
+
+@Composable
+private fun MainGraphScaffold(
+    navigationState: NavigationState,
+    navigator: Navigator,
+    topLevelRoutes: Set<Route>,
+    isConnected: Boolean,
+    density: Density,
+    onExitApp: () -> Unit,
+) {
     val currentTopLevelRoute = navigationState.topLevelRoute
     val currentStack = navigationState.backStacks[currentTopLevelRoute]
     val currentRoute = currentStack?.lastOrNull()
@@ -125,7 +166,6 @@ fun MainGraphNavigation(
     val showBottomBar = currentTopLevelRoute in topLevelRoutes && isRootRoute
 
     Scaffold(
-        modifier = modifier,
         contentWindowInsets = WindowInsets.statusBars,
         bottomBar = {
             if (showBottomBar) {
