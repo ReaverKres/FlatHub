@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -83,6 +84,7 @@ import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
 import io.flatzen.animations.rememberShimmerProgress
+import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -99,6 +101,7 @@ import io.flatzen.monetization.ads.buildFeedItems
 import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.screens.map.FlatItemContent
+import io.flatzen.themes.FlatHubTheme
 import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
 import io.flatzen.utils.LaunchedEffectOnce
@@ -467,7 +470,7 @@ fun BoxScope.ScrollToTopBtn(
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = "Scroll to top",
+                contentDescription = localizedStringResource(LocalizationKeys.SCROLL_TO_TOP),
                 tint = MaterialTheme.colorScheme.onPrimary
             )
         }
@@ -488,7 +491,7 @@ fun BoxScope.NoFlatsToLoadMoreText(
             .thenIf(showScrollToTopBtn) {
                 padding(bottom = 72.dp)
             }
-            .background(Color(0xFFbf4f1f), RoundedCornerShape(20.dp))
+            .background(FlatHubTheme.semantic.upsellBanner, FlatHubTheme.shapes.large)
             .padding(vertical = 4.dp)
             .onSizeChanged { size ->
                 onSizeChanged(size)
@@ -497,7 +500,7 @@ fun BoxScope.NoFlatsToLoadMoreText(
         Text(
             modifier = Modifier.align(Alignment.Center).padding(horizontal = 2.dp),
             text = stringResource(Res.string.list_no_more_flats),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = FlatHubTheme.semantic.onUpsellBanner,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -989,10 +992,15 @@ private fun ListFlatCard(
     clickOnFavorite: () -> Unit,
     clickOnClearDislike: () -> Unit = {},
 ) {
+    val dimens = FlatHubTheme.dimens
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = FlatHubTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = dimens.elevationCard),
+        border = BorderStroke(dimens.cardBorderWidth, MaterialTheme.colorScheme.outlineVariant),
     ) {
         FlatItemContent(
             flat = flat,
@@ -1011,22 +1019,27 @@ private fun GridFlatCard(
     clickOnFavorite: () -> Unit,
     clickOnClearDislike: () -> Unit = {},
 ) {
+    val dimens = FlatHubTheme.dimens
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = FlatHubTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = dimens.elevationCard),
+        border = BorderStroke(dimens.cardBorderWidth, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(dimens.cardPaddingCompact)
         ) {
             FlatImagePager(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .removeParentPadding(8.dp),
+                    .removeParentPadding(dimens.cardPaddingCompact),
                 flatPlatform = flat.flatPlatform,
                 imageUrls = flat.imageUrls,
                 isViewed = flat.isViewed,
@@ -1050,6 +1063,7 @@ private fun GridFlatCard(
                 Text(
                     text = mainPriceText,
                     style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -1058,6 +1072,7 @@ private fun GridFlatCard(
                     Text(
                         text = secondPriceText,
                         style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -1069,7 +1084,8 @@ private fun GridFlatCard(
 
                 Text(
                     text = date,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
@@ -1078,7 +1094,8 @@ private fun GridFlatCard(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = localizedStringResource(name),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
 
@@ -1095,25 +1112,29 @@ private fun GridFlatCard(
             ) {
                 Text(
                     text = "${flat.numberOfRooms} $roomSuffix,",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 if (flat.totalArea.isNullOrEmpty().not()) {
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = "${flat.totalArea} м²",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = localizedArea(flat.totalArea!!),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
             Text(
                 text = flat.metroStation.orEmpty(),
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = flat.address,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 minLines = 2,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

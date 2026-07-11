@@ -426,7 +426,7 @@ private fun NotifPermissionSnackbar(
         modifier = Modifier
             .padding(horizontal = 6.dp)
             .clip(RoundedCornerShape(10.dp)),
-        color = Color(0xFF2b64ad).copy(alpha = 0.8f),
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
         message = stringResource(Res.string.notifications_permission_message),
         closeBtnText = stringResource(Res.string.close),
         actionBtnText = stringResource(Res.string.notifications_allow),

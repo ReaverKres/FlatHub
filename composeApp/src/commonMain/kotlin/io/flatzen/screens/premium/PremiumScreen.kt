@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -81,6 +80,7 @@ import io.flatzen.di.container
 import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.billing.SubscriptionProduct
 import io.flatzen.monetization.billing.SubscriptionStatus
+import io.flatzen.themes.FlatHubTheme
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -93,9 +93,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
-
-private val PremiumAccent = Color(0xFFbf4f1f)
-private val PremiumAccentSoft = Color(0x33bf4f1f)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -258,9 +255,9 @@ private fun ActivePremiumContent(
     } ?: stringResource(Res.string.premium_active_unlimited)
 
     Surface(
-        shape = RoundedCornerShape(20.dp),
+        shape = FlatHubTheme.shapes.large,
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, PremiumAccent.copy(alpha = 0.35f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)),
         modifier = Modifier.fillMaxWidth(),
         shadowElevation = 2.dp,
     ) {
@@ -270,7 +267,7 @@ private fun ActivePremiumContent(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            PremiumAccentSoft,
+                            MaterialTheme.colorScheme.primaryContainer,
                             Color.Transparent,
                         ),
                     ),
@@ -284,13 +281,16 @@ private fun ActivePremiumContent(
                 Box(
                     modifier = Modifier
                         .size(64.dp)
-                        .background(PremiumAccent.copy(alpha = 0.15f), CircleShape),
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                            CircleShape
+                        ),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = PremiumAccent,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(36.dp),
                     )
                 }
@@ -309,14 +309,14 @@ private fun ActivePremiumContent(
                 Spacer(Modifier.height(12.dp))
                 if (sourceLabel != null) {
                     Surface(
-                        shape = RoundedCornerShape(50),
-                        color = PremiumAccent.copy(alpha = 0.12f),
+                        shape = FlatHubTheme.shapes.full,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
                     ) {
                         Text(
                             text = sourceLabel,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelLarge,
-                            color = PremiumAccent,
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                     Spacer(Modifier.height(8.dp))
@@ -335,7 +335,7 @@ private fun ActivePremiumContent(
     Button(
         onClick = onDone,
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = PremiumAccent),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
         Text(stringResource(Res.string.premium_done))
     }
@@ -343,9 +343,9 @@ private fun ActivePremiumContent(
     OutlinedButton(
         onClick = onManage,
         modifier = Modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, PremiumAccent.copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
     ) {
-        Text(stringResource(Res.string.premium_manage), color = PremiumAccent)
+        Text(stringResource(Res.string.premium_manage), color = MaterialTheme.colorScheme.primary)
     }
 
     TextButton(
@@ -366,9 +366,9 @@ private fun PurchasePremiumContent(
     onWatchAd: () -> Unit,
 ) {
     Surface(
-        shape = RoundedCornerShape(20.dp),
+        shape = FlatHubTheme.shapes.large,
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, PremiumAccent.copy(alpha = 0.25f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Box(
@@ -376,7 +376,10 @@ private fun PurchasePremiumContent(
                 .fillMaxWidth()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(PremiumAccentSoft, Color.Transparent),
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            Color.Transparent
+                        ),
                     ),
                 )
                 .padding(20.dp),
@@ -386,13 +389,16 @@ private fun PurchasePremiumContent(
                     Box(
                         modifier = Modifier
                             .size(44.dp)
-                            .background(PremiumAccent.copy(alpha = 0.15f), CircleShape),
+                            .background(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                CircleShape
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = null,
-                            tint = PremiumAccent,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     Spacer(Modifier.width(12.dp))
@@ -429,7 +435,7 @@ private fun PurchasePremiumContent(
                 .height(80.dp),
             contentAlignment = Alignment.Center,
         ) {
-            CircularProgressIndicator(color = PremiumAccent)
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         }
     }
 
@@ -447,14 +453,14 @@ private fun PurchasePremiumContent(
         enabled = !state.purchasing && state.selectedProductId != null,
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = PremiumAccent),
-        shape = RoundedCornerShape(14.dp),
+            .height(FlatHubTheme.dimens.ctaHeight),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+        shape = FlatHubTheme.shapes.cta,
     ) {
         if (state.purchasing) {
             CircularProgressIndicator(
                 modifier = Modifier.size(22.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.dp,
             )
         } else {
@@ -497,13 +503,13 @@ private fun FeatureRow(text: String) {
         Box(
             modifier = Modifier
                 .size(22.dp)
-                .background(PremiumAccent.copy(alpha = 0.15f), CircleShape),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = null,
-                tint = PremiumAccent,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(14.dp),
             )
         }
@@ -520,18 +526,18 @@ private fun PlanCard(
     onClick: () -> Unit,
 ) {
     val borderColor = when {
-        selected -> PremiumAccent
-        recommended -> PremiumAccent.copy(alpha = 0.45f)
+        selected -> MaterialTheme.colorScheme.primary
+        recommended -> MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
         else -> MaterialTheme.colorScheme.outlineVariant
     }
     val containerColor = when {
-        selected -> PremiumAccent.copy(alpha = 0.10f)
+        selected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
         else -> MaterialTheme.colorScheme.surface
     }
 
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
+        shape = FlatHubTheme.shapes.medium,
         color = containerColor,
         border = BorderStroke(if (selected) 2.dp else 1.dp, borderColor),
         modifier = Modifier.fillMaxWidth(),
@@ -552,14 +558,14 @@ private fun PlanCard(
                     if (recommended) {
                         Spacer(Modifier.width(8.dp))
                         Surface(
-                            shape = RoundedCornerShape(50),
-                            color = PremiumAccent,
+                            shape = FlatHubTheme.shapes.full,
+                            color = MaterialTheme.colorScheme.primary,
                         ) {
                             Text(
                                 text = stringResource(Res.string.premium_recommended),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
@@ -568,7 +574,7 @@ private fun PlanCard(
                     Spacer(Modifier.height(4.dp))
                     Text(
                         stringResource(Res.string.premium_savings, percent),
-                        color = PremiumAccent,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Medium,
                     )
