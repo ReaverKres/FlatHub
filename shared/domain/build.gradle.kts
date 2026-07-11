@@ -5,20 +5,13 @@ plugins {
 }
 
 kotlin {
-
-    androidLibrary {
+    android {
         namespace = "io.flatzen.domain"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     val xcfName = "shared:domainKit"
-
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
 
     iosArm64 {
         binaries.framework {
@@ -39,8 +32,6 @@ kotlin {
                 implementation(project(":shared:data"))
                 implementation(project(":shared:commoncomponents"))
 
-
-                // Add KMP dependencies here
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
@@ -50,9 +41,7 @@ kotlin {
 
         iosMain {
             dependencies {
-
             }
         }
     }
-
 }

@@ -5,20 +5,13 @@ plugins {
 }
 
 kotlin {
-
-    androidLibrary {
+    android {
         namespace = "io.flatzen.commoncomponents"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     val xcfName = "shared:commoncomponentsKit"
-
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
 
     iosArm64 {
         binaries.framework {
@@ -35,7 +28,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // Add KMP dependencies here
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
@@ -48,8 +40,6 @@ kotlin {
             dependencies {
                 implementation(libs.appmetrica.analytics)
                 implementation(project.dependencies.platform(libs.firebase.bom))
-                // Add the dependencies for the Remote Config and Analytics libraries
-                // When using the BoM, you don't specify versions in Firebase library dependencies
                 implementation(libs.firebase.config)
                 implementation(libs.firebase.analytics)
             }
@@ -57,9 +47,7 @@ kotlin {
 
         iosMain {
             dependencies {
-
             }
         }
     }
-
 }

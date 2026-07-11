@@ -4,20 +4,25 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinxSerialization)
-    id("com.android.library")
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "io.flatzen.shared.data"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -28,7 +33,6 @@ kotlin {
     }
 
     sourceSets {
-        // указание пути к сгенерированным файлам
         commonMain {
             dependencies {
                 implementation(project(":shared:commoncomponents"))
@@ -46,7 +50,6 @@ kotlin {
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.mp.maps)
             }
-            // Добавляем путь к сгенерированным KSP файлам
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
 
@@ -63,16 +66,13 @@ kotlin {
 dependencies {
     add("kspCommonMainMetadata", libs.ktorfit.ksp)
     add("kspAndroid", libs.ktorfit.ksp)
-    add("kspIosX64", libs.ktorfit.ksp)
     add("kspIosArm64", libs.ktorfit.ksp)
     add("kspIosSimulatorArm64", libs.ktorfit.ksp)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
 
-//Launch after ktorfit api classes changed
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon>().configureEach {
     if (name != "compileKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
@@ -81,14 +81,4 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon>().configur
 
 room {
     schemaDirectory("$projectDir/schemas")
-}
-
-android {
-    namespace = "io.flatzen.shared.data"
-    compileSdk = 35
-    defaultConfig.minSdk = 24
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
 }

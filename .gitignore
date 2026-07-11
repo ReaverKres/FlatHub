@@ -1,5 +1,7 @@
 *.iml
 composeApp/release/
+x5Run/
+docs/
 .kotlin
 .gradle
 **/build/

@@ -3,18 +3,23 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.composeCompiler)
-    id("com.android.library")
 }
 
 kotlin {
-    androidTarget {
+    android {
+        namespace = "io.flatzen.shared.presentation"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -36,8 +41,6 @@ kotlin {
             api(libs.kmp.notifier)
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.notifications)
-
-            // MapComposeMP для MapState и API
             implementation(libs.mp.maps)
         }
 
@@ -45,15 +48,5 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
         }
-    }
-}
-
-android {
-    namespace = "io.flatzen.shared.presentation"
-    compileSdk = 35
-    defaultConfig.minSdk = 24
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }

@@ -1,6 +1,6 @@
 [versions]
 coroutines = "1.10.2"
-agp = "8.11.1"
+agp = "9.2.1"
 androidx-activityCompose = "1.10.1"
 androidx-ui-tooling = "1.7.8"
 coil = "3.2.0"
@@ -15,14 +15,14 @@ ktor = "3.2.1"
 ktorfit = "2.6.1"
 ksoup = "0.2.4"
 materialIconsCore = "1.7.3"
-navigationCompose = "2.9.1"
-multiplatform-nav3-ui = "1.0.0-alpha06"
+navigationCompose = "2.9.2"
+multiplatform-nav3-ui = "1.1.1"
 compose-multiplatform-lifecycle = "2.10.0-alpha07"
 mapComposeMP = "0.10.0"
 lifecycleCompose = "2.9.1"
 kotlinStdlib = "2.2.0"
 jetbrainsKotlinJvm = "2.2.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.3.9"
 dateTimeVer = "0.6.0"
 room = "2.7.2"
 sqlite = "2.5.2"
@@ -31,7 +31,12 @@ firebaseBomVer = "34.3.0"
 mokoPermissions = "0.20.1"
 kmpNotifierVer = "1.6.0"
 flowmvi = "3.3.0-alpha02"
-
+gServices = "4.4.3"
+android-compileSdk = "36"
+android-minSdk = "24"
+android-targetSdk = "36"
+android-versionCode = "10"
+android-versionName = "1.1.02"
 
 [libraries]
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -45,6 +50,7 @@ coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"
 coil-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -84,6 +90,8 @@ moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifi
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifierVer" }
 flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
 flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -96,3 +104,4 @@ jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "gServices" }

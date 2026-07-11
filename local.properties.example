@@ -1,0 +1,8 @@
+# FlatHub local.properties keys for release signing.
+# Copy values into local.properties (gitignored). Keystore .jks stays in repo root.
+
+sdk.dir=<path-to-android-sdk>
+flatzen.keystore.path=LocusKeyStore.jks
+flatzen.keystore.password=
+flatzen.key.alias=
+flatzen.key.password=
