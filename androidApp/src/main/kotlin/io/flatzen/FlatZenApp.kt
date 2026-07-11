@@ -18,7 +18,7 @@ class FlatZenApp : Application(), KoinComponent {
         var instance: FlatZenApp? = null
             private set
     }
-    
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -27,13 +27,11 @@ class FlatZenApp : Application(), KoinComponent {
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
-        
-        // Initialize Config with hardcoded API key for now
+
         Config.addAppMetricaApiKey("ff1c4b73-6829-46f8-82ff-6d3d94ad1774")
-        // Initialize AppMetrica
         initAppmetrica()
     }
-    
+
     private fun initAppmetrica() {
         val config = AppMetricaConfig
             .newConfigBuilder(Config.appMetricaApiKey)

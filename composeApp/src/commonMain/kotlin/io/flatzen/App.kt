@@ -42,6 +42,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.navigation.AppNavDisplay
 import io.flatzen.navigation.DeepLinkParser
 import io.flatzen.navigation.DeepLinkRouter
 import io.flatzen.navigation.Navigator
@@ -253,7 +254,7 @@ fun App() {
 
                 @Suppress("UNCHECKED_CAST")
                 val provider = entryProvider as (androidx.navigation3.runtime.NavKey) -> androidx.navigation3.runtime.NavEntry<androidx.navigation3.runtime.NavKey>
-                NavDisplay(
+                AppNavDisplay(
                     entries = navigationState.toEntries(provider),
                     onBack = {
                         if (navigator.isAtRootOfStartRoute()) {
