@@ -31,6 +31,7 @@ data class UiDetailFlat(
     val savedInFavorite: Boolean,
     val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
+    val disliked: Boolean,
     val commercialUiInfo: CommercialUiInfo?,
     val flatUrl: String,
     val description: String,
@@ -91,8 +92,13 @@ data class PropertyTypeUi(
 
 // Intent
 sealed interface FlatDetailIntent : MVIIntent {
-    data class LoadFlatDetails(val flatPlatform: FlatPlatform, val flatId: Long) : FlatDetailIntent
+    data class LoadFlatDetails(
+        val flatPlatform: FlatPlatform,
+        val flatId: Long,
+        val markAsViewed: Boolean = true,
+    ) : FlatDetailIntent
     data class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FlatDetailIntent
+    data class ClearDislike(val flatPlatform: FlatPlatform, val adId: Long) : FlatDetailIntent
     data class TrackScreenView(
         val screenName: String,
         val parameters: Map<String, Any> = emptyMap()

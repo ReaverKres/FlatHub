@@ -55,6 +55,7 @@ data class UiFlat(
     val savedInFavorite: Boolean,
     val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
+    val disliked: Boolean,
     val imageUrls: ImmutableList<String>,
     val mainPrice: Double?,
     val localPrice: Double?,
@@ -64,6 +65,7 @@ data class UiFlat(
     val publishedAt: String?,
     val metroStation: String?,
     val address: String,
+    val description: String,
     val coordinates: Coordinates?,
 ) {
     companion object {
@@ -92,6 +94,7 @@ data class UiFlat(
                     savedInFavorite = it.savedInFavorites,
                     saveInFavoriteInProgress = false,
                     isViewed = it.isViewed,
+                    disliked = it.dislike,
                     localPrice = it.priceByn,
                     mainPrice = it.priceUsd,
                     priceText = it.getPricesText(),
@@ -105,6 +108,7 @@ data class UiFlat(
                     totalArea = it.totalArea?.toInt().toNullableString(),
                     publishedAt = it.publishedAtUi,
                     address = it.address.orEmpty(),
+                    description = it.description.orEmpty(),
                     metroStation = if (it.metroStation.isNullOrBlank()) {
                         null
                     } else {

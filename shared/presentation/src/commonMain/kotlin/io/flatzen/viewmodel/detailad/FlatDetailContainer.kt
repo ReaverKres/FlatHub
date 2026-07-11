@@ -57,6 +57,7 @@ class FlatDetailContainer(
             when (intent) {
                 is FlatDetailIntent.LoadFlatDetails -> handleLoadFlatDetails(intent)
                 is FlatDetailIntent.ClickOnFavorite -> handleClickOnFavorite(intent)
+                is FlatDetailIntent.ClearDislike -> handleClearDislike(intent)
                 is FlatDetailIntent.TrackScreenView -> {
                     launch {
                         analyticsManager.registerEvent(
@@ -75,7 +76,11 @@ class FlatDetailContainer(
     }
 
     private suspend fun FlatDetailCtx.handleLoadFlatDetails(intent: FlatDetailIntent.LoadFlatDetails) {
-        mergedRepository.getFlatByIdWithDetails(intent.flatPlatform, intent.flatId).asLCE()
+        mergedRepository.getFlatByIdWithDetails(
+            flatPlatform = intent.flatPlatform,
+            flatId = intent.flatId,
+            markAsViewed = intent.markAsViewed,
+        ).asLCE()
             .collect { lce ->
                 when (lce) {
                     is LCE.Loading -> updateState { copy(isLoading = true, error = null) }
@@ -112,9 +117,24 @@ class FlatDetailContainer(
                             copy(
                                 flat = flat?.copy(
                                     saveInFavoriteInProgress = false,
-                                    savedInFavorite = lce.value.savedInFavorites
+                                    savedInFavorite = lce.value.savedInFavorites,
+                                    disliked = lce.value.dislike,
                                 )
                             )
+                        }
+                    }
+                }
+            }
+    }
+
+    private suspend fun FlatDetailCtx.handleClearDislike(intent: FlatDetailIntent.ClearDislike) {
+        mergedRepository.setFlatDisliked(intent.flatPlatform, intent.adId, disliked = false)
+            .asLCE()
+            .collect { lce ->
+                if (lce is LCE.Content) {
+                    lce.value?.let { updated ->
+                        updateState {
+                            copy(flat = flat?.copy(disliked = updated.dislike))
                         }
                     }
                 }
@@ -125,9 +145,10 @@ class FlatDetailContainer(
         return UiDetailFlat(
             adId = appFlat.adId,
             isDetailDataLoaded = appFlat.flatDevInfo.isDetailLoaded,
-            isViewed = true,
+            isViewed = appFlat.isViewed,
             savedInFavorite = appFlat.savedInFavorites,
             saveInFavoriteInProgress = false,
+            disliked = appFlat.dislike,
             platform = appFlat.flatPlatform,
             commercialUiInfo = if (appFlat.commercialInfo?.propertyType != null) {
                 CommercialUiInfo(

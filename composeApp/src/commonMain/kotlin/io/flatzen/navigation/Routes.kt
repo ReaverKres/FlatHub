@@ -18,6 +18,9 @@ sealed interface Route : NavKey {
     data object Favorites : Route
 
     @Serializable
+    data object Swipe : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable
@@ -25,7 +28,11 @@ sealed interface Route : NavKey {
 
     // Detail
     @Serializable
-    data class Detail(val flatPlatform: String, val objectId: Long) : Route
+    data class Detail(
+        val flatPlatform: String,
+        val objectId: Long,
+        val markAsViewedOnOpen: Boolean = true,
+    ) : Route
 
     // Modals / nested screens
     @Serializable

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,20 +36,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.domovita32
 import flatzen.composeapp.generated.resources.eye
+import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.kufar32
 import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.realt32
-import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun SwipeCardsIcon(
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null,
+    tint: Color = LocalContentColor.current,
+) {
+    AsyncImage(
+        model = Res.getUri("drawable/swipe_cards.svg"),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = ContentScale.Fit,
+        colorFilter = ColorFilter.tint(tint),
+    )
+}
 
 
 @Composable
@@ -60,7 +80,9 @@ fun FlatImagePager(
     savedInFavorite: Boolean = false,
     saveInFavoriteInProgress: Boolean = false,
     isViewed: Boolean = false,
+    disliked: Boolean = false,
     clickOnFavorite: () -> Unit = {},
+    clickOnClearDislike: () -> Unit = {},
 ) {
     if (imageUrls.isNotEmpty()) {
         ImagePager(
@@ -71,10 +93,20 @@ fun FlatImagePager(
             isViewed = isViewed,
             savedInFavorite = savedInFavorite,
             saveInFavoriteInProgress = saveInFavoriteInProgress,
-            clickOnFavorite = clickOnFavorite
+            disliked = disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
         )
     } else {
-        FlatEmptyImage(flatPlatform, isViewed, savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
+        FlatEmptyImage(
+            flatPlatform = flatPlatform,
+            isViewed = isViewed,
+            savedInFavorite = savedInFavorite,
+            saveInFavoriteInProgress = saveInFavoriteInProgress,
+            disliked = disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
+        )
     }
 }
 
@@ -84,7 +116,9 @@ private fun FlatEmptyImage(
     isViewed: Boolean,
     savedInFavorite: Boolean,
     saveInFavoriteInProgress: Boolean,
-    clickOnFavorite: () -> Unit
+    disliked: Boolean,
+    clickOnFavorite: () -> Unit,
+    clickOnClearDislike: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -98,7 +132,13 @@ private fun FlatEmptyImage(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        AddToFavoriteIcon(savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
+        AddToFavoriteIcon(
+            savedInFavorite = savedInFavorite,
+            saveInFavoriteInProgress = saveInFavoriteInProgress,
+            disliked = disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
+        )
         PlatformIcon(flatPlatform)
         if (isViewed) {
             EyeIcon()
@@ -115,7 +155,9 @@ private fun ImagePager(
     isViewed: Boolean,
     savedInFavorite: Boolean = false,
     clickOnFavorite: () -> Unit = {},
+    clickOnClearDislike: () -> Unit = {},
     saveInFavoriteInProgress: Boolean,
+    disliked: Boolean,
 ) {
     val pagerState = rememberPagerState { imageUrls.size }
 
@@ -133,13 +175,18 @@ private fun ImagePager(
             )
         }
 
-        AddToFavoriteIcon(savedInFavorite, saveInFavoriteInProgress, clickOnFavorite)
+        AddToFavoriteIcon(
+            savedInFavorite = savedInFavorite,
+            saveInFavoriteInProgress = saveInFavoriteInProgress,
+            disliked = disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
+        )
         PlatformIcon(flatPlatform)
         if (isViewed) {
             EyeIcon()
         }
 
-        // Индикатор страниц
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -167,7 +214,9 @@ private fun ImagePager(
 fun BoxScope.AddToFavoriteIcon(
     savedInFavorite: Boolean = false,
     saveInFavoriteInProgress: Boolean = false,
-    clickOnFavorite: () -> Unit = {}
+    disliked: Boolean = false,
+    clickOnFavorite: () -> Unit = {},
+    clickOnClearDislike: () -> Unit = {},
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (saveInFavoriteInProgress) 360f else 0f,
@@ -180,17 +229,29 @@ fun BoxScope.AddToFavoriteIcon(
             tween(durationMillis = 300)
         }
     )
-    Icon(
-        imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-        contentDescription = stringResource(Res.string.tab_favorites),
-        tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .clickable { clickOnFavorite() }
-            .padding(8.dp)
-            .size(24.dp)
-            .rotate(rotation)
-    )
+    if (disliked) {
+        SwipeCardsIcon(
+            contentDescription = null,
+            tint = Color.Blue.copy(alpha = 0.7f),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .clickable { clickOnClearDislike() }
+                .padding(8.dp)
+                .size(24.dp),
+        )
+    } else {
+        Icon(
+            imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            contentDescription = stringResource(Res.string.tab_favorites),
+            tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .clickable { clickOnFavorite() }
+                .padding(8.dp)
+                .size(24.dp)
+                .rotate(rotation)
+        )
+    }
 }
 
 @Composable

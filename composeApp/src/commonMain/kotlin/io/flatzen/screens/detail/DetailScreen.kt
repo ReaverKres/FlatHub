@@ -78,7 +78,6 @@ import flatzen.composeapp.generated.resources.detail_year_suffix
 import flatzen.composeapp.generated.resources.filter_property_type
 import flatzen.composeapp.generated.resources.filter_rooms_count
 import flatzen.composeapp.generated.resources.list_rooms_suffix
-import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.utils.formatMainPrice
@@ -102,6 +101,7 @@ import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,13 +110,20 @@ fun DetailScreen(
     objectId: Long,
     navigateBack: () -> Unit,
     navigateToMap: (flatId: Long) -> Unit,
+    markAsViewedOnOpen: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val container: FlatDetailContainer = container()
     val state by container.store.subscribe()
 
     LaunchedEffectOnce(objectId) {
-        container.store.intent(FlatDetailIntent.LoadFlatDetails(flatPlatform, objectId))
+        container.store.intent(
+            FlatDetailIntent.LoadFlatDetails(
+                flatPlatform = flatPlatform,
+                flatId = objectId,
+                markAsViewed = markAsViewedOnOpen,
+            )
+        )
         container.store.intent(
             FlatDetailIntent.TrackScreenView(
                 screenName = AppMetrcica.Screens.DETAIL,
@@ -169,6 +176,14 @@ fun DetailScreen(
                             )
                         )
                     },
+                    clickOnClearDislike = {
+                        container.store.intent(
+                            FlatDetailIntent.ClearDislike(
+                                state.flat!!.platform,
+                                state.flat!!.adId
+                            )
+                        )
+                    },
                     navigateToMap = {
                         navigateToMap(state.flat!!.adId)
                     }
@@ -188,6 +203,7 @@ private fun FlatDetailContent(
     mapState: MapState,
     modifier: Modifier = Modifier,
     clickOnFavorite: () -> Unit,
+    clickOnClearDislike: () -> Unit,
     navigateToMap: () -> Unit
 ) {
     Column(
@@ -201,7 +217,9 @@ private fun FlatDetailContent(
             contentScale = ContentScale.Fit,
             savedInFavorite = flat.savedInFavorite,
             saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
-            clickOnFavorite = clickOnFavorite
+            disliked = flat.disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
         )
 
         // Основная информация

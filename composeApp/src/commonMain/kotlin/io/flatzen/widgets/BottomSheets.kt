@@ -43,6 +43,7 @@ fun MapScreenWithFlatModalSheet(
     selectedFlat: UiFlat?,
     onFlatSelected: (UiFlat?) -> Unit,
     clickOnFavorite: (UiFlat) -> Unit,
+    clickOnClearDislike: (UiFlat) -> Unit = {},
     navigateToDetails: (FlatPlatform, Long) -> Unit,
     mapContent: @Composable () -> Unit
 ) {
@@ -62,7 +63,8 @@ fun MapScreenWithFlatModalSheet(
                             onFlatSelected(null)
                             navigateToDetails(selectedFlat.flatPlatform, selectedFlat.adId)
                         },
-                        clickOnFavorite = { clickOnFavorite(selectedFlat) }
+                        clickOnFavorite = { clickOnFavorite(selectedFlat) },
+                        clickOnClearDislike = { clickOnClearDislike(selectedFlat) },
                     )
                     selectedFlat.coordinates?.let {
                         OpenInMapButton(

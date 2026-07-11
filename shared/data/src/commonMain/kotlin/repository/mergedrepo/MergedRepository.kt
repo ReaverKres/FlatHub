@@ -15,7 +15,8 @@ interface MergedRepository {
 
     suspend fun getFlatByIdWithDetails(
         flatPlatform: FlatPlatform,
-        flatId: Long
+        flatId: Long,
+        markAsViewed: Boolean = true,
     ): Flow<AppFlat>
 
     fun clearCashedFlats()
@@ -25,4 +26,13 @@ interface MergedRepository {
     fun getFavoritesFromLocalDb(): Flow<List<AppFlat>>
 
     fun saveFlatToFavorite(flatPlatform: FlatPlatform, adId: Long): Flow<AppFlat?>
+
+    fun setFlatDisliked(
+        flatPlatform: FlatPlatform,
+        adId: Long,
+        disliked: Boolean,
+    ): Flow<AppFlat?>
+
+    /** Deletes non-favorite flats published more than ~30 days ago. */
+    suspend fun cleanupOldFlats()
 }

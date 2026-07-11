@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
@@ -21,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -61,10 +61,12 @@ import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.ReferralScreen
+import io.flatzen.screens.swipe.SwipeScreen
 import io.flatzen.themes.LocalThemeRevealController
 import io.flatzen.themes.ThemeRevealHost
 import io.flatzen.themes.resolveDark
 import io.flatzen.widgets.MessageSnackbar
+import io.flatzen.widgets.SwipeCardsIcon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.StringResource
@@ -72,13 +74,19 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import repository.userpreferences.UserPreferencesRepository
 
-private data class BottomNavItem(val route: Route, val label: StringResource, val icon: ImageVector)
+private data class BottomNavItem(
+    val route: Route,
+    val label: StringResource,
+    val icon: ImageVector? = null,
+    val useSwipeIcon: Boolean = false,
+)
 
 private val bottomNavItems = listOf(
     BottomNavItem(Route.List, Res.string.tab_home, Icons.Default.Home),
     BottomNavItem(Route.Favorites, Res.string.tab_favorites, Icons.Default.Favorite),
+    BottomNavItem(Route.Swipe, Res.string.tab_home, useSwipeIcon = true),
     BottomNavItem(Route.Map(), Res.string.tab_map, Icons.Default.LocationOn),
-    BottomNavItem(Route.Settings, Res.string.tab_more, Icons.Default.Menu)
+    BottomNavItem(Route.Settings, Res.string.tab_more, Icons.Default.Menu),
 )
 
 @Composable
@@ -96,7 +104,9 @@ fun MainGraphNavigation(
 
     val density = LocalDensity.current
     val notificationsService: NotificationsService = koinInject()
-    val topLevelRoutes = remember { setOf(Route.List, Route.Favorites, Route.Map(), Route.Settings) }
+    val topLevelRoutes = remember {
+        setOf(Route.List, Route.Favorites, Route.Swipe, Route.Map(), Route.Settings)
+    }
     val navigationState = rememberNavigationState(
         startRoute = Route.List,
         topLevelRoutes = topLevelRoutes
@@ -174,6 +184,7 @@ private fun MainGraphScaffold(
                         val isSelected = when (item.route) {
                             Route.List -> currentTopLevelRoute == Route.List
                             Route.Favorites -> currentTopLevelRoute == Route.Favorites
+                            Route.Swipe -> currentTopLevelRoute == Route.Swipe
                             Route.Settings -> currentTopLevelRoute == Route.Settings
                             is Route.Map -> currentTopLevelRoute is Route.Map
                             else -> false
@@ -187,8 +198,18 @@ private fun MainGraphScaffold(
                                     navigator.navigate(item.route)
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = label) },
-                            label = { Text(label) }
+                            icon = {
+                                if (item.useSwipeIcon) {
+                                    SwipeCardsIcon(
+                                        contentDescription = label,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                } else {
+                                    Icon(item.icon!!, contentDescription = label)
+                                }
+                            },
+                            label = null,
+                            alwaysShowLabel = false,
                         )
                     }
                 }
@@ -226,6 +247,20 @@ private fun MainGraphScaffold(
                         }
                     )
                 }
+                entry<Route.Swipe> {
+                    SwipeScreen(
+                        navigateToDetails = { platform, id ->
+                            navigator.navigate(
+                                Route.Detail(
+                                    flatPlatform = platform.name,
+                                    objectId = id,
+                                    markAsViewedOnOpen = false,
+                                )
+                            )
+                        },
+                        navigateToFilters = { navigator.navigate(Route.Filter) },
+                    )
+                }
                 entry<Route.Settings> {
                     MoreScreen(
                         navigateToFaq = { navigator.navigate(Route.Faq) },
@@ -249,6 +284,7 @@ private fun MainGraphScaffold(
                     DetailScreen(
                         flatPlatform = platform,
                         objectId = key.objectId,
+                        markAsViewedOnOpen = key.markAsViewedOnOpen,
                         navigateBack = { navigator.goBack() },
                         navigateToMap = { flatId ->
                             navigator.navigate(Route.Map(selectedMarker = flatId))
