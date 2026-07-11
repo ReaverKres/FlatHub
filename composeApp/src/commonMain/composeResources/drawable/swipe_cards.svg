@@ -1,0 +1,30 @@
+<svg fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg">
+    <rect
+        fill="none"
+        height="18"
+        rx="2"
+        stroke="#9E9E9E"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        transform="rotate(18 14 13)"
+        width="14"
+        x="7"
+        y="4" />
+    <rect
+        fill="#FFFFFF"
+        height="18"
+        rx="2"
+        stroke="#9E9E9E"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        transform="rotate(-12 10 10)"
+        width="14"
+        x="3"
+        y="0" />
+</svg>

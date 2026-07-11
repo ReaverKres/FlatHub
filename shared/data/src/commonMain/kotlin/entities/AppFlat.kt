@@ -25,6 +25,7 @@ data class AppFlat(
     @Embedded val commercialInfo: CommercialInfo?,
     val savedInFavorites: Boolean = false,
     val isViewed: Boolean = false,
+    val dislike: Boolean = false,
     val flatPlatform: FlatPlatform,
     val flatDetailUrl: String,
     val publishedAt: Instant?,

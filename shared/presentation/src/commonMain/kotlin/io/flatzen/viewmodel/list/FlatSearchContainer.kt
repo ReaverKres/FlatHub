@@ -91,6 +91,9 @@ class FlatSearchContainer(
                 is FlatListIntent.SearchFlats -> handleSearchFlats(intent)
 
                 is FlatListIntent.ClickOnFavorite -> handleClickOnFavorite(intent)
+                is FlatListIntent.ClearDislike -> handleClearDislike(intent)
+                is FlatListIntent.SetDisliked -> handleSetDisliked(intent)
+                is FlatListIntent.PrefetchDetail -> handlePrefetchDetail(intent)
 
                 is FlatListIntent.LoadDbFlats -> handleLoadDbFlats(intent)
 
@@ -155,6 +158,10 @@ class FlatSearchContainer(
                                     flatOnScreen.copy(
                                         savedInFavorite = flatFromDb.savedInFavorites,
                                         isViewed = flatFromDb.isViewed,
+                                        disliked = flatFromDb.dislike,
+                                        description = flatFromDb.description.orEmpty().ifEmpty {
+                                            flatOnScreen.description
+                                        },
                                         imageUrls = (flatFromDb.imageUrls ?: flatOnScreen.imageUrls).toImmutableList()
                                     )
                                 } else flatOnScreen
@@ -186,6 +193,10 @@ class FlatSearchContainer(
 
         userPreferencesRepository.getUserPreferences().firstOrNull()?.let { preferences ->
             updateState { copy(isListView = preferences.isListView) }
+        }
+
+        launch(Dispatchers.IO) {
+            mergedRepository.cleanupOldFlats()
         }
     }
 
@@ -268,6 +279,7 @@ class FlatSearchContainer(
                                     if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
                                         uiFlat.copy(
                                             savedInFavorite = updatedFlat.savedInFavorites,
+                                            disliked = updatedFlat.dislike,
                                             saveInFavoriteInProgress = false
                                         )
                                     } else uiFlat
@@ -277,6 +289,59 @@ class FlatSearchContainer(
                     }
                 }
             }
+    }
+
+    private suspend fun PipeCtx.handleClearDislike(intent: FlatListIntent.ClearDislike) {
+        mergedRepository.setFlatDisliked(intent.flatPlatform, intent.adId, disliked = false)
+            .asLCE()
+            .collect { lce ->
+                if (lce is LCE.Content) {
+                    val updatedFlat = lce.value
+                    updateState {
+                        copy(
+                            flatList = flatList.map { uiFlat ->
+                                if (uiFlat.adId == updatedFlat?.adId &&
+                                    uiFlat.flatPlatform == updatedFlat.flatPlatform
+                                ) {
+                                    uiFlat.copy(disliked = updatedFlat.dislike)
+                                } else uiFlat
+                            }.toImmutableList()
+                        )
+                    }
+                }
+            }
+    }
+
+    private suspend fun PipeCtx.handleSetDisliked(intent: FlatListIntent.SetDisliked) {
+        mergedRepository.setFlatDisliked(intent.flatPlatform, intent.adId, disliked = true)
+            .asLCE()
+            .collect { lce ->
+                if (lce is LCE.Content) {
+                    val updatedFlat = lce.value
+                    updateState {
+                        copy(
+                            flatList = flatList.map { uiFlat ->
+                                if (uiFlat.adId == updatedFlat?.adId &&
+                                    uiFlat.flatPlatform == updatedFlat.flatPlatform
+                                ) {
+                                    uiFlat.copy(
+                                        disliked = updatedFlat.dislike,
+                                        savedInFavorite = updatedFlat.savedInFavorites,
+                                    )
+                                } else uiFlat
+                            }.toImmutableList()
+                        )
+                    }
+                }
+            }
+    }
+
+    private suspend fun PipeCtx.handlePrefetchDetail(intent: FlatListIntent.PrefetchDetail) {
+        mergedRepository.getFlatByIdWithDetails(
+            flatPlatform = intent.flatPlatform,
+            flatId = intent.adId,
+            markAsViewed = intent.markAsViewed,
+        ).asLCE().collect { /* DB flow updates list images/description */ }
     }
 
     private suspend fun PipeCtx.handleLoadDbFlats(intent: FlatListIntent.LoadDbFlats) {

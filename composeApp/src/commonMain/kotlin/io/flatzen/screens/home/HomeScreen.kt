@@ -83,7 +83,6 @@ import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
-import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -121,6 +120,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -315,6 +315,14 @@ fun HomeScreen(
                         clickOnFavorite = {
                             flatSearchContainer.store.intent(
                                 FlatListIntent.ClickOnFavorite(
+                                    it.flatPlatform,
+                                    it.adId
+                                )
+                            )
+                        },
+                        clickOnClearDislike = {
+                            flatSearchContainer.store.intent(
+                                FlatListIntent.ClearDislike(
                                     it.flatPlatform,
                                     it.adId
                                 )
@@ -778,6 +786,7 @@ fun FlatList(
     isListView: Boolean? = null,
     onFlatClick: (UiFlat) -> Unit,
     clickOnFavorite: (UiFlat) -> Unit,
+    clickOnClearDislike: (UiFlat) -> Unit = {},
     onLoadMore: (Int) -> Unit,
     topContent: LazyListScope.() -> Unit = {},
     bottomContent: LazyListScope.() -> Unit = {}
@@ -819,6 +828,9 @@ fun FlatList(
                     onClick = { onFlatClick(flat) },
                     clickOnFavorite = {
                         clickOnFavorite(flat)
+                    },
+                    clickOnClearDislike = {
+                        clickOnClearDislike(flat)
                     }
                 )
             }
@@ -840,6 +852,9 @@ fun FlatList(
                             clickOnFavorite = {
                                 clickOnFavorite(flat)
                             },
+                            clickOnClearDislike = {
+                                clickOnClearDislike(flat)
+                            },
                             modifier = Modifier.weight(1f)
                         )
                     } ?: Spacer(Modifier.weight(1f))
@@ -851,6 +866,9 @@ fun FlatList(
                             onClick = { onFlatClick(flat) },
                             clickOnFavorite = {
                                 clickOnFavorite(flat)
+                            },
+                            clickOnClearDislike = {
+                                clickOnClearDislike(flat)
                             },
                             modifier = Modifier.weight(1f)
                         )
@@ -883,7 +901,8 @@ private fun ListFlatCard(
     modifier: Modifier = Modifier,
     flat: UiFlat,
     onClick: () -> Unit,
-    clickOnFavorite: () -> Unit
+    clickOnFavorite: () -> Unit,
+    clickOnClearDislike: () -> Unit = {},
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -893,7 +912,8 @@ private fun ListFlatCard(
         FlatItemContent(
             flat = flat,
             onClick = onClick,
-            clickOnFavorite = clickOnFavorite
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
         )
     }
 }
@@ -903,7 +923,8 @@ private fun GridFlatCard(
     modifier: Modifier = Modifier,
     flat: UiFlat,
     onClick: () -> Unit,
-    clickOnFavorite: () -> Unit
+    clickOnFavorite: () -> Unit,
+    clickOnClearDislike: () -> Unit = {},
 ) {
     Card(
         onClick = onClick,
@@ -926,7 +947,9 @@ private fun GridFlatCard(
                 isViewed = flat.isViewed,
                 savedInFavorite = flat.savedInFavorite,
                 saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
-                clickOnFavorite = clickOnFavorite
+                disliked = flat.disliked,
+                clickOnFavorite = clickOnFavorite,
+                clickOnClearDislike = clickOnClearDislike,
             )
 
             Spacer(Modifier.height(16.dp))

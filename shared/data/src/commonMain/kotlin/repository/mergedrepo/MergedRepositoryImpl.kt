@@ -24,6 +24,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 import repository.domovita.DomovitaRepository
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
@@ -100,6 +104,7 @@ class MergedRepositoryImpl(
                                 adType = filter.adType,
                                 savedInFavorites = fromDb?.savedInFavorites == true,
                                 isViewed = fromDb?.isViewed == true,
+                                dislike = fromDb?.dislike == true,
                                 priceUsdSquare = priceUsdSquare,
                                 priceBynSquare = priceBynSquare
                             )
@@ -131,7 +136,8 @@ class MergedRepositoryImpl(
 
     override suspend fun getFlatByIdWithDetails(
         flatPlatform: FlatPlatform,
-        flatId: Long
+        flatId: Long,
+        markAsViewed: Boolean,
     ): Flow<AppFlat> {
         val detailFlat = when (flatPlatform) {
             FlatPlatform.KUFAR -> kufarRepository.getFlatByIdWithDetails(flatId)
@@ -139,8 +145,10 @@ class MergedRepositoryImpl(
             FlatPlatform.REALT -> realtRepository.getFlatByIdWithDetails(flatId)
             FlatPlatform.DOMOVITA -> domovitaRepository.getFlatByIdWithDetails(flatId)
         }.flowOn(Dispatchers.IO)
-        return detailFlat.mapNotNull {
-            it?.copy(isViewed = true)
+        return detailFlat.mapNotNull { flat ->
+            flat?.let {
+                if (markAsViewed) it.copy(isViewed = true) else it
+            }
         }.onEach { updatedFlat ->
             withContext(Dispatchers.IO) { flatsDao.upsert(updatedFlat) }
         }.catch {
@@ -351,11 +359,44 @@ class MergedRepositoryImpl(
                     flatFromDb = flatFromDbWithDetail
                 }
             }
+            val willBeFavorite = flatFromDb.savedInFavorites.not()
             val updated = flatFromDb.copy(
-                savedInFavorites = flatFromDb.savedInFavorites.not()
+                savedInFavorites = willBeFavorite,
+                dislike = if (willBeFavorite) false else flatFromDb.dislike,
             )
             flatsDao.upsert(updated)
             emit(flatsDao.getById(adId))
+        }
+    }
+
+    override fun setFlatDisliked(
+        flatPlatform: FlatPlatform,
+        adId: Long,
+        disliked: Boolean,
+    ): Flow<AppFlat?> {
+        val source: Flow<AppFlat> = when (flatPlatform) {
+            FlatPlatform.KUFAR -> kufarRepository.getFlatById(adId)
+            FlatPlatform.ONLINER -> onlinerRepository.getFlatById(adId)
+            FlatPlatform.REALT -> realtRepository.getFlatById(adId)
+            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(adId)
+        }
+        return flow {
+            val flatFromDb = source.last()
+            val updated = flatFromDb.copy(
+                dislike = disliked,
+                savedInFavorites = if (disliked) false else flatFromDb.savedInFavorites,
+            )
+            flatsDao.upsert(updated)
+            emit(flatsDao.getById(adId))
+        }
+    }
+
+    override suspend fun cleanupOldFlats() {
+        val threshold = Clock.System.now()
+            .minus(30, DateTimeUnit.DAY, TimeZone.UTC)
+            .toEpochMilliseconds()
+        withContext(Dispatchers.IO) {
+            flatsDao.deleteNonFavoritesOlderThan(threshold)
         }
     }
 }

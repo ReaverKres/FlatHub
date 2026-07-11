@@ -28,4 +28,15 @@ interface FlatsDao {
 
     @Query("DELETE FROM AppFlat")
     suspend fun clearAll()
+
+    /** Drops non-favorite flats whose publication time is older than [thresholdEpochMs]. */
+    @Query(
+        """
+        DELETE FROM AppFlat
+        WHERE savedInFavorites = 0
+          AND publishedAt IS NOT NULL
+          AND publishedAt < :thresholdEpochMs
+        """
+    )
+    suspend fun deleteNonFavoritesOlderThan(thresholdEpochMs: Long)
 }

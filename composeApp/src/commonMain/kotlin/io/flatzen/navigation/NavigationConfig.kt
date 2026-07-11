@@ -10,6 +10,7 @@ val navigationConfig = SavedStateConfiguration {
         polymorphic(NavKey::class) {
             subclass(Route.List::class, Route.List.serializer())
             subclass(Route.Favorites::class, Route.Favorites.serializer())
+            subclass(Route.Swipe::class, Route.Swipe.serializer())
             subclass(Route.Settings::class, Route.Settings.serializer())
             subclass(Route.Map::class, Route.Map.serializer())
             subclass(Route.Detail::class, Route.Detail.serializer())

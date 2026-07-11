@@ -183,7 +183,8 @@ class NotificationListContainer(
                                     if (uiFlat.adId == updatedFlat?.adId && uiFlat.flatPlatform == updatedFlat.flatPlatform) {
                                         uiFlat.copy(
                                             savedInFavorite = updatedFlat.savedInFavorites,
-                                            saveInFavoriteInProgress = false
+                                            saveInFavoriteInProgress = false,
+                                            disliked = updatedFlat.dislike,
                                         )
                                     } else uiFlat
                                 }.toImmutableList()
@@ -259,6 +260,7 @@ class NotificationListContainer(
                                 uiFlat.copy(
                                     savedInFavorite = flatFromDb.savedInFavorites,
                                     isViewed = flatFromDb.isViewed,
+                                    disliked = flatFromDb.dislike,
                                     imageUrls = (flatFromDb.imageUrls ?: uiFlat.imageUrls).toImmutableList()
                                 )
                             } else uiFlat

@@ -63,7 +63,6 @@ import flatzen.composeapp.generated.resources.map_too_many_objects
 import flatzen.composeapp.generated.resources.map_undo
 import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
-import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.utils.LaunchedEffectOnce
@@ -85,8 +84,8 @@ import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
-import org.koin.compose.koinInject
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -103,6 +102,7 @@ import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalClusteringApi::class,
@@ -331,6 +331,14 @@ fun MapScreen(
         clickOnFavorite = {
             flatSearchContainer.intent(
                 FlatListIntent.ClickOnFavorite(
+                    it.flatPlatform,
+                    it.adId
+                )
+            )
+        },
+        clickOnClearDislike = {
+            flatSearchContainer.intent(
+                FlatListIntent.ClearDislike(
                     it.flatPlatform,
                     it.adId
                 )
@@ -594,7 +602,8 @@ fun RoomMarker(
 fun FlatItemContent(
     flat: UiFlat,
     onClick: () -> Unit,
-    clickOnFavorite: () -> Unit
+    clickOnFavorite: () -> Unit,
+    clickOnClearDislike: () -> Unit = {},
 ) {
     // Вариация FlatCard для BottomSheet: компактная высота изображения, более плотные отступы
     Column(
@@ -612,7 +621,9 @@ fun FlatItemContent(
             isViewed = flat.isViewed,
             savedInFavorite = flat.savedInFavorite,
             saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
-            clickOnFavorite = clickOnFavorite
+            disliked = flat.disliked,
+            clickOnFavorite = clickOnFavorite,
+            clickOnClearDislike = clickOnClearDislike,
         )
 
         Spacer(Modifier.height(8.dp))
