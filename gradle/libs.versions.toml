@@ -38,6 +38,9 @@ android-targetSdk = "36"
 android-versionCode = "10"
 android-versionName = "1.1.02"
 collections-immutable = "0.5.1"
+datastore = "1.1.7"
+billing = "7.1.1"
+applovin = "13.3.1"
 
 [libraries]
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -92,6 +95,10 @@ moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifi
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifierVer" }
 flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
 flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
+applovin-sdk = { module = "com.applovin:applovin-sdk", version.ref = "applovin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 

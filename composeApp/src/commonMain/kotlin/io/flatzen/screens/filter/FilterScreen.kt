@@ -46,12 +46,11 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import flatzen.composeapp.generated.resources.Res
-import flatzen.composeapp.generated.resources.add
 import flatzen.composeapp.generated.resources.back
 import flatzen.composeapp.generated.resources.delete
 import flatzen.composeapp.generated.resources.filter_active_areas_prefix
-import flatzen.composeapp.generated.resources.filter_address_prefix
 import flatzen.composeapp.generated.resources.filter_add_to_my_filters
+import flatzen.composeapp.generated.resources.filter_address_prefix
 import flatzen.composeapp.generated.resources.filter_area
 import flatzen.composeapp.generated.resources.filter_booking_date
 import flatzen.composeapp.generated.resources.filter_deal_type
@@ -76,7 +75,6 @@ import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.from
 import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.to
-import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
@@ -119,6 +117,7 @@ import org.koin.core.parameter.parametersOf
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 import kotlin.time.ExperimentalTime
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
@@ -126,11 +125,18 @@ fun FilterScreen(
     navigateBack: () -> Unit,
     onOpenLocation: () -> Unit = {},
     onOpenReferralScreen: () -> Unit,
+    onOpenPremiumScreen: () -> Unit = {},
 ) {
     val filterContainer: FilterContainer = container()
+    val toastLauncher = androidx.compose.runtime.remember { io.flatzen.utils.ToastLauncher() }
     val state by filterContainer.store.subscribe { action ->
         when (action) {
             is FilterEffect.NavigateToReferralEffect -> onOpenReferralScreen()
+            is FilterEffect.NavigateToPremiumEffect -> onOpenPremiumScreen()
+            is FilterEffect.ShowToastEffect -> toastLauncher.showToast(
+                action.message,
+                io.flatzen.utils.ToastDurationType.LONG
+            )
         }
     }
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }

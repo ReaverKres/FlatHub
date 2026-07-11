@@ -38,6 +38,7 @@ kotlin {
             isStatic = true
             export(project(":shared:presentation"))
             export(project(":shared:commoncomponents"))
+            export(project(":shared:monetization"))
             export(libs.kmp.notifier)
         }
     }
@@ -52,6 +53,7 @@ kotlin {
             api(project(":shared:presentation"))
             api(project(":shared:commoncomponents"))
             implementation(project(":shared:data"))
+            api(project(":shared:monetization"))
 
             api(libs.kmp.notifier)
             implementation(compose.runtime)

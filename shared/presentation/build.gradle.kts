@@ -9,6 +9,7 @@ kotlin {
             implementation(project(":shared:commoncomponents"))
             implementation(project(":shared:data"))
             implementation(project(":shared:domain"))
+            implementation(project(":shared:monetization"))
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)

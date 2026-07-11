@@ -5,7 +5,8 @@ import ComposeApp
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     init() {
-        // Koin now initialized in MainViewController before Compose UI starts
+        // StoreKit 2 host before Compose/Koin billing starts using it.
+        FlatZenStoreKit2.install()
     }
 
     var body: some Scene {

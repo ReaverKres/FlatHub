@@ -57,5 +57,8 @@ sealed interface Route : NavKey {
     data object Referral : Route
 
     @Serializable
+    data object Premium : Route
+
+    @Serializable
     data class Notifications(val filterInNotification: String? = null) : Route
 }

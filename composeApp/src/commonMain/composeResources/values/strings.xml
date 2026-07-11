@@ -170,4 +170,34 @@
     <string name="force_update_title">Доступна новая версия</string>
     <string name="force_update_description">Текущая версия неработоспособна, пожалуйста обновите приложение</string>
     <string name="search_error_title">Произошла ошибка</string>
+
+    <string name="premium_title">Premium</string>
+    <string name="premium_subtitle">Новые квартиры без задержки и все фильтры</string>
+    <string name="premium_feature_realtime">Объявления в реальном времени</string>
+    <string name="premium_feature_location">Метро, районы, адрес, области на карте</string>
+    <string name="premium_feature_no_ads">Без рекламы</string>
+    <string name="premium_savings">Выгода %1$d%%</string>
+    <string name="premium_recommended">Рекомендуем</string>
+    <string name="premium_subscribe">Оформить подписку</string>
+    <string name="premium_restore">Восстановить покупки</string>
+    <string name="premium_watch_ad">Смотреть рекламу — 1 час Premium</string>
+    <string name="premium_upsell_banner">Квартиры с задержкой 1 ч — в Premium сразу</string>
+    <string name="premium_location_toast">Фильтры местоположения без Premium недоступны</string>
+    <string name="premium_menu">Premium</string>
+    <string name="premium_active_title">Premium активен</string>
+    <string name="premium_active_subtitle">Все возможности FlatZen уже доступны</string>
+    <string name="premium_active_until">Действует до %1$s</string>
+    <string name="premium_active_unlimited">Без срока окончания</string>
+    <string name="premium_source_store">Подписка</string>
+    <string name="premium_source_trial">Пробный период</string>
+    <string name="premium_source_rewarded">По рекламе</string>
+    <string name="premium_source_cache">Подписка</string>
+    <string name="premium_source_fallback">Режим разработки</string>
+    <string name="premium_manage">Управление подпиской</string>
+    <string name="premium_done">Готово</string>
+    <string name="premium_plans_title">Выберите план</string>
+    <string name="premium_debug_label">Debug UI</string>
+    <string name="premium_debug_auto">Авто</string>
+    <string name="premium_debug_active">Активен</string>
+    <string name="premium_debug_purchase">Покупка</string>
 </resources>

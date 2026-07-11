@@ -11,6 +11,8 @@ import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
+import io.flatzen.monetization.tier.UserTierProvider
+import io.flatzen.monetization.tier.applyFeedDelayFilter
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
@@ -41,7 +43,8 @@ class FlatSearchContainer(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val connectionMonitor: ConnectionMonitor,
     private val analyticsManager: AnalyticsManager,
-    private val configFieldsChecker: ConfigFieldsChecker
+    private val configFieldsChecker: ConfigFieldsChecker,
+    private val userTierProvider: UserTierProvider,
 ) : Container<FlatListScreenState, FlatListIntent, FlatListAction> {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -429,7 +432,12 @@ class FlatSearchContainer(
         isLoadMore: Boolean,
         isRefreshing: Boolean
     ) {
-        val uiFlatList = UiFlat.appFlatListToUiFlatList(flats)
+        val filtered = flats.applyFeedDelayFilter(
+            tier = userTierProvider.currentTier(),
+            delayMinutes = userTierProvider.feedDelayMinutes(),
+            publishedAt = { it.publishedAt },
+        )
+        val uiFlatList = UiFlat.appFlatListToUiFlatList(filtered)
         if (uiFlatList.isEmpty()) noFlatsToLoadMore = true
         updateState {
             when {

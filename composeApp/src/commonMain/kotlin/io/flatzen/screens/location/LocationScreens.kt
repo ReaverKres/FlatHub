@@ -66,15 +66,19 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.monetization.tier.UserTier
+import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.DistrictsIntent
 import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterContainer
+import io.flatzen.viewmodel.filter.FilterEffect
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 
@@ -85,9 +89,20 @@ fun LocationScreen(
     openCity: () -> Unit,
     openMetro: () -> Unit,
     openDistricts: () -> Unit,
+    openPremium: () -> Unit = {},
 ) {
     val filterContainer: FilterContainer = container()
-    val state by filterContainer.store.subscribe { }
+    val state by filterContainer.store.subscribe { action ->
+        when (action) {
+            is FilterEffect.NavigateToPremiumEffect -> openPremium()
+            is FilterEffect.ShowToastEffect -> Unit
+            is FilterEffect.NavigateToReferralEffect -> Unit
+        }
+    }
+    val userTierProvider: UserTierProvider = koinInject()
+    val isPremium = userTierProvider.currentTier() == UserTier.PREMIUM
+    val gatedMetro: () -> Unit = { if (isPremium) openMetro() else openPremium() }
+    val gatedDistricts: () -> Unit = { if (isPremium) openDistricts() else openPremium() }
 
 
     var addressInput by remember { mutableStateOf("") }
@@ -154,6 +169,10 @@ fun LocationScreen(
                 )
                 IconButton(
                     onClick = {
+                        if (!isPremium) {
+                            openPremium()
+                            return@IconButton
+                        }
                         if (addressInput.isNotBlank()) {
                             filterContainer.intent(
                                 FilterScreenAction.UpdateAddressFilter(
@@ -203,7 +222,7 @@ fun LocationScreen(
 
             if (state.filters.location?.selectedCity?.code == CityCode.MINSK) {
                 // Плитки действий (минимум метро)
-                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { openMetro() }) {
+                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { gatedMetro() }) {
                     Row(modifier = Modifier.padding(16.dp)) {
                         BadgedBox(badge = {
                             val count = state.filters.metroStationsState.filter { it.selected }.size
@@ -216,7 +235,7 @@ fun LocationScreen(
             }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
-                openDistricts()
+                gatedDistricts()
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {

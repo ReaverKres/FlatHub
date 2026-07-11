@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,12 +66,17 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.monetization.ads.AdService
+import io.flatzen.monetization.config.MonetizationRemoteConfig
+import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatListIntent
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
+import io.flatzen.widgets.RememberPremiumUpsellBanner
 import io.flatzen.widgets.SwipeableCard
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import repository.fillter.FilterRepository
@@ -92,12 +98,19 @@ private data class SwipeUndoEntry(
 fun SwipeScreen(
     navigateToDetails: (FlatPlatform, Long) -> Unit,
     navigateToFilters: () -> Unit,
+    navigateToPremium: () -> Unit = {},
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
     val filterContainer: FilterContainer = container()
     val filterScreenState by filterContainer.store.subscribe { }
     val filterRepository: FilterRepository = koinInject()
+    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
+    var swipeCount by remember { mutableIntStateOf(0) }
+    val userTierProvider: UserTierProvider = koinInject()
+    val monetizationConfig: MonetizationRemoteConfig = koinInject()
+    val adService: AdService = koinInject()
+    val swipeScope = rememberCoroutineScope()
 
     // Optimistic dismiss so the next card appears before Room/MVI finishes.
     var pendingDismissKeys by remember { mutableStateOf(emptySet<String>()) }
@@ -191,6 +204,13 @@ fun SwipeScreen(
                 FlatListIntent.ClickOnFavorite(flat.flatPlatform, flat.adId)
             )
         }
+        swipeCount += 1
+        val interval = monetizationConfig.swipeAdInterval
+        if (userTierProvider.shouldShowAds() && interval > 0 && swipeCount % interval == 0) {
+            swipeScope.launch {
+                adService.showInterstitial(monetizationConfig.interstitialAdUnit)
+            }
+        }
     }
 
     fun undoLastSwipe() {
@@ -211,6 +231,11 @@ fun SwipeScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        premiumBanner?.let { banner ->
+            Box(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
+                banner()
+            }
+        }
         when {
             isSearchLoading && deck.isEmpty() -> {
                 Box(Modifier.fillMaxSize()) {
