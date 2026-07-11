@@ -3,6 +3,7 @@ package io.flatzen.viewmodel
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.viewmodel.list.UiFlat
+import kotlinx.collections.immutable.toImmutableList
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
@@ -58,7 +59,7 @@ class FavoritesContainer(
                                     it.adId == updatedFlat.adId && it.flatPlatform == updatedFlat.flatPlatform
                                 }
                             }
-                            copy(flatList = updatedList)
+                            copy(flatList = updatedList.toImmutableList())
                         }
                     }
                 }

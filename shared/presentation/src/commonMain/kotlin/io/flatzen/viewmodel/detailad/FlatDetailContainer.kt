@@ -10,6 +10,7 @@ import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import ovh.plrapps.mapcompose.api.addLayer
@@ -142,7 +143,7 @@ class FlatDetailContainer(
             } else null,
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
-            imageUrls = appFlat.imageUrls.orEmpty(),
+            imageUrls = appFlat.imageUrls.orEmpty().toImmutableList(),
             priceUsd = appFlat.priceUsd,
             priceByn = appFlat.priceByn,
             priceText = appFlat.getPricesText(),
@@ -167,18 +168,18 @@ class FlatDetailContainer(
             balcony = appFlat.balcony,
             repairType = appFlat.repairType,
             condition = appFlat.condition,
-            windowDirection = appFlat.windowDirections.orEmpty(),
-            buildingImprovements = appFlat.buildingImprovements.orEmpty(),
-            amenities = appFlat.amenities.orEmpty(),
-            kitchenEquipment = appFlat.kitchenEquipment.orEmpty(),
+            windowDirection = appFlat.windowDirections.orEmpty().toImmutableList(),
+            buildingImprovements = appFlat.buildingImprovements.orEmpty().toImmutableList(),
+            amenities = appFlat.amenities.orEmpty().toImmutableList(),
+            kitchenEquipment = appFlat.kitchenEquipment.orEmpty().toImmutableList(),
             prepaymentType = appFlat.prepaymentType,
             yearBuilt = appFlat.yearBuilt?.toString(),
-            forWhom = appFlat.forWhom,
+            forWhom = appFlat.forWhom?.toImmutableList(),
             parkingInfo = appFlat.parkingInfo,
             isOwner = appFlat.owner,
             publishedAt = appFlat.publishedAtUi,
             contactInformation = ContactInformationUi(
-                phones = appFlat.contactInformation?.phones,
+                phones = appFlat.contactInformation?.phones?.toImmutableList(),
                 ownerName = appFlat.contactInformation?.ownerName
             ),
             coordinates = appFlat.coordinates

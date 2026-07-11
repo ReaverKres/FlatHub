@@ -14,6 +14,9 @@ import io.flatzen.viewmodel.detailad.PropertyTypeUi
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import pro.respawn.flowmvi.api.MVIState
 
 @Immutable
@@ -23,7 +26,7 @@ data class FlatListScreenState(
     val isLoadingMore: Boolean,
     val noFlatsToLoadMore: Boolean,
     val isAnyFilterApplied: Boolean,
-    val flatList: List<UiFlat>,
+    val flatList: ImmutableList<UiFlat>,
     val currentSearchPage: Int,
     val isListView: Boolean = false,
     val infoDialogState: InfoDialogState? = null,
@@ -34,7 +37,7 @@ data class FlatListScreenState(
             isLoading = true,
             isRefreshing = false,
             isLoadingMore = false,
-            flatList = emptyList(),
+            flatList = persistentListOf(),
             noFlatsToLoadMore = false,
             isAnyFilterApplied = false,
             currentSearchPage = 1
@@ -52,7 +55,7 @@ data class UiFlat(
     val savedInFavorite: Boolean,
     val saveInFavoriteInProgress: Boolean,
     val isViewed: Boolean,
-    val imageUrls: List<String>,
+    val imageUrls: ImmutableList<String>,
     val mainPrice: Double?,
     val localPrice: Double?,
     val priceText: PriceText,
@@ -64,7 +67,7 @@ data class UiFlat(
     val coordinates: Coordinates?,
 ) {
     companion object {
-        fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): List<UiFlat> {
+        fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): ImmutableList<UiFlat> {
             return appFlatList.map {
                 UiFlat(
                     adId = it.adId,
@@ -85,7 +88,7 @@ data class UiFlat(
                     } else {
                         null
                     },
-                    imageUrls = it.imageUrls ?: listOf(),
+                    imageUrls = (it.imageUrls ?: emptyList()).toImmutableList(),
                     savedInFavorite = it.savedInFavorites,
                     saveInFavoriteInProgress = false,
                     isViewed = it.isViewed,
@@ -109,7 +112,7 @@ data class UiFlat(
                     },
                     coordinates = it.coordinates
                 )
-            }
+            }.toImmutableList()
         }
     }
 }

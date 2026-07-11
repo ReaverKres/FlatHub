@@ -1,6 +1,8 @@
 package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -9,10 +11,10 @@ import pro.respawn.flowmvi.api.MVIState
 @Immutable
 data class DistrictsState(
     val isLoading: Boolean,
-    val districts: List<UiDistrict>
+    val districts: ImmutableList<UiDistrict>
 ) : MVIState {
     companion object {
-        val Initial = DistrictsState(isLoading = true, districts = emptyList())
+        val Initial = DistrictsState(isLoading = true, districts = persistentListOf())
     }
 }
 

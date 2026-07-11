@@ -3,6 +3,8 @@ package io.flatzen.viewmodel
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.viewmodel.list.UiFlat
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -11,10 +13,10 @@ import pro.respawn.flowmvi.api.MVIState
 @Immutable
 data class FavoritesState(
     val isLoading: Boolean,
-    val flatList: List<UiFlat>
+    val flatList: ImmutableList<UiFlat>
 ) : MVIState {
     companion object {
-        val Initial = FavoritesState(isLoading = true, flatList = emptyList())
+        val Initial = FavoritesState(isLoading = true, flatList = persistentListOf())
     }
 }
 

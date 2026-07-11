@@ -17,6 +17,7 @@ kotlin {
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.notifications)
             implementation(libs.mp.maps)
+            implementation(libs.kotlinx.collections.immutable)
         }
 
         androidMain.dependencies {
