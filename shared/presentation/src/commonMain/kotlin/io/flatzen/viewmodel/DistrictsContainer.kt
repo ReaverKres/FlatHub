@@ -3,6 +3,7 @@ package io.flatzen.viewmodel
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.mappers.LocationUiMapper
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
@@ -36,7 +37,7 @@ class DistrictsContainer(
                 is LCE.Error -> updateState { copy(isLoading = false) }
                 is LCE.Content -> {
                     val uiDistricts = UiDistrict.mapFromModelToUi(lce.value)
-                    updateState { copy(isLoading = false, districts = uiDistricts) }
+                    updateState { copy(isLoading = false, districts = uiDistricts.toImmutableList()) }
                 }
             }
         }

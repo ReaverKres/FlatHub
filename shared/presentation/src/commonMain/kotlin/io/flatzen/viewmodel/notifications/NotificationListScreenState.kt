@@ -6,6 +6,8 @@ import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.filter.mapFilterModelToFilterState
 import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import pro.respawn.flowmvi.api.MVIState
 
 @Immutable
@@ -14,11 +16,11 @@ data class NotificationListScreenState(
     val isRefreshing: Boolean,
     val isLoadingMore: Boolean,
     val noFlatsToLoadMore: Boolean,
-    val flatList: List<UiFlat>,
+    val flatList: ImmutableList<UiFlat>,
     val currentSearchPage: Int,
     val isListView: Boolean = false,
     val errorDialogState: SearchErrorDialogState? = null,
-    val subscriptions: List<SubscriptionUi> = emptyList(),
+    val subscriptions: ImmutableList<SubscriptionUi> = persistentListOf(),
     val paramsDialogText: String? = null,
     val errorText: String? = null
 ) : MviState, MVIState {
@@ -27,10 +29,10 @@ data class NotificationListScreenState(
             isLoading = true,
             isRefreshing = false,
             isLoadingMore = false,
-            flatList = emptyList(),
+            flatList = persistentListOf(),
             noFlatsToLoadMore = false,
             currentSearchPage = currentSearchPage,
-            subscriptions = emptyList(),
+            subscriptions = persistentListOf(),
             paramsDialogText = null,
             errorText = null
         )

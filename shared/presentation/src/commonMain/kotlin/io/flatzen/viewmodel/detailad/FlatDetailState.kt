@@ -6,6 +6,7 @@ import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.commoncomponents.localization.LocalizationKeys
+import kotlinx.collections.immutable.ImmutableList
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -33,7 +34,7 @@ data class UiDetailFlat(
     val commercialUiInfo: CommercialUiInfo?,
     val flatUrl: String,
     val description: String,
-    val imageUrls: List<String>,
+    val imageUrls: ImmutableList<String>,
     val priceUsd: Double?,
     val priceByn: Double?,
     val priceText: PriceText,
@@ -54,13 +55,13 @@ data class UiDetailFlat(
     val balcony: String?,
     val repairType: String?,
     val condition: String?,
-    val windowDirection: List<String>,
-    val buildingImprovements: List<String>,
-    val amenities: List<String>,
-    val kitchenEquipment: List<String>,
+    val windowDirection: ImmutableList<String>,
+    val buildingImprovements: ImmutableList<String>,
+    val amenities: ImmutableList<String>,
+    val kitchenEquipment: ImmutableList<String>,
     val prepaymentType: String?,
     val yearBuilt: String?,
-    val forWhom: List<String>?,
+    val forWhom: ImmutableList<String>?,
     val parkingInfo: String?,
     val isOwner: Boolean?,
     val publishedAt: String?,
@@ -70,7 +71,7 @@ data class UiDetailFlat(
 
 @Immutable
 data class ContactInformationUi(
-    val phones: List<String>?,
+    val phones: ImmutableList<String>?,
     val ownerName: String?
 )
 

@@ -12,6 +12,8 @@ import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.viewmodel.filter.mapFilterModelToFilterState
 import io.flatzen.viewmodel.list.UiFlat
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.firstOrNull
@@ -166,7 +168,7 @@ class NotificationListContainer(
                                         if (uiFlat.adId == intent.adId && intent.flatPlatform == uiFlat.flatPlatform) {
                                             uiFlat.copy(saveInFavoriteInProgress = true)
                                         } else uiFlat
-                                    }
+                                    }.toImmutableList()
                                 )
                             }
                         }
@@ -184,7 +186,7 @@ class NotificationListContainer(
                                             saveInFavoriteInProgress = false
                                         )
                                     } else uiFlat
-                                }
+                                }.toImmutableList()
                             )
                         }
                     }
@@ -197,7 +199,7 @@ class NotificationListContainer(
             val sub = subscriptions.find { it.id == intent.id }
             sub?.let { pendingDeletedSubscriptions[intent.id] = it }
             val newList = subscriptions.filter { it.id != intent.id }
-            updateState { copy(subscriptions = newList) }
+            updateState { copy(subscriptions = newList.toImmutableList()) }
 
             launch(Dispatchers.IO) {
                 try {
@@ -221,7 +223,7 @@ class NotificationListContainer(
                 updateState {
                     copy(
                         isLoading = false,
-                        flatList = emptyList(),
+                        flatList = persistentListOf(),
                         noFlatsToLoadMore = false
                     )
                 }
@@ -237,7 +239,7 @@ class NotificationListContainer(
             } else {
                 subscriptions
             }
-            updateState { copy(subscriptions = restored, errorText = intent.message) }
+            updateState { copy(subscriptions = restored.toImmutableList(), errorText = intent.message) }
         }
     }
 
@@ -257,10 +259,10 @@ class NotificationListContainer(
                                 uiFlat.copy(
                                     savedInFavorite = flatFromDb.savedInFavorites,
                                     isViewed = flatFromDb.isViewed,
-                                    imageUrls = flatFromDb.imageUrls ?: uiFlat.imageUrls
+                                    imageUrls = (flatFromDb.imageUrls ?: uiFlat.imageUrls).toImmutableList()
                                 )
                             } else uiFlat
-                        }
+                        }.toImmutableList()
                     )
                 }
             }
@@ -297,7 +299,7 @@ class NotificationListContainer(
                                 isRefreshing = false,
                                 isLoadingMore = false,
                                 isLoading = uiSubs.isNotEmpty(),
-                                subscriptions = uiSubs
+                                subscriptions = uiSubs.toImmutableList()
                             )
                         }
                         if (uiSubs.isNotEmpty()) {
@@ -316,6 +318,7 @@ class NotificationListContainer(
                 updateState {
                     copy(
                         subscriptions = subscriptions.map { s -> s.copy(selected = s.id == intent.id) }
+                            .toImmutableList()
                     )
                 }
                 store.intent(
@@ -376,7 +379,7 @@ class NotificationListContainer(
                                     isRefreshing = false,
                                     isLoading = false,
                                     isLoadingMore = false,
-                                    flatList = flatList + uiFlatList,
+                                    flatList = (flatList + uiFlatList).toImmutableList(),
                                     currentSearchPage = currentPage
                                 )
 

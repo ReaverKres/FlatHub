@@ -14,6 +14,7 @@ import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
@@ -154,10 +155,10 @@ class FlatSearchContainer(
                                     flatOnScreen.copy(
                                         savedInFavorite = flatFromDb.savedInFavorites,
                                         isViewed = flatFromDb.isViewed,
-                                        imageUrls = flatFromDb.imageUrls ?: flatOnScreen.imageUrls
+                                        imageUrls = (flatFromDb.imageUrls ?: flatOnScreen.imageUrls).toImmutableList()
                                     )
                                 } else flatOnScreen
-                            }
+                            }.toImmutableList()
                         )
                     }
                 } else {
@@ -252,7 +253,7 @@ class FlatSearchContainer(
                                         if (uiFlat.adId == intent.adId && intent.flatPlatform == uiFlat.flatPlatform) {
                                             uiFlat.copy(saveInFavoriteInProgress = true)
                                         } else uiFlat
-                                    }
+                                    }.toImmutableList()
                                 )
                             }
                         }
@@ -270,7 +271,7 @@ class FlatSearchContainer(
                                             saveInFavoriteInProgress = false
                                         )
                                     } else uiFlat
-                                }
+                                }.toImmutableList()
                             )
                         }
                     }
@@ -372,7 +373,7 @@ class FlatSearchContainer(
                     isRefreshing = false,
                     isLoading = false,
                     isLoadingMore = false,
-                    flatList = flatList + uiFlatList,
+                    flatList = (flatList + uiFlatList).toImmutableList(),
                     currentSearchPage = filterRepository.currentHomePage
                 )
 
