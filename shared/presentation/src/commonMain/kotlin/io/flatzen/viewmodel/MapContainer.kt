@@ -2,6 +2,7 @@ package io.flatzen.viewmodel
 
 import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.utils.normalizedToLonLat
@@ -95,8 +96,8 @@ class MapContainer(
                 is MapIntent.UpdateAreaName -> updateState {
                     val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
                     val errorMessage = when {
-                        intent.name.isBlank() -> "Название области не может быть пустым"
-                        intent.name.length > 25 -> "Название области не должно превышать 25 символов"
+                        intent.name.isBlank() -> LocalizationKeys.MAP_AREA_NAME_EMPTY_ERROR
+                        intent.name.length > 25 -> LocalizationKeys.MAP_AREA_NAME_LENGTH_ERROR
                         else -> null
                     }
                     copy(

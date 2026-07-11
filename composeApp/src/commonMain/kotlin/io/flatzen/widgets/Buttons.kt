@@ -31,18 +31,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.detail_open_in_map
+import flatzen.composeapp.generated.resources.filter_commercial_rent
+import flatzen.composeapp.generated.resources.filter_commercial_sale
+import flatzen.composeapp.generated.resources.filter_daily
+import flatzen.composeapp.generated.resources.filter_rent
+import flatzen.composeapp.generated.resources.filter_sale
+import flatzen.composeapp.generated.resources.sort_cheapest
+import flatzen.composeapp.generated.resources.sort_expensive
+import flatzen.composeapp.generated.resources.sort_newest
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.utils.mapLauncher
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OpenInMapButton(
     coordinates: Coordinates,
     modifier: Modifier = Modifier,
-    buttonText: String = "Открыть на карте",
+    buttonText: String? = null,
     onMapLaunchError: (exception: Exception) -> Unit = {}
 ) {
     val mapLauncher = mapLauncher(onMapLaunchError)
@@ -57,7 +68,7 @@ fun OpenInMapButton(
             contentColor = Color.White.copy(alpha = 0.9f)
         )
     ) {
-        Text(text = buttonText)
+        Text(text = buttonText ?: stringResource(Res.string.detail_open_in_map))
     }
 }
 
@@ -70,9 +81,9 @@ fun RentSaleButtons(
 ) {
 
     val commercialAdTypeBtnText = when (lastCommercialAdType) {
-        COMMERCIAL(CommercialAdType.RENT) -> "Коммерческая (Снять)"
-        COMMERCIAL(CommercialAdType.SALE) -> "Коммерческая (Купить)"
-        else -> "Коммерческая (Снять)"
+        COMMERCIAL(CommercialAdType.RENT) -> stringResource(Res.string.filter_commercial_rent)
+        COMMERCIAL(CommercialAdType.SALE) -> stringResource(Res.string.filter_commercial_sale)
+        else -> stringResource(Res.string.filter_commercial_rent)
     }
 
     Column {
@@ -89,7 +100,7 @@ fun RentSaleButtons(
                         .height(44.dp)
                         .weight(1f, fill = false),
                     adType = AdType.RENT,
-                    adTypeBtnText = "Аренда",
+                    adTypeBtnText = stringResource(Res.string.filter_rent),
                     onClick = onClick,
                     selectedAdType = selectedAdType
                 )
@@ -103,7 +114,7 @@ fun RentSaleButtons(
                         .height(44.dp)
                         .weight(1f, fill = false),
                     adType = AdType.SALE,
-                    adTypeBtnText = "Продажа",
+                    adTypeBtnText = stringResource(Res.string.filter_sale),
                     onClick = onClick,
                     selectedAdType = selectedAdType
                 )
@@ -116,7 +127,7 @@ fun RentSaleButtons(
                         .height(44.dp)
                         .weight(1f, fill = false),
                     adType = AdType.DAILY,
-                    adTypeBtnText = "Посуточно",
+                    adTypeBtnText = stringResource(Res.string.filter_daily),
                     onClick = onClick,
                     selectedAdType = selectedAdType
                 )
@@ -238,7 +249,7 @@ fun SortOptionRadioButtons(
                 onClick = { onClick(FlatSort.NEWEST_FIRST) }
             )
             Text(
-                text = "По новизне",
+                text = stringResource(Res.string.sort_newest),
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
@@ -255,7 +266,7 @@ fun SortOptionRadioButtons(
                 onClick = { onClick(FlatSort.CHEAPEST_FIRST) }
             )
             Text(
-                text = "Сначала дешевле",
+                text = stringResource(Res.string.sort_cheapest),
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
@@ -272,7 +283,7 @@ fun SortOptionRadioButtons(
                 onClick = { onClick(FlatSort.MOST_EXPENSIVE_FIRST) }
             )
             Text(
-                text = "Сначала дороже",
+                text = stringResource(Res.string.sort_expensive),
                 modifier = Modifier.padding(start = 8.dp)
             )
         }

@@ -11,5 +11,6 @@ import database.RoomTypeConverter
 data class UserPreferences(
     @PrimaryKey val id: Int = 0,
     val isListView: Boolean = false, // false = grid, true = list
-    val deviceDocumentResponse: DeviceDocumentResponse? = null
+    val deviceDocumentResponse: DeviceDocumentResponse? = null,
+    val themeMode: String? = null, // ThemeMode.name: SYSTEM | LIGHT | DARK
 )

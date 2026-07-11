@@ -3,6 +3,7 @@ package io.flatzen.viewmodel.filter
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 
 @Immutable
 data class CommercialFilters(
@@ -14,7 +15,7 @@ data class CommercialFilters(
 data class CommercialPropertyTypeInfo(
     val selected: Boolean = false,
     val commercialPropertyType: CommercialPropertyType? = null,
-    val commercialPropertyTypeName: String? = null
+    val commercialPropertyTypeName: LocalizationKeys? = null
 ) {
     //1 - Office
 //2 - Retail premises
@@ -31,15 +32,15 @@ data class CommercialPropertyTypeInfo(
 //4 склады
 
     companion object {
-        fun commercialPropertyTypeName(commercialPropertyType: CommercialPropertyType?): String? {
+        fun commercialPropertyTypeName(commercialPropertyType: CommercialPropertyType?): LocalizationKeys? {
             return when (commercialPropertyType) {
-                CommercialPropertyType.All -> "Все"
-                CommercialPropertyType.Industrial -> "Промышленные помещения"
-                CommercialPropertyType.Office -> "Офис"
-                CommercialPropertyType.Retail -> "Торговые помещения"
-                CommercialPropertyType.Services -> "Сфера услуг"
-                CommercialPropertyType.Warehouses -> "Склады"
-                CommercialPropertyType.Other -> "Прочая коммерческая"
+                CommercialPropertyType.All -> LocalizationKeys.COMMERCIAL_PROPERTY_ALL
+                CommercialPropertyType.Industrial -> LocalizationKeys.COMMERCIAL_PROPERTY_INDUSTRIAL
+                CommercialPropertyType.Office -> LocalizationKeys.COMMERCIAL_PROPERTY_OFFICE
+                CommercialPropertyType.Retail -> LocalizationKeys.COMMERCIAL_PROPERTY_RETAIL
+                CommercialPropertyType.Services -> LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES
+                CommercialPropertyType.Warehouses -> LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES
+                CommercialPropertyType.Other -> LocalizationKeys.COMMERCIAL_PROPERTY_OTHER
                 null -> null
             }
         }

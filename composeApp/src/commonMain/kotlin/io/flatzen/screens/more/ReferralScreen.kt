@@ -43,6 +43,17 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.cancel
+import flatzen.composeapp.generated.resources.close
+import flatzen.composeapp.generated.resources.copy_success
+import flatzen.composeapp.generated.resources.error
+import flatzen.composeapp.generated.resources.referral_activate
+import flatzen.composeapp.generated.resources.referral_code
+import flatzen.composeapp.generated.resources.referral_description
+import flatzen.composeapp.generated.resources.referral_input_hint
+import flatzen.composeapp.generated.resources.referral_my_code
+import flatzen.composeapp.generated.resources.referral_notifications_available
+import flatzen.composeapp.generated.resources.referral_remaining_invites
 import io.flatzen.di.container
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -60,6 +71,7 @@ import io.github.vinceglb.confettikit.core.Spread
 import io.github.vinceglb.confettikit.core.emitter.Emitter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import kotlin.time.Duration.Companion.seconds
 
@@ -69,10 +81,11 @@ fun ReferralScreen(
     navigateBack: () -> Unit
 ) {
     val toastLauncher = remember { ToastLauncher() }
+    val copySuccessTemplate = stringResource(Res.string.copy_success, "%s")
     val copier = copyLauncher(
         onCopySuccess = { text ->
             toastLauncher.showToast(
-                "Скопировано: $text",
+                copySuccessTemplate.replace("%s", text),
                 ToastDurationType.LONG
             )
         },
@@ -99,7 +112,7 @@ fun ReferralScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
-                        "Пригласительный код",
+                        stringResource(Res.string.referral_code),
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -113,7 +126,7 @@ fun ReferralScreen(
     ) { paddingValues ->
         if (state.statsErrorMessage != null) {
             SimpleAlertDialog(
-                title = "Ошибка",
+                title = stringResource(Res.string.error),
                 message = state.statsErrorMessage ?: "",
                 onDismiss = { container.store.intent(ReferralIntent.HideStatsErrorDialog) }
             )
@@ -164,7 +177,7 @@ fun ReferralScreen(
                 ) {
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Ваш код: ${state.myCode}",
+                        text = stringResource(Res.string.referral_my_code, state.myCode),
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(12.dp))
@@ -182,13 +195,12 @@ fun ReferralScreen(
 
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "Осталось пригласить: ${state.remainingInvites}"
+                        text = stringResource(Res.string.referral_remaining_invites, state.remainingInvites.toString())
                     )
 
                     Spacer(Modifier.height(2.dp))
                     DescriptionText(
-                        text = "Чтобы получить доступ к уведомлениям, ваш пригласительный код" +
-                                " должны активировать несколько пользователей.\nПоделитесь приложением с друзьями!"
+                        text = stringResource(Res.string.referral_description)
                     )
                 }
 
@@ -200,7 +212,7 @@ fun ReferralScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         text = state.inputCode,
-                        label = "Введите пригласительный код",
+                        label = stringResource(Res.string.referral_input_hint),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
@@ -227,7 +239,7 @@ fun ReferralScreen(
                             onClick = { container.store.intent(ReferralIntent.SubmitCode) },
                             enabled = state.inputCode.isNotBlank() && state.isLoading.not() && state.codeIsLoading.not()
                         ) {
-                            Text("Активировать")
+                            Text(stringResource(Res.string.referral_activate))
                         }
                     }
                     Spacer(Modifier.height(12.dp))
@@ -236,7 +248,11 @@ fun ReferralScreen(
                 Spacer(Modifier.height(24.dp))
             }
             if (state.isNotificationAvailable) {
-                OnNotificationAvailable(navigateBack, toastLauncher)
+                OnNotificationAvailable(
+                    navigateBack = navigateBack,
+                    toastLauncher = toastLauncher,
+                    message = stringResource(Res.string.referral_notifications_available)
+                )
             }
         }
     }
@@ -245,7 +261,8 @@ fun ReferralScreen(
 @Composable
 private fun OnNotificationAvailable(
     navigateBack: () -> Unit,
-    toastLauncher: ToastLauncher
+    toastLauncher: ToastLauncher,
+    message: String
 ) {
 
     rememberCoroutineScope().launch {
@@ -253,7 +270,7 @@ private fun OnNotificationAvailable(
         navigateBack()
     }
     toastLauncher.showToast(
-        "Вам доступны уведомления",
+        message,
         ToastDurationType.LONG
     )
 

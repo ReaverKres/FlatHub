@@ -14,12 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.favorite_is_empty
+import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.home.FlatList
 import io.flatzen.viewmodel.FavoritesContainer
 import io.flatzen.viewmodel.FavoritesIntent
+import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +39,7 @@ fun FavoritesScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Избранное", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.tab_favorites), style = MaterialTheme.typography.headlineSmall) },
             )
         }) { paddingValues ->
         Box(modifier.fillMaxSize().padding(paddingValues)) {

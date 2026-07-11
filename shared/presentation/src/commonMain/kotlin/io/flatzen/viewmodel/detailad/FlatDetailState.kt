@@ -5,6 +5,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -83,7 +84,7 @@ data class CommercialUiInfo(
 @Immutable
 data class PropertyTypeUi(
     val commercialPropertyType: CommercialPropertyType? = null,
-    val commercialPropertyTypeName: String? = null
+    val commercialPropertyTypeName: LocalizationKeys? = null
 )
 
 

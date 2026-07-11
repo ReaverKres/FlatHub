@@ -27,8 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.close
+import flatzen.composeapp.generated.resources.delete
+import flatzen.composeapp.generated.resources.map_saved_areas
+import flatzen.composeapp.generated.resources.map_saved_areas_empty
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +46,7 @@ fun SavedAreasDialog(
     onDismiss: () -> Unit,
 ) {
 
-    val title = state.title ?: ""
+    val title = state.title?.let { localizedStringResource(it) } ?: stringResource(Res.string.map_saved_areas)
     val mapAreas = state.savedAreas
 
     Dialog(onDismissRequest = onDismiss) {
@@ -61,7 +68,7 @@ fun SavedAreasDialog(
                 )
 
                 if(mapAreas.isEmpty()) {
-                    Text("Сохранённные области не найдены")
+                    Text(stringResource(Res.string.map_saved_areas_empty))
                 } else {
                     LazyColumn(
                         modifier = Modifier
@@ -91,7 +98,7 @@ fun SavedAreasDialog(
                         onClick = onDismiss,
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Text("Закрыть")
+                        Text(stringResource(Res.string.close))
                     }
                 }
             }
@@ -127,7 +134,7 @@ fun SavedAreaItem(
         }) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Удалить"
+                contentDescription = stringResource(Res.string.delete)
             )
         }
         Spacer(Modifier.width(6.dp))

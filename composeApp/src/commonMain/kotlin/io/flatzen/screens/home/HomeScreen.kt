@@ -70,7 +70,20 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.filter_deal_type
+import flatzen.composeapp.generated.resources.filter_rent
+import flatzen.composeapp.generated.resources.filter_sale
+import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
+import flatzen.composeapp.generated.resources.list_load_more
+import flatzen.composeapp.generated.resources.list_no_more_flats
+import flatzen.composeapp.generated.resources.list_page
+import flatzen.composeapp.generated.resources.list_rooms_suffix
 import flatzen.composeapp.generated.resources.no_data_available
+import flatzen.composeapp.generated.resources.reset
+import flatzen.composeapp.generated.resources.sort_cheapest
+import flatzen.composeapp.generated.resources.sort_expensive
+import flatzen.composeapp.generated.resources.sort_newest
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -78,6 +91,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
@@ -86,7 +100,6 @@ import io.flatzen.screens.map.FlatItemContent
 import io.flatzen.uiExtensions.removeParentPadding
 import io.flatzen.uiExtensions.thenIf
 import io.flatzen.utils.LaunchedEffectOnce
-import io.flatzen.utils.text
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.FilterState
@@ -104,6 +117,7 @@ import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
@@ -140,6 +154,7 @@ fun HomeScreen(
 
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
     var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
+    val filterSummaryStrings = filterSummaryStrings()
 
     LaunchedEffect(currentFilters) {
         filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -238,7 +253,7 @@ fun HomeScreen(
                         currentFilters = FilterState()
                     }
                 ) {
-                    Text("Сбросить фильтр")
+                    Text(stringResource(Res.string.reset))
                 }
             }
 
@@ -276,7 +291,9 @@ fun HomeScreen(
                             )
                             Spacer(Modifier.height(16.dp))
                             Text(
-                                text = currentFilters.getActiveFiltersText(),
+                                text = currentFilters.getActiveFiltersText { key ->
+                                    filterSummaryStrings[key] ?: key.name
+                                },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -371,15 +388,15 @@ fun HomeScreen(
 
             if (showCommercialDialog) {
                 SingleChoiceDialog(
-                    title = "Тип сделки",
+                    title = stringResource(Res.string.filter_deal_type),
                     items = listOf(
                         SingleChoiceEntity(
-                            title = "Продажа", AdType.COMMERCIAL(
+                            title = stringResource(Res.string.filter_sale), AdType.COMMERCIAL(
                                 CommercialAdType.SALE
                             )
                         ),
                         SingleChoiceEntity(
-                            title = "Аренда", AdType.COMMERCIAL(
+                            title = stringResource(Res.string.filter_rent), AdType.COMMERCIAL(
                                 CommercialAdType.RENT
                             )
                         )
@@ -462,7 +479,7 @@ fun BoxScope.NoFlatsToLoadMoreText(
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center).padding(horizontal = 2.dp),
-            text = "Квартиры с текущими фильтрами закончились",
+            text = stringResource(Res.string.list_no_more_flats),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
@@ -489,7 +506,7 @@ fun LoadMoreForce(
         modifier = Modifier.fillMaxWidth().wrapContentHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Страница: $currentSearchPage")
+        Text(stringResource(Res.string.list_page, currentSearchPage.toString()))
         TextButton(
             modifier = Modifier
                 .wrapContentHeight()
@@ -497,7 +514,7 @@ fun LoadMoreForce(
             onClick = {
                 loadMoreClick()
             }) {
-            Text("Загрузить больше")
+            Text(stringResource(Res.string.list_load_more))
         }
     }
 }
@@ -664,7 +681,7 @@ private fun LazyListScope.topContentHeader(
                 AssistChip(
                     modifier = Modifier.wrapContentSize(),
                     onClick = showSortSheet,
-                    label = { Text(text = filterState.sortOption.text) },
+                    label = { Text(text = filterState.sortOption.localizedText()) },
                     trailingIcon = {
                         AsyncImage(
                             model = Res.getUri("drawable/sort.svg"),
@@ -702,6 +719,52 @@ fun ListTypeSwitches(
             onToggleView()
         },
         colorFilter = ColorFilter.tint(if (isListView) activeColor else unSelectedColor)
+    )
+}
+
+@Composable
+private fun FlatSort.localizedText(): String {
+    return when (this) {
+        FlatSort.NEWEST_FIRST -> stringResource(Res.string.sort_newest)
+        FlatSort.CHEAPEST_FIRST -> stringResource(Res.string.sort_cheapest)
+        FlatSort.MOST_EXPENSIVE_FIRST -> stringResource(Res.string.sort_expensive)
+    }
+}
+
+@Composable
+private fun filterSummaryStrings(): Map<LocalizationKeys, String> {
+    return mapOf(
+        LocalizationKeys.FILTER_RENT to localizedStringResource(LocalizationKeys.FILTER_RENT),
+        LocalizationKeys.FILTER_SALE to localizedStringResource(LocalizationKeys.FILTER_SALE),
+        LocalizationKeys.FILTER_COMMERCIAL_SALE to localizedStringResource(LocalizationKeys.FILTER_COMMERCIAL_SALE),
+        LocalizationKeys.FILTER_COMMERCIAL_RENT to localizedStringResource(LocalizationKeys.FILTER_COMMERCIAL_RENT),
+        LocalizationKeys.FILTER_COMMERCIAL to localizedStringResource(LocalizationKeys.FILTER_COMMERCIAL),
+        LocalizationKeys.FILTER_DAILY to localizedStringResource(LocalizationKeys.FILTER_DAILY),
+        LocalizationKeys.FILTER_PROPERTY_TYPE to localizedStringResource(LocalizationKeys.FILTER_PROPERTY_TYPE),
+        LocalizationKeys.FILTER_PRICE_LABEL to localizedStringResource(LocalizationKeys.FILTER_PRICE_LABEL),
+        LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL to localizedStringResource(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL),
+        LocalizationKeys.DETAIL_TOTAL_AREA to localizedStringResource(LocalizationKeys.DETAIL_TOTAL_AREA),
+        LocalizationKeys.DETAIL_ROOMS_COUNT to localizedStringResource(LocalizationKeys.DETAIL_ROOMS_COUNT),
+        LocalizationKeys.FILTER_METRO_PREFIX to localizedStringResource(LocalizationKeys.FILTER_METRO_PREFIX),
+        LocalizationKeys.FILTER_ADDRESS_PREFIX to localizedStringResource(LocalizationKeys.FILTER_ADDRESS_PREFIX),
+        LocalizationKeys.FILTER_CITY_PREFIX to localizedStringResource(LocalizationKeys.FILTER_CITY_PREFIX),
+        LocalizationKeys.FILTER_ACTIVE_AREAS_PREFIX to localizedStringResource(LocalizationKeys.FILTER_ACTIVE_AREAS_PREFIX),
+        LocalizationKeys.FILTER_DISTRICTS_PREFIX to localizedStringResource(LocalizationKeys.FILTER_DISTRICTS_PREFIX),
+        LocalizationKeys.FILTER_OWNER_ONLY to localizedStringResource(LocalizationKeys.FILTER_OWNER_ONLY),
+        LocalizationKeys.FILTER_PHOTO_ONLY to localizedStringResource(LocalizationKeys.FILTER_PHOTO_ONLY),
+        LocalizationKeys.FILTER_ROOM_ONLY to localizedStringResource(LocalizationKeys.FILTER_ROOM_ONLY),
+        LocalizationKeys.FILTER_ACTIVE_NONE to localizedStringResource(LocalizationKeys.FILTER_ACTIVE_NONE),
+        LocalizationKeys.FILTER_ACTIVE_TITLE to localizedStringResource(LocalizationKeys.FILTER_ACTIVE_TITLE),
+        LocalizationKeys.FILTER_TYPE_PREFIX to localizedStringResource(LocalizationKeys.FILTER_TYPE_PREFIX),
+        LocalizationKeys.FROM to localizedStringResource(LocalizationKeys.FROM),
+        LocalizationKeys.TO to localizedStringResource(LocalizationKeys.TO),
+        LocalizationKeys.COMMERCIAL_PROPERTY_ALL to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_ALL),
+        LocalizationKeys.COMMERCIAL_PROPERTY_INDUSTRIAL to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_INDUSTRIAL),
+        LocalizationKeys.COMMERCIAL_PROPERTY_OFFICE to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_OFFICE),
+        LocalizationKeys.COMMERCIAL_PROPERTY_RETAIL to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_RETAIL),
+        LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES),
+        LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES),
+        LocalizationKeys.COMMERCIAL_PROPERTY_OTHER to localizedStringResource(LocalizationKeys.COMMERCIAL_PROPERTY_OTHER),
     )
 }
 
@@ -903,10 +966,10 @@ private fun GridFlatCard(
             }
             val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
             val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
-            if (propertyTypeName.isNullOrEmpty().not()) {
+            propertyTypeName?.let { name ->
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = propertyTypeName,
+                    text = localizedStringResource(name),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -914,9 +977,9 @@ private fun GridFlatCard(
             Spacer(Modifier.height(4.dp))
 
             val roomSuffix = if (propertyTypeRoom.isNullOrEmpty().not()) {
-                "помещений"
+                stringResource(Res.string.list_commercial_rooms_suffix)
             } else {
-                "комн"
+                stringResource(Res.string.list_rooms_suffix)
             }
 
             FlowRow(

@@ -2,6 +2,7 @@ package io.flatzen.viewmodel.sharedstates
 
 import androidx.compose.runtime.Immutable
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.viewmodel.filter.MapAreasUi
 
 sealed class DialogType() {
@@ -13,7 +14,7 @@ sealed class DialogType() {
 data class SearchErrorDialogState(
     val isVisible: Boolean,
     val dialogType: DialogType,
-    val title: String,
+    val title: LocalizationKeys,
     val errorInfo: List<ErrorInfo>,
 ) {
     class ErrorInfo(
@@ -26,13 +27,13 @@ data class SearchErrorDialogState(
 data class InfoDialogState(
     val isVisible: Boolean,
     val dialogType: DialogType,
-    val title: String,
-    val description: String,
+    val title: LocalizationKeys,
+    val description: LocalizationKeys,
 )
 
 @Immutable
 data class SavedAreasDialogState(
     val isVisible: Boolean = false,
-    val title: String? = null,
+    val title: LocalizationKeys? = null,
     val savedAreas: List<MapAreasUi> = emptyList()
 )

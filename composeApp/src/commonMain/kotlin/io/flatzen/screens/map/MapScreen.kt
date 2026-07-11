@@ -49,6 +49,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
+import flatzen.composeapp.generated.resources.list_load_more
+import flatzen.composeapp.generated.resources.list_no_more_flats
+import flatzen.composeapp.generated.resources.list_rooms_suffix
+import flatzen.composeapp.generated.resources.map_area_name_hint
+import flatzen.composeapp.generated.resources.map_area_name_validation
+import flatzen.composeapp.generated.resources.map_draw_instructions
+import flatzen.composeapp.generated.resources.map_exit
+import flatzen.composeapp.generated.resources.map_refresh
+import flatzen.composeapp.generated.resources.map_save_area_title
+import flatzen.composeapp.generated.resources.map_too_many_objects
+import flatzen.composeapp.generated.resources.map_undo
+import flatzen.composeapp.generated.resources.save
+import flatzen.composeapp.generated.resources.tab_map
+import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.utils.LaunchedEffectOnce
@@ -71,6 +86,7 @@ import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.stringResource
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
 import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
@@ -154,7 +170,7 @@ fun MapScreen(
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     Text(
-                                        text = "Сохранить",
+                                        text = stringResource(Res.string.save),
                                         color = Color.DarkGray,
                                         modifier = Modifier.padding(
                                             horizontal = 10.dp,
@@ -276,9 +292,9 @@ fun MapScreen(
 
     if (mapModelState.saveAreaDialogState.isVisible) {
         SaveDialog(
-            title = "Сохранить область",
-            textFieldHint = "Название области",
-            validationHint = "Название области не должно превышать 25 символов",
+            title = stringResource(Res.string.map_save_area_title),
+            textFieldHint = stringResource(Res.string.map_area_name_hint),
+            validationHint = stringResource(Res.string.map_area_name_validation),
             dialogState = mapModelState.saveAreaDialogState,
             onNameChange = { name ->
                 mapViewModel.store.intent(MapIntent.UpdateAreaName(name))
@@ -328,7 +344,7 @@ fun MapScreen(
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     title = {
                         Text(
-                            "Карта",
+                            stringResource(Res.string.tab_map),
                             style = MaterialTheme.typography.titleLarge
                         )
                     },
@@ -370,7 +386,7 @@ fun MapScreen(
                             modifier = Modifier
                                 .padding(horizontal = 6.dp)
                                 .clip(RoundedCornerShape(10.dp)),
-                            message = "Кликай по карте, рисуя контур, замкни его нажав на первую точку\nЧтобы сохранить нажми на маркер",
+                            message = stringResource(Res.string.map_draw_instructions),
                             color = Color(0xFF2b64ad).copy(alpha = 0.8f)
                         )
                     Column(
@@ -381,12 +397,12 @@ fun MapScreen(
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
                             if (mapModelState.undoBtnVisible) {
-                                ActionButton("Отменить") {
+                                ActionButton(stringResource(Res.string.map_undo)) {
                                     mapViewModel.store.intent(MapIntent.UndoLastPoint)
                                 }
                             }
                             Spacer(Modifier.width(8.dp))
-                            ActionButton("Выход") {
+                            ActionButton(stringResource(Res.string.map_exit)) {
                                 mapViewModel.store.intent(MapIntent.ClickOnMapArea)
                             }
                         }
@@ -441,7 +457,7 @@ fun MapScreen(
                                             )
                                         )
                                     }) {
-                                    Text("Обновить")
+                                    Text(stringResource(Res.string.map_refresh))
                                 }
                                 Spacer(Modifier.width(10.dp))
                                 Button(
@@ -463,7 +479,7 @@ fun MapScreen(
                                             )
                                         )
                                     }) {
-                                    Text("Загрузить больше")
+                                    Text(stringResource(Res.string.list_load_more))
                                 }
                             }
 
@@ -483,7 +499,7 @@ fun MapScreen(
                         if (listState.noFlatsToLoadMore) {
                             Text(
                                 modifier = Modifier.padding(10.dp),
-                                text = "Квартиры с текущими фильтрами закончились",
+                                text = stringResource(Res.string.list_no_more_flats),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = Color.DarkGray
@@ -492,8 +508,7 @@ fun MapScreen(
                         if (isMarkersSizeTooBig) {
                             Text(
                                 modifier = Modifier.padding(10.dp),
-                                text = "Слишком много объектов на карте, отображена только часть," +
-                                        " добавьте фильтры или нажмите кнопку обновить",
+                                text = stringResource(Res.string.map_too_many_objects),
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 color = Color.DarkGray
@@ -644,19 +659,19 @@ fun FlatItemContent(
 
         val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
         val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
-        if (propertyTypeName.isNullOrEmpty().not()) {
+        propertyTypeName?.let { name ->
             Spacer(Modifier.height(4.dp))
             Text(
-                text = propertyTypeName,
+                text = localizedStringResource(name),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
 
         val roomSuffix = if (propertyTypeRoom.isNullOrEmpty().not()) {
-            "помещений"
+            stringResource(Res.string.list_commercial_rooms_suffix)
         } else {
-            "комн"
+            stringResource(Res.string.list_rooms_suffix)
         }
         // Комнаты
         FlowRow(

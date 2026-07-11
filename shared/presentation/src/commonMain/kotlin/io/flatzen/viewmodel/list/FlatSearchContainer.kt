@@ -5,6 +5,7 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -123,8 +124,8 @@ class FlatSearchContainer(
                     infoDialogState = InfoDialogState(
                         isVisible = true,
                         dialogType = DialogType.ForceUpdate,
-                        title = "Доступна новая версия",
-                        description = "Текущая версия неработоспособна, пожалуйста обновите приложение"
+                        title = LocalizationKeys.FORCE_UPDATE_TITLE,
+                        description = LocalizationKeys.FORCE_UPDATE_DESCRIPTION
                     )
                 )
             }
@@ -209,8 +210,8 @@ class FlatSearchContainer(
                     infoDialogState = InfoDialogState(
                         isVisible = true,
                         dialogType = DialogType.ForceUpdate,
-                        title = "Доступна новая версия",
-                        description = "Текущая версия неработоспособна, пожалуйста обновите приложение"
+                        title = LocalizationKeys.FORCE_UPDATE_TITLE,
+                        description = LocalizationKeys.FORCE_UPDATE_DESCRIPTION
                     )
                 )
             }
@@ -340,7 +341,7 @@ class FlatSearchContainer(
                                     errorDialogState = SearchErrorDialogState(
                                         isVisible = true,
                                         dialogType = DialogType.NetworkError,
-                                        title = "Произошла ошибка",
+                                        title = LocalizationKeys.SEARCH_ERROR_TITLE,
                                         errorInfo = response.errors.map {
                                             SearchErrorDialogState.ErrorInfo(
                                                 platform = it.platform,

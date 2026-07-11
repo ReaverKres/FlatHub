@@ -9,6 +9,7 @@ import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
@@ -237,8 +238,8 @@ class FilterContainer(
                 is FilterScreenAction.UpdateFilterName -> {
                     val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
                     val errorMessage = when {
-                        intent.name.isBlank() -> "Название фильтра не может быть пустым"
-                        intent.name.length > 25 -> "Название фильтра не должно превышать 25 символов"
+                        intent.name.isBlank() -> LocalizationKeys.FILTER_NAME_EMPTY_ERROR
+                        intent.name.length > 25 -> LocalizationKeys.FILTER_NAME_LENGTH_ERROR
                         else -> null
                     }
                     updateState {
@@ -449,7 +450,7 @@ class FilterContainer(
         isVisible: Boolean = true
     ): SavedAreasDialogState {
         return SavedAreasDialogState(
-            title = "Сохранённые области",
+            title = LocalizationKeys.MAP_SAVED_AREAS,
             isVisible = isVisible,
             savedAreas = currentAreas
         )

@@ -44,8 +44,11 @@ import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.kufar32
 import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.realt32
+import flatzen.composeapp.generated.resources.filters_title
+import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -179,7 +182,7 @@ fun BoxScope.AddToFavoriteIcon(
     )
     Icon(
         imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-        contentDescription = "Добавить в избранное",
+        contentDescription = stringResource(Res.string.tab_favorites),
         tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
         modifier = Modifier
             .align(Alignment.BottomEnd)
@@ -228,7 +231,7 @@ fun BoxScope.EyeIcon() {
 fun FilterActionButton(onClick: () -> Unit, isAnyFilterApplied: Boolean) {
     Box {
         FloatingActionButton(onClick = onClick) {
-            Icon(Icons.Default.Build, contentDescription = "Фильтры")
+            Icon(Icons.Default.Build, contentDescription = stringResource(Res.string.filters_title))
         }
 
         if (isAnyFilterApplied) {

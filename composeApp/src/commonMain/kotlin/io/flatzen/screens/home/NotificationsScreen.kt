@@ -56,7 +56,15 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.close
+import flatzen.composeapp.generated.resources.delete
+import flatzen.composeapp.generated.resources.error
+import flatzen.composeapp.generated.resources.notifications_allow
 import flatzen.composeapp.generated.resources.notifications_is_empty
+import flatzen.composeapp.generated.resources.notifications_params
+import flatzen.composeapp.generated.resources.notifications_permission_message
+import flatzen.composeapp.generated.resources.notifications_title
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
@@ -68,6 +76,7 @@ import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.dialogs.SimpleAlertDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import pro.respawn.flowmvi.compose.dsl.subscribe
 
@@ -143,10 +152,10 @@ fun NotificationsScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Уведомления", style = MaterialTheme.typography.headlineSmall) },
+                title = { Text(stringResource(Res.string.notifications_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
                     }
                 }
             )
@@ -168,7 +177,7 @@ fun NotificationsScreen(
             Box(Modifier.fillMaxSize()) {
                 if (state.errorText != null) {
                     SimpleAlertDialog(
-                        title = "Ошибка",
+                        title = stringResource(Res.string.error),
                         message = state.errorText ?: "",
                         onDismiss = { container.store.intent(NotificationListIntent.HideNetworkErrorDialog) }
                     )
@@ -176,7 +185,7 @@ fun NotificationsScreen(
 
                 if (state.paramsDialogText != null) {
                     SimpleAlertDialog(
-                        title = "Параметры фильтра",
+                        title = stringResource(Res.string.notifications_params),
                         message = state.paramsDialogText ?: "",
                         onDismiss = { container.store.intent(NotificationListIntent.HideParams) }
                     )
@@ -378,11 +387,11 @@ private fun LazyListScope.topSubscriptionsContent(
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(
-                                text = { Text("Параметры") },
+                                text = { Text(stringResource(Res.string.notifications_params)) },
                                 onClick = { menuExpanded = false; onShowParams(sub.id) }
                             )
                             DropdownMenuItem(
-                                text = { Text("Удалить") },
+                                text = { Text(stringResource(Res.string.delete)) },
                                 onClick = { menuExpanded = false; onDelete(sub.id) }
                             )
                         }
@@ -418,9 +427,9 @@ private fun NotifPermissionSnackbar(
             .padding(horizontal = 6.dp)
             .clip(RoundedCornerShape(10.dp)),
         color = Color(0xFF2b64ad).copy(alpha = 0.8f),
-        message = "Предоставьте доступ к уведомлениям",
-        closeBtnText = "Закрыть",
-        actionBtnText = "Разрешить",
+        message = stringResource(Res.string.notifications_permission_message),
+        closeBtnText = stringResource(Res.string.close),
+        actionBtnText = stringResource(Res.string.notifications_allow),
         onCloseBtnClick = onCloseSnackbarBtnClick,
         onActionBtnClick = onActionSnackbarBtnClick
     )
