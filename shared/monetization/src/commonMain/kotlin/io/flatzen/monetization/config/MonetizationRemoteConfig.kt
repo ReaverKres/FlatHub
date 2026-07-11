@@ -3,6 +3,7 @@ package io.flatzen.monetization.config
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.monetization.MonetizationDefaults
+import kotlinx.serialization.json.Json
 
 data class MonetizationRemoteConfig(
     val adsEnabled: Boolean = MonetizationDefaults.ADS_ENABLED,
@@ -20,32 +21,41 @@ data class MonetizationRemoteConfig(
     val rewardedAdUnit: String = MonetizationDefaults.APPLOVIN_REWARDED_AD_UNIT,
 )
 
+private val monetizationConfigJson = Json { ignoreUnknownKeys = true }
+
 fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
+    val jsonConfig = checkString(ConfigFields.MonetizationConfigData)
+        ?.takeIf { it.isNotBlank() }
+        ?.let { jsonString ->
+            try {
+                monetizationConfigJson.decodeFromString<MonetizationConfigData>(jsonString)
+            } catch (e: Exception) {
+                print("MonetizationConfigData parsing exception\n ${e.message}")
+                null
+            }
+        }
+
     return MonetizationRemoteConfig(
         adsEnabled = checkBoolean(ConfigFields.AdsEnabled) ?: MonetizationDefaults.ADS_ENABLED,
-        homeListAdInterval = checkLong(ConfigFields.HomeListAdInterval)?.toInt()?.coerceAtLeast(1)
-            ?: MonetizationDefaults.HOME_LIST_AD_INTERVAL,
-        swipeAdInterval = checkLong(ConfigFields.SwipeAdInterval)?.toInt()?.coerceAtLeast(1)
-            ?: MonetizationDefaults.SWIPE_AD_INTERVAL,
-        feedDelayMinutes = checkLong(ConfigFields.FeedDelayMinutes)?.coerceAtLeast(0)
-            ?: MonetizationDefaults.FEED_DELAY_MINUTES,
         premiumFallbackEnabled = checkBoolean(ConfigFields.PremiumFallbackEnabled)
             ?: MonetizationDefaults.PREMIUM_FALLBACK_ENABLED,
-        trialDays = checkLong(ConfigFields.TrialDays)?.coerceAtLeast(0)
+        homeListAdInterval = jsonConfig?.homeListAdInterval?.coerceAtLeast(1)
+            ?: MonetizationDefaults.HOME_LIST_AD_INTERVAL,
+        swipeAdInterval = jsonConfig?.swipeAdInterval?.coerceAtLeast(1)
+            ?: MonetizationDefaults.SWIPE_AD_INTERVAL,
+        feedDelayMinutes = jsonConfig?.feedDelayMinutes?.coerceAtLeast(0)
+            ?: MonetizationDefaults.FEED_DELAY_MINUTES,
+        trialDays = jsonConfig?.trialDays?.coerceAtLeast(0)
             ?: MonetizationDefaults.TRIAL_DAYS,
-        priceWeekUsd = checkString(ConfigFields.PremiumPriceWeekUsd)
+        priceWeekUsd = jsonConfig?.premiumPriceWeekUsd?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.PRICE_WEEK_USD,
-        priceMonthUsd = checkString(ConfigFields.PremiumPriceMonthUsd)
+        priceMonthUsd = jsonConfig?.premiumPriceMonthUsd?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.PRICE_MONTH_USD,
-        priceQuarterUsd = checkString(ConfigFields.PremiumPriceQuarterUsd)
+        priceQuarterUsd = jsonConfig?.premiumPriceQuarterUsd?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.PRICE_QUARTER_USD,
-        applovinSdkKey = checkString(ConfigFields.ApplovinSdkKey)
-            ?: MonetizationDefaults.APPLOVIN_SDK_KEY,
-        bannerAdUnit = checkString(ConfigFields.ApplovinBannerAdUnit)
-            ?: MonetizationDefaults.APPLOVIN_BANNER_AD_UNIT,
-        interstitialAdUnit = checkString(ConfigFields.ApplovinInterstitialAdUnit)
-            ?: MonetizationDefaults.APPLOVIN_INTERSTITIAL_AD_UNIT,
-        rewardedAdUnit = checkString(ConfigFields.ApplovinRewardedAdUnit)
-            ?: MonetizationDefaults.APPLOVIN_REWARDED_AD_UNIT,
+        applovinSdkKey = jsonConfig?.applovinSdkKey.orEmpty(),
+        bannerAdUnit = jsonConfig?.applovinBannerAdUnit.orEmpty(),
+        interstitialAdUnit = jsonConfig?.applovinInterstitialAdUnit.orEmpty(),
+        rewardedAdUnit = jsonConfig?.applovinRewardedAdUnit.orEmpty(),
     )
 }
