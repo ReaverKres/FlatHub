@@ -1,5 +1,6 @@
 package io.flatzen.navigation
 
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
 /**
@@ -15,14 +16,27 @@ class Navigator(private val state: NavigationState) {
         }
     }
 
+    fun getCurrentStack(): NavBackStack<NavKey>? = state.backStacks[state.topLevelRoute]
+
+    fun isAtDestination(route: NavKey): Boolean {
+        val current = getCurrentStack()?.lastOrNull() ?: return false
+        return if (route in state.backStacks.keys) {
+            state.topLevelRoute == route && current == route
+        } else {
+            current == route
+        }
+    }
+
+    fun navigateFromExternal(route: NavKey) {
+        if (!isAtDestination(route)) navigate(route)
+    }
+
     fun goBack() {
-        val currentStack = state.backStacks[state.topLevelRoute]
-            ?: return
+        val currentStack = getCurrentStack() ?: return
         val currentRoute = currentStack.lastOrNull() ?: return
 
         if (currentRoute == state.topLevelRoute) {
             if (state.topLevelRoute == state.startRoute) {
-                // At root of start tab - caller should exit app
                 return
             }
             state.topLevelRoute = state.startRoute
@@ -31,23 +45,20 @@ class Navigator(private val state: NavigationState) {
         }
     }
 
-    /** Replaces current screen without adding to stack */
     fun replaceCurrent(route: NavKey) {
-        val currentStack = state.backStacks[state.topLevelRoute] ?: return
+        val currentStack = getCurrentStack() ?: return
         currentStack.removeLastOrNull()
         currentStack.add(route)
     }
 
-    /** True when Back should exit app (at root of start tab) */
     fun isAtRootOfStartRoute(): Boolean {
-        val currentStack = state.backStacks[state.topLevelRoute] ?: return false
+        val currentStack = getCurrentStack() ?: return false
         val currentRoute = currentStack.lastOrNull() ?: return false
         return currentRoute == state.topLevelRoute && state.topLevelRoute == state.startRoute
     }
 
-    /** True when Back can pop or switch tab */
     fun canGoBack(): Boolean {
-        val currentStack = state.backStacks[state.topLevelRoute] ?: return false
+        val currentStack = getCurrentStack() ?: return false
         val currentRoute = currentStack.lastOrNull() ?: return false
         return currentRoute != state.topLevelRoute || state.topLevelRoute != state.startRoute
     }

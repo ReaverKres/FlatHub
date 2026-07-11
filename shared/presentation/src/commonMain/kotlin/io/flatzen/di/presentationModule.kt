@@ -16,6 +16,8 @@ import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralContainer
 import io.flatzen.viewmodel.notifications.NotificationListContainer
 import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
+import io.flatzen.navigation.FlatHubNavigator
+import io.flatzen.navigation.FlatHubNavigatorDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,6 +28,8 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val flatSearchPresentationModule = module {
+    single { FlatHubNavigatorDelegate() }
+    single<FlatHubNavigator> { get<FlatHubNavigatorDelegate>() }
     single {
         FlatSearchContainer(
             mergedRepository = get(),

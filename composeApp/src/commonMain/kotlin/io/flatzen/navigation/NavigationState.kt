@@ -9,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -18,10 +19,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
 import kotlinx.serialization.PolymorphicSerializer
 
-/**
- * Creates navigation state with multiple back stacks per tab.
- * Persists topLevelRoute across config changes and process death.
- */
 @Composable
 fun rememberNavigationState(
     startRoute: NavKey,
@@ -49,9 +46,6 @@ fun rememberNavigationState(
     }
 }
 
-/**
- * State holder for multiple backstack navigation.
- */
 class NavigationState(
     val startRoute: NavKey,
     topLevelRoute: MutableState<NavKey>,
@@ -59,7 +53,6 @@ class NavigationState(
 ) {
     var topLevelRoute: NavKey by topLevelRoute
 
-    /** Stacks to display: startRoute + current tab (for transition animation) */
     val stacksInUse: List<NavKey>
         get() = if (topLevelRoute == startRoute) {
             listOf(startRoute)
@@ -68,16 +61,13 @@ class NavigationState(
         }
 }
 
-/**
- * Converts NavigationState into NavEntries for NavDisplay.
- */
 @Composable
 fun NavigationState.toEntries(
     entryProvider: (NavKey) -> NavEntry<NavKey>
 ): SnapshotStateList<NavEntry<NavKey>> {
-    val decorators = listOf(
-        rememberSaveableStateHolderNavEntryDecorator<NavKey>()
-    )
+    val saveableDecorator = rememberSaveableStateHolderNavEntryDecorator<NavKey>()
+    val viewModelDecorator = rememberViewModelStoreNavEntryDecorator<NavKey>()
+    val decorators = listOf(saveableDecorator, viewModelDecorator)
 
     val decoratedEntries = backStacks.mapValues { (_, stack) ->
         rememberDecoratedNavEntries(
