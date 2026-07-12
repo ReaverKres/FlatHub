@@ -1,5 +1,5 @@
-import SwiftUI
-import shared
+import UIKit
+import ComposeApp
 import FirebaseCore
 import FirebaseMessaging
 
@@ -8,7 +8,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 
-        FirebaseApp.configure() //important
+        // TODO FirebaseApp.configure() //important
 
         //By default showPushNotification value is true.
         //When set showPushNotification to false foreground push  notification will not be shown.

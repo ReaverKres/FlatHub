@@ -1,6 +1,6 @@
 package io.flatzen.commoncomponents.commonentities
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.Serializable
 

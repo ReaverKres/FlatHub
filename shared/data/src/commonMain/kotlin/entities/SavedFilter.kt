@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Entity(tableName = "saved_filters")
 @TypeConverters(RoomTypeConverter::class)

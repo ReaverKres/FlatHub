@@ -6,7 +6,7 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.DomovitaListResponse

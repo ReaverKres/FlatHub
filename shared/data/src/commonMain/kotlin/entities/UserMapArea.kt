@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
 import io.flatzen.commoncomponents.commonentities.Coordinates
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.serialization.Serializable
 
 @Entity(tableName = "map_areas")

@@ -22,8 +22,8 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.cancel
 import flatzen.composeapp.generated.resources.filter_booking_date
 import flatzen.composeapp.generated.resources.ok
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
