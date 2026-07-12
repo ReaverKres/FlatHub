@@ -31,7 +31,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +55,7 @@ import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.themes.FlatHubTheme
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -86,6 +89,10 @@ fun FlatImagePager(
     disliked: Boolean = false,
     clickOnFavorite: () -> Unit = {},
     clickOnClearDislike: () -> Unit = {},
+    enablePhotoTapZones: Boolean = false,
+    onCenterTap: ((Int) -> Unit)? = null,
+    initialPage: Int = 0,
+    onPageChange: ((Int) -> Unit)? = null,
 ) {
     if (imageUrls.isNotEmpty()) {
         ImagePager(
@@ -99,6 +106,10 @@ fun FlatImagePager(
             disliked = disliked,
             clickOnFavorite = clickOnFavorite,
             clickOnClearDislike = clickOnClearDislike,
+            enablePhotoTapZones = enablePhotoTapZones,
+            onCenterTap = onCenterTap,
+            initialPage = initialPage,
+            onPageChange = onPageChange,
         )
     } else {
         FlatEmptyImage(
@@ -161,15 +172,55 @@ private fun ImagePager(
     clickOnClearDislike: () -> Unit = {},
     saveInFavoriteInProgress: Boolean,
     disliked: Boolean,
+    enablePhotoTapZones: Boolean = false,
+    onCenterTap: ((Int) -> Unit)? = null,
+    initialPage: Int = 0,
+    onPageChange: ((Int) -> Unit)? = null,
 ) {
-    val pagerState = rememberPagerState { imageUrls.size }
+    val safeInitialPage = initialPage.coerceIn(0, imageUrls.lastIndex)
+    val pagerState = rememberPagerState(initialPage = safeInitialPage) { imageUrls.size }
+    val scope = rememberCoroutineScope()
+    val tapZonesEnabled = enablePhotoTapZones || onCenterTap != null
+
+    LaunchedEffect(initialPage, imageUrls.size) {
+        if (imageUrls.isEmpty()) return@LaunchedEffect
+        val target = initialPage.coerceIn(0, imageUrls.lastIndex)
+        if (pagerState.currentPage != target) {
+            pagerState.scrollToPage(target)
+        }
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        onPageChange?.invoke(pagerState.currentPage)
+    }
 
     Box(
         modifier = modifier.fillMaxWidth()
     ) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .photoTapZones(
+                    enabled = tapZonesEnabled,
+                    onTapLeft = {
+                        if (pagerState.currentPage > 0) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            }
+                        }
+                    },
+                    onTapCenter = {
+                        onCenterTap?.invoke(pagerState.currentPage)
+                    },
+                    onTapRight = {
+                        if (pagerState.currentPage < imageUrls.lastIndex) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        }
+                    },
+                ),
         ) { page ->
             AppAsyncImage(
                 imageUrl = imageUrls[page],
