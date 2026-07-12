@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.mmk.kmpnotifier.extensions.onCreateOrOnNewIntent
 import com.mmk.kmpnotifier.notification.NotifierManager
 import io.flatzen.di.container
+import io.flatzen.monetization.billing.CurrentActivityHolder
 import io.flatzen.navigation.DeepLinkRouter
 import io.flatzen.viewmodel.SplashContainer
 import io.flatzen.viewmodel.SplashState
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        CurrentActivityHolder.activity = this
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         NotifierManager.onCreateOrOnNewIntent(intent)
@@ -48,5 +50,12 @@ class MainActivity : ComponentActivity() {
 
             App()
         }
+    }
+
+    override fun onDestroy() {
+        if (CurrentActivityHolder.activity === this) {
+            CurrentActivityHolder.activity = null
+        }
+        super.onDestroy()
     }
 }

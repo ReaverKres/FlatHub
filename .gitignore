@@ -1,6 +1,7 @@
 *.iml
 composeApp/release/
 x5Run/
+androidApp/release/
 docs/
 .kotlin
 .gradle

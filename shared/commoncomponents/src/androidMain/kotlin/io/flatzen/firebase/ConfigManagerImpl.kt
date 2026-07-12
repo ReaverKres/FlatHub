@@ -6,6 +6,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_L
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.DEFAULT_VALUE_FOR_STRING
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import io.flatzen.commoncomponents.commonentities.monetization.MonetizationConfigData
 import io.flatzen.commoncomponents.commonentities.more.FaqConfigData
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData
 import kotlinx.coroutines.channels.awaitClose
@@ -99,6 +100,15 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                     Json.decodeFromString<FaqConfigData>(jsonString) as T
                 } catch (e: Exception) {
                     print("FaqConfigData parsing exception\n ${e.localizedMessage}")
+                    null
+                }
+            }
+
+            ConfigFields.MonetizationConfigData -> {
+                try {
+                    Json.decodeFromString<MonetizationConfigData>(jsonString) as T
+                } catch (e: Exception) {
+                    print("MonetizationConfigData parsing exception\n ${e.localizedMessage}")
                     null
                 }
             }
