@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -289,11 +290,12 @@ fun AppTextButton(
     image: Any?,
     text: String,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
+    contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     onClick: () -> Unit
 ) {
     TextButton(
         colors = ButtonDefaults.textButtonColors()
-            .copy(contentColor = MaterialTheme.colorScheme.onSurfaceVariant),
+            .copy(contentColor = contentColor),
         onClick = onClick,
         modifier = modifier
     ) {
