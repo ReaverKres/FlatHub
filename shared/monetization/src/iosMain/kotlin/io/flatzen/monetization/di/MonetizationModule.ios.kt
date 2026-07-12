@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import io.flatzen.monetization.ads.AdService
 import io.flatzen.monetization.ads.IosAppLovinAdService
+import io.flatzen.monetization.ads.NoOpAdService
 import io.flatzen.monetization.billing.NoOpBillingBridge
 import io.flatzen.monetization.billing.PlatformBillingBridge
 import io.flatzen.monetization.billing.StoreKit2BillingBridge
@@ -22,8 +23,10 @@ actual fun platformMonetizationModule(): Module = module {
 
     single<AdService> {
         val config = get<MonetizationRemoteConfig>()
-        IosAppLovinAdService().also {
-            if (config.applovinSdkKey.isNotBlank()) it.initialize(config.applovinSdkKey)
+        if (config.applovinSdkKey.isBlank() || config.premiumFallbackEnabled) {
+            NoOpAdService()
+        } else {
+            IosAppLovinAdService().also { it.initialize(config.applovinSdkKey) }
         }
     }
 }
