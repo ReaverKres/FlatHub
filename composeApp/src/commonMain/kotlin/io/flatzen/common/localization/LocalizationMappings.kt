@@ -141,6 +141,53 @@ import flatzen.composeapp.generated.resources.notifications_params
 import flatzen.composeapp.generated.resources.notifications_permission_message
 import flatzen.composeapp.generated.resources.notifications_title
 import flatzen.composeapp.generated.resources.ok
+import flatzen.composeapp.generated.resources.premium_active_subtitle
+import flatzen.composeapp.generated.resources.premium_active_title
+import flatzen.composeapp.generated.resources.premium_active_unlimited
+import flatzen.composeapp.generated.resources.premium_active_until
+import flatzen.composeapp.generated.resources.premium_debug_active
+import flatzen.composeapp.generated.resources.premium_debug_auto
+import flatzen.composeapp.generated.resources.premium_debug_label
+import flatzen.composeapp.generated.resources.premium_debug_purchase
+import flatzen.composeapp.generated.resources.premium_done
+import flatzen.composeapp.generated.resources.premium_error_ad_disabled
+import flatzen.composeapp.generated.resources.premium_error_ad_unavailable
+import flatzen.composeapp.generated.resources.premium_error_billing_unavailable
+import flatzen.composeapp.generated.resources.premium_error_generic
+import flatzen.composeapp.generated.resources.premium_error_item_already_owned
+import flatzen.composeapp.generated.resources.premium_error_item_unavailable
+import flatzen.composeapp.generated.resources.premium_error_load_plans
+import flatzen.composeapp.generated.resources.premium_error_network
+import flatzen.composeapp.generated.resources.premium_error_no_active_subscription
+import flatzen.composeapp.generated.resources.premium_error_purchases_unavailable
+import flatzen.composeapp.generated.resources.premium_error_restore_failed
+import flatzen.composeapp.generated.resources.premium_error_restored
+import flatzen.composeapp.generated.resources.premium_error_rewarded_activated
+import flatzen.composeapp.generated.resources.premium_error_service_unavailable
+import flatzen.composeapp.generated.resources.premium_error_subscription_activated
+import flatzen.composeapp.generated.resources.premium_feature_location
+import flatzen.composeapp.generated.resources.premium_feature_no_ads
+import flatzen.composeapp.generated.resources.premium_feature_realtime
+import flatzen.composeapp.generated.resources.premium_location_toast
+import flatzen.composeapp.generated.resources.premium_manage
+import flatzen.composeapp.generated.resources.premium_menu
+import flatzen.composeapp.generated.resources.premium_plan_month
+import flatzen.composeapp.generated.resources.premium_plan_quarter
+import flatzen.composeapp.generated.resources.premium_plan_week
+import flatzen.composeapp.generated.resources.premium_plans_title
+import flatzen.composeapp.generated.resources.premium_recommended
+import flatzen.composeapp.generated.resources.premium_restore
+import flatzen.composeapp.generated.resources.premium_savings
+import flatzen.composeapp.generated.resources.premium_source_cache
+import flatzen.composeapp.generated.resources.premium_source_fallback
+import flatzen.composeapp.generated.resources.premium_source_rewarded
+import flatzen.composeapp.generated.resources.premium_source_store
+import flatzen.composeapp.generated.resources.premium_source_trial
+import flatzen.composeapp.generated.resources.premium_subscribe
+import flatzen.composeapp.generated.resources.premium_subtitle
+import flatzen.composeapp.generated.resources.premium_title
+import flatzen.composeapp.generated.resources.premium_upsell_banner
+import flatzen.composeapp.generated.resources.premium_watch_ad
 import flatzen.composeapp.generated.resources.referral_activate
 import flatzen.composeapp.generated.resources.referral_code
 import flatzen.composeapp.generated.resources.referral_description
@@ -170,6 +217,8 @@ import flatzen.composeapp.generated.resources.theme_system
 import flatzen.composeapp.generated.resources.theme_title
 import flatzen.composeapp.generated.resources.to
 import io.flatzen.commoncomponents.localization.LocalizationKeys
+import io.flatzen.monetization.MonetizationDefaults
+import io.flatzen.monetization.billing.SubscriptionProduct
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -187,6 +236,8 @@ private val formattedLocalizationKeys = setOf(
     LocalizationKeys.LIST_ROOMS_FEW,
     LocalizationKeys.LIST_ROOMS_MANY,
     LocalizationKeys.DETAIL_OPEN_SOURCE,
+    LocalizationKeys.PREMIUM_SAVINGS,
+    LocalizationKeys.PREMIUM_ACTIVE_UNTIL,
 )
 
 @Composable
@@ -208,6 +259,14 @@ fun stringResource(key: LocalizationKeys, formatArg1: Any, formatArg2: Any): Str
         "Localization key $key does not support two format arguments"
     }
     return stringResource(key.resource, formatArg1, formatArg2)
+}
+
+@Composable
+fun localizedProductTitle(product: SubscriptionProduct): String = when (product.id) {
+    MonetizationDefaults.PRODUCT_WEEK -> stringResource(LocalizationKeys.PREMIUM_PLAN_WEEK)
+    MonetizationDefaults.PRODUCT_MONTH -> stringResource(LocalizationKeys.PREMIUM_PLAN_MONTH)
+    MonetizationDefaults.PRODUCT_QUARTER -> stringResource(LocalizationKeys.PREMIUM_PLAN_QUARTER)
+    else -> product.title
 }
 
 val LocalizationKeys.resource: StringResource
@@ -379,4 +438,51 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.FORCE_UPDATE_TITLE -> Res.string.force_update_title
         LocalizationKeys.FORCE_UPDATE_DESCRIPTION -> Res.string.force_update_description
         LocalizationKeys.SEARCH_ERROR_TITLE -> Res.string.search_error_title
+        LocalizationKeys.PREMIUM_TITLE -> Res.string.premium_title
+        LocalizationKeys.PREMIUM_SUBTITLE -> Res.string.premium_subtitle
+        LocalizationKeys.PREMIUM_FEATURE_REALTIME -> Res.string.premium_feature_realtime
+        LocalizationKeys.PREMIUM_FEATURE_LOCATION -> Res.string.premium_feature_location
+        LocalizationKeys.PREMIUM_FEATURE_NO_ADS -> Res.string.premium_feature_no_ads
+        LocalizationKeys.PREMIUM_SAVINGS -> Res.string.premium_savings
+        LocalizationKeys.PREMIUM_RECOMMENDED -> Res.string.premium_recommended
+        LocalizationKeys.PREMIUM_SUBSCRIBE -> Res.string.premium_subscribe
+        LocalizationKeys.PREMIUM_RESTORE -> Res.string.premium_restore
+        LocalizationKeys.PREMIUM_WATCH_AD -> Res.string.premium_watch_ad
+        LocalizationKeys.PREMIUM_UPSELL_BANNER -> Res.string.premium_upsell_banner
+        LocalizationKeys.PREMIUM_LOCATION_TOAST -> Res.string.premium_location_toast
+        LocalizationKeys.PREMIUM_MENU -> Res.string.premium_menu
+        LocalizationKeys.PREMIUM_ACTIVE_TITLE -> Res.string.premium_active_title
+        LocalizationKeys.PREMIUM_ACTIVE_SUBTITLE -> Res.string.premium_active_subtitle
+        LocalizationKeys.PREMIUM_ACTIVE_UNTIL -> Res.string.premium_active_until
+        LocalizationKeys.PREMIUM_ACTIVE_UNLIMITED -> Res.string.premium_active_unlimited
+        LocalizationKeys.PREMIUM_SOURCE_STORE -> Res.string.premium_source_store
+        LocalizationKeys.PREMIUM_SOURCE_TRIAL -> Res.string.premium_source_trial
+        LocalizationKeys.PREMIUM_SOURCE_REWARDED -> Res.string.premium_source_rewarded
+        LocalizationKeys.PREMIUM_SOURCE_CACHE -> Res.string.premium_source_cache
+        LocalizationKeys.PREMIUM_SOURCE_FALLBACK -> Res.string.premium_source_fallback
+        LocalizationKeys.PREMIUM_MANAGE -> Res.string.premium_manage
+        LocalizationKeys.PREMIUM_DONE -> Res.string.premium_done
+        LocalizationKeys.PREMIUM_PLANS_TITLE -> Res.string.premium_plans_title
+        LocalizationKeys.PREMIUM_DEBUG_LABEL -> Res.string.premium_debug_label
+        LocalizationKeys.PREMIUM_DEBUG_AUTO -> Res.string.premium_debug_auto
+        LocalizationKeys.PREMIUM_DEBUG_ACTIVE -> Res.string.premium_debug_active
+        LocalizationKeys.PREMIUM_DEBUG_PURCHASE -> Res.string.premium_debug_purchase
+        LocalizationKeys.PREMIUM_PLAN_WEEK -> Res.string.premium_plan_week
+        LocalizationKeys.PREMIUM_PLAN_MONTH -> Res.string.premium_plan_month
+        LocalizationKeys.PREMIUM_PLAN_QUARTER -> Res.string.premium_plan_quarter
+        LocalizationKeys.PREMIUM_ERROR_LOAD_PLANS -> Res.string.premium_error_load_plans
+        LocalizationKeys.PREMIUM_ERROR_SUBSCRIPTION_ACTIVATED -> Res.string.premium_error_subscription_activated
+        LocalizationKeys.PREMIUM_ERROR_PURCHASES_UNAVAILABLE -> Res.string.premium_error_purchases_unavailable
+        LocalizationKeys.PREMIUM_ERROR_RESTORED -> Res.string.premium_error_restored
+        LocalizationKeys.PREMIUM_ERROR_NO_ACTIVE_SUBSCRIPTION -> Res.string.premium_error_no_active_subscription
+        LocalizationKeys.PREMIUM_ERROR_RESTORE_FAILED -> Res.string.premium_error_restore_failed
+        LocalizationKeys.PREMIUM_ERROR_REWARDED_ACTIVATED -> Res.string.premium_error_rewarded_activated
+        LocalizationKeys.PREMIUM_ERROR_AD_UNAVAILABLE -> Res.string.premium_error_ad_unavailable
+        LocalizationKeys.PREMIUM_ERROR_AD_DISABLED -> Res.string.premium_error_ad_disabled
+        LocalizationKeys.PREMIUM_ERROR_GENERIC -> Res.string.premium_error_generic
+        LocalizationKeys.PREMIUM_ERROR_SERVICE_UNAVAILABLE -> Res.string.premium_error_service_unavailable
+        LocalizationKeys.PREMIUM_ERROR_BILLING_UNAVAILABLE -> Res.string.premium_error_billing_unavailable
+        LocalizationKeys.PREMIUM_ERROR_ITEM_UNAVAILABLE -> Res.string.premium_error_item_unavailable
+        LocalizationKeys.PREMIUM_ERROR_NETWORK -> Res.string.premium_error_network
+        LocalizationKeys.PREMIUM_ERROR_ITEM_ALREADY_OWNED -> Res.string.premium_error_item_already_owned
     }

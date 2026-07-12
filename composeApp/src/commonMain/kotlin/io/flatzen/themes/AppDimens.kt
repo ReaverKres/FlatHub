@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 
 @Immutable
 data class FlatZenDimens(
+    val horizontalSpacing6: Dp = 6.dp,
     val screenHorizontal: Dp = 16.dp,
     val screenHorizontalCompact: Dp = 12.dp,
     val screenVertical: Dp = 8.dp,

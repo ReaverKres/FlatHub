@@ -56,9 +56,7 @@ import flatzen.composeapp.generated.resources.premium_feature_no_ads
 import flatzen.composeapp.generated.resources.premium_feature_realtime
 import flatzen.composeapp.generated.resources.premium_manage
 import flatzen.composeapp.generated.resources.premium_plans_title
-import flatzen.composeapp.generated.resources.premium_recommended
 import flatzen.composeapp.generated.resources.premium_restore
-import flatzen.composeapp.generated.resources.premium_savings
 import flatzen.composeapp.generated.resources.premium_source_cache
 import flatzen.composeapp.generated.resources.premium_source_fallback
 import flatzen.composeapp.generated.resources.premium_source_rewarded
@@ -68,7 +66,9 @@ import flatzen.composeapp.generated.resources.premium_subscribe
 import flatzen.composeapp.generated.resources.premium_subtitle
 import flatzen.composeapp.generated.resources.premium_title
 import flatzen.composeapp.generated.resources.premium_watch_ad
+import io.flatzen.common.localization.localizedProductTitle
 import io.flatzen.commoncomponents.date.DateConverter
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.di.container
 import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.billing.SubscriptionProduct
@@ -80,12 +80,14 @@ import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.manageSubscriptionsUrl
 import io.flatzen.viewmodel.premium.PremiumContainer
 import io.flatzen.viewmodel.premium.PremiumIntent
+import io.flatzen.viewmodel.premium.PremiumMessage
 import io.flatzen.viewmodel.premium.PremiumState
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import kotlin.time.ExperimentalTime
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,9 +101,16 @@ fun PremiumScreen() {
         container.store.intent(PremiumIntent.Load)
     }
 
-    androidx.compose.runtime.LaunchedEffect(state.message) {
-        state.message?.let {
-            toastLauncher.showToast(it, ToastDurationType.LONG)
+    val resolvedMessage = state.message?.let { message ->
+        when (message) {
+            is PremiumMessage.Localized -> localizedStringResource(message.key)
+            is PremiumMessage.Raw -> message.text
+        }
+    }
+
+    androidx.compose.runtime.LaunchedEffect(resolvedMessage) {
+        resolvedMessage?.let { text ->
+            toastLauncher.showToast(text, ToastDurationType.LONG)
         }
     }
 
@@ -461,10 +470,10 @@ private fun PlanCard(
     recommended: Boolean,
     onClick: () -> Unit,
 ) {
-    val borderColor = when {
-        selected -> MaterialTheme.colorScheme.primary
-        recommended -> MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
-        else -> MaterialTheme.colorScheme.outlineVariant
+    val borderColor = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.outlineVariant
     }
     val containerColor = when {
         selected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
@@ -487,7 +496,7 @@ private fun PlanCard(
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        product.title,
+                        localizedProductTitle(product),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -498,7 +507,7 @@ private fun PlanCard(
                             color = MaterialTheme.colorScheme.primary,
                         ) {
                             Text(
-                                text = stringResource(Res.string.premium_recommended),
+                                text = localizedStringResource(LocalizationKeys.PREMIUM_RECOMMENDED),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
@@ -509,7 +518,7 @@ private fun PlanCard(
                 product.savingsPercent?.takeIf { it > 0 }?.let { percent ->
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        stringResource(Res.string.premium_savings, percent),
+                        localizedStringResource(LocalizationKeys.PREMIUM_SAVINGS, percent),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Medium,

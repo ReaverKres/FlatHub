@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -77,8 +78,10 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatZenFloatingActionButton
 import io.flatzen.widgets.FlatZenOverlayChip
-import io.flatzen.widgets.RememberPremiumUpsellBanner
+import io.flatzen.widgets.PremiumUpsellCardBanner
+import io.flatzen.widgets.PremiumUpsellState
 import io.flatzen.widgets.SwipeableCard
+import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
@@ -124,7 +127,7 @@ fun SwipeScreen() {
     val filterContainer: FilterContainer = container()
     val filterScreenState by filterContainer.store.subscribe { }
     val filterRepository: FilterRepository = koinInject()
-    val premiumBanner = RememberPremiumUpsellBanner(
+    val premiumUpsell = rememberPremiumUpsellState(
         navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
     )
     var swipeCount by remember { mutableIntStateOf(0) }
@@ -137,6 +140,8 @@ fun SwipeScreen() {
 
     // Optimistic dismiss so the next card appears before Room/MVI finishes.
     var pendingDismissKeys by remember { mutableStateOf(emptySet<String>()) }
+    // Keep swiped card in deck until fly-out animation completes (MVI may set dislike earlier).
+    var animatingOutKeys by remember { mutableStateOf(emptySet<String>()) }
     // Keep the same top card after detail open/return (even if isViewed was set earlier).
     var pinnedFrontKey by rememberSaveable { mutableStateOf<String?>(null) }
     var undoStack by remember { mutableStateOf(listOf<SwipeUndoEntry>()) }
@@ -155,6 +160,7 @@ fun SwipeScreen() {
         if (isSearchLoading && !listState.isLoadingMore) {
             undoStack = emptyList()
             pendingDismissKeys = emptySet()
+            animatingOutKeys = emptySet()
             pinnedFrontKey = null
         }
     }
@@ -168,13 +174,14 @@ fun SwipeScreen() {
         }.toSet()
     }
 
-    val deck by remember(listState.flatList, pendingDismissKeys, pinnedFrontKey) {
+    val deck by remember(listState.flatList, pendingDismissKeys, pinnedFrontKey, animatingOutKeys) {
         derivedStateOf {
             val swipeDeck = listState.flatList.filter {
-                !it.savedInFavorite &&
-                        !it.isViewed &&
-                        !it.disliked &&
-                        it.deckKey() !in pendingDismissKeys
+                val key = it.deckKey()
+                val keepWhileAnimating = key in animatingOutKeys
+                (keepWhileAnimating ||
+                        (!it.savedInFavorite && !it.isViewed && !it.disliked)) &&
+                        key !in pendingDismissKeys
             }
             val pinned = pinnedFrontKey?.let { key ->
                 listState.flatList.find {
@@ -260,11 +267,6 @@ fun SwipeScreen() {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        premiumBanner?.let { banner ->
-            Box(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
-                banner()
-            }
-        }
         when {
             isSearchLoading && deck.isEmpty() -> {
                 Box(Modifier.fillMaxSize()) {
@@ -295,15 +297,8 @@ fun SwipeScreen() {
             }
 
             else -> {
-                val premiumTopPad = if (premiumBanner != null) {
-                    FlatHubTheme.dimens.stickyBarHeight
-                } else {
-                    0.dp
-                }
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = premiumTopPad),
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     val visible = deck.take(3)
                     val frontKey = visible.firstOrNull()?.deckKey()
@@ -329,15 +324,20 @@ fun SwipeScreen() {
                                         translationY = stackTransform.translationY
                                         alpha = stackTransform.alpha
                                     },
+                                onSwipeWillDismiss = {
+                                    animatingOutKeys = animatingOutKeys + flat.deckKey()
+                                },
                                 onSwipedLeft = {
-                                    stackPromoteProgress = 1f
-                                    swipeProgress = 0f
                                     dismissCard(flat, SwipeOutcome.Disliked)
+                                    animatingOutKeys = animatingOutKeys - flat.deckKey()
+                                    swipeProgress = 0f
+                                    stackPromoteProgress = 0f
                                 },
                                 onSwipedRight = {
-                                    stackPromoteProgress = 1f
-                                    swipeProgress = 0f
                                     dismissCard(flat, SwipeOutcome.Liked)
+                                    animatingOutKeys = animatingOutKeys - flat.deckKey()
+                                    swipeProgress = 0f
+                                    stackPromoteProgress = 0f
                                 },
                                 onSwipeProgress = { progress ->
                                     if (isFront) {
@@ -352,6 +352,7 @@ fun SwipeScreen() {
                                     swipeProgress = if (isFront) swipeProgress else 0f,
                                     interactive = isFront,
                                     showSearchProgress = isFront && isSearchLoading,
+                                    premiumUpsell = premiumUpsell,
                                     onOpenDetail = {
                                         pinnedFrontKey = flat.deckKey()
                                         flatSearchContainer.store.intent(
@@ -451,6 +452,7 @@ private fun TwinbyCardFace(
     swipeProgress: Float,
     interactive: Boolean,
     showSearchProgress: Boolean,
+    premiumUpsell: PremiumUpsellState? = null,
     onOpenDetail: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -560,6 +562,10 @@ private fun TwinbyCardFace(
                     .statusBarsPadding()
                     .padding(FlatHubTheme.dimens.screenHorizontalCompact),
             ) {
+                premiumUpsell?.let { upsell ->
+                    PremiumUpsellCardBanner(state = upsell)
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
                 if (showSearchProgress) {
                     SwipeSearchProgressBar()
                 } else {
@@ -678,7 +684,7 @@ private fun SwipeCardPhoto(
     }
 
     BoxWithConstraints(
-        modifier = modifier.background(Color.Black),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
         val contentScale = remember(imageSize, maxWidth, maxHeight) {
@@ -736,6 +742,13 @@ private fun swipePhotoContentScale(
 
 @Composable
 private fun PhotoStepBar(count: Int, activeIndex: Int) {
+    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val activeColor = if (isDarkTheme) {
+        Color.White
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val inactiveColor = activeColor.copy(alpha = 0.35f)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -747,8 +760,7 @@ private fun PhotoStepBar(count: Int, activeIndex: Int) {
                     .height(3.dp)
                     .clip(FlatHubTheme.shapes.extraSmall)
                     .background(
-                        if (index <= activeIndex) Color.White
-                        else Color.White.copy(alpha = 0.35f)
+                        if (index <= activeIndex) activeColor else inactiveColor,
                     ),
             )
         }

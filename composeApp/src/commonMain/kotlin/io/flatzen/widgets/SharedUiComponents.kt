@@ -138,14 +138,14 @@ private fun FlatEmptyImage(
         AddToFavoriteIcon(
             savedInFavorite = savedInFavorite,
             saveInFavoriteInProgress = saveInFavoriteInProgress,
-            disliked = disliked,
             clickOnFavorite = clickOnFavorite,
-            clickOnClearDislike = clickOnClearDislike,
         )
         PlatformIcon(flatPlatform)
-        if (isViewed) {
-            EyeIcon()
-        }
+        TopLeftStatusIcon(
+            isViewed = isViewed,
+            disliked = disliked,
+            clickOnClearDislike = clickOnClearDislike,
+        )
     }
 }
 
@@ -181,14 +181,14 @@ private fun ImagePager(
         AddToFavoriteIcon(
             savedInFavorite = savedInFavorite,
             saveInFavoriteInProgress = saveInFavoriteInProgress,
-            disliked = disliked,
             clickOnFavorite = clickOnFavorite,
-            clickOnClearDislike = clickOnClearDislike,
         )
         PlatformIcon(flatPlatform)
-        if (isViewed) {
-            EyeIcon()
-        }
+        TopLeftStatusIcon(
+            isViewed = isViewed,
+            disliked = disliked,
+            clickOnClearDislike = clickOnClearDislike,
+        )
 
         Row(
             modifier = Modifier
@@ -217,9 +217,7 @@ private fun ImagePager(
 fun BoxScope.AddToFavoriteIcon(
     savedInFavorite: Boolean = false,
     saveInFavoriteInProgress: Boolean = false,
-    disliked: Boolean = false,
     clickOnFavorite: () -> Unit = {},
-    clickOnClearDislike: () -> Unit = {},
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (saveInFavoriteInProgress) 360f else 0f,
@@ -232,27 +230,35 @@ fun BoxScope.AddToFavoriteIcon(
             tween(durationMillis = 300)
         }
     )
-    if (disliked) {
-        SwipeCardsIcon(
+    Icon(
+        imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+        contentDescription = stringResource(Res.string.tab_favorites),
+        tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .clickable { clickOnFavorite() }
+            .padding(8.dp)
+            .size(24.dp)
+            .rotate(rotation)
+    )
+}
+
+@Composable
+fun BoxScope.TopLeftStatusIcon(
+    isViewed: Boolean,
+    disliked: Boolean,
+    clickOnClearDislike: () -> Unit,
+) {
+    when {
+        isViewed -> EyeIcon()
+        disliked -> SwipeCardsIcon(
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+            tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f),
             modifier = Modifier
-                .align(Alignment.BottomEnd)
+                .align(Alignment.TopStart)
                 .clickable { clickOnClearDislike() }
                 .padding(8.dp)
                 .size(24.dp),
-        )
-    } else {
-        Icon(
-            imageVector = if (savedInFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-            contentDescription = stringResource(Res.string.tab_favorites),
-            tint = if (savedInFavorite) Color.Red else Color.Red.copy(alpha = 0.5f),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .clickable { clickOnFavorite() }
-                .padding(8.dp)
-                .size(24.dp)
-                .rotate(rotation)
         )
     }
 }

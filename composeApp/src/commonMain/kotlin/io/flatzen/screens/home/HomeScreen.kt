@@ -114,12 +114,13 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
-import io.flatzen.widgets.RememberPremiumUpsellBanner
+import io.flatzen.widgets.PremiumUpsellInlineText
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortBottomSheet
 import io.flatzen.widgets.dialogs.ForceUpdateDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
+import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -158,7 +159,7 @@ fun HomeScreen(
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
     var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
     val filterSummaryStrings = filterSummaryStrings()
-    val premiumBanner = RememberPremiumUpsellBanner(
+    val premiumUpsell = rememberPremiumUpsellState(
         navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
     )
 
@@ -228,8 +229,12 @@ fun HomeScreen(
 
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .wrapContentHeight()
-                    .align(Alignment.TopEnd)
+                    .align(Alignment.TopCenter)
+                    .thenIf(premiumUpsell != null) {
+                        background(FlatHubTheme.semantic.premiumDelayHint)
+                    }
                     .onSizeChanged { size ->
                         topAppBarSize = localDensity.run {
                             DpSize(
@@ -238,9 +243,19 @@ fun HomeScreen(
                             )
                         }
                     },
-                horizontalArrangement = Arrangement.Center, // Выравнивание по горизонтали
-                verticalAlignment = Alignment.CenterVertically // Выравнивание по вертикали
+                verticalAlignment = Alignment.CenterVertically,
             ) {
+                if (premiumUpsell != null) {
+                    PremiumUpsellInlineText(
+                        state = premiumUpsell,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp),
+                    )
+                } else {
+                    Spacer(Modifier.weight(1f))
+                }
+
                 AsyncImage(
                     model = Res.getUri("drawable/outline_notifications.svg"),
                     modifier = Modifier
@@ -342,9 +357,6 @@ fun HomeScreen(
                             flatSearchContainer.store.intent(FlatListIntent.SearchFlats(true))
                         },
                         topContent = {
-                            premiumBanner?.let { banner ->
-                                item { banner() }
-                            }
                             topContentHeader(
                                 isListView = state.isListView,
                                 filterState = currentFilters,

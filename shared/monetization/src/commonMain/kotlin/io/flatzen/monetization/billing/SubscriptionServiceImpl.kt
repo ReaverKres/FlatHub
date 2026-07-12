@@ -170,7 +170,7 @@ class SubscriptionServiceImpl(
     private fun fallbackProducts(): List<SubscriptionProduct> = listOf(
         SubscriptionProduct(
             id = MonetizationDefaults.PRODUCT_WEEK,
-            title = "1 неделя",
+            title = MonetizationDefaults.PRODUCT_WEEK,
             priceFormatted = "$${MonetizationDefaults.PRICE_WEEK_USD}",
             priceAmount = MonetizationDefaults.PRICE_WEEK_USD.toDouble(),
             currencyCode = "USD",
@@ -179,7 +179,7 @@ class SubscriptionServiceImpl(
         ),
         SubscriptionProduct(
             id = MonetizationDefaults.PRODUCT_MONTH,
-            title = "1 месяц",
+            title = MonetizationDefaults.PRODUCT_MONTH,
             priceFormatted = "$${MonetizationDefaults.PRICE_MONTH_USD}",
             priceAmount = MonetizationDefaults.PRICE_MONTH_USD.toDouble(),
             currencyCode = "USD",
@@ -188,7 +188,7 @@ class SubscriptionServiceImpl(
         ),
         SubscriptionProduct(
             id = MonetizationDefaults.PRODUCT_QUARTER,
-            title = "3 месяца",
+            title = MonetizationDefaults.PRODUCT_QUARTER,
             priceFormatted = "$${MonetizationDefaults.PRICE_QUARTER_USD}",
             priceAmount = MonetizationDefaults.PRICE_QUARTER_USD.toDouble(),
             currencyCode = "USD",

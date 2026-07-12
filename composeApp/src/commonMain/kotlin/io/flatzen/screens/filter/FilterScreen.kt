@@ -86,11 +86,14 @@ import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.utils.LaunchedEffectOnce
+import io.flatzen.utils.ToastDurationType
+import io.flatzen.utils.ToastLauncher
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.filter.FilterContainer
@@ -125,13 +128,18 @@ import io.flatzen.common.localization.stringResource as localizedStringResource
 @Composable
 fun FilterScreen() {
     val filterContainer: FilterContainer = container()
-    val toastLauncher = androidx.compose.runtime.remember { io.flatzen.utils.ToastLauncher() }
+    val toastLauncher = remember { ToastLauncher() }
+    var pendingToastKey by remember { mutableStateOf<LocalizationKeys?>(null) }
     val state by filterContainer.store.subscribe { action ->
         when (action) {
-            is FilterEffect.ShowToastEffect -> toastLauncher.showToast(
-                action.message,
-                io.flatzen.utils.ToastDurationType.LONG
-            )
+            is FilterEffect.ShowToastEffect -> pendingToastKey = action.messageKey
+        }
+    }
+    val resolvedToast = pendingToastKey?.let { localizedStringResource(it) }
+    LaunchedEffect(pendingToastKey) {
+        resolvedToast?.let { text ->
+            toastLauncher.showToast(text, ToastDurationType.LONG)
+            pendingToastKey = null
         }
     }
     var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
