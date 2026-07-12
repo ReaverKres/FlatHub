@@ -47,7 +47,6 @@ import flatzen.composeapp.generated.resources.tab_more
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.commoncomponents.theme.ThemeMode
-import io.flatzen.notifications.NotificationsService
 import io.flatzen.screens.detail.DetailScreen
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
@@ -104,7 +103,6 @@ fun MainGraphNavigation(
     }
 
     val density = LocalDensity.current
-    val notificationsService: NotificationsService = koinInject()
     val topLevelRoutes = remember {
         setOf(Route.List, Route.Favorites, Route.Swipe, Route.Map(), Route.Settings)
     }
@@ -114,22 +112,6 @@ fun MainGraphNavigation(
     )
     val navigator = remember(navigationState) { Navigator(navigationState) }
     val flatHubCommands = rememberFlatHubCommands()
-
-    LaunchedEffect(Unit) {
-        notificationsService.notificationClickListener.collect { clickOnNotification ->
-            if (clickOnNotification == null) return@collect
-            navigator.navigateFromExternal(Route.Notifications())
-            notificationsService.notificationClickListener.emit(null)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        DeepLinkRouter.deepLinks.collect { uri ->
-            DeepLinkParser.parse(uri)?.let { route ->
-                navigator.navigateFromExternal(route)
-            }
-        }
-    }
 
     LaunchedEffect(flatHubCommands) {
         flatHubCommands?.collectLatest { command ->

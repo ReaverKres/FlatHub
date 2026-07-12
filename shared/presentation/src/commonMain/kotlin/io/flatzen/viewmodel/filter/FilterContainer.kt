@@ -3,8 +3,8 @@ package io.flatzen.viewmodel.filter
 import androidx.compose.runtime.Immutable
 import entities.CommonFilterRequestModel
 import entities.SavedFilter
-import io.flatzen.commoncomponents.analytics.AnalyticsEvent
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
+import io.flatzen.analytics.Analytics
+import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
@@ -22,7 +22,6 @@ import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -37,6 +36,7 @@ import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
 import repository.userpreferences.UserPreferencesRepository
 import server_request.Currency
+import kotlin.time.Clock
 
 private typealias PipeCtx = PipelineContext<FilterScreenState, FilterScreenAction, FilterEffect>
 
@@ -119,7 +119,7 @@ sealed interface FilterEffect : MVIAction {
 class FilterContainer(
     private val filterRepository: FilterRepository,
     private val userMapAreaRepository: UserMapAreaRepository,
-    private val analyticsManager: AnalyticsManager,
+    private val analytics: Analytics,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val userTierProvider: UserTierProvider,
     private val navigator: FlatHubNavigator,
@@ -372,7 +372,7 @@ class FilterContainer(
                 is FilterScreenAction.TrackScreenView -> {
                     launch {
                         try {
-                            analyticsManager.registerEvent(
+                            analytics.track(
                                 AnalyticsEvent(
                                     eventName = AppMetrcica.Events.SCREEN_VIEW,
                                     parameters = mapOf(

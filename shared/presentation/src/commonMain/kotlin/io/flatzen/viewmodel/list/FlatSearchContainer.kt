@@ -2,8 +2,8 @@ package io.flatzen.viewmodel.list
 
 import entities.AppFlat
 import entities.CommonFilterRequestModel
-import io.flatzen.commoncomponents.analytics.AnalyticsEvent
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
+import io.flatzen.analytics.Analytics
+import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.network.ConnectionMonitor
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
@@ -36,6 +35,7 @@ import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import repository.mergedrepo.MergedRepository
 import repository.userpreferences.UserPreferencesRepository
+import kotlin.time.Clock
 
 private typealias PipeCtx = PipelineContext<FlatListScreenState, FlatListIntent, FlatListAction>
 
@@ -44,7 +44,7 @@ class FlatSearchContainer(
     private val filterRepository: FilterRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val connectionMonitor: ConnectionMonitor,
-    private val analyticsManager: AnalyticsManager,
+    private val analytics: Analytics,
     private val configFieldsChecker: ConfigFieldsChecker,
     private val userTierProvider: UserTierProvider,
     private val navigator: FlatHubNavigator,
@@ -105,7 +105,7 @@ class FlatSearchContainer(
 
                 is FlatListIntent.TrackScreenView -> {
                     launch(Dispatchers.IO) {
-                        analyticsManager.registerEvent(
+                        analytics.track(
                             AnalyticsEvent(
                                 eventName = AppMetrcica.Events.SCREEN_VIEW,
                                 parameters = mapOf(
@@ -220,7 +220,7 @@ class FlatSearchContainer(
 
     private suspend fun PipeCtx.handleSearchFlats(intent: FlatListIntent.SearchFlats) {
         launch(Dispatchers.IO) {
-            analyticsManager.registerEvent(
+            analytics.track(
                 AnalyticsEvent(
                     eventName = "search_flats",
                     parameters = mapOf(

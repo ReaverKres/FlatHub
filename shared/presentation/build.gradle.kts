@@ -6,6 +6,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":shared:analytics"))
             implementation(project(":shared:commoncomponents"))
             implementation(project(":shared:data"))
             implementation(project(":shared:domain"))
@@ -14,7 +15,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.flowmvi.core)
-            api(libs.kmp.notifier)
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.notifications)
             implementation(libs.mp.maps)
@@ -22,6 +22,7 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.koin.android)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
         }

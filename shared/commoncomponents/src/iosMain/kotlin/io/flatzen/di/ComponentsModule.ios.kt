@@ -1,7 +1,5 @@
 package io.flatzen.di
 
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
-import io.flatzen.commoncomponents.analytics.AnalyticsManagerImpl
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.commoncomponents.network.ConnectionMonitorImpl
 import io.flatzen.commoncomponents.utils.DevicePlatform
@@ -14,8 +12,4 @@ import org.koin.dsl.module
 actual fun dataUtilsModule(): Module = module {
     single<ConnectionMonitor> { ConnectionMonitorImpl() }
     single<DevicePlatform> { DevicePlatformImpl() }
-}
-
-actual fun analyticsModule(): Module = module {
-    single<AnalyticsManager> { AnalyticsManagerImpl() }
 }

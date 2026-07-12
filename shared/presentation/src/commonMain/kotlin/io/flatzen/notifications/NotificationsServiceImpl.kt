@@ -1,22 +1,31 @@
 package io.flatzen.notifications
 
-import com.mmk.kmpnotifier.notification.NotifierManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
-class NotificationsServiceImpl : NotificationsService {
-
-    override val notificationClickListener: MutableSharedFlow<Boolean?> = MutableSharedFlow(1)
+class NotificationsServiceImpl(
+    private val pushPlatform: PushNotificationsPlatform,
+) : NotificationsService {
 
     override suspend fun getOrCreateDeviceToken(): String? {
         return withContext(Dispatchers.Default) {
-            runCatching { NotifierManager.getPushNotifier().getToken() }.getOrNull()
+            val cached = pushPlatform.getLastKnownToken()
+            if (!cached.isNullOrBlank()) {
+                return@withContext cached
+            }
+            suspendCancellableCoroutine<String?> { cont ->
+                pushPlatform.requestToken { token ->
+                    if (cont.isActive) {
+                        cont.resume(token)
+                    }
+                }
+            }
         }
     }
 
     override suspend fun disable() {
-        runCatching { NotifierManager.getPushNotifier().deleteMyToken() }
+        pushPlatform.deleteToken()
     }
 }
-

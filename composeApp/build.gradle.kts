@@ -39,7 +39,7 @@ kotlin {
             export(project(":shared:presentation"))
             export(project(":shared:commoncomponents"))
             export(project(":shared:monetization"))
-            export(libs.kmp.notifier)
+            export(project(":shared:analytics"))
         }
     }
 
@@ -47,15 +47,17 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.compose.ui.tooling.preview)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.messaging)
         }
 
         commonMain.dependencies {
             api(project(":shared:presentation"))
             api(project(":shared:commoncomponents"))
+            api(project(":shared:analytics"))
             implementation(project(":shared:data"))
             api(project(":shared:monetization"))
 
-            api(libs.kmp.notifier)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

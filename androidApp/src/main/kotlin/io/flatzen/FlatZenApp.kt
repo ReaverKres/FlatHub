@@ -4,12 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.mmk.kmpnotifier.notification.NotifierManager
-import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
-import io.appmetrica.analytics.AppMetrica
-import io.appmetrica.analytics.AppMetricaConfig
+import io.flatzen.analytics.AnalyticsConfig
 import io.flatzen.coil.configureSingletonImageLoader
-import io.flatzen.commoncomponents.config.Config
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 
@@ -25,41 +21,25 @@ class FlatZenApp : Application(), KoinComponent {
         instance = this
         configureSingletonImageLoader()
         createDefaultNotificationChannel()
-        initKmpNotifier()
+
+        AnalyticsConfig.configure(
+            apiKey = "ff1c4b73-6829-46f8-82ff-6d3d94ad1774",
+            logsEnabled = true,
+        )
+
         CommonApplication.initialize {
             androidContext(applicationContext)
         }
-
-        Config.addAppMetricaApiKey("ff1c4b73-6829-46f8-82ff-6d3d94ad1774")
-        initAppmetrica()
-    }
-
-    private fun initAppmetrica() {
-        val config = AppMetricaConfig
-            .newConfigBuilder(Config.appMetricaApiKey)
-            .withLogs()
-            .build()
-        AppMetrica.activate(this, config)
-        AppMetrica.enableActivityAutoTracking(this)
     }
 
     private fun createDefaultNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channelId = "default"
-            val name = "Default"
+            val channelId = "flatzen_general_notifications"
+            val name = "Notifications"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, name, importance)
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
-    }
-
-    private fun initKmpNotifier() {
-        NotifierManager.initialize(
-            configuration = NotificationPlatformConfiguration.Android(
-                notificationIconResId = R.mipmap.ic_launcher,
-                showPushNotification = true
-            )
-        )
     }
 }
