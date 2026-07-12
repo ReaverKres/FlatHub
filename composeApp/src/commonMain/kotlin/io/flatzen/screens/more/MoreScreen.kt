@@ -153,6 +153,7 @@ fun MoreScreen(
                         AppTextButton(
                             image = null,
                             text = stringResource(Res.string.faq_title),
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                             onClick = { moreContainer.store.intent(MoreIntent.OpenFaq) }
                         )
