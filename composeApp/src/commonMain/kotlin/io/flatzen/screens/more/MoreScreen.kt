@@ -65,6 +65,7 @@ import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.FaqState
 import io.flatzen.viewmodel.more.MoreConfigState
 import io.flatzen.viewmodel.more.MoreContainer
+import io.flatzen.viewmodel.more.MoreIntent
 import io.flatzen.widgets.AppTextButton
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
@@ -76,9 +77,6 @@ import repository.userpreferences.UserPreferencesRepository
 @Composable
 fun MoreScreen(
     modifier: Modifier = Modifier,
-    navigateToFaq: () -> Unit,
-    navigateToReferral: () -> Unit,
-    navigateToPremium: () -> Unit = {},
 ) {
     val moreContainer: MoreContainer = container()
     val moreState by moreContainer.store.subscribe { }
@@ -131,25 +129,11 @@ fun MoreScreen(
                 ThemeModeSelector(
                     currentMode = displayMode,
                     onModeSelected = { mode, originInRoot ->
-                        if (mode != themeMode && !revealController.isAnimating) {
+                        if (mode != displayMode && !revealController.isAnimating) {
                             revealController.start(originInRoot = originInRoot, targetMode = mode)
                         }
                     },
                 )
-
-                if (faqState is FaqState.Success &&
-                    (faqState as FaqState.Success).faqConfigData.faqItems.isNotEmpty()
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
-                        AppTextButton(
-                            image = null,
-                            text = stringResource(Res.string.faq_title),
-                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
-                            onClick = navigateToFaq
-                        )
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
@@ -157,8 +141,21 @@ fun MoreScreen(
                         image = null,
                         text = stringResource(Res.string.premium_menu),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
-                        onClick = navigateToPremium
+                        onClick = { moreContainer.store.intent(MoreIntent.OpenPremium) }
                     )
+                }
+
+                if (faqState is FaqState.Success &&
+                    (faqState as FaqState.Success).faqConfigData.faqItems.isNotEmpty()
+                ) {
+                    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
+                        AppTextButton(
+                            image = null,
+                            text = stringResource(Res.string.faq_title),
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                            onClick = { moreContainer.store.intent(MoreIntent.OpenFaq) }
+                        )
+                    }
                 }
 
                 if (moreState.isNotificationAvailable.not()) {
@@ -167,7 +164,7 @@ fun MoreScreen(
                             image = null,
                             text = stringResource(Res.string.referral_code),
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
-                            onClick = navigateToReferral
+                            onClick = { moreContainer.store.intent(MoreIntent.OpenReferral) }
                         )
                     }
                 }

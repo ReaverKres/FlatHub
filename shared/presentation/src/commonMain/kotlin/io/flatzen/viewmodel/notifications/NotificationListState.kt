@@ -37,6 +37,9 @@ sealed interface NotificationListIntent : MVIIntent {
     data class SetListView(val isListView: Boolean) : NotificationListIntent
     data class DeleteSubscriptionFailed(val id: String, val message: String) :
         NotificationListIntent
+
+    data class OpenDetail(val flatPlatform: FlatPlatform, val adId: Long) : NotificationListIntent
+    data object NavigateBack : NotificationListIntent
 }
 
 // Action (was NotificationListEffect)

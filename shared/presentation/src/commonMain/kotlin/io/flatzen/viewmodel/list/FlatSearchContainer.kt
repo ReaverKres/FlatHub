@@ -13,6 +13,8 @@ import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.monetization.tier.applyFeedDelayFilter
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
@@ -45,6 +47,7 @@ class FlatSearchContainer(
     private val analyticsManager: AnalyticsManager,
     private val configFieldsChecker: ConfigFieldsChecker,
     private val userTierProvider: UserTierProvider,
+    private val navigator: FlatHubNavigator,
 ) : Container<FlatListScreenState, FlatListIntent, FlatListAction> {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -119,6 +122,18 @@ class FlatSearchContainer(
                 FlatListIntent.HideNetworkErrorDialog -> {
                     updateState { copy(errorDialogState = null) }
                 }
+
+                is FlatListIntent.OpenDetail -> navigator.navigate(
+                    FlatHubCommand.OpenDetail(
+                        platform = intent.flatPlatform,
+                        objectId = intent.adId,
+                        markAsViewedOnOpen = intent.markAsViewedOnOpen,
+                    )
+                )
+
+                FlatListIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
+                FlatListIntent.OpenNotifications -> navigator.navigate(FlatHubCommand.OpenNotifications())
+                FlatListIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
             }
         }
     }

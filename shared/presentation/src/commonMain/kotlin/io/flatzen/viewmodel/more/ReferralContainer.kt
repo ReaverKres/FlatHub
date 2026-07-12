@@ -4,6 +4,8 @@ import io.flatzen.commoncomponents.extensions.substringBeforeAnyDelimiter
 import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.notifications.NotificationsService
 import io.flatzen.usecases.RegistrationUseCase
 import kotlinx.coroutines.flow.first
@@ -26,7 +28,8 @@ class ReferralContainer(
     private val notificationsService: NotificationsService,
     private val prefsRepo: UserPreferencesRepository,
     private val referralRepo: ReferralsRepository,
-    private val devicePlatform: DevicePlatform
+    private val devicePlatform: DevicePlatform,
+    private val navigator: FlatHubNavigator,
 ) : Container<ReferralState, ReferralIntent, ReferralAction> {
 
     override val store = store<ReferralState, ReferralIntent, ReferralAction>(
@@ -53,6 +56,7 @@ class ReferralContainer(
                 }
 
                 is ReferralIntent.HideStatsErrorDialog -> updateState { copy(statsErrorMessage = null) }
+                ReferralIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
             }
         }
     }

@@ -35,6 +35,9 @@ import kotlin.math.sin
 private const val CIRCLE_SEGMENTS = 64
 private const val TWO_PI = 2f * PI.toFloat()
 
+/** Peak inward wobble (0.03 + 0.025 + 0.015). Without compensating, progress=1 still leaves corners bare. */
+private const val WOBBLE_INSET = 0.03f + 0.025f + 0.015f
+
 val LocalThemeRevealController = staticCompositionLocalOf<ThemeRevealController> {
     error("ThemeRevealController not provided")
 }
@@ -79,7 +82,7 @@ fun ThemeRevealHost(
     isDark: Boolean,
     onCommit: suspend (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
-    durationMs: Int = 1000,
+    durationMs: Int = 1500,
     edgeColor: Color? = null,
     content: @Composable () -> Unit,
 ) {
@@ -88,6 +91,9 @@ fun ThemeRevealHost(
     var size by remember { mutableStateOf(IntSize.Zero) }
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
     var showingReverse by remember { mutableStateOf(false) }
+    // Optimistic mode applied synchronously when the reveal finishes, matching RiftToggle's
+    // onToggle() before showingReverse=false. committedMode from DataStore can lag by a frame+.
+    var displayedMode by remember { mutableStateOf(committedMode) }
 
     val timeState = remember { mutableFloatStateOf(0f) }
     val progressState = remember { mutableFloatStateOf(0f) }
@@ -96,15 +102,30 @@ fun ThemeRevealHost(
 
     val request = controller.request
 
-    // Status / nav bar icon contrast follows committed theme (snaps on commit).
-    PlatformSystemBars(isDark = isDark)
+    // Status / nav bar icon contrast follows displayed theme (snaps when reveal commits).
+    PlatformSystemBars(isDark = displayedMode.resolveDark(systemDark))
+
+    LaunchedEffect(committedMode) {
+        if (!showingReverse && request == null) {
+            displayedMode = committedMode
+        }
+    }
+
+    // Drop pending request only after Flow has caught up — keeps MoreScreen selector stable.
+    LaunchedEffect(committedMode, request) {
+        val req = request ?: return@LaunchedEffect
+        if (committedMode == req.targetMode && !showingReverse) {
+            displayedMode = committedMode
+            controller.clear()
+        }
+    }
 
     LaunchedEffect(request) {
         val req = request ?: return@LaunchedEffect
         val targetDark = req.targetMode.resolveDark(systemDark)
         if (targetDark == isDark) {
             onCommit(req.targetMode)
-            controller.clear()
+            displayedMode = req.targetMode
             return@LaunchedEffect
         }
 
@@ -122,10 +143,12 @@ fun ThemeRevealHost(
             if (raw >= 1f) break
         }
         onCommit(req.targetMode)
+        // Apply new theme before tearing down the overlay (same order as RiftToggle).
+        displayedMode = req.targetMode
         showingReverse = false
         progressState.floatValue = 0f
         timeState.floatValue = 0f
-        controller.clear()
+        // controller.clear() waits for committedMode == target via LaunchedEffect above.
     }
 
     Box(
@@ -137,7 +160,7 @@ fun ThemeRevealHost(
             },
     ) {
         if (!showingReverse) {
-            FlatHubTheme(themeMode = committedMode) {
+            FlatHubTheme(themeMode = displayedMode) {
                 content()
             }
         } else {
@@ -151,8 +174,9 @@ fun ThemeRevealHost(
                     .drawWithContent {
                         val progress = progressState.floatValue
                         val time = timeState.floatValue
+                        // maxReveal already accounts for wobble inset, so full waves stay safe to the end.
                         val currentRadius = maxReveal(tapOffset, size) * progress
-                        fillWobblyPath(clipPathObj, tapOffset, currentRadius, time, 1f)
+                        fillWobblyPath(clipPathObj, tapOffset, currentRadius, time, intensity = 1f)
                         clipPath(clipPathObj) {
                             this@drawWithContent.drawContent()
                         }
@@ -169,7 +193,7 @@ fun ThemeRevealHost(
                     val time = timeState.floatValue
                     val currentRadius = maxReveal(tapOffset, size) * progress
                     if (progress <= 0f || progress >= 1f) return@Canvas
-                    fillWobblyPath(edgePath, tapOffset, currentRadius, time, 1f)
+                    fillWobblyPath(edgePath, tapOffset, currentRadius, time, intensity = 1f)
                     drawPath(
                         path = edgePath,
                         color = edgeColor.copy(alpha = 0.35f * (1f - progress)),
@@ -197,10 +221,14 @@ fun ThemeMode.resolveDark(systemDark: Boolean): Boolean = when (this) {
     ThemeMode.DARK -> true
 }
 
-private fun maxReveal(center: Offset, size: IntSize): Float = hypot(
-    maxOf(center.x, size.width - center.x).toFloat(),
-    maxOf(center.y, size.height - center.y).toFloat(),
-)
+private fun maxReveal(center: Offset, size: IntSize): Float {
+    val toFarthestCorner = hypot(
+        maxOf(center.x, size.width - center.x),
+        maxOf(center.y, size.height - center.y),
+    )
+    // Inflate so the minimum wobbly radius still reaches the farthest corner at progress=1.
+    return toFarthestCorner / (1f - WOBBLE_INSET)
+}
 
 private fun fillWobblyPath(
     path: Path,

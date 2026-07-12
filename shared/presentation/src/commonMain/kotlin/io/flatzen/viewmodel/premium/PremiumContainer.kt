@@ -10,6 +10,8 @@ import io.flatzen.monetization.billing.SubscriptionService
 import io.flatzen.monetization.billing.SubscriptionStatus
 import io.flatzen.monetization.billing.SubscriptionTier
 import io.flatzen.monetization.config.MonetizationRemoteConfig
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -54,16 +56,16 @@ sealed interface PremiumIntent : MVIIntent {
     data object Restore : PremiumIntent
     data object WatchRewardedAd : PremiumIntent
     data class SetDebugForceActive(val forceActive: Boolean?) : PremiumIntent
+    data object NavigateBack : PremiumIntent
 }
 
-sealed interface PremiumAction : MVIAction {
-    data object NavigateBack : PremiumAction
-}
+sealed interface PremiumAction : MVIAction
 
 class PremiumContainer(
     private val subscriptionService: SubscriptionService,
     private val adService: AdService,
     private val monetizationRemoteConfig: MonetizationRemoteConfig,
+    private val navigator: FlatHubNavigator,
 ) : Container<PremiumState, PremiumIntent, PremiumAction> {
 
     override val store = store(initial = PremiumState.Initial) {
@@ -92,6 +94,7 @@ class PremiumContainer(
                 is PremiumIntent.SetDebugForceActive -> updateState {
                     copy(debugForceActive = intent.forceActive)
                 }
+                PremiumIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
             }
         }
     }

@@ -7,12 +7,16 @@ import io.flatzen.commoncomponents.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AnalyticsManager
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.localization.LocalizationKeys
+import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.monetization.tier.UserTier
 import io.flatzen.monetization.tier.UserTierProvider
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.viewmodel.UiDistrict
 import io.flatzen.viewmodel.sharedstates.SavedAreasDialogState
 import kotlinx.coroutines.flow.first
@@ -84,6 +88,16 @@ sealed interface FilterScreenAction : MVIIntent {
         val screenName: String,
         val parameters: Map<String, Any> = emptyMap()
     ) : FilterScreenAction
+
+    data object NavigateBack : FilterScreenAction
+    data object OpenLocation : FilterScreenAction
+    data object OpenCity : FilterScreenAction
+    data object OpenMetro : FilterScreenAction
+    data object OpenDistricts : FilterScreenAction
+    data class SelectCity(val cityCode: CityCode) : FilterScreenAction
+
+    data object OpenPremiumForAddress : FilterScreenAction
+    data class AddAddress(val address: String) : FilterScreenAction
 }
 
 @Immutable
@@ -99,8 +113,6 @@ data class FilterScreenState(
 }
 
 sealed interface FilterEffect : MVIAction {
-    data object NavigateToReferralEffect : FilterEffect
-    data object NavigateToPremiumEffect : FilterEffect
     data class ShowToastEffect(val message: String) : FilterEffect
 }
 
@@ -110,6 +122,7 @@ class FilterContainer(
     private val analyticsManager: AnalyticsManager,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val userTierProvider: UserTierProvider,
+    private val navigator: FlatHubNavigator,
 ) : Container<FilterScreenState, FilterScreenAction, FilterEffect> {
 
     override val store = store<FilterScreenState, FilterScreenAction, FilterEffect>(
@@ -270,7 +283,7 @@ class FilterContainer(
                             )
                         }
                     } else {
-                        action(FilterEffect.NavigateToReferralEffect)
+                        navigator.navigate(FlatHubCommand.OpenReferral)
                     }
                 }
 
@@ -376,7 +389,7 @@ class FilterContainer(
 
                 is FilterScreenAction.ActivateMapArea -> {
                     if (intent.checked && userTierProvider.currentTier() == UserTier.FREE) {
-                        action(FilterEffect.NavigateToPremiumEffect)
+                        navigator.navigate(FlatHubCommand.OpenPremium)
                     } else {
                         var currentAreas = filterRepository.areasInFilter(userMapAreaRepository)
                         currentAreas = if (intent.checked) {
@@ -432,6 +445,55 @@ class FilterContainer(
                             savedAreasDialogState = savedAreasDialogState.copy(isVisible = false)
                         )
                     }
+                }
+
+                FilterScreenAction.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
+                FilterScreenAction.OpenLocation -> navigator.navigate(FlatHubCommand.OpenLocation)
+                FilterScreenAction.OpenCity -> navigator.navigate(FlatHubCommand.OpenCitySelect)
+                FilterScreenAction.OpenMetro -> {
+                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+                        navigator.navigate(FlatHubCommand.OpenMetroSelect)
+                    } else {
+                        navigator.navigate(FlatHubCommand.OpenPremium)
+                    }
+                }
+
+                FilterScreenAction.OpenDistricts -> {
+                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+                        navigator.navigate(FlatHubCommand.OpenDistrictSelect)
+                    } else {
+                        navigator.navigate(FlatHubCommand.OpenPremium)
+                    }
+                }
+
+                FilterScreenAction.OpenPremiumForAddress -> navigator.navigate(FlatHubCommand.OpenPremium)
+                is FilterScreenAction.AddAddress -> {
+                    if (userTierProvider.currentTier() != UserTier.PREMIUM) {
+                        navigator.navigate(FlatHubCommand.OpenPremium)
+                    } else if (intent.address.isNotBlank()) {
+                        var currentState = FilterScreenState.Initial
+                        withState { currentState = this }
+                        val addresses = currentState.filters.address?.toSet().orEmpty() +
+                                AddressUiState(intent.address.trim())
+                        applyFiltersUpdate(
+                            currentState.filters.copy(address = addresses),
+                            doNetworkCall = false,
+                        )
+                    }
+                }
+
+                is FilterScreenAction.SelectCity -> {
+                    var currentState = FilterScreenState.Initial
+                    withState { currentState = this }
+                    applyFiltersUpdate(
+                        currentState.filters.copy(
+                            location = currentState.filters.location?.copy(
+                                selectedCity = LocationUiMapper.findSelectedCity(intent.cityCode)
+                            )
+                        ),
+                        doNetworkCall = false,
+                    )
+                    navigator.navigate(FlatHubCommand.NavigateBack)
                 }
             }
         }

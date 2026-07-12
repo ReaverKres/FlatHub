@@ -65,7 +65,6 @@ import flatzen.composeapp.generated.resources.notifications_is_empty
 import flatzen.composeapp.generated.resources.notifications_params
 import flatzen.composeapp.generated.resources.notifications_permission_message
 import flatzen.composeapp.generated.resources.notifications_title
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.viewmodel.notifications.NotificationListAction
@@ -83,8 +82,6 @@ import pro.respawn.flowmvi.compose.dsl.subscribe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsScreen(
-    navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
-    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     filterFromNotification: String? = null
 ) {
@@ -154,7 +151,7 @@ fun NotificationsScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.notifications_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { container.store.intent(NotificationListIntent.NavigateBack) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
                     }
                 }
@@ -248,7 +245,11 @@ fun NotificationsScreen(
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
                         isListView = state.isListView,
-                        onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                        onFlatClick = {
+                            container.store.intent(
+                                NotificationListIntent.OpenDetail(it.flatPlatform, it.adId)
+                            )
+                        },
                         clickOnFavorite = {
                             container.store.intent(
                                 NotificationListIntent.ClickOnFavorite(

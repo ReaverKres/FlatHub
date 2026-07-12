@@ -24,7 +24,12 @@ sealed interface Route : NavKey {
     data object Settings : Route
 
     @Serializable
-    data class Map(val selectedMarker: Long? = null) : Route
+    data class Map(
+        val selectedMarker: Long? = null,
+        val selectedLatitude: Double? = null,
+        val selectedLongitude: Double? = null,
+        val selectedRooms: Int? = null,
+    ) : Route
 
     // Detail
     @Serializable

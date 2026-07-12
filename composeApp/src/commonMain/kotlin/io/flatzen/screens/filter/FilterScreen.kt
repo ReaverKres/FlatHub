@@ -123,18 +123,11 @@ import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
-fun FilterScreen(
-    navigateBack: () -> Unit,
-    onOpenLocation: () -> Unit = {},
-    onOpenReferralScreen: () -> Unit,
-    onOpenPremiumScreen: () -> Unit = {},
-) {
+fun FilterScreen() {
     val filterContainer: FilterContainer = container()
     val toastLauncher = androidx.compose.runtime.remember { io.flatzen.utils.ToastLauncher() }
     val state by filterContainer.store.subscribe { action ->
         when (action) {
-            is FilterEffect.NavigateToReferralEffect -> onOpenReferralScreen()
-            is FilterEffect.NavigateToPremiumEffect -> onOpenPremiumScreen()
             is FilterEffect.ShowToastEffect -> toastLauncher.showToast(
                 action.message,
                 io.flatzen.utils.ToastDurationType.LONG
@@ -196,7 +189,7 @@ fun FilterScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.filters_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back))
                     }
                 },
@@ -317,7 +310,7 @@ fun FilterScreen(
                     selectedDistricts = state.filters.districtsArea?.filter { it.isChecked },
                     isLocationFilterActive = currentFilters.isLocationFilterActive(),
                     onOpenLocation = {
-                        onOpenLocation()
+                        filterContainer.intent(FilterScreenAction.OpenLocation)
                     }
                 )
             }

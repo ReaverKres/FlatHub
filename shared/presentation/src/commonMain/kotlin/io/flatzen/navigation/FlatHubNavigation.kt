@@ -7,16 +7,26 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
 sealed interface FlatHubCommand {
-    data class OpenDetail(val platform: FlatPlatform, val objectId: Long) : FlatHubCommand
+    data class OpenDetail(
+        val platform: FlatPlatform,
+        val objectId: Long,
+        val markAsViewedOnOpen: Boolean = true,
+    ) : FlatHubCommand
     data object OpenFilter : FlatHubCommand
     data class OpenNotifications(val filterJson: String? = null) : FlatHubCommand
-    data class OpenMap(val selectedMarker: Long? = null) : FlatHubCommand
+    data class OpenMap(
+        val selectedMarker: Long? = null,
+        val latitude: Double? = null,
+        val longitude: Double? = null,
+        val rooms: Int? = null,
+    ) : FlatHubCommand
     data object OpenFaq : FlatHubCommand
     data object OpenReferral : FlatHubCommand
     data object OpenLocation : FlatHubCommand
     data object OpenCitySelect : FlatHubCommand
     data object OpenMetroSelect : FlatHubCommand
     data object OpenDistrictSelect : FlatHubCommand
+    data object OpenPremium : FlatHubCommand
     data object NavigateBack : FlatHubCommand
 }
 

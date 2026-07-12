@@ -24,7 +24,11 @@ sealed interface MoreConfigState {
 }
 
 // Intent — no user intents, load on init
-sealed interface MoreIntent : MVIIntent
+sealed interface MoreIntent : MVIIntent {
+    data object OpenFaq : MoreIntent
+    data object OpenReferral : MoreIntent
+    data object OpenPremium : MoreIntent
+}
 
 // Action — no side effects for More screen
 sealed interface MoreAction : MVIAction

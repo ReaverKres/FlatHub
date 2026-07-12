@@ -31,6 +31,7 @@ sealed interface ReferralIntent : MVIIntent {
     data object CopyMyCode : ReferralIntent
     data object HideStatsErrorDialog : ReferralIntent
     data object NotificationAvailable : ReferralIntent
+    data object NavigateBack : ReferralIntent
 }
 
 sealed interface ReferralAction : MVIAction {

@@ -10,6 +10,8 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.utils.DevicePlatform
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.viewmodel.filter.mapFilterModelToFilterState
 import io.flatzen.viewmodel.list.UiFlat
 import kotlinx.collections.immutable.persistentListOf
@@ -46,7 +48,8 @@ class NotificationListContainer(
     private val subscriptionsRepository: SubscriptionsRepository,
     private val permissionsController: PermissionsController,
     private val devicePlatform: DevicePlatform,
-    private val filterFromNotification: String?
+    private val filterFromNotification: String?,
+    private val navigator: FlatHubNavigator,
 ) : Container<NotificationListScreenState, NotificationListIntent, NotificationListAction> {
 
     private var noFlatsToLoadMore: Boolean = false
@@ -146,6 +149,12 @@ class NotificationListContainer(
                             updateState { copy(isListView = newIsListView) }
                         }
                     }
+
+                    is NotificationListIntent.OpenDetail -> navigator.navigate(
+                        FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId)
+                    )
+
+                    NotificationListIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
                 }
             }
         }

@@ -3,6 +3,8 @@ package io.flatzen.viewmodel.more
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.respawn.flowmvi.api.Container
@@ -17,7 +19,8 @@ private typealias PipeCtx = PipelineContext<MoreState, MoreIntent, MoreAction>
 
 class MoreContainer(
     private val configFieldsChecker: ConfigFieldsChecker,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val navigator: FlatHubNavigator,
 ) : Container<MoreState, MoreIntent, MoreAction> {
 
     override val store = store<MoreState, MoreIntent, MoreAction>(initial = MoreState.Initial) {
@@ -28,7 +31,11 @@ class MoreContainer(
             checkNotificationAvailableStatus()
         }
         reduce { intent ->
-            // No user intents for More screen
+            when (intent) {
+                MoreIntent.OpenFaq -> navigator.navigate(FlatHubCommand.OpenFaq)
+                MoreIntent.OpenReferral -> navigator.navigate(FlatHubCommand.OpenReferral)
+                MoreIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
+            }
         }
     }
 
