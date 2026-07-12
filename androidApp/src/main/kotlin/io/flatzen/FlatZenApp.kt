@@ -8,6 +8,7 @@ import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
+import io.flatzen.coil.configureSingletonImageLoader
 import io.flatzen.commoncomponents.config.Config
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
@@ -22,6 +23,7 @@ class FlatZenApp : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        configureSingletonImageLoader()
         createDefaultNotificationChannel()
         initKmpNotifier()
         CommonApplication.initialize {
