@@ -1,4 +1,4 @@
-package io.flatzen.monetization.config
+package io.flatzen.commoncomponents.commonentities.monetization
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

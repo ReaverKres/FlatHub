@@ -19,16 +19,16 @@ object MonetizationDefaults {
     const val HOME_LIST_AD_INTERVAL = 20
     const val SWIPE_AD_INTERVAL = 10
     const val FEED_DELAY_MINUTES = 60L
-    const val TRIAL_DAYS = 3L
+    const val TRIAL_DAYS = 0L
 
-    /** Until SDK keys / store products are configured — treat everyone as Premium. */
-    const val PREMIUM_FALLBACK_ENABLED = true
+    /** When true — treat everyone as Premium and skip store billing. */
+    const val PREMIUM_FALLBACK_ENABLED = false
 
     /**
      * Debug: show Active / Purchase toggle on PremiumScreen to preview both UI branches
      * without changing real subscription status. Turn off before release.
      */
-    const val DEBUG_PREMIUM_SCREEN_TOGGLE = true
+    const val DEBUG_PREMIUM_SCREEN_TOGGLE = false
 
     /**
      * Debug: force PremiumScreen branch when [DEBUG_PREMIUM_SCREEN_TOGGLE] is true.

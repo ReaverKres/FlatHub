@@ -1,6 +1,5 @@
 package io.flatzen.monetization.di
 
-import android.app.Activity
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import io.flatzen.monetization.ads.AdService
@@ -19,17 +18,12 @@ actual fun platformMonetizationModule(): Module = module {
         createAndroidPreferencesDataStore(get())
     }
 
-    single<() -> Activity?> {
-        // Overridden in androidApp with real Activity holder if available
-        { null }
-    }
-
     single<PlatformBillingBridge> {
         val config = get<MonetizationRemoteConfig>()
         if (config.premiumFallbackEnabled) {
             NoOpBillingBridge()
         } else {
-            PlayBillingBridge(get(), get())
+            PlayBillingBridge(get())
         }
     }
 
@@ -38,7 +32,7 @@ actual fun platformMonetizationModule(): Module = module {
         if (config.applovinSdkKey.isBlank() || config.premiumFallbackEnabled) {
             NoOpAdService()
         } else {
-            AppLovinAdService(get(), get()).also { it.initialize(config.applovinSdkKey) }
+            AppLovinAdService(get()).also { it.initialize(config.applovinSdkKey) }
         }
     }
 }

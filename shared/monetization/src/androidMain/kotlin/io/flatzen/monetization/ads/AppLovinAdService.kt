@@ -1,6 +1,5 @@
 package io.flatzen.monetization.ads
 
-import android.app.Activity
 import android.content.Context
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
@@ -12,6 +11,7 @@ import com.applovin.mediation.ads.MaxRewardedAd
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration
+import io.flatzen.monetization.billing.CurrentActivityHolder
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -21,7 +21,6 @@ import kotlin.coroutines.resume
  */
 class AppLovinAdService(
     private val context: Context,
-    private val activityProvider: () -> Activity?,
 ) : AdService {
 
     @Volatile
@@ -49,7 +48,7 @@ class AppLovinAdService(
 
     override suspend fun showInterstitial(adUnitId: String): AdLoadResult {
         if (!initialized || adUnitId.isBlank()) return AdLoadResult.Disabled
-        val activity = activityProvider() ?: return AdLoadResult.Error("No activity")
+        val activity = CurrentActivityHolder.activity ?: return AdLoadResult.Error("No activity")
         return suspendCancellableCoroutine { cont ->
             val ad = MaxInterstitialAd(adUnitId, activity)
             interstitial = ad
@@ -80,7 +79,7 @@ class AppLovinAdService(
 
     override suspend fun showRewarded(adUnitId: String): AdLoadResult {
         if (!initialized || adUnitId.isBlank()) return AdLoadResult.Disabled
-        val activity = activityProvider() ?: return AdLoadResult.Error("No activity")
+        val activity = CurrentActivityHolder.activity ?: return AdLoadResult.Error("No activity")
         return suspendCancellableCoroutine { cont ->
             var rewardedGranted = false
             val ad = MaxRewardedAd.getInstance(adUnitId, activity)

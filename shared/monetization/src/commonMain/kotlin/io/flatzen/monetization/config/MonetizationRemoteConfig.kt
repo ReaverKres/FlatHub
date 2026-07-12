@@ -1,9 +1,9 @@
 package io.flatzen.monetization.config
 
+import io.flatzen.commoncomponents.commonentities.monetization.MonetizationConfigData
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
 import io.flatzen.monetization.MonetizationDefaults
-import kotlinx.serialization.json.Json
 
 data class MonetizationRemoteConfig(
     val adsEnabled: Boolean = MonetizationDefaults.ADS_ENABLED,
@@ -21,19 +21,8 @@ data class MonetizationRemoteConfig(
     val rewardedAdUnit: String = MonetizationDefaults.APPLOVIN_REWARDED_AD_UNIT,
 )
 
-private val monetizationConfigJson = Json { ignoreUnknownKeys = true }
-
 fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
-    val jsonConfig = checkString(ConfigFields.MonetizationConfigData)
-        ?.takeIf { it.isNotBlank() }
-        ?.let { jsonString ->
-            try {
-                monetizationConfigJson.decodeFromString<MonetizationConfigData>(jsonString)
-            } catch (e: Exception) {
-                print("MonetizationConfigData parsing exception\n ${e.message}")
-                null
-            }
-        }
+    val jsonConfig = checkJson<MonetizationConfigData>(ConfigFields.MonetizationConfigData)
 
     return MonetizationRemoteConfig(
         adsEnabled = checkBoolean(ConfigFields.AdsEnabled) ?: MonetizationDefaults.ADS_ENABLED,

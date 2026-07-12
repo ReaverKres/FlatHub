@@ -31,9 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,10 +50,6 @@ import flatzen.composeapp.generated.resources.premium_active_subtitle
 import flatzen.composeapp.generated.resources.premium_active_title
 import flatzen.composeapp.generated.resources.premium_active_unlimited
 import flatzen.composeapp.generated.resources.premium_active_until
-import flatzen.composeapp.generated.resources.premium_debug_active
-import flatzen.composeapp.generated.resources.premium_debug_auto
-import flatzen.composeapp.generated.resources.premium_debug_label
-import flatzen.composeapp.generated.resources.premium_debug_purchase
 import flatzen.composeapp.generated.resources.premium_done
 import flatzen.composeapp.generated.resources.premium_feature_location
 import flatzen.composeapp.generated.resources.premium_feature_no_ads
@@ -92,6 +85,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,15 +137,6 @@ fun PremiumScreen() {
         ) {
             Spacer(Modifier.height(4.dp))
 
-            if (state.showDebugToggle) {
-                DebugPremiumToggle(
-                    forceActive = state.debugForceActive,
-                    onChange = { force ->
-                        container.store.intent(PremiumIntent.SetDebugForceActive(force))
-                    },
-                )
-            }
-
             if (state.showActivePremium) {
                 ActivePremiumContent(
                     state = state,
@@ -179,49 +164,7 @@ fun PremiumScreen() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DebugPremiumToggle(
-    forceActive: Boolean?,
-    onChange: (Boolean?) -> Unit,
-) {
-    val selectedIndex = when (forceActive) {
-        null -> 0
-        true -> 1
-        false -> 2
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            text = stringResource(Res.string.premium_debug_label),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            listOf(
-                stringResource(Res.string.premium_debug_auto),
-                stringResource(Res.string.premium_debug_active),
-                stringResource(Res.string.premium_debug_purchase),
-            ).forEachIndexed { index, label ->
-                SegmentedButton(
-                    selected = selectedIndex == index,
-                    onClick = {
-                        onChange(
-                            when (index) {
-                                1 -> true
-                                2 -> false
-                                else -> null
-                            },
-                        )
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index, 3),
-                ) {
-                    Text(label)
-                }
-            }
-        }
-    }
-}
-
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun ActivePremiumContent(
     state: PremiumState,

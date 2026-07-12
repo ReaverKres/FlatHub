@@ -1,6 +1,5 @@
 package io.flatzen.monetization.billing
 
-import android.app.Activity
 import android.content.Context
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -25,7 +24,6 @@ import kotlin.coroutines.resume
  */
 class PlayBillingBridge(
     context: Context,
-    private val activityProvider: () -> Activity?,
 ) : PlatformBillingBridge, PurchasesUpdatedListener {
 
     private var purchaseContinuation: ((PurchaseResult) -> Unit)? = null
@@ -51,8 +49,7 @@ class PlayBillingBridge(
         })
     }
 
-    override fun isConfigured(): Boolean =
-        connected && !MonetizationDefaults.PREMIUM_FALLBACK_ENABLED
+    override fun isConfigured(): Boolean = connected
 
     override suspend fun queryProducts(): List<SubscriptionProduct> {
         if (!connected) return emptyList()
@@ -81,7 +78,8 @@ class PlayBillingBridge(
     }
 
     override suspend fun purchase(productId: String): PurchaseResult {
-        val activity = activityProvider() ?: return PurchaseResult.Error("Activity unavailable")
+        val activity =
+            CurrentActivityHolder.activity ?: return PurchaseResult.Error("Activity unavailable")
         val details = cachedDetails.find { it.productId == productId }
             ?: queryProducts().let { cachedDetails.find { d -> d.productId == productId } }
             ?: return PurchaseResult.Error("Product not found")
