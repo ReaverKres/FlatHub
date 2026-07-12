@@ -21,7 +21,11 @@ data class SubscriptionProduct(
 sealed interface PurchaseResult {
     data object Success : PurchaseResult
     data object Cancelled : PurchaseResult
-    data class Error(val message: String) : PurchaseResult
+    data class Error(
+        val message: String? = null,
+        val billingResponseCode: Int? = null,
+    ) : PurchaseResult
+
     data object NotConfigured : PurchaseResult
 }
 

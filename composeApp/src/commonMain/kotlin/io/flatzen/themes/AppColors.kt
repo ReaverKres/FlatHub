@@ -64,6 +64,8 @@ internal val FlatZenDarkColors = darkColorScheme(
 data class FlatZenSemanticColors(
     val upsellBanner: Color = Color(0xFFBF4F1F),
     val onUpsellBanner: Color = Color(0xFFFFFFFF),
+    val premiumDelayHint: Color = Color(0xFFD6EEF9),
+    val onPremiumDelayHint: Color = Color(0xFF1A4A6E),
     val mapPinDefault: Color = Color(0xFFD32F2F),
     val mapPinSelected: Color = Color(0xFF43A047),
     val metroBlue: Color = Color(0xFF1976D2),
@@ -76,11 +78,15 @@ data class FlatZenSemanticColors(
 )
 
 internal val FlatZenSemanticLight = FlatZenSemanticColors(
+    premiumDelayHint = Color(0xFFD6EEF9),
+    onPremiumDelayHint = Color(0xFF1A4A6E),
     photoOverlayScrim = Color(0x66000000),
     photoOverlayScrimStrong = Color(0x8C000000),
 )
 
 internal val FlatZenSemanticDark = FlatZenSemanticColors(
+    premiumDelayHint = Color(0xFF1E3A52),
+    onPremiumDelayHint = Color(0xFFB8DFF0),
     photoOverlayScrim = Color(0x8C000000),
     photoOverlayScrimStrong = Color(0x99000000),
 )

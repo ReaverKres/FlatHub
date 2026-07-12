@@ -2,7 +2,6 @@ package io.flatzen.monetization.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -24,16 +23,8 @@ class EncryptedSecureStore(
     private val tierKey = stringPreferencesKey("subscription_tier")
     private val expiresKey = longPreferencesKey("subscription_expires_at")
     private val productKey = stringPreferencesKey("subscription_product_id")
-    private val bannerDismissedKey = booleanPreferencesKey("premium_delay_banner_dismissed")
     private val trialStartedKey = longPreferencesKey("trial_started_at")
     private val rewardedUntilKey = longPreferencesKey("rewarded_premium_until")
-
-    fun observeBannerDismissed(): Flow<Boolean> =
-        dataStore.data.map { it[bannerDismissedKey] == true }
-
-    suspend fun setBannerDismissed(dismissed: Boolean) {
-        dataStore.edit { it[bannerDismissedKey] = dismissed }
-    }
 
     fun observeSubscriptionCache(): Flow<SubscriptionCache> =
         dataStore.data.map { prefs ->

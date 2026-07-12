@@ -79,12 +79,13 @@ class PlayBillingBridge(
 
     override suspend fun purchase(productId: String): PurchaseResult {
         val activity =
-            CurrentActivityHolder.activity ?: return PurchaseResult.Error("Activity unavailable")
+            CurrentActivityHolder.activity
+                ?: return PurchaseResult.Error(message = "Activity unavailable")
         val details = cachedDetails.find { it.productId == productId }
             ?: queryProducts().let { cachedDetails.find { d -> d.productId == productId } }
-            ?: return PurchaseResult.Error("Product not found")
+            ?: return PurchaseResult.Error(message = "Product not found")
         val offer = details.subscriptionOfferDetails?.firstOrNull()
-            ?: return PurchaseResult.Error("No offer")
+            ?: return PurchaseResult.Error(message = "No offer")
         val productParams = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
             .setOfferToken(offer.offerToken)
@@ -97,7 +98,12 @@ class PlayBillingBridge(
             val launch = client.launchBillingFlow(activity, flowParams)
             if (launch.responseCode != BillingClient.BillingResponseCode.OK) {
                 purchaseContinuation = null
-                cont.resume(PurchaseResult.Error(launch.debugMessage))
+                cont.resume(
+                    PurchaseResult.Error(
+                        message = launch.debugMessage,
+                        billingResponseCode = launch.responseCode,
+                    )
+                )
             }
         }
     }
@@ -145,12 +151,22 @@ class PlayBillingBridge(
                     acknowledgeIfNeeded(purchase)
                     cont(PurchaseResult.Success)
                 } else {
-                    cont(PurchaseResult.Error("Empty purchases"))
+                    cont(
+                        PurchaseResult.Error(
+                            message = "Empty purchases",
+                            billingResponseCode = result.responseCode,
+                        )
+                    )
                 }
             }
 
             BillingClient.BillingResponseCode.USER_CANCELED -> cont(PurchaseResult.Cancelled)
-            else -> cont(PurchaseResult.Error(result.debugMessage))
+            else -> cont(
+                PurchaseResult.Error(
+                    message = result.debugMessage,
+                    billingResponseCode = result.responseCode,
+                )
+            )
         }
     }
 
@@ -179,12 +195,7 @@ class PlayBillingBridge(
             MonetizationDefaults.PRODUCT_QUARTER -> 12
             else -> 1
         }
-        val title = when (productId) {
-            MonetizationDefaults.PRODUCT_WEEK -> "1 неделя"
-            MonetizationDefaults.PRODUCT_MONTH -> "1 месяц"
-            MonetizationDefaults.PRODUCT_QUARTER -> "3 месяца"
-            else -> name
-        }
+        val title = name
         return SubscriptionProduct(
             id = productId,
             title = title,

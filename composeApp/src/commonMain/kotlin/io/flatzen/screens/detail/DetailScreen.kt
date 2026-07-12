@@ -174,14 +174,6 @@ fun DetailScreen(
                             )
                         )
                     },
-                    clickOnClearDislike = {
-                        container.store.intent(
-                            FlatDetailIntent.ClearDislike(
-                                flat.platform,
-                                flat.adId,
-                            )
-                        )
-                    },
                     navigateToMap = {
                         container.store.intent(FlatDetailIntent.OpenOnMap(flat.adId))
                     },
@@ -201,7 +193,6 @@ private fun FlatDetailContent(
     mapState: MapState,
     modifier: Modifier = Modifier,
     clickOnFavorite: () -> Unit,
-    clickOnClearDislike: () -> Unit,
     navigateToMap: () -> Unit
 ) {
     Column(
@@ -215,9 +206,7 @@ private fun FlatDetailContent(
             contentScale = ContentScale.Fit,
             savedInFavorite = flat.savedInFavorite,
             saveInFavoriteInProgress = flat.saveInFavoriteInProgress,
-            disliked = flat.disliked,
             clickOnFavorite = clickOnFavorite,
-            clickOnClearDislike = clickOnClearDislike,
         )
 
         // Основная информация

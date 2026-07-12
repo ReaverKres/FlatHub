@@ -50,8 +50,8 @@ class StoreKit2BillingBridge : PlatformBillingBridge {
         return when {
             result == "success" -> PurchaseResult.Success
             result == "cancelled" -> PurchaseResult.Cancelled
-            result.startsWith("error:") -> PurchaseResult.Error(result.removePrefix("error:"))
-            else -> PurchaseResult.Error(result)
+            result.startsWith("error:") -> PurchaseResult.Error(message = result.removePrefix("error:"))
+            else -> PurchaseResult.Error(message = result)
         }
     }
 
@@ -120,12 +120,7 @@ class StoreKit2BillingBridge : PlatformBillingBridge {
             MonetizationDefaults.PRODUCT_QUARTER -> 12
             else -> 1
         }
-        val mappedTitle = when (id) {
-            MonetizationDefaults.PRODUCT_WEEK -> "1 неделя"
-            MonetizationDefaults.PRODUCT_MONTH -> "1 месяц"
-            MonetizationDefaults.PRODUCT_QUARTER -> "3 месяца"
-            else -> title
-        }
+        val mappedTitle = title
         return SubscriptionProduct(
             id = id,
             title = mappedTitle,

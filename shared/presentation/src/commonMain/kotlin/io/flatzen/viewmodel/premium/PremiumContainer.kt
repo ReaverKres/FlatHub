@@ -1,6 +1,7 @@
 package io.flatzen.viewmodel.premium
 
 import androidx.compose.runtime.Immutable
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.ads.AdLoadResult
 import io.flatzen.monetization.ads.AdService
@@ -32,7 +33,7 @@ data class PremiumState(
     val selectedProductId: String? = null,
     val loading: Boolean = false,
     val purchasing: Boolean = false,
-    val message: String? = null,
+    val message: PremiumMessage? = null,
     val isPremiumActive: Boolean = false,
     val statusSource: SubscriptionStatus.StatusSource? = null,
     val expiresAtEpochMs: Long? = null,
@@ -117,11 +118,11 @@ class PremiumContainer(
                     )
                 }
             }
-            .onFailure { error ->
+            .onFailure {
                 updateState {
                     copy(
                         loading = false,
-                        message = error.message ?: "Не удалось загрузить тарифы",
+                        message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_LOAD_PLANS),
                     )
                 }
             }
@@ -137,7 +138,7 @@ class PremiumContainer(
                 updateState {
                     copy(
                         purchasing = false,
-                        message = "Подписка активирована",
+                        message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_SUBSCRIPTION_ACTIVATED),
                         isPremiumActive = true,
                         debugForceActive = if (showDebugToggle) true else debugForceActive,
                     )
@@ -149,11 +150,14 @@ class PremiumContainer(
             }
 
             is PurchaseResult.Error -> updateState {
-                copy(purchasing = false, message = result.message)
+                copy(purchasing = false, message = result.toPremiumMessage())
             }
 
             PurchaseResult.NotConfigured -> updateState {
-                copy(purchasing = false, message = "Покупки временно недоступны")
+                copy(
+                    purchasing = false,
+                    message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_PURCHASES_UNAVAILABLE),
+                )
             }
         }
     }
@@ -164,9 +168,9 @@ class PremiumContainer(
             .onSuccess { status ->
                 val isPremium = status.tier == SubscriptionTier.PREMIUM
                 val message = if (isPremium) {
-                    "Подписка восстановлена"
+                    PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_RESTORED)
                 } else {
-                    "Активная подписка не найдена"
+                    PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_NO_ACTIVE_SUBSCRIPTION)
                 }
                 updateState {
                     copy(
@@ -184,11 +188,11 @@ class PremiumContainer(
                     )
                 }
             }
-            .onFailure { error ->
+            .onFailure {
                 updateState {
                     copy(
                         purchasing = false,
-                        message = error.message ?: "Не удалось восстановить покупки",
+                        message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_RESTORE_FAILED),
                     )
                 }
             }
@@ -202,7 +206,7 @@ class PremiumContainer(
                 updateState {
                     copy(
                         purchasing = false,
-                        message = "Premium на 1 час активирован",
+                        message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_REWARDED_ACTIVATED),
                         isPremiumActive = true,
                         statusSource = SubscriptionStatus.StatusSource.REWARDED,
                         debugForceActive = if (showDebugToggle) true else debugForceActive,
@@ -211,15 +215,25 @@ class PremiumContainer(
             }
 
             AdLoadResult.NoFill -> updateState {
-                copy(purchasing = false, message = "Реклама сейчас недоступна")
+                copy(
+                    purchasing = false,
+                    message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_AD_UNAVAILABLE),
+                )
             }
 
             is AdLoadResult.Error -> updateState {
-                copy(purchasing = false, message = result.message)
+                copy(
+                    purchasing = false,
+                    message = result.message?.takeIf { it.isNotBlank() }?.let(PremiumMessage::Raw)
+                        ?: PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_GENERIC),
+                )
             }
 
             AdLoadResult.Disabled -> updateState {
-                copy(purchasing = false, message = "Реклама отключена")
+                copy(
+                    purchasing = false,
+                    message = PremiumMessage.Localized(LocalizationKeys.PREMIUM_ERROR_AD_DISABLED),
+                )
             }
         }
     }

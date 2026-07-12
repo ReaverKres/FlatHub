@@ -1,8 +1,10 @@
 package io.flatzen.widgets
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,13 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+
+private const val EXIT_ANIMATION_MS = 220
+private const val EXIT_DISTANCE_FACTOR = 1.35f
 
 /**
  * Twinby/Tinder-style swipe card. Right = like, left = dislike.
  * [onSwipeProgress] reports -1..1 for mid-swipe overlays.
  * When [enabled] is false the card stays in the stack without drag gestures
  * (so promoting a back card to front does not remount its content).
+ *
+ * Dismiss callbacks fire only after the fly-out animation finishes, so the
+ * parent can keep the card mounted until it is fully off-screen.
  */
 @Composable
 fun SwipeableCard(
@@ -28,6 +37,7 @@ fun SwipeableCard(
     enabled: Boolean = true,
     onSwipedLeft: () -> Unit,
     onSwipedRight: () -> Unit,
+    onSwipeWillDismiss: () -> Unit = {},
     onSwipeProgress: (Float) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -39,36 +49,51 @@ fun SwipeableCard(
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val screenWidthPx = with(density) { maxWidth.toPx() }.coerceAtLeast(1f)
         val threshold = screenWidthPx * 0.28f
+        val exitDistance = screenWidthPx * EXIT_DISTANCE_FACTOR
+        val exitSpec = tween<Float>(
+            durationMillis = EXIT_ANIMATION_MS,
+            easing = FastOutLinearInEasing,
+        )
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .then(
                     if (enabled) {
-                        Modifier.pointerInput(screenWidthPx) {
+                        Modifier.pointerInput(screenWidthPx, exitDistance) {
                             detectDragGestures(
                                 onDragEnd = {
                                     scope.launch {
                                         when {
                                             offsetX.value > threshold -> {
-                                                offsetX.animateTo(screenWidthPx * 1.2f)
+                                                onSwipeProgress(1f)
+                                                onSwipeWillDismiss()
+                                                offsetX.animateTo(exitDistance, exitSpec)
                                                 onSwipedRight()
                                             }
 
                                             offsetX.value < -threshold -> {
-                                                offsetX.animateTo(-screenWidthPx * 1.2f)
+                                                onSwipeProgress(-1f)
+                                                onSwipeWillDismiss()
+                                                offsetX.animateTo(-exitDistance, exitSpec)
                                                 onSwipedLeft()
                                             }
 
                                             else -> {
-                                                offsetX.animateTo(
-                                                    0f,
-                                                    spring(stiffness = Spring.StiffnessMedium),
-                                                )
-                                                offsetY.animateTo(
-                                                    0f,
-                                                    spring(stiffness = Spring.StiffnessMedium),
-                                                )
+                                                coroutineScope {
+                                                    launch {
+                                                        offsetX.animateTo(
+                                                            0f,
+                                                            spring(stiffness = Spring.StiffnessMedium),
+                                                        )
+                                                    }
+                                                    launch {
+                                                        offsetY.animateTo(
+                                                            0f,
+                                                            spring(stiffness = Spring.StiffnessMedium),
+                                                        )
+                                                    }
+                                                }
                                                 onSwipeProgress(0f)
                                             }
                                         }
@@ -76,8 +101,10 @@ fun SwipeableCard(
                                 },
                                 onDragCancel = {
                                     scope.launch {
-                                        offsetX.animateTo(0f)
-                                        offsetY.animateTo(0f)
+                                        coroutineScope {
+                                            launch { offsetX.animateTo(0f) }
+                                            launch { offsetY.animateTo(0f) }
+                                        }
                                         onSwipeProgress(0f)
                                     }
                                 },

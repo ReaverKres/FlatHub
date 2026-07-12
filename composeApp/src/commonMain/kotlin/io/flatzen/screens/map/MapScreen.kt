@@ -66,6 +66,8 @@ import flatzen.composeapp.generated.resources.tab_map
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.di.container
+import io.flatzen.themes.FlatHubTheme
+import io.flatzen.themes.FlatHubTheme.dimens
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -82,10 +84,11 @@ import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
 import io.flatzen.widgets.MessageSnackbar
-import io.flatzen.widgets.RememberPremiumUpsellBanner
+import io.flatzen.widgets.PremiumUpsellInlineText
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
+import io.flatzen.widgets.rememberPremiumUpsellState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
@@ -120,7 +123,7 @@ fun MapScreen(
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
-    val premiumBanner = RememberPremiumUpsellBanner(
+    val premiumUpsell = rememberPremiumUpsellState(
         navigateToPremium = { mapViewModel.store.intent(MapIntent.OpenPremium) },
     )
     var selectedFlatId by remember { mutableStateOf<Long?>(null) }
@@ -142,6 +145,9 @@ fun MapScreen(
     val filterState by filterContainer.store.subscribe { }
     val savePathCalloutId = "savePathCalloutId"
     val firstPointInPathMarker = "pathid1"
+    val pathMarkerColor = MaterialTheme.colorScheme.secondary
+    val pathMarkerTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val saveCalloutText = stringResource(Res.string.save)
 
     val mapModelState by mapViewModel.store.subscribe { action ->
         when (action) {
@@ -154,8 +160,8 @@ fun MapScreen(
                 ) {
                     RoomMarker(
                         rooms = null,
-                        pinColor = MaterialTheme.colorScheme.secondary,
-                        textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        pinColor = pathMarkerColor,
+                        textColor = pathMarkerTextColor
                     )
                 }
                 mapViewModel.mapState.onMarkerClick { id, x, y ->
@@ -179,7 +185,7 @@ fun MapScreen(
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     Text(
-                                        text = stringResource(Res.string.save),
+                                        text = saveCalloutText,
                                         color = Color.DarkGray,
                                         modifier = Modifier.padding(
                                             horizontal = 10.dp,
@@ -389,16 +395,36 @@ fun MapScreen(
             mapViewModel.store.intent(MapIntent.OpenDetail(platform, adId))
         }
     ) {
-        premiumBanner?.let { banner -> banner() }
         Scaffold(
             topBar = {
                 TopAppBar(
                     windowInsets = WindowInsets(0, 0, 0, 0),
+                    modifier = Modifier.then(
+                        if (premiumUpsell != null) {
+                            Modifier.background(FlatHubTheme.semantic.premiumDelayHint)
+                        } else {
+                            Modifier
+                        }
+                    ),
                     title = {
-                        Text(
-                            stringResource(Res.string.tab_map),
-                            style = MaterialTheme.typography.titleLarge
-                        )
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                stringResource(Res.string.tab_map),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = if (premiumUpsell != null) {
+                                    FlatHubTheme.semantic.onPremiumDelayHint
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                            )
+                            if (premiumUpsell != null) {
+                                Spacer(Modifier.width(dimens.horizontalSpacing6))
+                                PremiumUpsellInlineText(
+                                    state = premiumUpsell,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
                     },
                 )
             },

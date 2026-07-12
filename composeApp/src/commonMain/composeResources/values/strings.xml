@@ -211,4 +211,22 @@
     <string name="premium_debug_auto">Авто</string>
     <string name="premium_debug_active">Активен</string>
     <string name="premium_debug_purchase">Покупка</string>
+    <string name="premium_plan_week">1 неделя</string>
+    <string name="premium_plan_month">1 месяц</string>
+    <string name="premium_plan_quarter">3 месяца</string>
+    <string name="premium_error_load_plans">Не удалось загрузить тарифы</string>
+    <string name="premium_error_subscription_activated">Подписка активирована</string>
+    <string name="premium_error_purchases_unavailable">Покупки временно недоступны</string>
+    <string name="premium_error_restored">Подписка восстановлена</string>
+    <string name="premium_error_no_active_subscription">Активная подписка не найдена</string>
+    <string name="premium_error_restore_failed">Не удалось восстановить покупки</string>
+    <string name="premium_error_rewarded_activated">Premium на 1 час активирован</string>
+    <string name="premium_error_ad_unavailable">Реклама сейчас недоступна</string>
+    <string name="premium_error_ad_disabled">Реклама отключена</string>
+    <string name="premium_error_generic">Не удалось выполнить операцию</string>
+    <string name="premium_error_service_unavailable">Сервис оплаты временно недоступен</string>
+    <string name="premium_error_billing_unavailable">Оплата недоступна на этом устройстве</string>
+    <string name="premium_error_item_unavailable">Тариф временно недоступен</string>
+    <string name="premium_error_network">Проверьте подключение к интернету</string>
+    <string name="premium_error_item_already_owned">Подписка уже оформлена</string>
 </resources>

@@ -113,7 +113,7 @@ data class FilterScreenState(
 }
 
 sealed interface FilterEffect : MVIAction {
-    data class ShowToastEffect(val message: String) : FilterEffect
+    data class ShowToastEffect(val messageKey: LocalizationKeys) : FilterEffect
 }
 
 class FilterContainer(
@@ -363,7 +363,7 @@ class FilterContainer(
                     if (showPaidLocationToast) {
                         action(
                             FilterEffect.ShowToastEffect(
-                                "Фильтры местоположения без Premium недоступны"
+                                LocalizationKeys.PREMIUM_LOCATION_TOAST
                             )
                         )
                     }
