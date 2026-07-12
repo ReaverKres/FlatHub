@@ -21,9 +21,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.back
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
@@ -406,6 +411,18 @@ fun MapScreen(
                             Modifier
                         }
                     ),
+                    navigationIcon = {
+                        if (selectedMarker != null) {
+                            IconButton(onClick = {
+                                mapViewModel.store.intent(MapIntent.NavigateBack)
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(Res.string.back),
+                                )
+                            }
+                        }
+                    },
                     title = {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
