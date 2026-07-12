@@ -1,17 +1,13 @@
 package io.flatzen.screens.swipe
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,10 +39,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -78,6 +72,8 @@ import io.flatzen.viewmodel.list.UiFlat
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatZenFloatingActionButton
 import io.flatzen.widgets.FlatZenOverlayChip
+import io.flatzen.widgets.PhotoStepBar
+import io.flatzen.widgets.PhotoTapZones
 import io.flatzen.widgets.PremiumUpsellCardBanner
 import io.flatzen.widgets.PremiumUpsellState
 import io.flatzen.widgets.SwipeableCard
@@ -514,45 +510,20 @@ private fun TwinbyCardFace(
             }
 
             if (interactive) {
-                val noClickIndication = null
-                Row(modifier = Modifier.fillMaxSize()) {
-                    Box(
-                        modifier = Modifier
-                            .weight(0.35f)
-                            .fillMaxHeight()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = noClickIndication,
-                            ) {
-                                if (photos.isNotEmpty()) {
-                                    photoIndex = (safeIndex - 1).coerceAtLeast(0)
-                                }
-                            },
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(0.30f)
-                            .fillMaxHeight()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = noClickIndication,
-                                onClick = onOpenDetail,
-                            ),
-                    )
-                    Box(
-                        modifier = Modifier
-                            .weight(0.35f)
-                            .fillMaxHeight()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = noClickIndication,
-                            ) {
-                                if (photos.isNotEmpty()) {
-                                    photoIndex = (safeIndex + 1).coerceAtMost(photos.lastIndex)
-                                }
-                            },
-                    )
-                }
+                PhotoTapZones(
+                    modifier = Modifier.fillMaxSize(),
+                    onTapLeft = {
+                        if (photos.isNotEmpty()) {
+                            photoIndex = (safeIndex - 1).coerceAtLeast(0)
+                        }
+                    },
+                    onTapCenter = onOpenDetail,
+                    onTapRight = {
+                        if (photos.isNotEmpty()) {
+                            photoIndex = (safeIndex + 1).coerceAtMost(photos.lastIndex)
+                        }
+                    },
+                )
             }
 
             Column(
@@ -736,33 +707,6 @@ private fun swipePhotoContentScale(
         else -> {
             val containerIsLandscape = containerWidth > containerHeight
             if (containerIsLandscape) ContentScale.Fit else ContentScale.Crop
-        }
-    }
-}
-
-@Composable
-private fun PhotoStepBar(count: Int, activeIndex: Int) {
-    val isDarkTheme = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val activeColor = if (isDarkTheme) {
-        Color.White
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-    val inactiveColor = activeColor.copy(alpha = 0.35f)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        repeat(count) { index ->
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(3.dp)
-                    .clip(FlatHubTheme.shapes.extraSmall)
-                    .background(
-                        if (index <= activeIndex) activeColor else inactiveColor,
-                    ),
-            )
         }
     }
 }

@@ -1,6 +1,5 @@
 package io.flatzen.navigation
 
-import DetailScreen
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -49,6 +48,7 @@ import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.commoncomponents.theme.ThemeMode
 import io.flatzen.notifications.NotificationsService
+import io.flatzen.screens.detail.DetailScreen
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
 import io.flatzen.screens.home.HomeScreen
