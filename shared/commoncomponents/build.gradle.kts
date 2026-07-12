@@ -17,10 +17,8 @@ kotlin {
 
         androidMain {
             dependencies {
-                implementation(libs.appmetrica.analytics)
                 implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.config)
-                implementation(libs.firebase.analytics)
             }
         }
     }

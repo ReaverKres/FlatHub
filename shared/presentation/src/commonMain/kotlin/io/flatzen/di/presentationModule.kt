@@ -4,6 +4,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import di.dataModule
 import di.databaseModule
 import di.networkModule
+import io.flatzen.analytics.di.analyticsModule
 import io.flatzen.monetization.di.monetizationModules
 import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.navigation.FlatHubNavigatorDelegate
@@ -38,7 +39,7 @@ val flatSearchPresentationModule = module {
             filterRepository = get(),
             userPreferencesRepository = get(),
             connectionMonitor = get(),
-            analyticsManager = get(),
+            analytics = get(),
             configFieldsChecker = get(),
             userTierProvider = get(),
             navigator = get(),
@@ -104,7 +105,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             notificationsModule(),
             databaseModule(),
             dataUtilsModule(),
-            analyticsModule(),
+            analyticsModule,
             *monetizationModules().toTypedArray(),
         )
     }

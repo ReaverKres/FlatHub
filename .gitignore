@@ -2,6 +2,7 @@
 composeApp/release/
 androidApp/release/
 docs/
+x5Run/
 .kotlin
 .gradle
 **/build/

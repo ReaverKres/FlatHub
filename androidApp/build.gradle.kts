@@ -1,5 +1,5 @@
-import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -89,12 +89,11 @@ dependencies {
     implementation(projects.composeApp)
     implementation(projects.shared.presentation)
     implementation(projects.shared.commoncomponents)
+    implementation(projects.shared.analytics)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splashScreen)
-    implementation(libs.appmetrica.analytics)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
     implementation(libs.flowmvi.compose)
-    implementation(libs.kmp.notifier)
 }

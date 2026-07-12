@@ -2,8 +2,8 @@ package io.flatzen.viewmodel.detailad
 
 import entities.AppFlat
 import entities.getPricesText
-import io.flatzen.commoncomponents.analytics.AnalyticsEvent
-import io.flatzen.commoncomponents.analytics.AnalyticsManager
+import io.flatzen.analytics.Analytics
+import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.error_handling.LCE
@@ -14,7 +14,6 @@ import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.disableRotation
 import ovh.plrapps.mapcompose.api.disableScrolling
@@ -29,13 +28,14 @@ import pro.respawn.flowmvi.plugins.reduce
 import repository.mergedrepo.MergedRepository
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.time.Clock
 
 private typealias FlatDetailCtx = PipelineContext<FlatDetailState, FlatDetailIntent, FlatDetailAction>
 
 class FlatDetailContainer(
     private val mergedRepository: MergedRepository,
     private val tileStreamProvider: TileStreamProvider,
-    private val analyticsManager: AnalyticsManager,
+    private val analytics: Analytics,
     private val navigator: FlatHubNavigator,
 ) : Container<FlatDetailState, FlatDetailIntent, FlatDetailAction> {
 
@@ -63,7 +63,7 @@ class FlatDetailContainer(
                 is FlatDetailIntent.ClearDislike -> handleClearDislike(intent)
                 is FlatDetailIntent.TrackScreenView -> {
                     launch {
-                        analyticsManager.registerEvent(
+                        analytics.track(
                             AnalyticsEvent(
                                 eventName = AppMetrcica.Events.SCREEN_VIEW,
                                 parameters = mapOf(
