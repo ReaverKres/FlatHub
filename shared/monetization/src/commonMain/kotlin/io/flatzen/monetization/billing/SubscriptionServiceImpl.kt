@@ -58,9 +58,6 @@ class SubscriptionServiceImpl(
             }.collect { _status.value = it }
         }
         scope.launch {
-            if (!premiumFallbackEnabled() && bridge.isConfigured()) {
-                runCatching { restore() }
-            }
             if (!premiumFallbackEnabled()) {
                 startTrialIfNeeded()
             }

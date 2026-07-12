@@ -71,7 +71,6 @@ enum FlatZenStoreKit2 {
             },
             restore: { onResult in
                 Task {
-                    try? await AppStore.sync()
                     onResult(await statusJson())
                 }
             },

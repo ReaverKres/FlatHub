@@ -62,7 +62,9 @@ enum FirebaseRemoteConfigSetup {
                 FirebaseRemoteConfigBridge.shared.configure(timeoutSeconds: Int(timeout))
             },
             fetchAndActivate: { onComplete in
-                FirebaseRemoteConfigBridge.shared.fetchAndActivate(onComplete: onComplete)
+                FirebaseRemoteConfigBridge.shared.fetchAndActivate { success in
+                    onComplete(KotlinBoolean(bool: success))
+                }
             },
             getString: { key in
                 FirebaseRemoteConfigBridge.shared.getString(key)
@@ -74,7 +76,7 @@ enum FirebaseRemoteConfigSetup {
                 FirebaseRemoteConfigBridge.shared.getBool(key)
             },
             isLoaded: {
-                FirebaseRemoteConfigBridge.shared.isLoaded()
+                KotlinBoolean(bool: FirebaseRemoteConfigBridge.shared.isLoaded())
             }
         )
     }

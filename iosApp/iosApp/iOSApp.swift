@@ -9,6 +9,7 @@ struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
+        FirebaseBootstrap.configureIfNeeded()
         AppMetricaSetup.configureBridge()
         FirebaseRemoteConfigSetup.configureBridge()
         AppLovinSetup.configureBridge()
@@ -28,7 +29,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        configureFirebaseIfNeeded()
+        FirebaseBootstrap.configureIfNeeded()
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
         requestPushAuthorization(application: application)
@@ -79,7 +80,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 
-    private func configureFirebaseIfNeeded() {
+}
+
+enum FirebaseBootstrap {
+    static func configureIfNeeded() {
         if FirebaseApp.app() != nil {
             return
         }

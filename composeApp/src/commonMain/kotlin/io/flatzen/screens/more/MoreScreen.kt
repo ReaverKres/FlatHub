@@ -141,6 +141,7 @@ fun MoreScreen(
                         image = null,
                         text = stringResource(Res.string.premium_menu),
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                        contentColor = MaterialTheme.colorScheme.onSurface,
                         onClick = { moreContainer.store.intent(MoreIntent.OpenPremium) }
                     )
                 }
@@ -164,6 +165,7 @@ fun MoreScreen(
                             image = null,
                             text = stringResource(Res.string.referral_code),
                             style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                            contentColor = MaterialTheme.colorScheme.onSurface,
                             onClick = { moreContainer.store.intent(MoreIntent.OpenReferral) }
                         )
                     }
