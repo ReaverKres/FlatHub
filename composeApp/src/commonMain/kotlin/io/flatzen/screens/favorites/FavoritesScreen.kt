@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.favorite_is_empty
 import flatzen.composeapp.generated.resources.tab_favorites
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.home.FlatList
@@ -27,7 +26,6 @@ import pro.respawn.flowmvi.compose.dsl.subscribe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val container: FavoritesContainer = container()
@@ -52,7 +50,11 @@ fun FavoritesScreen(
                 else -> FlatList(
                     isLoadingMore = false,
                     flats = state.flatList,
-                    onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                    onFlatClick = {
+                        container.store.intent(
+                            FavoritesIntent.OpenDetail(it.flatPlatform, it.adId)
+                        )
+                    },
                     clickOnFavorite = {
                         container.store.intent(
                             FavoritesIntent.ClickOnFavorite(

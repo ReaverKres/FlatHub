@@ -88,7 +88,6 @@ import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.localization.LocalizationKeys
@@ -132,10 +131,6 @@ import io.flatzen.common.localization.stringResource as localizedStringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
-    navigateToFilters: () -> Unit,
-    navigateToNotifications: () -> Unit,
-    navigateToPremium: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
@@ -163,7 +158,9 @@ fun HomeScreen(
     var showSortSheet by rememberSaveable { mutableStateOf(false) }
     var showCommercialDialog by rememberSaveable { mutableStateOf(false) }
     val filterSummaryStrings = filterSummaryStrings()
-    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
+    val premiumBanner = RememberPremiumUpsellBanner(
+        navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
+    )
 
     LaunchedEffect(currentFilters) {
         filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, true))
@@ -198,7 +195,7 @@ fun HomeScreen(
         modifier = modifier,
         floatingActionButton = {
             FilterActionButton(
-                onClick = navigateToFilters,
+                onClick = { flatSearchContainer.store.intent(FlatListIntent.OpenFilter) },
                 isAnyFilterApplied = state.isAnyFilterApplied
             )
         }
@@ -249,7 +246,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .size(24.dp)
                         .clickable {
-                            navigateToNotifications()
+                            flatSearchContainer.store.intent(FlatListIntent.OpenNotifications)
                         },
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
@@ -320,7 +317,11 @@ fun HomeScreen(
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
                         isListView = state.isListView,
-                        onFlatClick = { navigateToDetails(it.flatPlatform, it.adId) },
+                        onFlatClick = {
+                            flatSearchContainer.store.intent(
+                                FlatListIntent.OpenDetail(it.flatPlatform, it.adId)
+                            )
+                        },
                         clickOnFavorite = {
                             flatSearchContainer.store.intent(
                                 FlatListIntent.ClickOnFavorite(

@@ -118,17 +118,15 @@ private data class SwipeUndoEntry(
 }
 
 @Composable
-fun SwipeScreen(
-    navigateToDetails: (FlatPlatform, Long) -> Unit,
-    navigateToFilters: () -> Unit,
-    navigateToPremium: () -> Unit = {},
-) {
+fun SwipeScreen() {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
     val filterContainer: FilterContainer = container()
     val filterScreenState by filterContainer.store.subscribe { }
     val filterRepository: FilterRepository = koinInject()
-    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
+    val premiumBanner = RememberPremiumUpsellBanner(
+        navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
+    )
     var swipeCount by remember { mutableIntStateOf(0) }
     var swipeProgress by remember { mutableFloatStateOf(0f) }
     var stackPromoteProgress by remember { mutableFloatStateOf(0f) }
@@ -356,7 +354,13 @@ fun SwipeScreen(
                                     showSearchProgress = isFront && isSearchLoading,
                                     onOpenDetail = {
                                         pinnedFrontKey = flat.deckKey()
-                                        navigateToDetails(flat.flatPlatform, flat.adId)
+                                        flatSearchContainer.store.intent(
+                                            FlatListIntent.OpenDetail(
+                                                flatPlatform = flat.flatPlatform,
+                                                adId = flat.adId,
+                                                markAsViewedOnOpen = false,
+                                            )
+                                        )
                                     },
                                 )
                             }
@@ -388,7 +392,7 @@ fun SwipeScreen(
                 .padding(fabMargin),
         ) {
             FilterActionButton(
-                onClick = navigateToFilters,
+                onClick = { flatSearchContainer.store.intent(FlatListIntent.OpenFilter) },
                 isAnyFilterApplied = listState.isAnyFilterApplied,
             )
         }

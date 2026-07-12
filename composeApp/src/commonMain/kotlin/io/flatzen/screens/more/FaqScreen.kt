@@ -31,14 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.flatzen.di.container
 import io.flatzen.viewmodel.more.FaqContainer
+import io.flatzen.viewmodel.more.FaqIntent
 import io.flatzen.viewmodel.more.FaqState
 import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FaqScreen(
-    navigateBack: () -> Unit
-) {
+fun FaqScreen() {
     val container: FaqContainer = container()
     val state by container.store.subscribe { }
 
@@ -49,7 +48,7 @@ fun FaqScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text("FAQ", style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { container.store.intent(FaqIntent.NavigateBack) }) {
                         Icon(Icons.Default.ArrowBack, null)
                     }
                 }

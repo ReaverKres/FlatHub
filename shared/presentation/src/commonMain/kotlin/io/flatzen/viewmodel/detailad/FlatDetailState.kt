@@ -103,6 +103,9 @@ sealed interface FlatDetailIntent : MVIIntent {
         val screenName: String,
         val parameters: Map<String, Any> = emptyMap()
     ) : FlatDetailIntent
+
+    data object NavigateBack : FlatDetailIntent
+    data class OpenOnMap(val flatId: Long) : FlatDetailIntent
 }
 
 // Action — no side effects for FlatDetail screen

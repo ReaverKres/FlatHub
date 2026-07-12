@@ -41,6 +41,7 @@ val flatSearchPresentationModule = module {
             analyticsManager = get(),
             configFieldsChecker = get(),
             userTierProvider = get(),
+            navigator = get(),
         ).apply {
             store.start(CoroutineScope(Dispatchers.Main.immediate + SupervisorJob()))
         }
@@ -55,7 +56,8 @@ val flatSearchPresentationModule = module {
             subscriptionsRepository = get(),
             permissionsController = controller,
             devicePlatform = get(),
-            filterFromNotification = filter
+            filterFromNotification = filter,
+            navigator = get(),
         )
     }
 
@@ -75,6 +77,7 @@ val flatSearchPresentationModule = module {
             subscriptionService = get(),
             adService = get(),
             monetizationRemoteConfig = get(),
+            navigator = get(),
         )
     }
 

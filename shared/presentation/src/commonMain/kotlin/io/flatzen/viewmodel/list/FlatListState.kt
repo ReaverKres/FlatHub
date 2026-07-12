@@ -36,6 +36,16 @@ sealed interface FlatListIntent : MVIIntent {
     data object ToggleView : FlatListIntent
     data class SetListView(val isListView: Boolean) : FlatListIntent
     data object HideNetworkErrorDialog : FlatListIntent
+
+    data class OpenDetail(
+        val flatPlatform: FlatPlatform,
+        val adId: Long,
+        val markAsViewedOnOpen: Boolean = true,
+    ) : FlatListIntent
+
+    data object OpenFilter : FlatListIntent
+    data object OpenNotifications : FlatListIntent
+    data object OpenPremium : FlatListIntent
 }
 
 // Action (was FlatListEffect)

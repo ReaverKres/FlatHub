@@ -17,6 +17,7 @@ sealed interface FaqState : MVIState {
 // Intent
 sealed interface FaqIntent : MVIIntent {
     data object LoadData : FaqIntent
+    data object NavigateBack : FaqIntent
 }
 
 // Action — no side effects for FAQ screen

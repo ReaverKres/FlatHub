@@ -23,6 +23,7 @@ data class FavoritesState(
 // Intent
 sealed interface FavoritesIntent : MVIIntent {
     data class ClickOnFavorite(val flatPlatform: FlatPlatform, val adId: Long) : FavoritesIntent
+    data class OpenDetail(val flatPlatform: FlatPlatform, val adId: Long) : FavoritesIntent
 }
 
 // Action — no side effects for Favorites screen

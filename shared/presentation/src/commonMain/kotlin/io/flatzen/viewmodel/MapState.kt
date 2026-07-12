@@ -27,6 +27,16 @@ sealed interface MapIntent : MVIIntent {
     data object HideSaveAreaDialog : MapIntent
     data class UpdateAreaName(val name: String) : MapIntent
     data object SaveArea : MapIntent
+
+    data class OpenDetail(
+        val flatPlatform: io.flatzen.commoncomponents.commonentities.FlatPlatform,
+        val adId: Long
+    ) : MapIntent
+
+    data object OpenFilter : MapIntent
+    data object NavigateBack : MapIntent
+    data object OpenPremium : MapIntent
+    data object RequestMapAreaOrPremium : MapIntent
 }
 
 sealed interface MapAction : MVIAction {

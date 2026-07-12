@@ -109,8 +109,6 @@ import io.flatzen.common.localization.stringResource as localizedStringResource
 fun DetailScreen(
     flatPlatform: FlatPlatform,
     objectId: Long,
-    navigateBack: () -> Unit,
-    navigateToMap: (flatId: Long) -> Unit,
     markAsViewedOnOpen: Boolean = true,
     modifier: Modifier = Modifier
 ) {
@@ -145,7 +143,7 @@ fun DetailScreen(
             windowInsets = WindowInsets(0, 0, 0, 0),
             title = { },
             navigationIcon = {
-                IconButton(onClick = navigateBack) {
+                IconButton(onClick = { container.store.intent(FlatDetailIntent.NavigateBack) }) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(Res.string.back),
@@ -185,7 +183,7 @@ fun DetailScreen(
                         )
                     },
                     navigateToMap = {
-                        navigateToMap(flat.adId)
+                        container.store.intent(FlatDetailIntent.OpenOnMap(flat.adId))
                     },
                 )
             }

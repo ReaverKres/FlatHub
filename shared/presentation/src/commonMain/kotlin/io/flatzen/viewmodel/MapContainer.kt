@@ -3,6 +3,10 @@ package io.flatzen.viewmodel
 import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.localization.LocalizationKeys
+import io.flatzen.monetization.tier.UserTier
+import io.flatzen.monetization.tier.UserTierProvider
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.utils.normalizedToLonLat
@@ -33,7 +37,9 @@ private typealias MapCtx = PipelineContext<MapUiState, MapIntent, MapAction>
 class MapContainer(
     private val tileStreamProvider: TileStreamProvider,
     private val userMapAreaRepository: UserMapAreaRepository,
-    private val filterRepository: FilterRepository
+    private val filterRepository: FilterRepository,
+    private val userTierProvider: UserTierProvider,
+    private val navigator: FlatHubNavigator,
 ) : Container<MapUiState, MapIntent, MapAction> {
 
     private val maxLevel = 18
@@ -107,6 +113,21 @@ class MapContainer(
                             errorMessage = errorMessage
                         )
                     )
+                }
+
+                is MapIntent.OpenDetail -> navigator.navigate(
+                    FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId)
+                )
+
+                MapIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
+                MapIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
+                MapIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
+                MapIntent.RequestMapAreaOrPremium -> {
+                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+                        handleClickOnMapArea()
+                    } else {
+                        navigator.navigate(FlatHubCommand.OpenPremium)
+                    }
                 }
             }
         }

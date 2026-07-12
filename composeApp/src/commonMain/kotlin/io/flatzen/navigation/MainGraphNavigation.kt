@@ -231,55 +231,17 @@ private fun MainGraphScaffold(
                     focusManager.clearFocus()
                 }
         ) {
-            val entryProvider = entryProvider<Route> {
-                entry<Route.List> {
-                    HomeScreen(
-                        navigateToDetails = { platform, id ->
-                            navigator.navigate(Route.Detail(platform.name, id))
-                        },
-                        navigateToFilters = { navigator.navigate(Route.Filter) },
-                        navigateToNotifications = { navigator.navigate(Route.Notifications()) },
-                        navigateToPremium = { navigator.navigate(Route.Premium) },
-                    )
-                }
-                entry<Route.Favorites> {
-                    FavoritesScreen(
-                        navigateToDetails = { platform, id ->
-                            navigator.navigate(Route.Detail(platform.name, id))
-                        }
-                    )
-                }
-                entry<Route.Swipe> {
-                    SwipeScreen(
-                        navigateToDetails = { platform, id ->
-                            navigator.navigate(
-                                Route.Detail(
-                                    flatPlatform = platform.name,
-                                    objectId = id,
-                                    markAsViewedOnOpen = false,
-                                )
-                            )
-                        },
-                        navigateToFilters = { navigator.navigate(Route.Filter) },
-                        navigateToPremium = { navigator.navigate(Route.Premium) },
-                    )
-                }
-                entry<Route.Settings> {
-                    MoreScreen(
-                        navigateToFaq = { navigator.navigate(Route.Faq) },
-                        navigateToReferral = { navigator.navigate(Route.Referral) },
-                        navigateToPremium = { navigator.navigate(Route.Premium) },
-                    )
-                }
+            val entryProvider = entryProvider {
+                entry<Route.List> { HomeScreen() }
+                entry<Route.Favorites> { FavoritesScreen() }
+                entry<Route.Swipe> { SwipeScreen() }
+                entry<Route.Settings> { MoreScreen() }
                 entry<Route.Map> { key ->
                     MapScreen(
                         selectedMarker = key.selectedMarker,
-                        navigateToDetails = { platform, id ->
-                            navigator.navigate(Route.Detail(platform.name, id))
-                        },
-                        navigateToFilters = { navigator.navigate(Route.Filter) },
-                        navigateBack = { navigator.goBack() },
-                        navigateToPremium = { navigator.navigate(Route.Premium) },
+                        selectedLatitude = key.selectedLatitude,
+                        selectedLongitude = key.selectedLongitude,
+                        selectedRooms = key.selectedRooms,
                     )
                 }
                 entry<Route.Detail> { key ->
@@ -290,55 +252,18 @@ private fun MainGraphScaffold(
                         flatPlatform = platform,
                         objectId = key.objectId,
                         markAsViewedOnOpen = key.markAsViewedOnOpen,
-                        navigateBack = { navigator.goBack() },
-                        navigateToMap = { flatId ->
-                            navigator.navigate(Route.Map(selectedMarker = flatId))
-                        }
                     )
                 }
-                entry<Route.Filter> {
-                    FilterScreen(
-                        navigateBack = { navigator.goBack() },
-                        onOpenLocation = { navigator.navigate(Route.Location) },
-                        onOpenReferralScreen = { navigator.navigate(Route.Referral) },
-                        onOpenPremiumScreen = { navigator.navigate(Route.Premium) },
-                    )
-                }
-                entry<Route.Location> {
-                    LocationScreen(
-                        navigateBack = { navigator.goBack() },
-                        openCity = { navigator.navigate(Route.CitySelect) },
-                        openMetro = { navigator.navigate(Route.MetroSelect) },
-                        openDistricts = { navigator.navigate(Route.DistrictSelect) },
-                        openPremium = { navigator.navigate(Route.Premium) },
-                    )
-                }
-                entry<Route.CitySelect> {
-                    CitySelectScreen(navigateBack = { navigator.goBack() })
-                }
-                entry<Route.MetroSelect> {
-                    MetroSelectScreen(navigateBack = { navigator.goBack() })
-                }
-                entry<Route.DistrictSelect> {
-                    DistrictSelectScreen(navigateBack = { navigator.goBack() })
-                }
-                entry<Route.Faq> {
-                    FaqScreen(navigateBack = { navigator.goBack() })
-                }
-                entry<Route.Referral> {
-                    ReferralScreen(navigateBack = { navigator.goBack() })
-                }
-                entry<Route.Premium> {
-                    PremiumScreen(navigateBack = { navigator.goBack() })
-                }
+                entry<Route.Filter> { FilterScreen() }
+                entry<Route.Location> { LocationScreen() }
+                entry<Route.CitySelect> { CitySelectScreen() }
+                entry<Route.MetroSelect> { MetroSelectScreen() }
+                entry<Route.DistrictSelect> { DistrictSelectScreen() }
+                entry<Route.Faq> { FaqScreen() }
+                entry<Route.Referral> { ReferralScreen() }
+                entry<Route.Premium> { PremiumScreen() }
                 entry<Route.Notifications> { key ->
-                    NotificationsScreen(
-                        navigateBack = { navigator.goBack() },
-                        navigateToDetails = { platform, id ->
-                            navigator.navigate(Route.Detail(platform.name, id))
-                        },
-                        filterFromNotification = key.filterInNotification
-                    )
+                    NotificationsScreen(filterFromNotification = key.filterInNotification)
                 }
             }
 
@@ -397,18 +322,35 @@ private fun rememberFlatHubCommands(): Flow<FlatHubCommand>? {
 private fun handleFlatHubCommand(command: FlatHubCommand, navigator: Navigator) {
     when (command) {
         is FlatHubCommand.OpenDetail ->
-            navigator.navigate(Route.Detail(command.platform.name, command.objectId))
+            navigator.navigate(
+                Route.Detail(
+                    command.platform.name,
+                    command.objectId,
+                    markAsViewedOnOpen = command.markAsViewedOnOpen,
+                )
+            )
+
         FlatHubCommand.OpenFilter -> navigator.navigate(Route.Filter)
         is FlatHubCommand.OpenNotifications ->
             navigator.navigate(Route.Notifications(command.filterJson))
+
         is FlatHubCommand.OpenMap ->
-            navigator.navigate(Route.Map(selectedMarker = command.selectedMarker))
+            navigator.navigate(
+                Route.Map(
+                    selectedMarker = command.selectedMarker,
+                    selectedLatitude = command.latitude,
+                    selectedLongitude = command.longitude,
+                    selectedRooms = command.rooms,
+                )
+            )
+
         FlatHubCommand.OpenFaq -> navigator.navigate(Route.Faq)
         FlatHubCommand.OpenReferral -> navigator.navigate(Route.Referral)
         FlatHubCommand.OpenLocation -> navigator.navigate(Route.Location)
         FlatHubCommand.OpenCitySelect -> navigator.navigate(Route.CitySelect)
         FlatHubCommand.OpenMetroSelect -> navigator.navigate(Route.MetroSelect)
         FlatHubCommand.OpenDistrictSelect -> navigator.navigate(Route.DistrictSelect)
+        FlatHubCommand.OpenPremium -> navigator.navigate(Route.Premium)
         FlatHubCommand.NavigateBack -> navigator.goBack()
     }
 }

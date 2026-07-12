@@ -64,10 +64,8 @@ import flatzen.composeapp.generated.resources.map_undo
 import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
 import io.flatzen.common.localization.localizedArea
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.di.container
-import io.flatzen.monetization.tier.UserTier
-import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.viewmodel.MapAction
@@ -115,33 +113,30 @@ import io.flatzen.common.localization.stringResource as localizedStringResource
 @Composable
 fun MapScreen(
     mapViewModel: MapContainer = container(),
-    navigateToDetails: (flatPlatform: FlatPlatform, objectId: Long) -> Unit,
-    navigateToFilters: () -> Unit,
-    navigateBack: () -> Unit,
     selectedMarker: Long?,
-    navigateToPremium: () -> Unit = {},
+    selectedLatitude: Double? = null,
+    selectedLongitude: Double? = null,
+    selectedRooms: Int? = null,
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
-    val premiumBanner = RememberPremiumUpsellBanner(navigateToPremium)
-    val userTierProvider: UserTierProvider = koinInject()
-    val openMapAreaOrPremium: () -> Unit = {
-        if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-            mapViewModel.store.intent(MapIntent.ClickOnMapArea)
-        } else {
-            navigateToPremium()
-        }
-    }
+    val premiumBanner = RememberPremiumUpsellBanner(
+        navigateToPremium = { mapViewModel.store.intent(MapIntent.OpenPremium) },
+    )
     var selectedFlatId by remember { mutableStateOf<Long?>(null) }
     val selectedFlat = selectedFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
     }
     val clusterId = "default"
     val isMarkersSizeTooBig = listState.flatList.size >= 270
-    val detailFlatId by remember { mutableStateOf(selectedMarker) }
+    val detailFlatId = selectedMarker
     val detailFlat = detailFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
     }
+    val selectedMarkerCoordinates = selectedLatitude?.let { lat ->
+        selectedLongitude?.let { lon -> Coordinates(lat, lon) }
+    }
+    val highlightedFlatCoordinates = detailFlat?.coordinates ?: selectedMarkerCoordinates
 
     val filterContainer: FilterContainer = container()
     val filterState by filterContainer.store.subscribe { }
@@ -215,10 +210,11 @@ fun MapScreen(
     }
 
     BackHandler {
-        navigateBack()
+        mapViewModel.store.intent(MapIntent.NavigateBack)
     }
 
-    LaunchedEffect(filterState.filters.location) {
+    LaunchedEffect(filterState.filters.location, selectedMarker) {
+        if (selectedMarker != null) return@LaunchedEffect
         val location = filterState.filters.location
         mapViewModel.mapState.apply {
             val mercatorCoordinates = location?.selectedCity?.coordinates?.let {
@@ -231,7 +227,13 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(listState.flatList, mapModelState.isMapAreaActive) {
+    LaunchedEffect(
+        listState.flatList,
+        mapModelState.isMapAreaActive,
+        selectedMarker,
+        highlightedFlatCoordinates,
+        selectedRooms,
+    ) {
         if (mapModelState.isMapAreaActive) {
             mapViewModel.mapState.removeAllMarkers()
         } else {
@@ -246,7 +248,7 @@ fun MapScreen(
                     listState.flatList.forEach {
                         val mercatorCoordinates =
                             it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
-                                ?: return@LaunchedEffect
+                                ?: return@forEach
                         addMarker(
                             id = it.adId.toString(),
                             x = mercatorCoordinates.first,
@@ -261,6 +263,31 @@ fun MapScreen(
                                 ),
                                 textColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                        }
+                    }
+                    if (detailFlatId != null && highlightedFlatCoordinates != null) {
+                        val flatInListWithCoordinates = listState.flatList.any {
+                            it.adId == detailFlatId && it.coordinates != null
+                        }
+                        if (!flatInListWithCoordinates) {
+                            val mercatorCoordinates = lonLatToNormalized(
+                                highlightedFlatCoordinates.latitude,
+                                highlightedFlatCoordinates.longitude,
+                            )
+                            addMarker(
+                                id = detailFlatId.toString(),
+                                x = mercatorCoordinates.first,
+                                y = mercatorCoordinates.second,
+                                clickableAreaScale = Offset(1.3f, 1.3f),
+                                renderingStrategy = RenderingStrategy.Clustering(clusterId)
+                            ) {
+                                RoomMarker(
+                                    rooms = selectedRooms
+                                        ?: detailFlat?.numberOfRooms?.toIntOrNull(),
+                                    pinColor = Color.Green,
+                                    textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                     addClusterer(
@@ -284,10 +311,10 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(detailFlat) {
+    LaunchedEffect(selectedMarker, highlightedFlatCoordinates) {
         mapViewModel.mapState.apply {
             if (selectedMarker != null) {
-                val mercatorCoordinates = detailFlat?.coordinates?.let {
+                val mercatorCoordinates = highlightedFlatCoordinates?.let {
                     lonLatToNormalized(it.latitude, it.longitude)
                 } ?: return@LaunchedEffect
                 scrollTo(
@@ -358,7 +385,9 @@ fun MapScreen(
                 )
             )
         },
-        navigateToDetails = navigateToDetails
+        navigateToDetails = { platform, adId ->
+            mapViewModel.store.intent(MapIntent.OpenDetail(platform, adId))
+        }
     ) {
         premiumBanner?.let { banner -> banner() }
         Scaffold(
@@ -375,7 +404,7 @@ fun MapScreen(
             },
             floatingActionButton = {
                 FilterActionButton(
-                    onClick = navigateToFilters,
+                    onClick = { mapViewModel.store.intent(MapIntent.OpenFilter) },
                     isAnyFilterApplied = listState.isAnyFilterApplied
                 )
             }
@@ -449,7 +478,7 @@ fun MapScreen(
                                     modifier = Modifier
                                         .size(60.dp)
                                         .clickable {
-                                            openMapAreaOrPremium()
+                                            mapViewModel.store.intent(MapIntent.RequestMapAreaOrPremium)
                                         }
                                 )
                                 Spacer(Modifier.height(10.dp))

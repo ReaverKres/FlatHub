@@ -8,6 +8,8 @@ import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
+import io.flatzen.navigation.FlatHubCommand
+import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.collections.immutable.toImmutableList
@@ -33,7 +35,8 @@ private typealias FlatDetailCtx = PipelineContext<FlatDetailState, FlatDetailInt
 class FlatDetailContainer(
     private val mergedRepository: MergedRepository,
     private val tileStreamProvider: TileStreamProvider,
-    private val analyticsManager: AnalyticsManager
+    private val analyticsManager: AnalyticsManager,
+    private val navigator: FlatHubNavigator,
 ) : Container<FlatDetailState, FlatDetailIntent, FlatDetailAction> {
 
     private val maxLevel = 18
@@ -70,6 +73,19 @@ class FlatDetailContainer(
                             )
                         )
                     }
+                }
+
+                FlatDetailIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
+                is FlatDetailIntent.OpenOnMap -> withState {
+                    val flat = flat
+                    navigator.navigate(
+                        FlatHubCommand.OpenMap(
+                            selectedMarker = intent.flatId,
+                            latitude = flat?.coordinates?.latitude,
+                            longitude = flat?.coordinates?.longitude,
+                            rooms = flat?.numberOfRooms?.toIntOrNull(),
+                        )
+                    )
                 }
             }
         }

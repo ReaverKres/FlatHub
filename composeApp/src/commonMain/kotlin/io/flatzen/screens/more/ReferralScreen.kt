@@ -43,8 +43,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
-import flatzen.composeapp.generated.resources.cancel
-import flatzen.composeapp.generated.resources.close
 import flatzen.composeapp.generated.resources.copy_success
 import flatzen.composeapp.generated.resources.error
 import flatzen.composeapp.generated.resources.referral_activate
@@ -77,9 +75,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReferralScreen(
-    navigateBack: () -> Unit
-) {
+fun ReferralScreen() {
     val toastLauncher = remember { ToastLauncher() }
     val copySuccessTemplate = stringResource(Res.string.copy_success, "%s")
     val copier = copyLauncher(
@@ -117,7 +113,7 @@ fun ReferralScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { container.store.intent(ReferralIntent.NavigateBack) }) {
                         Icon(Icons.Default.ArrowBack, null)
                     }
                 }
@@ -249,7 +245,7 @@ fun ReferralScreen(
             }
             if (state.isNotificationAvailable) {
                 OnNotificationAvailable(
-                    navigateBack = navigateBack,
+                    container = container,
                     toastLauncher = toastLauncher,
                     message = stringResource(Res.string.referral_notifications_available)
                 )
@@ -260,14 +256,14 @@ fun ReferralScreen(
 
 @Composable
 private fun OnNotificationAvailable(
-    navigateBack: () -> Unit,
+    container: ReferralContainer,
     toastLauncher: ToastLauncher,
     message: String
 ) {
 
     rememberCoroutineScope().launch {
         delay(2000)
-        navigateBack()
+        container.store.intent(ReferralIntent.NavigateBack)
     }
     toastLauncher.showToast(
         message,

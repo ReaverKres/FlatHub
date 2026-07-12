@@ -65,45 +65,22 @@ import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
-import io.flatzen.mappers.LocationUiMapper
-import io.flatzen.monetization.tier.UserTier
-import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.DistrictsIntent
-import io.flatzen.viewmodel.filter.AddressUiState
 import io.flatzen.viewmodel.filter.FilterContainer
-import io.flatzen.viewmodel.filter.FilterEffect
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocationScreen(
-    navigateBack: () -> Unit,
-    openCity: () -> Unit,
-    openMetro: () -> Unit,
-    openDistricts: () -> Unit,
-    openPremium: () -> Unit = {},
-) {
+fun LocationScreen() {
     val filterContainer: FilterContainer = container()
-    val state by filterContainer.store.subscribe { action ->
-        when (action) {
-            is FilterEffect.NavigateToPremiumEffect -> openPremium()
-            is FilterEffect.ShowToastEffect -> Unit
-            is FilterEffect.NavigateToReferralEffect -> Unit
-        }
-    }
-    val userTierProvider: UserTierProvider = koinInject()
-    val isPremium = userTierProvider.currentTier() == UserTier.PREMIUM
-    val gatedMetro: () -> Unit = { if (isPremium) openMetro() else openPremium() }
-    val gatedDistricts: () -> Unit = { if (isPremium) openDistricts() else openPremium() }
-
+    val state by filterContainer.store.subscribe { }
 
     var addressInput by remember { mutableStateOf("") }
     val addresses = state.filters.address?.toMutableSet() ?: mutableSetOf()
@@ -129,7 +106,7 @@ fun LocationScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.location_title), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 },
@@ -150,7 +127,9 @@ fun LocationScreen(
             ListItem(
                 headlineContent = { Text(state.filters.location?.selectedCity?.displayName.orEmpty()) },
                 trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth().clickable { openCity() },
+                modifier = Modifier.fillMaxWidth().clickable {
+                    filterContainer.intent(FilterScreenAction.OpenCity)
+                },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent)
             )
 
@@ -169,16 +148,8 @@ fun LocationScreen(
                 )
                 IconButton(
                     onClick = {
-                        if (!isPremium) {
-                            openPremium()
-                            return@IconButton
-                        }
                         if (addressInput.isNotBlank()) {
-                            filterContainer.intent(
-                                FilterScreenAction.UpdateAddressFilter(
-                                    addresses + AddressUiState(addressInput.trim())
-                                )
-                            )
+                            filterContainer.intent(FilterScreenAction.AddAddress(addressInput))
                             addressInput = ""
                         }
                     },
@@ -222,7 +193,9 @@ fun LocationScreen(
 
             if (state.filters.location?.selectedCity?.code == CityCode.MINSK) {
                 // Плитки действий (минимум метро)
-                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable { gatedMetro() }) {
+                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+                    filterContainer.intent(FilterScreenAction.OpenMetro)
+                }) {
                     Row(modifier = Modifier.padding(16.dp)) {
                         BadgedBox(badge = {
                             val count = state.filters.metroStationsState.filter { it.selected }.size
@@ -235,7 +208,7 @@ fun LocationScreen(
             }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
-                gatedDistricts()
+                filterContainer.intent(FilterScreenAction.OpenDistricts)
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     BadgedBox(badge = {
@@ -267,7 +240,6 @@ fun LocationScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitySelectScreen(
-    navigateBack: () -> Unit,
     filterContainer: FilterContainer = container()
 ) {
     val state by filterContainer.store.subscribe { }
@@ -278,7 +250,7 @@ fun CitySelectScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.location_city), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 }
@@ -294,33 +266,15 @@ fun CitySelectScreen(
                         Checkbox(checked = checked, onCheckedChange = {
                             if (!checked) {
                                 filterContainer.intent(
-                                    FilterScreenAction.UpdateFilter(
-                                        state.filters.copy(
-                                            location = state.filters.location?.copy(
-                                                selectedCity = LocationUiMapper.findSelectedCity(
-                                                    city.code
-                                                )
-                                            )
-                                        )
-                                    )
+                                    FilterScreenAction.SelectCity(city.code)
                                 )
                             }
-                            navigateBack()
                         })
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            filterContainer.intent(
-                                FilterScreenAction.UpdateFilter(
-                                    state.filters.copy(
-                                        location = state.filters.location?.copy(
-                                            selectedCity = LocationUiMapper.findSelectedCity(city.code)
-                                        )
-                                    )
-                                )
-                            )
-                            navigateBack()
+                            filterContainer.intent(FilterScreenAction.SelectCity(city.code))
                         },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
@@ -333,7 +287,6 @@ fun CitySelectScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetroSelectScreen(
-    navigateBack: () -> Unit,
     filterContainer: FilterContainer = container()
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
@@ -349,7 +302,12 @@ fun MetroSelectScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.location_metro), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }
+                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            null
+                        )
+                    }
                 }
             )
         }
@@ -419,9 +377,7 @@ fun MetroSelectScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DistrictSelectScreen(
-    navigateBack: () -> Unit,
-) {
+fun DistrictSelectScreen() {
     var query by remember { mutableStateOf(TextFieldValue("")) }
 
     val filterContainer: FilterContainer = container()
@@ -454,7 +410,12 @@ fun DistrictSelectScreen(
                 windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(Res.string.location_districts), style = MaterialTheme.typography.headlineSmall) },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) { Icon(Icons.Default.ArrowBack, null) }
+                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            null
+                        )
+                    }
                 }
             )
         }

@@ -85,7 +85,6 @@ import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.manageSubscriptionsUrl
-import io.flatzen.viewmodel.premium.PremiumAction
 import io.flatzen.viewmodel.premium.PremiumContainer
 import io.flatzen.viewmodel.premium.PremiumIntent
 import io.flatzen.viewmodel.premium.PremiumState
@@ -96,17 +95,11 @@ import pro.respawn.flowmvi.compose.dsl.subscribe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PremiumScreen(
-    navigateBack: () -> Unit,
-) {
+fun PremiumScreen() {
     val container: PremiumContainer = container()
     val toastLauncher = androidx.compose.runtime.remember { ToastLauncher() }
     val uriHandler = LocalUriHandler.current
-    val state by container.store.subscribe { action ->
-        when (action) {
-            PremiumAction.NavigateBack -> navigateBack()
-        }
-    }
+    val state by container.store.subscribe()
 
     LaunchedEffectOnce(Unit) {
         container.store.intent(PremiumIntent.Load)
@@ -130,7 +123,7 @@ fun PremiumScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
+                    IconButton(onClick = { container.store.intent(PremiumIntent.NavigateBack) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(Res.string.back),
@@ -165,7 +158,7 @@ fun PremiumScreen(
                     onManage = {
                         runCatching { uriHandler.openUri(manageSubscriptionsUrl()) }
                     },
-                    onDone = navigateBack,
+                    onDone = { container.store.intent(PremiumIntent.NavigateBack) },
                     onRestore = { container.store.intent(PremiumIntent.Restore) },
                     purchasing = state.purchasing,
                 )
