@@ -2,6 +2,7 @@ package io.flatzen
 
 import io.flatzen.analytics.Analytics
 import io.flatzen.di.initKoin
+import io.flatzen.firebase.RemoteConfigRepository
 import io.flatzen.notifications.NotificationsService
 import io.flatzen.notifications.PushTokenRefreshNotifier
 import io.flatzen.usecases.RegistrationUseCase
@@ -23,6 +24,8 @@ object CommonApplication {
         if (di == null) {
             di = initKoin(appDeclaration)
         }
+
+        di?.koin?.get<RemoteConfigRepository>()
 
         val notificationsService: NotificationsService? = di?.koin?.get()
         val registrationUseCase: RegistrationUseCase? = di?.koin?.get()
