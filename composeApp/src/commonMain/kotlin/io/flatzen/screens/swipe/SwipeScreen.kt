@@ -46,9 +46,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
-import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
@@ -426,7 +426,7 @@ private fun PrefetchDeckImages(deck: List<UiFlat>) {
         }.distinct()
     }
     LaunchedEffect(urls) {
-        val loader = context.imageLoader
+        val loader = SingletonImageLoader.get(context)
         urls.forEach { url ->
             if (url.isBlank()) return@forEach
             loader.enqueue(
@@ -462,7 +462,7 @@ private fun TwinbyCardFace(
     // Prefetch neighbors of the active photo into memory cache.
     LaunchedEffect(photos, safeIndex) {
         if (photos.isEmpty()) return@LaunchedEffect
-        val loader = context.imageLoader
+        val loader = SingletonImageLoader.get(context)
         listOfNotNull(
             photos.getOrNull(safeIndex),
             photos.getOrNull(safeIndex + 1),
@@ -637,7 +637,7 @@ private fun SwipeCardPhoto(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalPlatformContext.current
-    val imageLoader = context.imageLoader
+    val imageLoader = SingletonImageLoader.get(context)
     val cachedSize = remember(imageUrl, imageLoader) {
         imageLoader.memoryCache
             ?.get(MemoryCache.Key(imageUrl))

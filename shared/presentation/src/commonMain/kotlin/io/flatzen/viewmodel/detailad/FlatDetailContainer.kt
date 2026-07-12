@@ -14,7 +14,7 @@ import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.disableRotation
 import ovh.plrapps.mapcompose.api.disableScrolling

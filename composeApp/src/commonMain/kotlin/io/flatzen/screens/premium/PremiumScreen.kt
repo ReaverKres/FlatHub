@@ -82,7 +82,7 @@ import io.flatzen.viewmodel.premium.PremiumContainer
 import io.flatzen.viewmodel.premium.PremiumIntent
 import io.flatzen.viewmodel.premium.PremiumMessage
 import io.flatzen.viewmodel.premium.PremiumState
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe

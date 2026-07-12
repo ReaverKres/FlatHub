@@ -2,6 +2,7 @@ package io.flatzen.monetization.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -9,6 +10,7 @@ import platform.Foundation.NSUserDomainMask
 actual fun createPreferencesDataStore(producePath: () -> String): DataStore<Preferences> =
     createPreferencesDataStoreWithPath(producePath())
 
+@OptIn(ExperimentalForeignApi::class)
 fun createIosPreferencesDataStore(): DataStore<Preferences> {
     val dir = NSFileManager.defaultManager.URLForDirectory(
         directory = NSDocumentDirectory,

@@ -14,6 +14,9 @@
 		78CB81CA2EC9FCFB00B846BE /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 78CB81C92EC9FCFB00B846BE /* Launch Screen.storyboard */; };
 		78CB81F02ECA06E100B846BE /* locus_logo_2-removebg-preview.png in Resources */ = {isa = PBXBuildFile; fileRef = 78CB81EF2ECA06E100B846BE /* locus_logo_2-removebg-preview.png */; };
 		A1B2C3D52ECF000100B846BE /* FlatZenStoreKit2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */; };
+		B2C3D4E72ECF000100B846BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E62ECF000100B846BE /* AppDelegate.swift */; };
+		D4E5F6A72ECF000100B846BE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = C3D4E5F72ECF000100B846BE /* FirebaseCore */; };
+		D4E5F6A82ECF000100B846BE /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C3D4E5F82ECF000100B846BE /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +27,9 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		78CB81C92EC9FCFB00B846BE /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		78CB81EF2ECA06E100B846BE /* locus_logo_2-removebg-preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "locus_logo_2-removebg-preview.png"; sourceTree = "<group>"; };
-		78CB81F12ECA084600B846BE /* Lokus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lokus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78CB81F12ECA084600B846BE /* FlatHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlatHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlatZenStoreKit2.swift; sourceTree = "<group>"; };
+		B2C3D4E62ECF000100B846BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -34,6 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4E5F6A72ECF000100B846BE /* FirebaseCore in Frameworks */,
+				D4E5F6A82ECF000100B846BE /* FirebaseMessaging in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +74,7 @@
 		7555FF7C242A565900829871 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				78CB81F12ECA084600B846BE /* Lokus.app */,
+				78CB81F12ECA084600B846BE /* FlatHub.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -79,6 +85,7 @@
 				78CB81EF2ECA06E100B846BE /* locus_logo_2-removebg-preview.png */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* ContentView.swift */,
+				B2C3D4E62ECF000100B846BE /* AppDelegate.swift */,
 				A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
@@ -114,9 +121,11 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				C3D4E5F72ECF000100B846BE /* FirebaseCore */,
+				C3D4E5F82ECF000100B846BE /* FirebaseMessaging */,
 			);
 			productName = iosApp;
-			productReference = 78CB81F12ECA084600B846BE /* Lokus.app */;
+			productReference = 78CB81F12ECA084600B846BE /* FlatHub.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -145,6 +154,7 @@
 			);
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
+				C3D4E5F62ECF000100B846BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -178,11 +188,14 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/../gradle/libs.versions.toml",
+				"$(SRCROOT)/../composeApp/build.gradle.kts",
 			);
 			name = "Compile Kotlin Framework";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/ComposeApp.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -196,6 +209,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				B2C3D4E72ECF000100B846BE /* AppDelegate.swift in Sources */,
 				A1B2C3D52ECF000100B846BE /* FlatZenStoreKit2.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 			);
@@ -331,7 +345,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = GUPBZ2462Q;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -358,7 +372,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = GUPBZ2462Q;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -400,6 +414,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C3D4E5F62ECF000100B846BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = exactVersion;
+				version = 12.14.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C3D4E5F72ECF000100B846BE /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3D4E5F62ECF000100B846BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		C3D4E5F82ECF000100B846BE /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3D4E5F62ECF000100B846BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }

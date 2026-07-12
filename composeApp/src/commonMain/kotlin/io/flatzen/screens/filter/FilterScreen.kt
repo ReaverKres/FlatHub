@@ -115,7 +115,7 @@ import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf

@@ -6,7 +6,7 @@ import entities.SavedFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 class FilterRepositoryImpl(
     private val savedFiltersDao: SavedFiltersDao

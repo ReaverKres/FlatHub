@@ -12,7 +12,7 @@ import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.commoncomponents.utils.formatMainPrice
 import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.commoncomponents.utils.formatSecondPrice
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Entity
 @TypeConverters(RoomTypeConverter::class)
