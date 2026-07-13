@@ -1,8 +1,6 @@
 package io.flatzen.monetization.billing
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -14,31 +12,23 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.queryProductDetails
-import com.android.billingclient.api.queryPurchasesAsync
 import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.util.roundToScale
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 
 /**
  * Google Play Billing. Requires Activity for [purchase].
- * All BillingClient calls are marshalled to the main thread as required by Play Billing.
+ * Until products exist in Play Console, [isConfigured] can still be true if BillingClient connects —
+ * purchase will fail gracefully. Prefer fallback Premium until keys/products ready.
  */
 class PlayBillingBridge(
     context: Context,
 ) : PlatformBillingBridge, PurchasesUpdatedListener {
 
-    private val mainHandler = Handler(Looper.getMainLooper())
-
     private var purchaseContinuation: ((PurchaseResult) -> Unit)? = null
     private var cachedDetails: List<ProductDetails> = emptyList()
     private var connected = false
-    private var connectCont: CancellableContinuation<Boolean>? = null
 
     private val client: BillingClient = BillingClient.newBuilder(context.applicationContext)
         .setListener(this)
@@ -47,28 +37,22 @@ class PlayBillingBridge(
         )
         .build()
 
-    private val connectionListener = object : BillingClientStateListener {
-        override fun onBillingSetupFinished(result: BillingResult) {
-            connected = result.responseCode == BillingClient.BillingResponseCode.OK
-            connectCont?.takeIf { it.isActive }?.resume(connected)
-            connectCont = null
-        }
-
-        override fun onBillingServiceDisconnected() {
-            connected = false
-            runOnMain { client.startConnection(this) }
-        }
-    }
-
     init {
-        runOnMain { client.startConnection(connectionListener) }
+        client.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(result: BillingResult) {
+                connected = result.responseCode == BillingClient.BillingResponseCode.OK
+            }
+
+            override fun onBillingServiceDisconnected() {
+                connected = false
+            }
+        })
     }
 
-    override fun isConfigured(): Boolean = connected || client.isReady
+    override fun isConfigured(): Boolean = connected
 
-    override suspend fun queryProducts(): List<SubscriptionProduct> = onMain {
-        if (!awaitConnection()) return@onMain emptyList()
-
+    override suspend fun queryProducts(): List<SubscriptionProduct> {
+        if (!connected) return emptyList()
         val productList = listOf(
             MonetizationDefaults.PRODUCT_WEEK,
             MonetizationDefaults.PRODUCT_MONTH,
@@ -80,34 +64,28 @@ class PlayBillingBridge(
                 .build()
         }
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
-
-        val result = withTimeoutOrNull(QUERY_TIMEOUT_MS) {
-            client.queryProductDetails(params)
+        return suspendCancellableCoroutine { cont ->
+            client.queryProductDetailsAsync(params) { result, queryProductDetailsResult ->
+                if (result.responseCode != BillingClient.BillingResponseCode.OK) {
+                    cont.resume(emptyList())
+                    return@queryProductDetailsAsync
+                }
+                val list = queryProductDetailsResult.productDetailsList
+                cachedDetails = list
+                cont.resume(list.mapNotNull { it.toSubscriptionProduct() })
+            }
         }
-        if (result == null) {
-            return@onMain emptyList()
-        }
-        if (result.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            return@onMain emptyList()
-        }
-
-        val list = result.productDetailsList.orEmpty()
-        cachedDetails = list
-        list.mapNotNull { it.toSubscriptionProduct() }
     }
 
-    override suspend fun purchase(productId: String): PurchaseResult = onMain {
-        if (!awaitConnection()) {
-            return@onMain PurchaseResult.Error(message = "Billing unavailable")
-        }
+    override suspend fun purchase(productId: String): PurchaseResult {
         val activity =
             CurrentActivityHolder.activity
-                ?: return@onMain PurchaseResult.Error(message = "Activity unavailable")
+                ?: return PurchaseResult.Error(message = "Activity unavailable")
         val details = cachedDetails.find { it.productId == productId }
             ?: queryProducts().let { cachedDetails.find { d -> d.productId == productId } }
-            ?: return@onMain PurchaseResult.Error(message = "Product not found")
+            ?: return PurchaseResult.Error(message = "Product not found")
         val offer = details.subscriptionOfferDetails?.firstOrNull()
-            ?: return@onMain PurchaseResult.Error(message = "No offer")
+            ?: return PurchaseResult.Error(message = "No offer")
         val productParams = BillingFlowParams.ProductDetailsParams.newBuilder()
             .setProductDetails(details)
             .setOfferToken(offer.offerToken)
@@ -115,8 +93,8 @@ class PlayBillingBridge(
         val flowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productParams))
             .build()
-        suspendCancellableCoroutine<PurchaseResult> { cont ->
-            purchaseContinuation = { result -> cont.resume(result) }
+        return suspendCancellableCoroutine { cont ->
+            purchaseContinuation = { cont.resume(it) }
             val launch = client.launchBillingFlow(activity, flowParams)
             if (launch.responseCode != BillingClient.BillingResponseCode.OK) {
                 purchaseContinuation = null
@@ -130,34 +108,34 @@ class PlayBillingBridge(
         }
     }
 
-    override suspend fun restore(): SubscriptionStatus = onMain {
-        if (!awaitConnection()) return@onMain SubscriptionStatus(SubscriptionTier.FREE)
-
-        val purchasesResult = withTimeoutOrNull(QUERY_TIMEOUT_MS) {
+    override suspend fun restore(): SubscriptionStatus {
+        if (!connected) return SubscriptionStatus(SubscriptionTier.FREE)
+        return suspendCancellableCoroutine { cont ->
             client.queryPurchasesAsync(
                 QueryPurchasesParams.newBuilder()
                     .setProductType(BillingClient.ProductType.SUBS)
                     .build()
-            )
-        }
-        if (purchasesResult == null) {
-            return@onMain SubscriptionStatus(SubscriptionTier.FREE)
-        }
-        if (purchasesResult.billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            return@onMain SubscriptionStatus(SubscriptionTier.FREE)
-        }
-        val active = purchasesResult.purchasesList.firstOrNull {
-            it.purchaseState == Purchase.PurchaseState.PURCHASED
-        }
-        if (active != null) {
-            acknowledgeIfNeeded(active)
-            SubscriptionStatus(
-                tier = SubscriptionTier.PREMIUM,
-                productId = active.products.firstOrNull(),
-                source = SubscriptionStatus.StatusSource.STORE,
-            )
-        } else {
-            SubscriptionStatus(SubscriptionTier.FREE)
+            ) { result, purchases ->
+                if (result.responseCode != BillingClient.BillingResponseCode.OK) {
+                    cont.resume(SubscriptionStatus(SubscriptionTier.FREE))
+                    return@queryPurchasesAsync
+                }
+                val active = purchases.firstOrNull {
+                    it.purchaseState == Purchase.PurchaseState.PURCHASED
+                }
+                if (active != null) {
+                    acknowledgeIfNeeded(active)
+                    cont.resume(
+                        SubscriptionStatus(
+                            tier = SubscriptionTier.PREMIUM,
+                            productId = active.products.firstOrNull(),
+                            source = SubscriptionStatus.StatusSource.STORE,
+                        )
+                    )
+                } else {
+                    cont.resume(SubscriptionStatus(SubscriptionTier.FREE))
+                }
+            }
         }
     }
 
@@ -192,50 +170,13 @@ class PlayBillingBridge(
         }
     }
 
-    private suspend fun awaitConnection(): Boolean {
-        if (connected || client.isReady) {
-            connected = true
-            return true
-        }
-        return withTimeoutOrNull(CONNECT_TIMEOUT_MS) {
-            suspendCancellableCoroutine { cont ->
-                runOnMain {
-                    connectCont = cont
-                    cont.invokeOnCancellation {
-                        if (connectCont === cont) connectCont = null
-                    }
-                    if (connected || client.isReady) {
-                        connected = true
-                        connectCont = null
-                        cont.resume(true)
-                        return@runOnMain
-                    }
-                    client.startConnection(connectionListener)
-                }
-            }
-        } ?: run {
-            false
-        }
-    }
-
     private fun acknowledgeIfNeeded(purchase: Purchase) {
         if (purchase.isAcknowledged) return
         val params = AcknowledgePurchaseParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
             .build()
-        runOnMain { client.acknowledgePurchase(params) { } }
+        client.acknowledgePurchase(params) { }
     }
-
-    private fun runOnMain(block: () -> Unit) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            block()
-        } else {
-            mainHandler.post(block)
-        }
-    }
-
-    private suspend fun <T> onMain(block: suspend () -> T): T =
-        withContext(Dispatchers.Main) { block() }
 
     private fun ProductDetails.toSubscriptionProduct(): SubscriptionProduct? {
         val offer = subscriptionOfferDetails?.firstOrNull() ?: return null
@@ -264,11 +205,5 @@ class PlayBillingBridge(
             periodWeeks = weeks,
             savingsPercent = null,
         )
-    }
-
-    private companion object {
-        const val TAG = "PlayBillingBridge"
-        const val CONNECT_TIMEOUT_MS = 15_000L
-        const val QUERY_TIMEOUT_MS = 20_000L
     }
 }
