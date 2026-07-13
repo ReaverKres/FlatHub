@@ -4,39 +4,53 @@ import android.app.Activity
 import android.content.Context
 import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
+import com.appodeal.ads.utils.Log
 import io.flatzen.monetization.billing.CurrentActivityHolder
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 /**
- * Appodeal — Android. Requires Activity for rewarded / view display.
+ * Appodeal — Android. SDK starts from [AppodealConsentStartup] with a visible [Activity] for CMP.
  * Safe when app key empty: methods return [AdLoadResult.Disabled].
  */
 class AppodealAdService(
-    private val context: Context,
+    context: Context,
+    val androidAppKey: String,
 ) : AdService {
+
+    private val appContext = context.applicationContext
 
     @Volatile
     private var initialized = false
 
     override fun initialize(androidAppKey: String, iosAppKey: String) {
+        val activity = CurrentActivityHolder.activity
+        if (activity != null && androidAppKey.isNotBlank()) {
+            initializeWithActivity(activity)
+        }
+    }
+
+    fun initializeWithActivity(activity: Activity) {
         if (androidAppKey.isBlank() || initialized) return
         val adTypes = Appodeal.NATIVE or Appodeal.MREC or Appodeal.REWARDED_VIDEO
         Appodeal.setAutoCache(Appodeal.NATIVE, true)
         Appodeal.setAutoCache(Appodeal.MREC, true)
         Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true)
         Appodeal.setTesting(false)
-        Appodeal.initialize(context, androidAppKey, adTypes) { _ ->
+        Appodeal.setLogLevel(Log.LogLevel.none)
+        Appodeal.initialize(activity, androidAppKey, adTypes) { _ ->
             initialized = true
         }
     }
 
-    override fun isInitialized(): Boolean = initialized
+    override fun isInitialized(): Boolean =
+        initialized || Appodeal.isInitialized(Appodeal.NATIVE or Appodeal.MREC or Appodeal.REWARDED_VIDEO)
 
     override suspend fun prefetchNative(placement: String, count: Int): AdLoadResult {
-        if (!initialized || placement.isBlank()) return AdLoadResult.Disabled
+        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
         val activity = CurrentActivityHolder.activity ?: return AdLoadResult.NoFill
-        Appodeal.cache(activity, Appodeal.NATIVE)
+        val requested = count.coerceIn(1, 5)
+        Appodeal.cache(activity, Appodeal.NATIVE, requested)
         return if (Appodeal.isLoaded(Appodeal.NATIVE)) {
             AdLoadResult.Ready
         } else {
@@ -45,7 +59,7 @@ class AppodealAdService(
     }
 
     override suspend fun prefetchMrec(placement: String): AdLoadResult {
-        if (!initialized || placement.isBlank()) return AdLoadResult.Disabled
+        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
         val activity = CurrentActivityHolder.activity ?: return AdLoadResult.NoFill
         Appodeal.cache(activity, Appodeal.MREC)
         return if (Appodeal.canShow(Appodeal.MREC, placement)) {
@@ -56,7 +70,7 @@ class AppodealAdService(
     }
 
     override suspend fun showRewarded(placement: String): AdLoadResult {
-        if (!initialized || placement.isBlank()) return AdLoadResult.Disabled
+        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
         val activity = CurrentActivityHolder.activity ?: return AdLoadResult.Error("No activity")
         if (!Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement)) {
             Appodeal.cache(activity, Appodeal.REWARDED_VIDEO)

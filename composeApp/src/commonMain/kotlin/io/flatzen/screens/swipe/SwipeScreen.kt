@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -26,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -39,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -52,17 +57,19 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
+import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
+import io.flatzen.ads.NativeAdSlot
+import io.flatzen.ads.NativeAdSlotStyle
+import io.flatzen.ads.clearNativeAdBatch
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.common.localization.localizedRoomsLabel
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
+import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.themes.FlatHubTheme
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
-import io.flatzen.ads.NativeAdSlot
-import io.flatzen.ads.NativeAdSlotStyle
-import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.viewmodel.swipe.SWIPE_AD_DECK_KEY
 import io.flatzen.viewmodel.swipe.SwipeContainer
 import io.flatzen.viewmodel.swipe.SwipeDeckItem
@@ -85,6 +92,7 @@ import kotlin.math.abs
 private const val STACK_SCALE_STEP = 0.04f
 private const val STACK_Y_STEP = 10f
 private const val STACK_ALPHA_STEP = 0.08f
+private val SwipeNativeAdHeightEstimate = 100.dp
 
 private fun stackCardTransform(depth: Int, promoteProgress: Float): StackCardTransform {
     val effectiveDepth = (depth - promoteProgress).coerceAtLeast(0f)
@@ -356,11 +364,97 @@ private fun SwipeAdCardFace(
     placement: String,
     modifier: Modifier = Modifier,
 ) {
-    NativeAdSlot(
-        placement = placement,
+    val batchId = remember(placement) { "$placement-${kotlin.random.Random.nextLong()}" }
+    val density = LocalDensity.current
+
+    DisposableEffect(batchId) {
+        onDispose { clearNativeAdBatch(batchId) }
+    }
+
+    Surface(
         modifier = modifier.fillMaxSize(),
-        style = NativeAdSlotStyle.ContentStream,
-    )
+        shape = FlatHubTheme.shapes.none,
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        border = null,
+    ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val maxHeightPx = with(density) { maxHeight.roundToPx() }
+            val estimatedSlotCount = remember(maxHeightPx) {
+                (maxHeight / SwipeNativeAdHeightEstimate)
+                    .toInt()
+                    .coerceIn(1, MAX_NATIVE_ADS_PER_BATCH)
+            }
+            var slotCount by remember(maxHeightPx) { mutableIntStateOf(estimatedSlotCount) }
+            var failedSlots by remember { mutableStateOf(setOf<Int>()) }
+            var measuredHeightsPx by remember { mutableStateOf(IntArray(estimatedSlotCount)) }
+
+            LaunchedEffect(slotCount) {
+                if (measuredHeightsPx.size != slotCount) {
+                    measuredHeightsPx = IntArray(slotCount)
+                }
+            }
+
+            val activeSlots = (0 until slotCount).filter { it !in failedSlots }
+            val totalMeasuredPx = activeSlots.sumOf { index ->
+                measuredHeightsPx.getOrElse(index) { 0 }
+            }
+            val measuredActiveCount = activeSlots.count { index ->
+                measuredHeightsPx.getOrElse(index) { 0 } > 0
+            }
+            val canGrowByMeasurement = activeSlots.isNotEmpty() &&
+                    measuredActiveCount == activeSlots.size &&
+                    totalMeasuredPx > 0 &&
+                    totalMeasuredPx < maxHeightPx
+
+            LaunchedEffect(
+                totalMeasuredPx,
+                maxHeightPx,
+                slotCount,
+                canGrowByMeasurement,
+                failedSlots
+            ) {
+                if (canGrowByMeasurement && slotCount < MAX_NATIVE_ADS_PER_BATCH) {
+                    slotCount++
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Top,
+            ) {
+                activeSlots.forEach { index ->
+                    key(batchId, index) {
+                        NativeAdSlot(
+                            placement = placement,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .onSizeChanged { size ->
+                                    if (index < measuredHeightsPx.size) {
+                                        measuredHeightsPx = measuredHeightsPx.copyOf().also {
+                                            it[index] = size.height
+                                        }
+                                    }
+                                },
+                            style = NativeAdSlotStyle.ContentStream,
+                            batchId = batchId,
+                            slotIndex = index,
+                            batchSize = slotCount,
+                            onAdLoadResult = { loaded ->
+                                if (!loaded) {
+                                    failedSlots += index
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable

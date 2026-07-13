@@ -236,7 +236,7 @@ class TrustedTimeRepository(
     companion object {
         private val SYNC_INTERVAL = 1.minutes
         private val TICK_INTERVAL = 30.seconds
-        private const val MAX_CLOCK_SKEW_MS = 60_000L
+        private const val MAX_CLOCK_SKEW_MS = 300_000L
         private const val ROLLBACK_THRESHOLD_MS = 5_000L
         private const val TIME_API_URL =
             "https://timeapi.io/api/Time/current/zone?timeZone=UTC"

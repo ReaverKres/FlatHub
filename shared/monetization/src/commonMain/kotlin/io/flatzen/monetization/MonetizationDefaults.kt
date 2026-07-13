@@ -43,8 +43,8 @@ object MonetizationDefaults {
 
     const val REWARDED_PREMIUM_HOURS = 1L
 
-    /** Empty app keys = ads SDK not initialized (safe no-op). Fill via Remote Config. */
-    const val APPODEAL_ANDROID_APP_KEY = ""
+    /** Override via Remote Config when needed. Empty iOS key = ads SDK not initialized on iOS. */
+    const val APPODEAL_ANDROID_APP_KEY = "835e2e84e79c82f41a5ea221196738da563bfcf6287ba11c"
     const val APPODEAL_IOS_APP_KEY = ""
 
     const val HOME_FEED_LIST_PLACEMENT = "home_feed_list"
