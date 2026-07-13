@@ -50,8 +50,10 @@ fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
             ?: MonetizationDefaults.PRICE_MONTH_USD,
         priceQuarterUsd = jsonConfig?.premiumPriceQuarterUsd?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.PRICE_QUARTER_USD,
-        appodealAndroidAppKey = jsonConfig?.appodealAndroidAppKey.orEmpty(),
-        appodealIosAppKey = jsonConfig?.appodealIosAppKey.orEmpty(),
+        appodealAndroidAppKey = jsonConfig?.appodealAndroidAppKey?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.APPODEAL_ANDROID_APP_KEY,
+        appodealIosAppKey = jsonConfig?.appodealIosAppKey?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.APPODEAL_IOS_APP_KEY,
         homeFeedListPlacement = jsonConfig?.homeFeedListPlacement?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.HOME_FEED_LIST_PLACEMENT,
         homeFeedGridPlacement = jsonConfig?.homeFeedGridPlacement?.takeIf { it.isNotBlank() }
@@ -62,3 +64,9 @@ fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
             ?: MonetizationDefaults.REWARDED_PREMIUM_PLACEMENT,
     )
 }
+
+fun MonetizationRemoteConfig.resolveAppodealAndroidAppKey(): String =
+    appodealAndroidAppKey.ifBlank { MonetizationDefaults.APPODEAL_ANDROID_APP_KEY }
+
+fun MonetizationRemoteConfig.resolveAppodealIosAppKey(): String =
+    appodealIosAppKey.ifBlank { MonetizationDefaults.APPODEAL_IOS_APP_KEY }

@@ -27,6 +27,10 @@ object CommonApplication {
 
         di?.koin?.get<RemoteConfigRepository>()
 
+        appScope.launch(Dispatchers.IO) {
+            di?.koin?.get<RemoteConfigRepository>()?.awaitFirstLoadAttempt()
+        }
+
         val notificationsService: NotificationsService? = di?.koin?.get()
         val registrationUseCase: RegistrationUseCase? = di?.koin?.get()
         val analytics: Analytics? = di?.koin?.get()

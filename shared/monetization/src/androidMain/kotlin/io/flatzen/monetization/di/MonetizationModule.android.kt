@@ -9,6 +9,7 @@ import io.flatzen.monetization.billing.NoOpBillingBridge
 import io.flatzen.monetization.billing.PlatformBillingBridge
 import io.flatzen.monetization.billing.PlayBillingBridge
 import io.flatzen.monetization.config.MonetizationRemoteConfig
+import io.flatzen.monetization.config.resolveAppodealAndroidAppKey
 import io.flatzen.monetization.datastore.createAndroidPreferencesDataStore
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -29,11 +30,17 @@ actual fun platformMonetizationModule(): Module = module {
 
     single<AdService> {
         val config = get<MonetizationRemoteConfig>()
-        if (config.appodealAndroidAppKey.isBlank() || config.premiumFallbackEnabled) {
+        if (config.premiumFallbackEnabled) {
             NoOpAdService()
         } else {
-            AppodealAdService(get()).also {
-                it.initialize(config.appodealAndroidAppKey, config.appodealIosAppKey)
+            val androidAppKey = config.resolveAppodealAndroidAppKey()
+            if (androidAppKey.isBlank()) {
+                NoOpAdService()
+            } else {
+                AppodealAdService(
+                    context = get(),
+                    androidAppKey = androidAppKey,
+                )
             }
         }
     }
