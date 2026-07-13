@@ -9,6 +9,7 @@ import io.flatzen.monetization.crypto.createPlatformCipher
 import io.flatzen.monetization.datastore.EncryptedSecureStore
 import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.monetization.tier.UserTierProviderImpl
+import io.flatzen.monetization.time.TrustedTimeRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -22,6 +23,12 @@ fun monetizationCommonModule(): Module = module {
             cipher = get(),
         )
     }
+    single(createdAtStart = true) {
+        TrustedTimeRepository(
+            secureStore = get(),
+            connectionMonitor = get(),
+        )
+    }
     factory<MonetizationRemoteConfig> {
         get<ConfigFieldsChecker>().resolveMonetizationConfig()
     }
@@ -29,6 +36,7 @@ fun monetizationCommonModule(): Module = module {
         SubscriptionServiceImpl(
             secureStore = get(),
             bridge = get(),
+            trustedTime = get(),
             premiumFallbackEnabled = { get<MonetizationRemoteConfig>().premiumFallbackEnabled },
             trialDays = { get<MonetizationRemoteConfig>().trialDays },
         )
