@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MonetizationConfigData(
+    @SerialName("homeGridAdInterval") val homeGridAdInterval: Int? = null,
     @SerialName("homeListAdInterval") val homeListAdInterval: Int? = null,
     @SerialName("swipeAdInterval") val swipeAdInterval: Int? = null,
+    @SerialName("swipeAdMinIntervalMinutes") val swipeAdMinIntervalMinutes: Long? = null,
     @SerialName("feedDelayMinutes") val feedDelayMinutes: Long? = null,
     @SerialName("trialDays") val trialDays: Long? = null,
     @SerialName("premiumPriceWeekUsd") val premiumPriceWeekUsd: String? = null,

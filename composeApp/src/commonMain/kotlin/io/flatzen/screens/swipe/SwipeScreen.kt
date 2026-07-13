@@ -27,21 +27,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -56,19 +54,18 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.common.localization.localizedRoomsLabel
-import io.flatzen.commoncomponents.commonentities.CityCode
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
-import io.flatzen.mappers.LocationUiMapper
-import io.flatzen.monetization.ads.AdService
-import io.flatzen.monetization.config.MonetizationRemoteConfig
-import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.themes.FlatHubTheme
 import io.flatzen.viewmodel.filter.FilterContainer
-import io.flatzen.viewmodel.list.FlatListIntent
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.viewmodel.swipe.SWIPE_AD_DECK_KEY
+import io.flatzen.viewmodel.swipe.SwipeContainer
+import io.flatzen.viewmodel.swipe.SwipeDeckItem
+import io.flatzen.viewmodel.swipe.SwipeIntent
+import io.flatzen.viewmodel.swipe.SwipeOutcome
+import io.flatzen.viewmodel.swipe.swipeDeckKey
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatZenFloatingActionButton
 import io.flatzen.widgets.FlatZenOverlayChip
@@ -78,14 +75,9 @@ import io.flatzen.widgets.PremiumUpsellCardBanner
 import io.flatzen.widgets.PremiumUpsellState
 import io.flatzen.widgets.SwipeableCard
 import io.flatzen.widgets.rememberPremiumUpsellState
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
-import repository.fillter.FilterRepository
-import repository.fillter.lastFilter
 import kotlin.math.abs
-
-private fun UiFlat.deckKey(): String = "${flatPlatform.name}:$adId"
 
 private const val STACK_SCALE_STEP = 0.04f
 private const val STACK_Y_STEP = 10f
@@ -106,171 +98,42 @@ private data class StackCardTransform(
     val alpha: Float,
 )
 
-private enum class SwipeOutcome { Liked, Disliked }
-
-private data class SwipeUndoEntry(
-    val flatPlatform: FlatPlatform,
-    val adId: Long,
-    val outcome: SwipeOutcome,
-) {
-    fun deckKey(): String = "${flatPlatform.name}:$adId"
-}
-
 @Composable
 fun SwipeScreen() {
+    val swipeContainer: SwipeContainer = container()
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
+    val state by swipeContainer.store.subscribe { }
     val filterContainer: FilterContainer = container()
     val filterScreenState by filterContainer.store.subscribe { }
-    val filterRepository: FilterRepository = koinInject()
     val premiumUpsell = rememberPremiumUpsellState(
-        navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
+        navigateToPremium = { swipeContainer.store.intent(SwipeIntent.OpenPremium) },
     )
-    var swipeCount by remember { mutableIntStateOf(0) }
+
     var swipeProgress by remember { mutableFloatStateOf(0f) }
     var stackPromoteProgress by remember { mutableFloatStateOf(0f) }
-    val userTierProvider: UserTierProvider = koinInject()
-    val monetizationConfig: MonetizationRemoteConfig = koinInject()
-    val adService: AdService = koinInject()
-    val swipeScope = rememberCoroutineScope()
-
-    // Optimistic dismiss so the next card appears before Room/MVI finishes.
-    var pendingDismissKeys by remember { mutableStateOf(emptySet<String>()) }
-    // Keep swiped card in deck until fly-out animation completes (MVI may set dislike earlier).
-    var animatingOutKeys by remember { mutableStateOf(emptySet<String>()) }
-    // Keep the same top card after detail open/return (even if isViewed was set earlier).
-    var pinnedFrontKey by rememberSaveable { mutableStateOf<String?>(null) }
-    var undoStack by remember { mutableStateOf(listOf<SwipeUndoEntry>()) }
-
-    val isSearchLoading = listState.isLoading || listState.isRefreshing
 
     LaunchedEffect(Unit) {
-        flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
-        if (listState.flatList.isEmpty() && !listState.isLoading) {
-            flatSearchContainer.store.intent(FlatListIntent.SearchFlats(isLoadMore = false))
-        }
+        swipeContainer.store.intent(SwipeIntent.ScreenVisible)
     }
 
-    // New search (e.g. after filters) invalidates undo history.
-    LaunchedEffect(isSearchLoading) {
-        if (isSearchLoading && !listState.isLoadingMore) {
-            undoStack = emptyList()
-            pendingDismissKeys = emptySet()
-            animatingOutKeys = emptySet()
-            pinnedFrontKey = null
-        }
+    LaunchedEffect(listState) {
+        swipeContainer.store.intent(SwipeIntent.SyncListState(listState))
     }
 
-    // Drop pending keys once state has absorbed favorite/dislike.
-    LaunchedEffect(listState.flatList) {
-        if (pendingDismissKeys.isEmpty()) return@LaunchedEffect
-        pendingDismissKeys = pendingDismissKeys.filter { key ->
-            val flat = listState.flatList.find { it.deckKey() == key } ?: return@filter false
-            !flat.savedInFavorite && !flat.isViewed && !flat.disliked
-        }.toSet()
-    }
-
-    val deck by remember(listState.flatList, pendingDismissKeys, pinnedFrontKey, animatingOutKeys) {
-        derivedStateOf {
-            val swipeDeck = listState.flatList.filter {
-                val key = it.deckKey()
-                val keepWhileAnimating = key in animatingOutKeys
-                (keepWhileAnimating ||
-                        (!it.savedInFavorite && !it.isViewed && !it.disliked)) &&
-                        key !in pendingDismissKeys
-            }
-            val pinned = pinnedFrontKey?.let { key ->
-                listState.flatList.find {
-                    it.deckKey() == key && it.deckKey() !in pendingDismissKeys
-                }
-            }
-            when {
-                pinned == null -> swipeDeck
-                else -> listOf(pinned) + swipeDeck.filter { it.deckKey() != pinned.deckKey() }
-            }
-        }
-    }
-
-    LaunchedEffect(deck.size, listState.isLoadingMore, listState.noFlatsToLoadMore) {
-        if (deck.size <= 3 && !listState.isLoadingMore && !listState.noFlatsToLoadMore && !listState.isLoading) {
-            flatSearchContainer.store.intent(FlatListIntent.SearchFlats(isLoadMore = true))
-        }
-    }
-
-    LaunchedEffect(
-        deck.getOrNull(0)?.deckKey(),
-        deck.getOrNull(1)?.deckKey(),
-        deck.getOrNull(2)?.deckKey(),
-    ) {
-        deck.take(3).forEach { card ->
-            flatSearchContainer.store.intent(
-                FlatListIntent.PrefetchDetail(
-                    flatPlatform = card.flatPlatform,
-                    adId = card.adId,
-                    markAsViewed = false,
-                )
-            )
-        }
-    }
-
-    PrefetchDeckImages(deck = deck.take(3))
-
-    val cityName = remember(filterRepository.lastFilter()) {
-        LocationUiMapper.findSelectedCity(
-            filterRepository.lastFilter().location?.city ?: CityCode.MINSK
-        ).displayName
-    }
-
-    fun dismissCard(flat: UiFlat, outcome: SwipeOutcome) {
-        if (pinnedFrontKey == flat.deckKey()) pinnedFrontKey = null
-        pendingDismissKeys = pendingDismissKeys + flat.deckKey()
-        undoStack = undoStack + SwipeUndoEntry(flat.flatPlatform, flat.adId, outcome)
-        when (outcome) {
-            SwipeOutcome.Disliked -> flatSearchContainer.store.intent(
-                FlatListIntent.SetDisliked(flat.flatPlatform, flat.adId)
-            )
-
-            SwipeOutcome.Liked -> flatSearchContainer.store.intent(
-                FlatListIntent.ClickOnFavorite(flat.flatPlatform, flat.adId)
-            )
-        }
-        swipeCount += 1
-        val interval = monetizationConfig.swipeAdInterval
-        if (userTierProvider.shouldShowAds() && interval > 0 && swipeCount % interval == 0) {
-            swipeScope.launch {
-                adService.showInterstitial(monetizationConfig.interstitialAdUnit)
-            }
-        }
-    }
-
-    fun undoLastSwipe() {
-        val entry = undoStack.lastOrNull() ?: return
-        undoStack = undoStack.dropLast(1)
-        pendingDismissKeys = pendingDismissKeys - entry.deckKey()
-        pinnedFrontKey = entry.deckKey()
-        swipeProgress = 0f
-        stackPromoteProgress = 0f
-        when (entry.outcome) {
-            SwipeOutcome.Disliked -> flatSearchContainer.store.intent(
-                FlatListIntent.ClearDislike(entry.flatPlatform, entry.adId)
-            )
-
-            SwipeOutcome.Liked -> flatSearchContainer.store.intent(
-                // Toggle favorite off (same intent as heart tap).
-                FlatListIntent.ClickOnFavorite(entry.flatPlatform, entry.adId)
-            )
-        }
-    }
+    PrefetchDeckImages(
+        deck = state.deck.take(3).mapNotNull { (it as? SwipeDeckItem.Flat)?.value },
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            isSearchLoading && deck.isEmpty() -> {
+            state.isSearchLoading && state.deck.isEmpty() -> {
                 Box(Modifier.fillMaxSize()) {
                     SwipeSearchProgressBar(Modifier.align(Alignment.TopCenter))
                 }
             }
 
-            deck.isEmpty() -> {
+            state.deck.isEmpty() -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -293,82 +156,40 @@ fun SwipeScreen() {
             }
 
             else -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    val visible = deck.take(3)
-                    val frontKey = visible.firstOrNull()?.deckKey()
-                    LaunchedEffect(frontKey) {
+                SwipeCardStack(
+                    deck = state.deck,
+                    cityName = state.cityName,
+                    isSearchLoading = state.isSearchLoading,
+                    premiumUpsell = premiumUpsell,
+                    swipeProgress = swipeProgress,
+                    stackPromoteProgress = stackPromoteProgress,
+                    onSwipeProgressChange = { progress, promote ->
+                        swipeProgress = progress
+                        stackPromoteProgress = promote
+                    },
+                    onResetSwipeProgress = {
                         swipeProgress = 0f
                         stackPromoteProgress = 0f
-                    }
-                    for (i in visible.lastIndex downTo 0) {
-                        val flat = visible[i]
-                        val isFront = i == 0
-                        val stackTransform = stackCardTransform(
-                            depth = i,
-                            promoteProgress = stackPromoteProgress,
-                        )
-                        key(flat.deckKey()) {
-                            SwipeableCard(
-                                enabled = isFront,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .graphicsLayer {
-                                        scaleX = stackTransform.scale
-                                        scaleY = stackTransform.scale
-                                        translationY = stackTransform.translationY
-                                        alpha = stackTransform.alpha
-                                    },
-                                onSwipeWillDismiss = {
-                                    animatingOutKeys = animatingOutKeys + flat.deckKey()
-                                },
-                                onSwipedLeft = {
-                                    dismissCard(flat, SwipeOutcome.Disliked)
-                                    animatingOutKeys = animatingOutKeys - flat.deckKey()
-                                    swipeProgress = 0f
-                                    stackPromoteProgress = 0f
-                                },
-                                onSwipedRight = {
-                                    dismissCard(flat, SwipeOutcome.Liked)
-                                    animatingOutKeys = animatingOutKeys - flat.deckKey()
-                                    swipeProgress = 0f
-                                    stackPromoteProgress = 0f
-                                },
-                                onSwipeProgress = { progress ->
-                                    if (isFront) {
-                                        swipeProgress = progress
-                                        stackPromoteProgress = abs(progress.coerceIn(-1f, 1f))
-                                    }
-                                },
-                            ) {
-                                TwinbyCardFace(
-                                    flat = flat,
-                                    cityName = cityName,
-                                    swipeProgress = if (isFront) swipeProgress else 0f,
-                                    interactive = isFront,
-                                    showSearchProgress = isFront && isSearchLoading,
-                                    premiumUpsell = premiumUpsell,
-                                    onOpenDetail = {
-                                        pinnedFrontKey = flat.deckKey()
-                                        flatSearchContainer.store.intent(
-                                            FlatListIntent.OpenDetail(
-                                                flatPlatform = flat.flatPlatform,
-                                                adId = flat.adId,
-                                                markAsViewedOnOpen = false,
-                                            )
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
+                    },
+                    onBeginCardDismiss = { deckKey ->
+                        swipeContainer.store.intent(SwipeIntent.BeginCardDismiss(deckKey))
+                    },
+                    onSwipeFlat = { flat, outcome ->
+                        swipeContainer.store.intent(SwipeIntent.SwipeFlat(flat, outcome))
+                    },
+                    onDismissAd = {
+                        swipeContainer.store.intent(SwipeIntent.DismissAdCard)
+                    },
+                    onOpenDetail = { flat ->
+                        swipeContainer.store.intent(SwipeIntent.PinFrontCard(flat.swipeDeckKey()))
+                        swipeContainer.store.intent(SwipeIntent.OpenDetail(flat))
+                    },
+                )
             }
         }
 
         val fabMargin = FlatHubTheme.dimens.fabMargin
-        if (undoStack.isNotEmpty()) {
+        if (state.showUndo) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -376,7 +197,11 @@ fun SwipeScreen() {
                     .padding(fabMargin),
             ) {
                 FlatZenFloatingActionButton(
-                    onClick = ::undoLastSwipe,
+                    onClick = {
+                        swipeContainer.store.intent(SwipeIntent.UndoLastSwipe)
+                        swipeProgress = 0f
+                        stackPromoteProgress = 0f
+                    },
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
                 )
             }
@@ -389,9 +214,121 @@ fun SwipeScreen() {
                 .padding(fabMargin),
         ) {
             FilterActionButton(
-                onClick = { flatSearchContainer.store.intent(FlatListIntent.OpenFilter) },
-                isAnyFilterApplied = listState.isAnyFilterApplied,
+                onClick = { swipeContainer.store.intent(SwipeIntent.OpenFilter) },
+                isAnyFilterApplied = state.isAnyFilterApplied,
             )
+        }
+    }
+}
+
+@Composable
+private fun SwipeCardStack(
+    deck: List<SwipeDeckItem>,
+    cityName: String,
+    isSearchLoading: Boolean,
+    premiumUpsell: PremiumUpsellState?,
+    swipeProgress: Float,
+    stackPromoteProgress: Float,
+    onSwipeProgressChange: (progress: Float, promote: Float) -> Unit,
+    onResetSwipeProgress: () -> Unit,
+    onBeginCardDismiss: (deckKey: String) -> Unit,
+    onSwipeFlat: (UiFlat, SwipeOutcome) -> Unit,
+    onDismissAd: () -> Unit,
+    onOpenDetail: (UiFlat) -> Unit,
+) {
+    val visible = deck.take(3)
+    val frontKey = visible.firstOrNull()?.deckKey()
+
+    LaunchedEffect(frontKey) {
+        onResetSwipeProgress()
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        for (i in visible.lastIndex downTo 0) {
+            val item = visible[i]
+            val isFront = i == 0
+            val stackTransform = stackCardTransform(
+                depth = i,
+                promoteProgress = stackPromoteProgress,
+            )
+            key(item.deckKey()) {
+                when (item) {
+                    is SwipeDeckItem.Flat -> {
+                        val flat = item.value
+                        SwipeableCard(
+                            enabled = isFront,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .graphicsLayer {
+                                    scaleX = stackTransform.scale
+                                    scaleY = stackTransform.scale
+                                    translationY = stackTransform.translationY
+                                    alpha = stackTransform.alpha
+                                },
+                            onSwipeWillDismiss = { onBeginCardDismiss(flat.swipeDeckKey()) },
+                            onSwipedLeft = {
+                                onSwipeFlat(flat, SwipeOutcome.Disliked)
+                                onResetSwipeProgress()
+                            },
+                            onSwipedRight = {
+                                onSwipeFlat(flat, SwipeOutcome.Liked)
+                                onResetSwipeProgress()
+                            },
+                            onSwipeProgress = { progress ->
+                                if (isFront) {
+                                    onSwipeProgressChange(
+                                        progress,
+                                        abs(progress.coerceIn(-1f, 1f)),
+                                    )
+                                }
+                            },
+                        ) {
+                            TwinbyCardFace(
+                                flat = flat,
+                                cityName = cityName,
+                                swipeProgress = if (isFront) swipeProgress else 0f,
+                                interactive = isFront,
+                                showSearchProgress = isFront && isSearchLoading,
+                                premiumUpsell = premiumUpsell,
+                                onOpenDetail = { onOpenDetail(flat) },
+                            )
+                        }
+                    }
+
+                    SwipeDeckItem.Ad -> {
+                        SwipeableCard(
+                            enabled = isFront,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .graphicsLayer {
+                                    scaleX = stackTransform.scale
+                                    scaleY = stackTransform.scale
+                                    translationY = stackTransform.translationY
+                                    alpha = stackTransform.alpha
+                                },
+                            onSwipeWillDismiss = { onBeginCardDismiss(SWIPE_AD_DECK_KEY) },
+                            onSwipedLeft = {
+                                onDismissAd()
+                                onResetSwipeProgress()
+                            },
+                            onSwipedRight = {
+                                onDismissAd()
+                                onResetSwipeProgress()
+                            },
+                            onSwipeProgress = { progress ->
+                                if (isFront) {
+                                    onSwipeProgressChange(
+                                        progress,
+                                        abs(progress.coerceIn(-1f, 1f)),
+                                    )
+                                }
+                            },
+                        ) {
+                            SwipeAdCardFace()
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -408,6 +345,30 @@ private fun SwipeSearchProgressBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun SwipeAdCardFace(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Ad",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Реклама",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
 private fun PrefetchDeckImages(deck: List<UiFlat>) {
     val context = LocalPlatformContext.current
     val urls = remember(deck) {
@@ -416,10 +377,8 @@ private fun PrefetchDeckImages(deck: List<UiFlat>) {
                 val photos = flat.imageUrls
                 if (photos.isEmpty()) return@forEachIndexed
                 if (index == 0) {
-                    // Current card: warm a few photos ahead for fast taps.
                     addAll(photos.take(4))
                 } else {
-                    // Back cards: first photo only.
                     add(photos.first())
                 }
             }
@@ -459,7 +418,6 @@ private fun TwinbyCardFace(
     val safeIndex = if (photos.isEmpty()) 0 else photoIndex.coerceIn(0, photos.lastIndex)
     val context = LocalPlatformContext.current
 
-    // Prefetch neighbors of the active photo into memory cache.
     LaunchedEffect(photos, safeIndex) {
         if (photos.isEmpty()) return@LaunchedEffect
         val loader = SingletonImageLoader.get(context)
@@ -586,18 +544,25 @@ private fun TwinbyCardFace(
 
             if (flat.description.isNotBlank()) {
                 val semantic = FlatHubTheme.semantic
-                val fabSafe = FlatHubTheme.dimens.fabSafeZone
+                val horizontalPadding = FlatHubTheme.dimens.screenHorizontalCompact
+                val fabSafe = (FlatHubTheme.dimens.fabSafeZone.value * 1.2).toInt().dp
                 Text(
                     text = flat.description,
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
+                    textAlign = TextAlign.Start,
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                        .align(Alignment.BottomStart)
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(start = fabSafe, end = fabSafe, bottom = fabSafe, top = 12.dp)
+                        .padding(
+                            start = horizontalPadding,
+                            end = horizontalPadding,
+                            bottom = fabSafe,
+                            top = 12.dp,
+                        )
                         .background(semantic.photoOverlayScrim, FlatHubTheme.shapes.extraSmall)
                         .padding(8.dp),
                 )
@@ -686,10 +651,6 @@ private fun SwipeCardPhoto(
     }
 }
 
-/**
- * Portrait photos fill the card; landscape photos fit without cropping (like DetailScreen).
- * Container size follows screen orientation via [BoxWithConstraints].
- */
 private fun swipePhotoContentScale(
     imageWidth: Int,
     imageHeight: Int,
