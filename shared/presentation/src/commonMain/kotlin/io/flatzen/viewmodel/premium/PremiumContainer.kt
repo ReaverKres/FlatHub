@@ -225,7 +225,7 @@ class PremiumContainer(
         withState { blocked = trustStatus == TrustStatus.SUSPECT }
         if (blocked) return
         updateState { copy(purchasing = true, message = null) }
-        when (val result = adService.showRewarded(monetizationRemoteConfig.rewardedAdUnit)) {
+        when (val result = adService.showRewarded(monetizationRemoteConfig.rewardedPremiumPlacement)) {
             AdLoadResult.Ready -> {
                 subscriptionService.grantRewardedPremium(MonetizationDefaults.REWARDED_PREMIUM_HOURS)
                 updateState {

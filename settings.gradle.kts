@@ -26,6 +26,18 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven { url = uri("https://artifactory.appodeal.com/appodeal") }
+        maven { url = uri("https://android-sdk.is.com/") }
+        maven { url = uri("https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea") }
+        maven { url = uri("https://artifact.bytedance.com/repository/pangle") }
+        maven { url = uri("https://s3.amazonaws.com/smaato-sdk-releases/") }
+        maven { url = uri("https://artifactory.bidmachine.io/bidmachine") }
+        maven {
+            url = uri("https://maven.google.com")
+            content {
+                includeGroup("org.chromium.net")
+            }
+        }
     }
 }
 

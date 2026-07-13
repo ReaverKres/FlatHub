@@ -39,7 +39,7 @@ android-versionName = "1.1.03"
 collections-immutable = "0.5.1"
 datastore = "1.1.7"
 billing = "7.1.1"
-applovin = "13.3.1"
+appodeal = "4.2.0"
 
 [libraries]
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -96,7 +96,7 @@ flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowm
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
-applovin-sdk = { module = "com.applovin:applovin-sdk", version.ref = "applovin" }
+appodeal-core = { module = "com.appodeal.ads.sdk:core", version.ref = "appodeal" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 

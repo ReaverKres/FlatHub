@@ -22,7 +22,7 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.datastore.preferences)
                 implementation(libs.androidx.billing.ktx)
-                implementation(libs.applovin.sdk)
+                implementation(libs.appodeal.core)
                 implementation(libs.ktor.client.okhttp)
             }
         }

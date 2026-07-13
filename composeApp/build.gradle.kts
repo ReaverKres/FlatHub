@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.androidx.compose.ui.tooling.preview)
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
+            implementation(libs.appodeal.core)
         }
 
         commonMain.dependencies {
