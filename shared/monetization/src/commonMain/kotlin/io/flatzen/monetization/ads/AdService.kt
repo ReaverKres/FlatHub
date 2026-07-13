@@ -14,24 +14,29 @@ sealed interface AdLoadResult {
 }
 
 interface AdService {
-    fun initialize(sdkKey: String)
+    fun initialize(androidAppKey: String, iosAppKey: String)
     fun isInitialized(): Boolean
-    suspend fun loadBanner(adUnitId: String): AdLoadResult
-    suspend fun showInterstitial(adUnitId: String): AdLoadResult
-    suspend fun showRewarded(adUnitId: String): AdLoadResult
+    suspend fun showRewarded(placement: String): AdLoadResult
+    suspend fun prefetchNative(placement: String, count: Int = 1): AdLoadResult
+    suspend fun prefetchMrec(placement: String): AdLoadResult
     fun destroy()
 }
 
-/** No-op until AppLovin SDK key is provided. App builds and runs without ads. */
+/** No-op until Appodeal app key is provided. App builds and runs without ads. */
 class NoOpAdService : AdService {
     private var initialized = false
-    override fun initialize(sdkKey: String) {
-        initialized = sdkKey.isNotBlank()
+
+    override fun initialize(androidAppKey: String, iosAppKey: String) {
+        initialized = androidAppKey.isNotBlank() || iosAppKey.isNotBlank()
     }
 
     override fun isInitialized(): Boolean = initialized
-    override suspend fun loadBanner(adUnitId: String): AdLoadResult = AdLoadResult.Disabled
-    override suspend fun showInterstitial(adUnitId: String): AdLoadResult = AdLoadResult.Disabled
-    override suspend fun showRewarded(adUnitId: String): AdLoadResult = AdLoadResult.Disabled
+
+    override suspend fun showRewarded(placement: String): AdLoadResult = AdLoadResult.Disabled
+
+    override suspend fun prefetchNative(placement: String, count: Int): AdLoadResult = AdLoadResult.Disabled
+
+    override suspend fun prefetchMrec(placement: String): AdLoadResult = AdLoadResult.Disabled
+
     override fun destroy() = Unit
 }

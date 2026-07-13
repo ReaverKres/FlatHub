@@ -1,0 +1,43 @@
+package io.flatzen.ads
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+
+enum class NativeAdSlotStyle {
+    ContentStream,
+    AppWall,
+}
+
+@Composable
+expect fun MrecAdSlot(
+    placement: String,
+    modifier: Modifier = Modifier,
+)
+
+@Composable
+expect fun NativeAdSlot(
+    placement: String,
+    modifier: Modifier = Modifier,
+    style: NativeAdSlotStyle = NativeAdSlotStyle.ContentStream,
+)
+
+@Composable
+fun AdSlotPlaceholder(
+    modifier: Modifier = Modifier,
+    label: String = "Ad",
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}

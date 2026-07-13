@@ -12,7 +12,7 @@ struct iOSApp: App {
         FirebaseBootstrap.configureIfNeeded()
         AppMetricaSetup.configureBridge()
         FirebaseRemoteConfigSetup.configureBridge()
-        AppLovinSetup.configureBridge()
+        AppodealSetup.configureBridge()
         FlatZenStoreKit2.install()
     }
 

@@ -4,3 +4,8 @@
 -keepnames class io.flatzen.SettingsScreenDestination
 -keepnames class io.flatzen.MapScreenDestination
 -keepnames class io.flatzen.NotificationScreenDestination
+
+# Appodeal
+-keep class com.appodeal.** { *; }
+-dontwarn com.appodeal.**
+-keepattributes Signature, *Annotation*

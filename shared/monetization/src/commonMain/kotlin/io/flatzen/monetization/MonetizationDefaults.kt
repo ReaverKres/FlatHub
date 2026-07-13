@@ -43,9 +43,12 @@ object MonetizationDefaults {
 
     const val REWARDED_PREMIUM_HOURS = 1L
 
-    /** Empty = ads SDK not initialized (safe no-op). Fill via Remote Config or BuildConfig later. */
-    const val APPLOVIN_SDK_KEY = ""
-    const val APPLOVIN_BANNER_AD_UNIT = ""
-    const val APPLOVIN_INTERSTITIAL_AD_UNIT = ""
-    const val APPLOVIN_REWARDED_AD_UNIT = ""
+    /** Empty app keys = ads SDK not initialized (safe no-op). Fill via Remote Config. */
+    const val APPODEAL_ANDROID_APP_KEY = ""
+    const val APPODEAL_IOS_APP_KEY = ""
+
+    const val HOME_FEED_LIST_PLACEMENT = "home_feed_list"
+    const val HOME_FEED_GRID_PLACEMENT = "home_feed_grid"
+    const val SWIPE_CARD_PLACEMENT = "swipe_card"
+    const val REWARDED_PREMIUM_PLACEMENT = "rewarded_premium"
 }

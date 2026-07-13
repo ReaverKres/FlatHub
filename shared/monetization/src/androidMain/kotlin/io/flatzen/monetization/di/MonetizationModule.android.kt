@@ -3,7 +3,7 @@ package io.flatzen.monetization.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import io.flatzen.monetization.ads.AdService
-import io.flatzen.monetization.ads.AppLovinAdService
+import io.flatzen.monetization.ads.AppodealAdService
 import io.flatzen.monetization.ads.NoOpAdService
 import io.flatzen.monetization.billing.NoOpBillingBridge
 import io.flatzen.monetization.billing.PlatformBillingBridge
@@ -29,10 +29,12 @@ actual fun platformMonetizationModule(): Module = module {
 
     single<AdService> {
         val config = get<MonetizationRemoteConfig>()
-        if (config.applovinSdkKey.isBlank() || config.premiumFallbackEnabled) {
+        if (config.appodealAndroidAppKey.isBlank() || config.premiumFallbackEnabled) {
             NoOpAdService()
         } else {
-            AppLovinAdService(get()).also { it.initialize(config.applovinSdkKey) }
+            AppodealAdService(get()).also {
+                it.initialize(config.appodealAndroidAppKey, config.appodealIosAppKey)
+            }
         }
     }
 }

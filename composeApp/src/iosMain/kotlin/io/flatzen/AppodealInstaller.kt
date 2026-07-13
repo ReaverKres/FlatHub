@@ -1,0 +1,30 @@
+package io.flatzen
+
+import io.flatzen.monetization.ads.installAppodeal as monetizationInstallAppodeal
+import platform.UIKit.UIView
+
+/**
+ * Re-export for Swift (`ComposeApp.AppodealInstallerKt.installAppodeal`).
+ * Appodeal host is registered from `iosApp` via [AppodealSetup.configureBridge].
+ */
+fun installAppodeal(
+    initialize: (appKey: String, onComplete: (Boolean) -> Unit) -> Unit,
+    isInitialized: () -> Boolean,
+    showRewarded: (placement: String, onResult: (String) -> Unit) -> Unit,
+    createMrecView: (placement: String) -> UIView,
+    createNativeView: (placement: String, style: String) -> UIView,
+    showMrec: (placement: String) -> Unit,
+    showNative: (view: UIView, placement: String) -> Unit,
+    releaseView: (view: UIView) -> Unit,
+) {
+    monetizationInstallAppodeal(
+        initialize = initialize,
+        isInitialized = isInitialized,
+        showRewarded = showRewarded,
+        createMrecView = createMrecView,
+        createNativeView = createNativeView,
+        showMrec = showMrec,
+        showNative = showNative,
+        releaseView = releaseView,
+    )
+}

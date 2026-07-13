@@ -60,6 +60,9 @@ import io.flatzen.themes.FlatHubTheme
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.UiFlat
+import io.flatzen.ads.NativeAdSlot
+import io.flatzen.ads.NativeAdSlotStyle
+import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.viewmodel.swipe.SWIPE_AD_DECK_KEY
 import io.flatzen.viewmodel.swipe.SwipeContainer
 import io.flatzen.viewmodel.swipe.SwipeDeckItem
@@ -110,6 +113,8 @@ fun SwipeScreen() {
         navigateToPremium = { swipeContainer.store.intent(SwipeIntent.OpenPremium) },
     )
 
+    val monetizationConfig: MonetizationRemoteConfig = koinInject()
+
     var swipeProgress by remember { mutableFloatStateOf(0f) }
     var stackPromoteProgress by remember { mutableFloatStateOf(0f) }
 
@@ -158,6 +163,7 @@ fun SwipeScreen() {
             else -> {
                 SwipeCardStack(
                     deck = state.deck,
+                    swipeAdPlacement = monetizationConfig.swipeCardPlacement,
                     cityName = state.cityName,
                     isSearchLoading = state.isSearchLoading,
                     premiumUpsell = premiumUpsell,
@@ -224,6 +230,7 @@ fun SwipeScreen() {
 @Composable
 private fun SwipeCardStack(
     deck: List<SwipeDeckItem>,
+    swipeAdPlacement: String,
     cityName: String,
     isSearchLoading: Boolean,
     premiumUpsell: PremiumUpsellState?,
@@ -324,7 +331,7 @@ private fun SwipeCardStack(
                                 }
                             },
                         ) {
-                            SwipeAdCardFace()
+                            SwipeAdCardFace(placement = swipeAdPlacement)
                         }
                     }
                 }
@@ -345,27 +352,15 @@ private fun SwipeSearchProgressBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SwipeAdCardFace(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Ad",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Реклама",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
+private fun SwipeAdCardFace(
+    placement: String,
+    modifier: Modifier = Modifier,
+) {
+    NativeAdSlot(
+        placement = placement,
+        modifier = modifier.fillMaxSize(),
+        style = NativeAdSlotStyle.ContentStream,
+    )
 }
 
 @Composable

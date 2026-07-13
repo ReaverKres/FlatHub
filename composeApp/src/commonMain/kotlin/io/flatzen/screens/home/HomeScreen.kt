@@ -96,6 +96,9 @@ import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.ads.MrecAdSlot
+import io.flatzen.ads.NativeAdSlot
+import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.monetization.ads.FeedItem
 import io.flatzen.monetization.ads.buildFeedItems
 import io.flatzen.monetization.config.MonetizationRemoteConfig
@@ -900,7 +903,7 @@ fun FlatList(
                     }
 
                     FeedItem.Ad -> {
-                        FeedAdPlaceholder(isGrid = false)
+                        MrecAdSlot(placement = monetizationConfig.homeFeedListPlacement)
                     }
                 }
             }
@@ -940,7 +943,13 @@ fun FlatList(
                         }
                     }
 
-                    is GridRow.Ad -> FeedAdPlaceholder(isGrid = true)
+                    is GridRow.Ad -> NativeAdSlot(
+                        placement = monetizationConfig.homeFeedGridPlacement,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(GridFlatItemSpec.skeletonHeight),
+                        style = NativeAdSlotStyle.AppWall,
+                    )
                 }
             }
         }
@@ -996,42 +1005,6 @@ private fun buildGridRows(feedItems: List<FeedItem<UiFlat>>): List<GridRow> {
     }
     pending?.let { rows += GridRow.Pair(it, null) }
     return rows
-}
-
-@Composable
-private fun FeedAdPlaceholder(
-    modifier: Modifier = Modifier,
-    isGrid: Boolean,
-) {
-    val dimens = FlatHubTheme.dimens
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .thenIf(isGrid) {
-                height(GridFlatItemSpec.skeletonHeight)
-            }
-            .thenIf(!isGrid) {
-                height(120.dp)
-            }
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant,
-                if (isGrid) FlatHubTheme.shapes.medium else RoundedCornerShape(12.dp),
-            )
-            .thenIf(isGrid) {
-                border(
-                    width = dimens.cardBorderWidth,
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    shape = FlatHubTheme.shapes.medium,
-                )
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "Ad",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.labelLarge,
-        )
-    }
 }
 
 @Composable

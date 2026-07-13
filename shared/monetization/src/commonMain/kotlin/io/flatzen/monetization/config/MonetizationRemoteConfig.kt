@@ -17,10 +17,12 @@ data class MonetizationRemoteConfig(
     val priceWeekUsd: String = MonetizationDefaults.PRICE_WEEK_USD,
     val priceMonthUsd: String = MonetizationDefaults.PRICE_MONTH_USD,
     val priceQuarterUsd: String = MonetizationDefaults.PRICE_QUARTER_USD,
-    val applovinSdkKey: String = MonetizationDefaults.APPLOVIN_SDK_KEY,
-    val bannerAdUnit: String = MonetizationDefaults.APPLOVIN_BANNER_AD_UNIT,
-    val interstitialAdUnit: String = MonetizationDefaults.APPLOVIN_INTERSTITIAL_AD_UNIT,
-    val rewardedAdUnit: String = MonetizationDefaults.APPLOVIN_REWARDED_AD_UNIT,
+    val appodealAndroidAppKey: String = MonetizationDefaults.APPODEAL_ANDROID_APP_KEY,
+    val appodealIosAppKey: String = MonetizationDefaults.APPODEAL_IOS_APP_KEY,
+    val homeFeedListPlacement: String = MonetizationDefaults.HOME_FEED_LIST_PLACEMENT,
+    val homeFeedGridPlacement: String = MonetizationDefaults.HOME_FEED_GRID_PLACEMENT,
+    val swipeCardPlacement: String = MonetizationDefaults.SWIPE_CARD_PLACEMENT,
+    val rewardedPremiumPlacement: String = MonetizationDefaults.REWARDED_PREMIUM_PLACEMENT,
 )
 
 fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
@@ -48,9 +50,15 @@ fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
             ?: MonetizationDefaults.PRICE_MONTH_USD,
         priceQuarterUsd = jsonConfig?.premiumPriceQuarterUsd?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.PRICE_QUARTER_USD,
-        applovinSdkKey = jsonConfig?.applovinSdkKey.orEmpty(),
-        bannerAdUnit = jsonConfig?.applovinBannerAdUnit.orEmpty(),
-        interstitialAdUnit = jsonConfig?.applovinInterstitialAdUnit.orEmpty(),
-        rewardedAdUnit = jsonConfig?.applovinRewardedAdUnit.orEmpty(),
+        appodealAndroidAppKey = jsonConfig?.appodealAndroidAppKey.orEmpty(),
+        appodealIosAppKey = jsonConfig?.appodealIosAppKey.orEmpty(),
+        homeFeedListPlacement = jsonConfig?.homeFeedListPlacement?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.HOME_FEED_LIST_PLACEMENT,
+        homeFeedGridPlacement = jsonConfig?.homeFeedGridPlacement?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.HOME_FEED_GRID_PLACEMENT,
+        swipeCardPlacement = jsonConfig?.swipeCardPlacement?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.SWIPE_CARD_PLACEMENT,
+        rewardedPremiumPlacement = jsonConfig?.rewardedPremiumPlacement?.takeIf { it.isNotBlank() }
+            ?: MonetizationDefaults.REWARDED_PREMIUM_PLACEMENT,
     )
 }
