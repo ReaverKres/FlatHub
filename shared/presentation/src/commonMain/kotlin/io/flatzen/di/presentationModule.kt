@@ -15,6 +15,7 @@ import io.flatzen.viewmodel.SplashContainer
 import io.flatzen.viewmodel.detailad.FlatDetailContainer
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatSearchContainer
+import io.flatzen.viewmodel.list.PremiumFeedReloadTrigger
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralContainer
@@ -35,7 +36,8 @@ val flatSearchPresentationModule = module {
     single { FlatHubNavigatorDelegate() }
     single<FlatHubNavigator> { get<FlatHubNavigatorDelegate>() }
     single {
-        FlatSearchContainer(
+        val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+        val container = FlatSearchContainer(
             mergedRepository = get(),
             filterRepository = get(),
             userPreferencesRepository = get(),
@@ -44,9 +46,14 @@ val flatSearchPresentationModule = module {
             configFieldsChecker = get(),
             userTierProvider = get(),
             navigator = get(),
-        ).apply {
-            store.start(CoroutineScope(Dispatchers.Main.immediate + SupervisorJob()))
-        }
+        )
+        container.store.start(scope)
+        PremiumFeedReloadTrigger(
+            userTierProvider = get(),
+            flatSearchContainer = container,
+            scope = scope,
+        )
+        container
     }
     container { new(::FlatDetailContainer) }
     container { new(::FavoritesContainer) }
