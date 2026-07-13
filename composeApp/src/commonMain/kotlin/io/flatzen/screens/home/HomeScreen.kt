@@ -9,6 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -593,12 +594,32 @@ fun LazyListScope.flatListSkeletons(isListView: Boolean) {
     }
 }
 
+private object GridFlatItemSpec {
+    val imageHeight = 100.dp
+    val padding = 8.dp
+    val spacerAfterImage = 8.dp
+    val priceLineHeight = 20.dp
+    val smallSpacer = 4.dp
+    val roomsLineHeight = 18.dp
+    val textLineHeight = 16.dp
+
+    val skeletonHeight: Dp
+        get() = padding * 2 +
+                imageHeight +
+                spacerAfterImage +
+                priceLineHeight + smallSpacer +
+                roomsLineHeight + smallSpacer +
+                textLineHeight + smallSpacer +
+                textLineHeight + smallSpacer +
+                textLineHeight
+}
+
 @Composable
 private fun SkeletonFlatGridItem(
     modifier: Modifier = Modifier
 ) {
-
     val shimmerProgress by rememberShimmerProgress()
+    val spec = GridFlatItemSpec
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -608,62 +629,57 @@ private fun SkeletonFlatGridItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(spec.padding)
         ) {
-            // Скелетон изображения
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(spec.imageHeight),
                 shimmerProgress = shimmerProgress
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(spec.spacerAfterImage))
 
-            // Скелетон цены USD
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .height(20.dp),
+                    .height(spec.priceLineHeight),
                 shimmerProgress = shimmerProgress
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(spec.smallSpacer))
 
-            // Скелетон количества комнат
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
-                    .height(18.dp),
+                    .height(spec.roomsLineHeight),
                 shimmerProgress = shimmerProgress
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(spec.smallSpacer))
 
-            // Скелетон метро
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .height(16.dp),
+                    .height(spec.textLineHeight),
                 shimmerProgress = shimmerProgress
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(spec.smallSpacer))
 
-            // Скелетон адреса (2 строки)
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(16.dp),
+                    .height(spec.textLineHeight),
                 shimmerProgress = shimmerProgress
             )
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(spec.smallSpacer))
 
             ShimmerBox(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(16.dp),
+                    .height(spec.textLineHeight),
                 shimmerProgress = shimmerProgress
             )
         }
@@ -818,11 +834,16 @@ fun FlatList(
 ) {
     val userTierProvider: UserTierProvider = koinInject()
     val monetizationConfig: MonetizationRemoteConfig = koinInject()
+    val adInterval = if (isListView == true) {
+        monetizationConfig.homeListAdInterval
+    } else {
+        monetizationConfig.homeGridAdInterval
+    }
     val feedItems =
-        remember(flats, monetizationConfig.homeListAdInterval, userTierProvider.shouldShowAds()) {
+        remember(flats, adInterval, userTierProvider.shouldShowAds()) {
             buildFeedItems(
                 flats = flats,
-                interval = monetizationConfig.homeListAdInterval,
+                interval = adInterval,
                 showAds = userTierProvider.shouldShowAds(),
             )
         }
@@ -978,15 +999,31 @@ private fun buildGridRows(feedItems: List<FeedItem<UiFlat>>): List<GridRow> {
 }
 
 @Composable
-private fun FeedAdPlaceholder(isGrid: Boolean) {
+private fun FeedAdPlaceholder(
+    modifier: Modifier = Modifier,
+    isGrid: Boolean,
+) {
+    val dimens = FlatHubTheme.dimens
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(if (isGrid) 280.dp else 120.dp)
+            .thenIf(isGrid) {
+                height(GridFlatItemSpec.skeletonHeight)
+            }
+            .thenIf(!isGrid) {
+                height(120.dp)
+            }
             .background(
                 MaterialTheme.colorScheme.surfaceVariant,
-                RoundedCornerShape(12.dp)
-            ),
+                if (isGrid) FlatHubTheme.shapes.medium else RoundedCornerShape(12.dp),
+            )
+            .thenIf(isGrid) {
+                border(
+                    width = dimens.cardBorderWidth,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    shape = FlatHubTheme.shapes.medium,
+                )
+            },
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -1051,7 +1088,7 @@ private fun GridFlatCard(
             FlatImagePager(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(GridFlatItemSpec.imageHeight)
                     .removeParentPadding(dimens.cardPaddingCompact),
                 flatPlatform = flat.flatPlatform,
                 imageUrls = flat.imageUrls,

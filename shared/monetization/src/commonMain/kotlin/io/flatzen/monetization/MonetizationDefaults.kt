@@ -16,8 +16,10 @@ object MonetizationDefaults {
     const val PRICE_MONTH_USD = "2.50"
     const val PRICE_QUARTER_USD = "6.00"
 
-    const val HOME_LIST_AD_INTERVAL = 20
+    const val HOME_GRID_AD_INTERVAL = 16
+    const val HOME_LIST_AD_INTERVAL = 14
     const val SWIPE_AD_INTERVAL = 10
+    const val SWIPE_AD_MIN_INTERVAL_MINUTES = 1L
     const val FEED_DELAY_MINUTES = 60L
     const val TRIAL_DAYS = 0L
 

@@ -21,6 +21,7 @@ import io.flatzen.viewmodel.more.ReferralContainer
 import io.flatzen.viewmodel.notifications.NotificationListContainer
 import io.flatzen.viewmodel.notifications.ToggleNotificationsContainer
 import io.flatzen.viewmodel.premium.PremiumContainer
+import io.flatzen.viewmodel.swipe.SwipeContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -67,6 +68,16 @@ val flatSearchPresentationModule = module {
     container { new(::DistrictsContainer) }
 
     container { new(::MapContainer) }
+
+    container {
+        SwipeContainer(
+            flatSearchContainer = get(),
+            filterRepository = get(),
+            userTierProvider = get(),
+            monetizationRemoteConfig = get(),
+            navigator = get(),
+        )
+    }
 
     container { new(::SplashContainer) }
     container { new(::MoreContainer) }

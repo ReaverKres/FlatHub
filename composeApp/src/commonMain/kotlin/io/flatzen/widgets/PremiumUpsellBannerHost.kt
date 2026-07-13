@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.flatzen.commoncomponents.localization.LocalizationKeys
-import io.flatzen.monetization.tier.PremiumUpsellSessionState
+import io.flatzen.monetization.tier.MonetizationSessionState
 import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.themes.FlatHubTheme
 import org.koin.compose.koinInject
@@ -38,13 +38,13 @@ fun rememberPremiumUpsellState(
     navigateToPremium: () -> Unit,
 ): PremiumUpsellState? {
     val userTierProvider: UserTierProvider = koinInject()
-    var dismissed by remember { mutableStateOf(PremiumUpsellSessionState.dismissed) }
+    var dismissed by remember { mutableStateOf(MonetizationSessionState.premiumUpsellDismissed) }
     val show = userTierProvider.shouldShowUpsellBanner(dismissed)
     if (!show) return null
     return PremiumUpsellState(
         onClick = navigateToPremium,
         onDismiss = {
-            PremiumUpsellSessionState.dismissed = true
+            MonetizationSessionState.premiumUpsellDismissed = true
             dismissed = true
         },
     )

@@ -55,7 +55,7 @@ class RemoteConfigRepositoryImpl(
     override val faqConfig: Flow<FaqConfigData?> = loadState
         .map { state ->
             if (state is RemoteConfigLoadState.Ready) {
-                configFieldsChecker.checkJson(ConfigFields.FaqConfigData)
+                configFieldsChecker.checkJson<FaqConfigData>(ConfigFields.FaqConfigData)
             } else {
                 null
             }
@@ -65,7 +65,7 @@ class RemoteConfigRepositoryImpl(
     override val moreConfig: Flow<MoreConfigData?> = loadState
         .map { state ->
             if (state is RemoteConfigLoadState.Ready) {
-                configFieldsChecker.checkJson(ConfigFields.MoreConfigData)
+                configFieldsChecker.checkJson<MoreConfigData>(ConfigFields.MoreConfigData)
             } else {
                 null
             }
