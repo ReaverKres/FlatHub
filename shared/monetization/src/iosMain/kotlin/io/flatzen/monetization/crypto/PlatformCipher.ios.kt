@@ -1,13 +1,13 @@
 package io.flatzen.monetization.crypto
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.Foundation.NSUserDefaults
 import platform.Foundation.create
-import platform.Security.SecRandomCopyBytes
-import platform.Security.kSecRandomDefault
+import platform.posix.arc4random_buf
 import platform.posix.memcpy
 import kotlin.experimental.xor
 
@@ -33,7 +33,7 @@ private class IosPlatformCipher(private val alias: String) : PlatformCipher {
         }
         val generated = ByteArray(32)
         generated.usePinned { pinned ->
-            SecRandomCopyBytes(kSecRandomDefault, generated.size.toULong(), pinned.addressOf(0))
+            arc4random_buf(pinned.addressOf(0), generated.size.toULong())
         }
         defaults.setObject(generated.toNSData(), storageKey)
         defaults.synchronize()
@@ -53,7 +53,7 @@ private class IosPlatformCipher(private val alias: String) : PlatformCipher {
     }
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private fun ByteArray.toNSData(): NSData =
     usePinned { pinned ->
         NSData.create(bytes = pinned.addressOf(0), length = size.toULong())

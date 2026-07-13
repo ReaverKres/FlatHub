@@ -11,11 +11,14 @@ import io.flatzen.monetization.billing.SubscriptionService
 import io.flatzen.monetization.billing.SubscriptionStatus
 import io.flatzen.monetization.billing.SubscriptionTier
 import io.flatzen.monetization.config.MonetizationRemoteConfig
+import io.flatzen.monetization.time.TrustStatus
+import io.flatzen.monetization.time.TrustedTimeRepository
 import io.flatzen.navigation.FlatHubCommand
 import io.flatzen.navigation.FlatHubNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.combine
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -38,12 +41,24 @@ data class PremiumState(
     val statusSource: SubscriptionStatus.StatusSource? = null,
     val expiresAtEpochMs: Long? = null,
     val activeProductId: String? = null,
+    val trustStatus: TrustStatus = TrustStatus.UNVERIFIED,
     val showDebugToggle: Boolean = MonetizationDefaults.DEBUG_PREMIUM_SCREEN_TOGGLE,
     /** null = use [isPremiumActive]; otherwise forces the UI branch for debug. */
     val debugForceActive: Boolean? = MonetizationDefaults.DEBUG_PREMIUM_SCREEN_FORCE_ACTIVE,
 ) : MVIState {
     val showActivePremium: Boolean
         get() = debugForceActive ?: isPremiumActive
+
+    val showClockTamperWarning: Boolean
+        get() = !showActivePremium && trustStatus == TrustStatus.SUSPECT
+
+    val canWatchRewardedAd: Boolean
+        get() = !purchasing && trustStatus != TrustStatus.SUSPECT
+
+    val canExtendRewardedPremium: Boolean
+        get() = isPremiumActive &&
+                statusSource == SubscriptionStatus.StatusSource.REWARDED &&
+                canWatchRewardedAd
 
     companion object {
         val Initial = PremiumState()
@@ -64,6 +79,7 @@ sealed interface PremiumAction : MVIAction
 
 class PremiumContainer(
     private val subscriptionService: SubscriptionService,
+    private val trustedTimeRepository: TrustedTimeRepository,
     private val adService: AdService,
     private val monetizationRemoteConfig: MonetizationRemoteConfig,
     private val navigator: FlatHubNavigator,
@@ -71,13 +87,19 @@ class PremiumContainer(
 
     override val store = store(initial = PremiumState.Initial) {
         whileSubscribed {
-            subscriptionService.observeStatus().collect { status ->
+            combine(
+                subscriptionService.observeStatus(),
+                trustedTimeRepository.state,
+            ) { status, trusted ->
+                status to trusted.status
+            }.collect { (status, trustStatus) ->
                 updateState {
                     copy(
                         isPremiumActive = status.tier == SubscriptionTier.PREMIUM,
                         statusSource = status.source,
                         expiresAtEpochMs = status.expiresAtEpochMs,
                         activeProductId = status.productId,
+                        trustStatus = trustStatus,
                     )
                 }
             }
@@ -199,10 +221,13 @@ class PremiumContainer(
     }
 
     private suspend fun PremiumCtx.handleWatchRewardedAd() {
+        var blocked = false
+        withState { blocked = trustStatus == TrustStatus.SUSPECT }
+        if (blocked) return
         updateState { copy(purchasing = true, message = null) }
         when (val result = adService.showRewarded(monetizationRemoteConfig.rewardedAdUnit)) {
             AdLoadResult.Ready -> {
-                subscriptionService.grantRewardedPremium(1)
+                subscriptionService.grantRewardedPremium(MonetizationDefaults.REWARDED_PREMIUM_HOURS)
                 updateState {
                     copy(
                         purchasing = false,

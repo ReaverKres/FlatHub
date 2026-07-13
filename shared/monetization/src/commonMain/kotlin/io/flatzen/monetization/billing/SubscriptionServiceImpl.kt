@@ -2,6 +2,7 @@ package io.flatzen.monetization.billing
 
 import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.datastore.EncryptedSecureStore
+import io.flatzen.monetization.time.TrustedTimeRepository
 import io.flatzen.monetization.util.roundToScale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,18 +13,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
 /**
  * Common orchestration around platform billing: trial, rewarded, fallback Premium, cache.
  * Platform [PlatformBillingBridge] talks to Play Billing / StoreKit.
+ * Expiry comparisons use [TrustedTimeRepository] instead of raw device clock.
  */
 class SubscriptionServiceImpl(
     private val secureStore: EncryptedSecureStore,
     private val bridge: PlatformBillingBridge,
+    private val trustedTime: TrustedTimeRepository,
     private val premiumFallbackEnabled: () -> Boolean = { MonetizationDefaults.PREMIUM_FALLBACK_ENABLED },
     private val trialDays: () -> Long = { MonetizationDefaults.TRIAL_DAYS },
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
@@ -47,13 +50,15 @@ class SubscriptionServiceImpl(
                 secureStore.observeSubscriptionCache(),
                 secureStore.observeTrialStartedAt(),
                 secureStore.observeRewardedUntil(),
-            ) { cache, trialStarted, rewardedUntil ->
+                trustedTime.state.map { it.nowEpochMs },
+            ) { cache, trialStarted, rewardedUntil, nowEpochMs ->
                 resolveStatus(
                     cache.tier,
                     cache.expiresAtEpochMs,
                     cache.productId,
                     trialStarted,
-                    rewardedUntil
+                    rewardedUntil,
+                    nowEpochMs,
                 )
             }.collect { _status.value = it }
         }
@@ -112,14 +117,16 @@ class SubscriptionServiceImpl(
     }
 
     override suspend fun grantRewardedPremium(hours: Long) {
-        val until = Clock.System.now().toEpochMilliseconds() + hours.hours.inWholeMilliseconds
-        secureStore.setRewardedUntil(until)
+        val now = trustedTime.nowEpochMs()
+        val currentUntil = secureStore.loadRewardedUntil()
+        val base = maxOf(now, currentUntil ?: 0L)
+        secureStore.setRewardedUntil(base + hours.hours.inWholeMilliseconds)
     }
 
     override fun isBillingConfigured(): Boolean = bridge.isConfigured()
 
     override suspend fun startTrialIfNeeded() {
-        secureStore.setTrialStartedAtIfAbsent(Clock.System.now().toEpochMilliseconds())
+        secureStore.setTrialStartedAtIfAbsent(trustedTime.nowEpochMs())
     }
 
     private fun resolveStatus(
@@ -128,6 +135,7 @@ class SubscriptionServiceImpl(
         productId: String?,
         trialStarted: Long?,
         rewardedUntil: Long?,
+        now: Long,
     ): SubscriptionStatus {
         if (premiumFallbackEnabled()) {
             return SubscriptionStatus(
@@ -135,7 +143,6 @@ class SubscriptionServiceImpl(
                 source = SubscriptionStatus.StatusSource.FALLBACK
             )
         }
-        val now = Clock.System.now().toEpochMilliseconds()
         if (rewardedUntil != null && rewardedUntil > now) {
             return SubscriptionStatus(
                 tier = SubscriptionTier.PREMIUM,

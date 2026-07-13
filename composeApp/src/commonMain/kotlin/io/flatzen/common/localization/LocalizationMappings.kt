@@ -145,6 +145,7 @@ import flatzen.composeapp.generated.resources.premium_active_subtitle
 import flatzen.composeapp.generated.resources.premium_active_title
 import flatzen.composeapp.generated.resources.premium_active_unlimited
 import flatzen.composeapp.generated.resources.premium_active_until
+import flatzen.composeapp.generated.resources.premium_clock_tamper_warning
 import flatzen.composeapp.generated.resources.premium_debug_active
 import flatzen.composeapp.generated.resources.premium_debug_auto
 import flatzen.composeapp.generated.resources.premium_debug_label
@@ -485,4 +486,5 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.PREMIUM_ERROR_ITEM_UNAVAILABLE -> Res.string.premium_error_item_unavailable
         LocalizationKeys.PREMIUM_ERROR_NETWORK -> Res.string.premium_error_network
         LocalizationKeys.PREMIUM_ERROR_ITEM_ALREADY_OWNED -> Res.string.premium_error_item_already_owned
+        LocalizationKeys.PREMIUM_CLOCK_TAMPER_WARNING -> Res.string.premium_clock_tamper_warning
     }

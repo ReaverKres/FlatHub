@@ -76,6 +76,7 @@ val flatSearchPresentationModule = module {
     container {
         PremiumContainer(
             subscriptionService = get(),
+            trustedTimeRepository = get(),
             adService = get(),
             monetizationRemoteConfig = get(),
             navigator = get(),

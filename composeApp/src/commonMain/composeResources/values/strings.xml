@@ -229,4 +229,5 @@
     <string name="premium_error_item_unavailable">Тариф временно недоступен</string>
     <string name="premium_error_network">Проверьте подключение к интернету</string>
     <string name="premium_error_item_already_owned">Подписка уже оформлена</string>
+    <string name="premium_clock_tamper_warning">Обнаружена перемотка системного времени. Исправьте часы устройства, чтобы снова смотреть рекламу за Premium.</string>
 </resources>

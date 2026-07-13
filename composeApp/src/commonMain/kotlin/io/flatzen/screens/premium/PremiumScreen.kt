@@ -50,6 +50,7 @@ import flatzen.composeapp.generated.resources.premium_active_subtitle
 import flatzen.composeapp.generated.resources.premium_active_title
 import flatzen.composeapp.generated.resources.premium_active_unlimited
 import flatzen.composeapp.generated.resources.premium_active_until
+import flatzen.composeapp.generated.resources.premium_clock_tamper_warning
 import flatzen.composeapp.generated.resources.premium_done
 import flatzen.composeapp.generated.resources.premium_feature_location
 import flatzen.composeapp.generated.resources.premium_feature_no_ads
@@ -82,11 +83,11 @@ import io.flatzen.viewmodel.premium.PremiumContainer
 import io.flatzen.viewmodel.premium.PremiumIntent
 import io.flatzen.viewmodel.premium.PremiumMessage
 import io.flatzen.viewmodel.premium.PremiumState
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,6 +155,7 @@ fun PremiumScreen() {
                     },
                     onDone = { container.store.intent(PremiumIntent.NavigateBack) },
                     onRestore = { container.store.intent(PremiumIntent.Restore) },
+                    onWatchAd = { container.store.intent(PremiumIntent.WatchRewardedAd) },
                     purchasing = state.purchasing,
                 )
             } else {
@@ -180,6 +182,7 @@ private fun ActivePremiumContent(
     onManage: () -> Unit,
     onDone: () -> Unit,
     onRestore: () -> Unit,
+    onWatchAd: () -> Unit,
     purchasing: Boolean,
 ) {
     val sourceLabel = when (state.statusSource) {
@@ -291,6 +294,16 @@ private fun ActivePremiumContent(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
     ) {
         Text(stringResource(Res.string.premium_manage), color = MaterialTheme.colorScheme.primary)
+    }
+
+    if (state.canExtendRewardedPremium) {
+        TextButton(
+            onClick = onWatchAd,
+            enabled = state.canWatchRewardedAd,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(Res.string.premium_watch_ad))
+        }
     }
 
     TextButton(
@@ -424,9 +437,18 @@ private fun PurchasePremiumContent(
         Text(stringResource(Res.string.premium_restore))
     }
 
+    if (state.showClockTamperWarning) {
+        Text(
+            text = stringResource(Res.string.premium_clock_tamper_warning),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+
     TextButton(
         onClick = onWatchAd,
-        enabled = !state.purchasing,
+        enabled = state.canWatchRewardedAd,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(stringResource(Res.string.premium_watch_ad))
