@@ -95,10 +95,10 @@ import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
 import io.flatzen.viewmodel.UiDistrict
-import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterEffect
 import io.flatzen.viewmodel.filter.FilterScreenAction
+import io.flatzen.viewmodel.filter.FilterState
 import io.flatzen.viewmodel.filter.LocationUiFilter
 import io.flatzen.viewmodel.filter.MapAreasUi
 import io.flatzen.viewmodel.filter.Room
@@ -115,13 +115,13 @@ import io.flatzen.widgets.SortOptionRadioButtons
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import io.flatzen.widgets.dialogs.SystemSettingsDialog
-import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -142,7 +142,10 @@ fun FilterScreen() {
             pendingToastKey = null
         }
     }
-    var currentFilters by remember(state.filters) { mutableStateOf(state.filters) }
+    val filters = state.filters
+    val updateFilter: (FilterState) -> Unit = { newFilters ->
+        filterContainer.intent(FilterScreenAction.UpdateFilter(newFilters, doNetworkCall = false))
+    }
 
     val factory = rememberPermissionsControllerFactory()
     val permissionsController: PermissionsController = remember(factory) { factory.createPermissionsController() }
@@ -161,7 +164,7 @@ fun FilterScreen() {
         }
     }
     val propertyTypes: List<SingleChoiceEntity<CommercialPropertyType>> =
-        currentFilters.commercial.commercialPropertyType?.mapNotNull {
+        filters.commercial.commercialPropertyType?.mapNotNull {
             it.commercialPropertyType?.let { propertyType ->
                 SingleChoiceEntity(
                     title = it.commercialPropertyTypeName?.let { key -> localizedStringResource(key) }.orEmpty(),
@@ -169,14 +172,8 @@ fun FilterScreen() {
                 )
             }
         } ?: listOf()
-    val selectedCommercialPropertyType: CommercialPropertyTypeInfo? by remember(state.filters) {
-        val selectedItem = state.filters.commercial.commercialPropertyType?.find { it.selected }
-        mutableStateOf(selectedItem)
-    }
-
-    LaunchedEffect(currentFilters) {
-        filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, false))
-    }
+    val selectedCommercialPropertyType =
+        filters.commercial.commercialPropertyType?.find { it.selected }
 
     LaunchedEffectOnce(Unit) {
         // Track screen view through MviAction
@@ -245,14 +242,16 @@ fun FilterScreen() {
                         )
                     )
                 ),
-                selectedItem = currentFilters.lastCommercialAdType,
+                selectedItem = filters.lastCommercialAdType,
                 onDismissRequest = {
                     showCommercialAdTypeDialog = false
                 },
                 onSelected = { adType ->
-                    currentFilters = currentFilters.copy(
-                        adType = adType,
-                        lastCommercialAdType = adType
+                    updateFilter(
+                        filters.copy(
+                            adType = adType,
+                            lastCommercialAdType = adType
+                        )
                     )
                 }
             )
@@ -285,10 +284,10 @@ fun FilterScreen() {
 
             // Продажа или Аренда
             RentSaleButtons(
-                selectedAdType = state.filters.adType,
-                lastCommercialAdType = state.filters.lastCommercialAdType,
+                selectedAdType = filters.adType,
+                lastCommercialAdType = filters.lastCommercialAdType,
                 onClick = {
-                    currentFilters = currentFilters.copy(adType = it)
+                    updateFilter(filters.copy(adType = it))
                 },
                 fewTypeInOneClick = {
                     if (it.isCommercial) {
@@ -301,7 +300,7 @@ fun FilterScreen() {
 
             // Сортировка
             FilterSectionTitle(title = stringResource(Res.string.filter_sorting))
-            SortOptionRadioButtons(state.filters.sortOption) { sortOption ->
+            SortOptionRadioButtons(filters.sortOption) { sortOption ->
                 filterContainer.intent(FilterScreenAction.UpdateSortOption(sortOption))
             }
             Spacer(Modifier.height(8.dp))
@@ -311,33 +310,42 @@ fun FilterScreen() {
             Card {
                 LocationItem(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    selectedCity = state.filters.location?.selectedCity?.displayName,
-                    selectedMetro = state.filters.getSelectedMetroStation(),
-                    selectedAddress = state.filters.getSelectedAddress(),
-                    selectedUserAreas = state.filters.userMapAreas?.filter { it.isActive },
-                    selectedDistricts = state.filters.districtsArea?.filter { it.isChecked },
-                    isLocationFilterActive = currentFilters.isLocationFilterActive(),
+                    selectedCity = filters.location?.selectedCity?.displayName,
+                    selectedMetro = filters.getSelectedMetroStation(),
+                    selectedAddress = filters.getSelectedAddress(),
+                    selectedUserAreas = filters.userMapAreas?.filter { it.isActive },
+                    selectedDistricts = filters.districtsArea?.filter { it.isChecked },
+                    isLocationFilterActive = filters.isLocationFilterActive(),
                     onOpenLocation = {
                         filterContainer.intent(FilterScreenAction.OpenLocation)
                     }
                 )
             }
 
-            if(currentFilters.adType != AdType.DAILY) {
-                AppSwitch(label = stringResource(Res.string.filter_owner_only), state = currentFilters.fromOwnerOnly) {
-                    currentFilters = currentFilters.copy(fromOwnerOnly = it)
+            if (filters.adType != AdType.DAILY) {
+                AppSwitch(
+                    label = stringResource(Res.string.filter_owner_only),
+                    state = filters.fromOwnerOnly
+                ) {
+                    updateFilter(filters.copy(fromOwnerOnly = it))
                 }
             }
-            AppSwitch(label = stringResource(Res.string.filter_photo_only), state = currentFilters.withPhotoOnly) {
-                currentFilters = currentFilters.copy(withPhotoOnly = it)
+            AppSwitch(
+                label = stringResource(Res.string.filter_photo_only),
+                state = filters.withPhotoOnly
+            ) {
+                updateFilter(filters.copy(withPhotoOnly = it))
             }
-            if (currentFilters.adType == AdType.RENT) {
-                AppSwitch(label = stringResource(Res.string.filter_room_only), state = currentFilters.roomOnly) {
-                    currentFilters = currentFilters.copy(roomOnly = it)
+            if (filters.adType == AdType.RENT) {
+                AppSwitch(
+                    label = stringResource(Res.string.filter_room_only),
+                    state = filters.roomOnly
+                ) {
+                    updateFilter(filters.copy(roomOnly = it))
                 }
             }
 
-            if (currentFilters.adType.isCommercial.not() && currentFilters.roomOnly.not()) {
+            if (filters.adType.isCommercial.not() && filters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
                 FilterSectionTitle(title = stringResource(Res.string.filter_rooms_in_apartment))
                 Spacer(Modifier.height(6.dp))
@@ -345,41 +353,45 @@ fun FilterScreen() {
                     Room.entries.forEach {
                         val room = it.displayName.toInt()
                         FilterChip(
-                            selected = currentFilters.rooms.contains(room),
+                            selected = filters.rooms.contains(room),
                             onClick = {
-                                val rooms = currentFilters.rooms.toMutableSet()
+                                val rooms = filters.rooms.toMutableSet()
                                 if (rooms.contains(room)) rooms.remove(room) else rooms.add(
                                     room
                                 )
-                                currentFilters = currentFilters.copy(rooms = rooms)
+                                updateFilter(filters.copy(rooms = rooms))
                             },
                             label = { Text(it.displayName) }
                         )
                     }
                 }
-            } else if(currentFilters.roomOnly.not()) {
+            } else if (filters.roomOnly.not()) {
                 Spacer(Modifier.height(6.dp))
                 NumberRange(
                     title = stringResource(Res.string.filter_rooms_count),
-                    rangeFrom = currentFilters.commercial.roomRange?.fromRange?.toInt()?.toString()
+                    rangeFrom = filters.commercial.roomRange?.fromRange?.toInt()?.toString()
                         .orEmpty(),
                     fromOnChange = {
-                        currentFilters = currentFilters.copy(
-                            commercial = currentFilters.commercial.copy(
-                                roomRange = currentFilters.commercial.roomRange?.copy(
-                                    fromRange = it.toDoubleOrNull()
-                                ) ?: FromToRange(fromRange = it.toDoubleOrNull())
+                        updateFilter(
+                            filters.copy(
+                                commercial = filters.commercial.copy(
+                                    roomRange = filters.commercial.roomRange?.copy(
+                                        fromRange = it.toDoubleOrNull()
+                                    ) ?: FromToRange(fromRange = it.toDoubleOrNull())
+                                )
                             )
                         )
                     },
-                    rangeTo = currentFilters.commercial.roomRange?.toRange?.toInt()?.toString()
+                    rangeTo = filters.commercial.roomRange?.toRange?.toInt()?.toString()
                         .orEmpty(),
                     toOnChange = {
-                        currentFilters = currentFilters.copy(
-                            commercial = currentFilters.commercial.copy(
-                                roomRange = currentFilters.commercial.roomRange?.copy(
-                                    toRange = it.toDoubleOrNull()
-                                ) ?: FromToRange(toRange = it.toDoubleOrNull())
+                        updateFilter(
+                            filters.copy(
+                                commercial = filters.commercial.copy(
+                                    roomRange = filters.commercial.roomRange?.copy(
+                                        toRange = it.toDoubleOrNull()
+                                    ) ?: FromToRange(toRange = it.toDoubleOrNull())
+                                )
                             )
                         )
                     }
@@ -388,7 +400,7 @@ fun FilterScreen() {
 
             Spacer(Modifier.height(10.dp))
 
-            if (currentFilters.adType.isCommercial) {
+            if (filters.adType.isCommercial) {
                 Spacer(Modifier.height(8.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -416,12 +428,11 @@ fun FilterScreen() {
                 Spacer(Modifier.height(8.dp))
             }
 
-            if(currentFilters.adType == AdType.DAILY) {
+            if (filters.adType == AdType.DAILY) {
                 var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
-                // Get the current booking dates from the filter
-                val startDateMillis = currentFilters.bookingDatesFilter?.dateFrom?.toEpochMilliseconds()
-                val endDateMillis = currentFilters.bookingDatesFilter?.dateTo?.toEpochMilliseconds()
+                val startDateMillis = filters.bookingDatesFilter?.dateFrom?.toEpochMilliseconds()
+                val endDateMillis = filters.bookingDatesFilter?.dateTo?.toEpochMilliseconds()
                 
                 // Format the date range for display
                 val formattedDateRange = if (startDateMillis != null && endDateMillis != null) {
@@ -455,7 +466,7 @@ fun FilterScreen() {
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     IconButton(onClick = {
-                        currentFilters = currentFilters.copy(bookingDatesFilter = null)
+                        updateFilter(filters.copy(bookingDatesFilter = null))
                     }) {
                         Icon(Icons.Default.Clear, contentDescription = stringResource(Res.string.delete))
                     }
@@ -467,13 +478,12 @@ fun FilterScreen() {
                         onDateRangeSelected = { dateRange ->
                             val (startDate, endDate) = dateRange
                             if (startDate != null && endDate != null) {
-                                // Update the filter with the selected dates
                                 val bookingDatesFilter = BookingDatesFilter(
                                     dateFrom = Instant.fromEpochMilliseconds(startDate),
                                     dateTo = Instant.fromEpochMilliseconds(endDate),
                                     timeZone = TimeZone.currentSystemDefault()
                                 )
-                                currentFilters = currentFilters.copy(bookingDatesFilter = bookingDatesFilter)
+                                updateFilter(filters.copy(bookingDatesFilter = bookingDatesFilter))
                             }
                             showDatePicker = false
                         },
@@ -484,56 +494,64 @@ fun FilterScreen() {
                 Spacer(Modifier.height(12.dp))
             }
 
-            val currencyText = if(currentFilters.adType == AdType.DAILY) "(BYN)" else "($)"
-            val priceTitle = if(currentFilters.adType == AdType.DAILY) {
+            val currencyText = if (filters.adType == AdType.DAILY) "(BYN)" else "($)"
+            val priceTitle = if (filters.adType == AdType.DAILY) {
                 stringResource(Res.string.filter_price_daily, currencyText)
             } else {
                 stringResource(Res.string.filter_price, currencyText)
             }
             NumberRange(
                 title = priceTitle,
-                rangeFrom = currentFilters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
+                rangeFrom = filters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
-                    currentFilters = currentFilters.copy(
-                        priceFull = currentFilters.priceFull?.copy(
-                            priceFrom = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceFrom = it.toDoubleOrNull()
-                        )
-                    )
-                },
-                rangeTo = currentFilters.priceFull?.priceTo?.asIntPrice().orEmpty(),
-                toOnChange = {
-                    currentFilters = currentFilters.copy(
-                        priceFull = currentFilters.priceFull?.copy(
-                            priceTo = it.toDoubleOrNull()
-                        ) ?: Price(
-                            priceTo = it.toDoubleOrNull()
-                        )
-                    )
-                }
-            )
-            if(currentFilters.adType != AdType.DAILY) {
-                Spacer(Modifier.height(10.dp))
-                NumberRange(
-                    title = stringResource(Res.string.filter_price_per_square, currencyText),
-                    rangeFrom = currentFilters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
-                    fromOnChange = {
-                        currentFilters = currentFilters.copy(
-                            pricePerSquare = currentFilters.pricePerSquare?.copy(
+                    updateFilter(
+                        filters.copy(
+                            priceFull = filters.priceFull?.copy(
                                 priceFrom = it.toDoubleOrNull()
                             ) ?: Price(
                                 priceFrom = it.toDoubleOrNull()
                             )
                         )
-                    },
-                    rangeTo = currentFilters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
-                    toOnChange = {
-                        currentFilters = currentFilters.copy(
-                            pricePerSquare = currentFilters.pricePerSquare?.copy(
+                    )
+                },
+                rangeTo = filters.priceFull?.priceTo?.asIntPrice().orEmpty(),
+                toOnChange = {
+                    updateFilter(
+                        filters.copy(
+                            priceFull = filters.priceFull?.copy(
                                 priceTo = it.toDoubleOrNull()
                             ) ?: Price(
                                 priceTo = it.toDoubleOrNull()
+                            )
+                        )
+                    )
+                }
+            )
+            if (filters.adType != AdType.DAILY) {
+                Spacer(Modifier.height(10.dp))
+                NumberRange(
+                    title = stringResource(Res.string.filter_price_per_square, currencyText),
+                    rangeFrom = filters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
+                    fromOnChange = {
+                        updateFilter(
+                            filters.copy(
+                                pricePerSquare = filters.pricePerSquare?.copy(
+                                    priceFrom = it.toDoubleOrNull()
+                                ) ?: Price(
+                                    priceFrom = it.toDoubleOrNull()
+                                )
+                            )
+                        )
+                    },
+                    rangeTo = filters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
+                    toOnChange = {
+                        updateFilter(
+                            filters.copy(
+                                pricePerSquare = filters.pricePerSquare?.copy(
+                                    priceTo = it.toDoubleOrNull()
+                                ) ?: Price(
+                                    priceTo = it.toDoubleOrNull()
+                                )
                             )
                         )
                     }
@@ -543,23 +561,27 @@ fun FilterScreen() {
             Spacer(Modifier.height(10.dp))
             NumberRange(
                 title = stringResource(Res.string.filter_area),
-                rangeFrom = currentFilters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
+                rangeFrom = filters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
-                    currentFilters = currentFilters.copy(
-                        totalArea = currentFilters.totalArea?.copy(
-                            fromRange = it.toDoubleOrNull()
-                        ) ?: FromToRange(
-                            fromRange = it.toDoubleOrNull()
+                    updateFilter(
+                        filters.copy(
+                            totalArea = filters.totalArea?.copy(
+                                fromRange = it.toDoubleOrNull()
+                            ) ?: FromToRange(
+                                fromRange = it.toDoubleOrNull()
+                            )
                         )
                     )
                 },
-                rangeTo = currentFilters.totalArea?.toRange?.toInt()?.toString().orEmpty(),
+                rangeTo = filters.totalArea?.toRange?.toInt()?.toString().orEmpty(),
                 toOnChange = {
-                    currentFilters = currentFilters.copy(
-                        totalArea = currentFilters.totalArea?.copy(
-                            toRange = it.toDoubleOrNull()
-                        ) ?: FromToRange(
-                            toRange = it.toDoubleOrNull()
+                    updateFilter(
+                        filters.copy(
+                            totalArea = filters.totalArea?.copy(
+                                toRange = it.toDoubleOrNull()
+                            ) ?: FromToRange(
+                                toRange = it.toDoubleOrNull()
+                            )
                         )
                     )
                 }
@@ -590,10 +612,6 @@ fun FilterScreen() {
                 filterContainer.intent(FilterScreenAction.NotificationEnable(enabled))
             },
             onSave = { notificationEnabled ->
-                currentFilters = currentFilters.copy(
-                    name = state.saveDialogState.filterName,
-                    isNotificationEnabled = notificationEnabled
-                )
                 toggleNotificationsContainer.intent(
                     ToggleNotificationsIntent.ToggleNotifications(
                         filterName = state.saveDialogState.filterName,

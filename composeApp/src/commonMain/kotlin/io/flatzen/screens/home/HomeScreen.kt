@@ -150,7 +150,10 @@ fun HomeScreen(
 
     val filterContainer: FilterContainer = container()
     val filterScreenState by filterContainer.store.subscribe { }
-    var currentFilters by remember(filterScreenState.filters) { mutableStateOf(filterScreenState.filters) }
+    val filters = filterScreenState.filters
+    val updateFilters: (FilterState) -> Unit = { newFilters ->
+        filterContainer.intent(FilterScreenAction.UpdateFilter(newFilters, doNetworkCall = true))
+    }
 
     val localDensity = LocalDensity.current
     var topAppBarSize by remember { mutableStateOf(DpSize.Zero) }
@@ -165,10 +168,6 @@ fun HomeScreen(
     val premiumUpsell = rememberPremiumUpsellState(
         navigateToPremium = { flatSearchContainer.store.intent(FlatListIntent.OpenPremium) },
     )
-
-    LaunchedEffect(currentFilters) {
-        filterContainer.intent(FilterScreenAction.UpdateFilter(currentFilters, true))
-    }
 
     val firstVisibleItemIndex by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex }
@@ -274,7 +273,7 @@ fun HomeScreen(
 
                 TextButton(
                     onClick = {
-                        currentFilters = FilterState()
+                        updateFilters(FilterState())
                     }
                 ) {
                     Text(stringResource(Res.string.reset))
@@ -284,7 +283,7 @@ fun HomeScreen(
             when {
                 state.isLoading && state.isLoadingMore.not() -> LoadingContent(
                     modifier = Modifier.padding(top = topAppBarHeight),
-                    filterState = currentFilters,
+                    filterState = filters,
                     isListView = state.isListView,
                     onToggleView = {
                         flatSearchContainer.store.intent(FlatListIntent.ToggleView)
@@ -299,10 +298,8 @@ fun HomeScreen(
                     ) {
                         topContentHeader(
                             isListView = state.isListView,
-                            filterState = currentFilters,
-                            updateFilters = {
-                                currentFilters = it
-                            },
+                            filterState = filters,
+                            updateFilters = updateFilters,
                             onToggleView = {
                                 flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                             }
@@ -315,7 +312,7 @@ fun HomeScreen(
                             )
                             Spacer(Modifier.height(16.dp))
                             Text(
-                                text = currentFilters.getActiveFiltersText { key ->
+                                text = filters.getActiveFiltersText { key ->
                                     filterSummaryStrings[key] ?: key.name
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
@@ -362,10 +359,8 @@ fun HomeScreen(
                         topContent = {
                             topContentHeader(
                                 isListView = state.isListView,
-                                filterState = currentFilters,
-                                updateFilters = {
-                                    currentFilters = it
-                                },
+                                filterState = filters,
+                                updateFilters = updateFilters,
                                 onToggleView = {
                                     flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                                 },
@@ -414,9 +409,9 @@ fun HomeScreen(
 
             if (showSortSheet) {
                 SortBottomSheet(
-                    selectedSortOption = currentFilters.sortOption,
+                    selectedSortOption = filters.sortOption,
                     onOptionSelected = { sortOption: FlatSort ->
-                        currentFilters = currentFilters.copy(sortOption = sortOption)
+                        updateFilters(filters.copy(sortOption = sortOption))
                     },
                     onDismiss = { showSortSheet = false }
                 )
@@ -437,14 +432,16 @@ fun HomeScreen(
                             )
                         )
                     ),
-                    selectedItem = currentFilters.lastCommercialAdType,
+                    selectedItem = filters.lastCommercialAdType,
                     onDismissRequest = {
                         showCommercialDialog = false
                     },
                     onSelected = { adType ->
-                        currentFilters = currentFilters.copy(
-                            adType = adType,
-                            lastCommercialAdType = adType
+                        updateFilters(
+                            filters.copy(
+                                adType = adType,
+                                lastCommercialAdType = adType
+                            )
                         )
                     }
                 )
