@@ -16,6 +16,7 @@ interface UserPreferencesRepository {
     suspend fun setThemeMode(themeMode: ThemeMode)
     suspend fun setUser(deviceDocumentResponse: DeviceDocumentResponse)
     suspend fun updateReferralStats(referralStats: ReferralStatsResponse?)
+    suspend fun setSwipeOnboardingCompleted(completed: Boolean)
 }
 
 class UserPreferencesRepositoryImpl(
@@ -51,5 +52,12 @@ class UserPreferencesRepositoryImpl(
 
     override suspend fun updateReferralStats(referralStats: ReferralStatsResponse?) {
         userPreferencesDao.updateReferralStats(referralStats)
+    }
+
+    override suspend fun setSwipeOnboardingCompleted(completed: Boolean) {
+        val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
+        userPreferencesDao.saveUserPreferences(
+            preferences.copy(swipeOnboardingCompleted = completed)
+        )
     }
 }

@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
@@ -23,12 +24,14 @@ import pro.respawn.flowmvi.dsl.store
 import pro.respawn.flowmvi.plugins.reduce
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
+import repository.userpreferences.UserPreferencesRepository
 
 private typealias SwipeCtx = PipelineContext<SwipeScreenState, SwipeIntent, SwipeAction>
 
 class SwipeContainer(
     private val flatSearchContainer: FlatSearchContainer,
     private val filterRepository: FilterRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val userTierProvider: UserTierProvider,
     private val monetizationRemoteConfig: MonetizationRemoteConfig,
     private val adService: AdService,
@@ -63,15 +66,26 @@ class SwipeContainer(
                 is SwipeIntent.OpenDetail -> handleOpenDetail(intent.flat)
                 SwipeIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
                 SwipeIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
+                SwipeIntent.CompleteOnboarding -> handleCompleteOnboarding()
             }
         }
     }
 
     private suspend fun SwipeCtx.handleScreenVisible() {
+        val onboardingDone = userPreferencesRepository.getUserPreferences()
+            .firstOrNull()
+            ?.swipeOnboardingCompleted == true
+        updateState { copy(showOnboarding = !onboardingDone) }
+
         pendingInitialSearch = true
         flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
         // Warm native fill as soon as swipe opens; show-position logic stays unchanged.
         prefetchSwipeNativeAds()
+    }
+
+    private suspend fun SwipeCtx.handleCompleteOnboarding() {
+        userPreferencesRepository.setSwipeOnboardingCompleted(completed = true)
+        updateState { copy(showOnboarding = false) }
     }
 
     private suspend fun SwipeCtx.handleSyncListState(listState: FlatListScreenState) {
