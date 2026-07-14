@@ -80,6 +80,7 @@ val flatSearchPresentationModule = module {
         SwipeContainer(
             flatSearchContainer = get(),
             filterRepository = get(),
+            userPreferencesRepository = get(),
             userTierProvider = get(),
             monetizationRemoteConfig = get(),
             adService = get(),

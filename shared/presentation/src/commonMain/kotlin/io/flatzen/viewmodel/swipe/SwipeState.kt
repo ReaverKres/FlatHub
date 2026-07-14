@@ -53,10 +53,11 @@ data class SwipeScreenState(
     val adAnchorFlatKey: String? = null,
     val undoStack: ImmutableList<SwipeUndoEntry> = persistentListOf(),
     val cityName: String = "",
+    val showOnboarding: Boolean = false,
 ) : MVIState {
     val isSearchLoading: Boolean get() = isLoading || isRefreshing
     val flatDeckSize: Int get() = deck.count { it is SwipeDeckItem.Flat }
-    val showUndo: Boolean get() = undoStack.isNotEmpty()
+    val showUndo: Boolean get() = undoStack.isNotEmpty() && !showOnboarding
 
     companion object {
         val Initial = SwipeScreenState()
@@ -75,6 +76,7 @@ sealed interface SwipeIntent : MVIIntent {
     data class OpenDetail(val flat: UiFlat) : SwipeIntent
     data object OpenFilter : SwipeIntent
     data object OpenPremium : SwipeIntent
+    data object CompleteOnboarding : SwipeIntent
 }
 
 sealed interface SwipeAction : MVIAction {

@@ -352,8 +352,9 @@ fun FilterScreen() {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Room.entries.forEach {
                         val room = it.displayName.toInt()
+                        val isSelected = filters.rooms.contains(room)
                         FilterChip(
-                            selected = filters.rooms.contains(room),
+                            selected = isSelected,
                             onClick = {
                                 val rooms = filters.rooms.toMutableSet()
                                 if (rooms.contains(room)) rooms.remove(room) else rooms.add(
@@ -361,7 +362,25 @@ fun FilterScreen() {
                                 )
                                 updateFilter(filters.copy(rooms = rooms))
                             },
-                            label = { Text(it.displayName) }
+                            label = {
+                                Text(
+                                    text = it.displayName,
+                                    fontWeight = if (isSelected) {
+                                        FontWeight.SemiBold
+                                    } else {
+                                        FontWeight.Normal
+                                    },
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                selectedBorderColor = MaterialTheme.colorScheme.primary,
+                            ),
                         )
                     }
                 }

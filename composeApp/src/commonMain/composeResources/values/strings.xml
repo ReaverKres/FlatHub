@@ -191,7 +191,7 @@
     <string name="premium_recommended">Рекомендуем</string>
     <string name="premium_subscribe">Оформить подписку</string>
     <string name="premium_restore">Восстановить покупки</string>
-    <string name="premium_watch_ad">Смотреть рекламу — 1 час Premium</string>
+    <string name="premium_watch_ad">Смотреть рекламу — 1 час Premium бесплатно</string>
     <string name="premium_upsell_banner">Квартиры с задержкой 1 ч — в Premium сразу</string>
     <string name="premium_location_toast">Фильтры местоположения без Premium недоступны</string>
     <string name="premium_menu">Premium</string>
@@ -222,6 +222,11 @@
     <string name="premium_error_restore_failed">Не удалось восстановить покупки</string>
     <string name="premium_error_rewarded_activated">Premium на 1 час активирован</string>
     <string name="swipe_ad_label">Реклама</string>
+    <string name="swipe_onboarding_title">Как это работает</string>
+    <string name="swipe_onboarding_swipe">Смахните карточку влево, если объявление не подходит, и вправо — чтобы сохранить в избранное.</string>
+    <string name="swipe_onboarding_photo">Нажмите слева на фото, чтобы вернуться к предыдущему, справа — показать следующее.</string>
+    <string name="swipe_onboarding_detail">Нажмите по центру карточки, чтобы открыть объявление целиком.</string>
+    <string name="swipe_onboarding_got_it">Понятно</string>
     <string name="home_ad_label">реклама</string>
     <string name="premium_error_ad_unavailable">Реклама сейчас недоступна</string>
     <string name="premium_error_ad_disabled">Реклама отключена</string>

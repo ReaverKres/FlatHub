@@ -226,15 +226,25 @@ fun SwipeScreen() {
             }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(fabMargin),
-        ) {
-            FilterActionButton(
-                onClick = { swipeContainer.store.intent(SwipeIntent.OpenFilter) },
-                isAnyFilterApplied = state.isAnyFilterApplied,
+        if (!state.showOnboarding) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(fabMargin),
+            ) {
+                FilterActionButton(
+                    onClick = { swipeContainer.store.intent(SwipeIntent.OpenFilter) },
+                    isAnyFilterApplied = state.isAnyFilterApplied,
+                )
+            }
+        }
+
+        if (state.showOnboarding) {
+            SwipeOnboardingOverlay(
+                onComplete = {
+                    swipeContainer.store.intent(SwipeIntent.CompleteOnboarding)
+                },
             )
         }
     }

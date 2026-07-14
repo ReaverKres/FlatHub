@@ -13,4 +13,5 @@ data class UserPreferences(
     val isListView: Boolean = false, // false = grid, true = list
     val deviceDocumentResponse: DeviceDocumentResponse? = null,
     val themeMode: String? = null, // ThemeMode.name: SYSTEM | LIGHT | DARK
+    val swipeOnboardingCompleted: Boolean = false,
 )
