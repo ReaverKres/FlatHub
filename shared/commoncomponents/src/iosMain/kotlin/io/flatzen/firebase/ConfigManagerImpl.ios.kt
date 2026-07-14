@@ -11,6 +11,11 @@ import kotlinx.serialization.json.Json
 class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
     override var connectionTimeout: Long = 3
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
+
     override fun init() {
         RemoteConfigNativeHandlers.initHandler?.invoke(connectionTimeout)
     }
@@ -66,15 +71,15 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
         if (jsonString.isEmpty()) return null
         return when (configField) {
             ConfigFields.MoreConfigData -> {
-                runCatching { Json.decodeFromString<MoreConfigData>(jsonString) as T }.getOrNull()
+                runCatching { json.decodeFromString<MoreConfigData>(jsonString) as T }.getOrNull()
             }
 
             ConfigFields.FaqConfigData -> {
-                runCatching { Json.decodeFromString<FaqConfigData>(jsonString) as T }.getOrNull()
+                runCatching { json.decodeFromString<FaqConfigData>(jsonString) as T }.getOrNull()
             }
 
             ConfigFields.MonetizationConfigData -> {
-                runCatching { Json.decodeFromString<MonetizationConfigData>(jsonString) as T }.getOrNull()
+                runCatching { json.decodeFromString<MonetizationConfigData>(jsonString) as T }.getOrNull()
             }
 
             else -> null

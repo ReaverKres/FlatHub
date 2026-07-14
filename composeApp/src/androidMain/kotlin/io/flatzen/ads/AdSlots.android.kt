@@ -1,8 +1,10 @@
 package io.flatzen.ads
 
 import android.app.Activity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -98,7 +100,10 @@ actual fun NativeAdSlot(
     val hideUntilLoaded = onAdLoadResult != null
     val activity = LocalActivity.current
     val adService = koinInject<AdService>()
-    val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
+    val colorScheme = MaterialTheme.colorScheme
+    val backgroundColor = colorScheme.surface.toArgb()
+    val titleTextColor = colorScheme.onSurface.toArgb()
+    val bodyTextColor = colorScheme.onSurfaceVariant.toArgb()
 
     if (activity == null || !adService.isInitialized() || placement.isBlank()) {
         if (hideUntilLoaded) {
@@ -215,7 +220,8 @@ actual fun NativeAdSlot(
         },
         update = { container ->
             nativeLoadTick
-            val nativeView = container.tag as? android.view.View ?: return@AndroidView
+            container.setBackgroundColor(backgroundColor)
+            val nativeView = container.tag as? View ?: return@AndroidView
             val registered = registerNativeAd(
                 activity = activity,
                 view = nativeView,
@@ -223,6 +229,11 @@ actual fun NativeAdSlot(
                 batchId = batchId,
                 slotIndex = slotIndex,
                 batchSize = effectiveBatchSize,
+            )
+            applyNativeAdThemeColors(
+                root = nativeView,
+                titleTextColor = titleTextColor,
+                bodyTextColor = bodyTextColor,
             )
             if (registered) {
                 if (loadState != NativeAdSlotState.Loaded) {
@@ -240,6 +251,34 @@ actual fun NativeAdSlot(
             }
         },
     )
+}
+
+/**
+ * Appodeal template TextViews often keep dark-theme (near-white) colors.
+ * Re-tint them to match the current Material surface contrast.
+ */
+private fun applyNativeAdThemeColors(
+    root: View,
+    titleTextColor: Int,
+    bodyTextColor: Int,
+) {
+    fun View.walk(isRoot: Boolean = false) {
+        when (this) {
+            is TextView -> {
+                val text = text?.toString().orEmpty()
+                val useBodyColor = !isRoot &&
+                        (text.length > 48 || lineCount > 1 || textSize < 16f)
+                setTextColor(if (useBodyColor) bodyTextColor else titleTextColor)
+            }
+
+            is ViewGroup -> {
+                for (i in 0 until childCount) {
+                    getChildAt(i).walk(isRoot = false)
+                }
+            }
+        }
+    }
+    root.walk(isRoot = true)
 }
 
 private fun showMrecIfReady(activity: Activity, placement: String) {

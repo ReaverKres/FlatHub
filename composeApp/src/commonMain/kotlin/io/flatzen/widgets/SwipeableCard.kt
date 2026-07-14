@@ -18,6 +18,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 private const val EXIT_ANIMATION_MS = 220
 private const val EXIT_DISTANCE_FACTOR = 1.35f
@@ -28,8 +29,14 @@ private const val EXIT_DISTANCE_FACTOR = 1.35f
  * When [enabled] is false the card stays in the stack without drag gestures
  * (so promoting a back card to front does not remount its content).
  *
- * Dismiss callbacks fire only after the fly-out animation finishes, so the
- * parent can keep the card mounted until it is fully off-screen.
+ * [onSwipeWillDismiss] fires once when the drag first crosses the dismiss
+ * threshold (before the fly-out animation), so the parent can insert the next
+ * deck card (e.g. an ad) behind this one while the gesture is still in progress.
+ * [onSwipeDismissCancelled] fires if the user returns below the threshold or
+ * cancels the gesture after will-dismiss was notified.
+ *
+ * Dismiss result callbacks ([onSwipedLeft]/[onSwipedRight]) fire only after the
+ * fly-out animation finishes.
  */
 @Composable
 fun SwipeableCard(
@@ -38,6 +45,7 @@ fun SwipeableCard(
     onSwipedLeft: () -> Unit,
     onSwipedRight: () -> Unit,
     onSwipeWillDismiss: () -> Unit = {},
+    onSwipeDismissCancelled: () -> Unit = {},
     onSwipeProgress: (Float) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -61,25 +69,52 @@ fun SwipeableCard(
                 .then(
                     if (enabled) {
                         Modifier.pointerInput(screenWidthPx, exitDistance) {
+                            var willDismissNotified = false
+
+                            fun notifyWillDismissIfNeeded(absOffset: Float) {
+                                val crossed = absOffset >= threshold
+                                when {
+                                    crossed && !willDismissNotified -> {
+                                        willDismissNotified = true
+                                        onSwipeWillDismiss()
+                                    }
+
+                                    !crossed && willDismissNotified -> {
+                                        willDismissNotified = false
+                                        onSwipeDismissCancelled()
+                                    }
+                                }
+                            }
+
                             detectDragGestures(
                                 onDragEnd = {
                                     scope.launch {
                                         when {
                                             offsetX.value > threshold -> {
                                                 onSwipeProgress(1f)
-                                                onSwipeWillDismiss()
+                                                if (!willDismissNotified) {
+                                                    willDismissNotified = true
+                                                    onSwipeWillDismiss()
+                                                }
                                                 offsetX.animateTo(exitDistance, exitSpec)
                                                 onSwipedRight()
                                             }
 
                                             offsetX.value < -threshold -> {
                                                 onSwipeProgress(-1f)
-                                                onSwipeWillDismiss()
+                                                if (!willDismissNotified) {
+                                                    willDismissNotified = true
+                                                    onSwipeWillDismiss()
+                                                }
                                                 offsetX.animateTo(-exitDistance, exitSpec)
                                                 onSwipedLeft()
                                             }
 
                                             else -> {
+                                                if (willDismissNotified) {
+                                                    willDismissNotified = false
+                                                    onSwipeDismissCancelled()
+                                                }
                                                 coroutineScope {
                                                     launch {
                                                         offsetX.animateTo(
@@ -101,6 +136,10 @@ fun SwipeableCard(
                                 },
                                 onDragCancel = {
                                     scope.launch {
+                                        if (willDismissNotified) {
+                                            willDismissNotified = false
+                                            onSwipeDismissCancelled()
+                                        }
                                         coroutineScope {
                                             launch { offsetX.animateTo(0f) }
                                             launch { offsetY.animateTo(0f) }
@@ -113,6 +152,7 @@ fun SwipeableCard(
                                     scope.launch {
                                         offsetX.snapTo(offsetX.value + dragAmount.x)
                                         offsetY.snapTo(offsetY.value + dragAmount.y * 0.35f)
+                                        notifyWillDismissIfNeeded(abs(offsetX.value))
                                         onSwipeProgress(
                                             (offsetX.value / threshold).coerceIn(-1.5f, 1.5f),
                                         )

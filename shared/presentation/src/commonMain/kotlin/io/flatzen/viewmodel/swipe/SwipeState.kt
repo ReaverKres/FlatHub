@@ -67,6 +67,7 @@ sealed interface SwipeIntent : MVIIntent {
     data object ScreenVisible : SwipeIntent
     data class SyncListState(val listState: FlatListScreenState) : SwipeIntent
     data class BeginCardDismiss(val deckKey: String) : SwipeIntent
+    data class CancelCardDismiss(val deckKey: String) : SwipeIntent
     data class SwipeFlat(val flat: UiFlat, val outcome: SwipeOutcome) : SwipeIntent
     data object DismissAdCard : SwipeIntent
     data object UndoLastSwipe : SwipeIntent

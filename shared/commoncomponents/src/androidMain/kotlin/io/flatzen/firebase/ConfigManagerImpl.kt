@@ -17,6 +17,11 @@ import kotlinx.serialization.json.Json
 class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
     override var connectionTimeout: Long = 3
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
+
     private var remoteConfig: FirebaseRemoteConfig? = null
 
     override fun init() {
@@ -89,7 +94,7 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
         return when (configField) {
             ConfigFields.MoreConfigData -> {
                 try {
-                    Json.decodeFromString<MoreConfigData>(jsonString) as T
+                    json.decodeFromString<MoreConfigData>(jsonString) as T
                 } catch (e: Exception) {
                     print("MoreConfigData parsing exception\n ${e.localizedMessage}")
                     null
@@ -97,7 +102,7 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
             }
             ConfigFields.FaqConfigData -> {
                 try {
-                    Json.decodeFromString<FaqConfigData>(jsonString) as T
+                    json.decodeFromString<FaqConfigData>(jsonString) as T
                 } catch (e: Exception) {
                     print("FaqConfigData parsing exception\n ${e.localizedMessage}")
                     null
@@ -106,7 +111,7 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
 
             ConfigFields.MonetizationConfigData -> {
                 try {
-                    Json.decodeFromString<MonetizationConfigData>(jsonString) as T
+                    json.decodeFromString<MonetizationConfigData>(jsonString) as T
                 } catch (e: Exception) {
                     print("MonetizationConfigData parsing exception\n ${e.localizedMessage}")
                     null

@@ -44,6 +44,7 @@ class SwipeContainer(
                 SwipeIntent.ScreenVisible -> handleScreenVisible()
                 is SwipeIntent.SyncListState -> handleSyncListState(intent.listState)
                 is SwipeIntent.BeginCardDismiss -> handleBeginCardDismiss(intent.deckKey)
+                is SwipeIntent.CancelCardDismiss -> handleCancelCardDismiss(intent.deckKey)
                 is SwipeIntent.SwipeFlat -> handleSwipeFlat(intent.flat, intent.outcome)
                 SwipeIntent.DismissAdCard -> handleDismissAdCard()
                 SwipeIntent.UndoLastSwipe -> handleUndoLastSwipe()
@@ -129,6 +130,12 @@ class SwipeContainer(
                     else -> null
                 },
             ).rebuildDeck()
+        }
+    }
+
+    private suspend fun SwipeCtx.handleCancelCardDismiss(deckKey: String) {
+        updateState {
+            copy(animatingOutKeys = animatingOutKeys - deckKey).rebuildDeck()
         }
     }
 
@@ -234,11 +241,12 @@ class SwipeContainer(
     }
 
     /**
-     * After exactly (interval - 1) swipes: pre-queue ad behind the next top card.
+     * After at least (interval - 1) swipes: pre-queue ad behind the next top card.
+     * Uses >= so a delayed cooldown queue still lands behind the current front.
      */
     private fun shouldPreQueueAdOnSwipeComplete(): Boolean {
         val interval = monetizationRemoteConfig.swipeAdInterval
-        return shouldQueueAdBehindFront() && flatsSinceLastAd == interval - 1
+        return shouldQueueAdBehindFront() && flatsSinceLastAd >= interval - 1
     }
 
     private fun cancelAdCooldownJob() {

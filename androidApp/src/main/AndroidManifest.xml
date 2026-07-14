@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -44,6 +45,13 @@
                 <data android:scheme="https" android:host="flatzen.app" android:pathPrefix="/" />
             </intent-filter>
         </activity>
+
+        <!-- Pulled transitively by ad SDKs; disable auto-init without Facebook App ID -->
+        <provider
+            android:name="com.facebook.internal.FacebookInitProvider"
+            android:authorities="${applicationId}.FacebookInitProvider"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
     </application>
 
 </manifest>
