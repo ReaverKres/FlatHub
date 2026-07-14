@@ -2,15 +2,19 @@ package io.flatzen.screens.location
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,9 +29,11 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -44,10 +50,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.add
@@ -56,6 +64,10 @@ import flatzen.composeapp.generated.resources.location_address_hint
 import flatzen.composeapp.generated.resources.location_city
 import flatzen.composeapp.generated.resources.location_districts
 import flatzen.composeapp.generated.resources.location_metro
+import flatzen.composeapp.generated.resources.location_metro_any_switch
+import flatzen.composeapp.generated.resources.location_metro_line_blue
+import flatzen.composeapp.generated.resources.location_metro_line_green
+import flatzen.composeapp.generated.resources.location_metro_line_red
 import flatzen.composeapp.generated.resources.location_saved_areas
 import flatzen.composeapp.generated.resources.location_search_district
 import flatzen.composeapp.generated.resources.location_search_station
@@ -71,10 +83,13 @@ import io.flatzen.viewmodel.DistrictsIntent
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.MetroLineState
+import io.flatzen.viewmodel.filter.UiMetroStation
+import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -199,7 +214,10 @@ fun LocationScreen() {
                     Row(modifier = Modifier.padding(16.dp)) {
                         BadgedBox(badge = {
                             val count = state.filters.metroStationsState.filter { it.selected }.size
-                            if (count > 0) Badge { Text(count.toString()) }
+                            when {
+                                state.filters.withAnyMetro -> Badge()
+                                count > 0 -> Badge { Text(count.toString()) }
+                            }
                         }) {
                             Text(stringResource(Res.string.location_metro))
                         }
@@ -291,85 +309,225 @@ fun MetroSelectScreen(
 ) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     val state by filterContainer.store.subscribe { }
+    val withAnyMetro = state.filters.withAnyMetro
+    val stations = state.filters.metroStationsState
+    val queryText = query.text.lowercase()
 
-    val filteredStation = state.filters.metroStationsState.filter {
-        it.name.lowercase().contains(query.text.lowercase(), true)
-    }
+    fun stationsOf(line: MetroLineState): List<UiMetroStation> =
+        stations.filter {
+            it.line == line && it.name.lowercase().contains(queryText)
+        }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text(stringResource(Res.string.location_metro), style = MaterialTheme.typography.headlineSmall) },
+                title = {
+                    Text(
+                        stringResource(Res.string.location_metro),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            null
-                        )
+                    IconButton(onClick = {
+                        filterContainer.intent(FilterScreenAction.NavigateBack)
+                    }) {
+                        Icon(Icons.Default.ArrowBack, null)
                     }
-                }
+                },
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp)
                     .fillMaxWidth(),
-                placeholder = { Text(stringResource(Res.string.location_search_station)) }
+                placeholder = { Text(stringResource(Res.string.location_search_station)) },
+                enabled = !withAnyMetro,
             )
 
-            LazyColumn {
-                items(filteredStation) { station ->
-                    val dotColor = when (station.line) {
-                        MetroLineState.BLUE -> Color(0xFF1976D2)
-                        MetroLineState.RED -> Color(0xFFD32F2F)
-                        MetroLineState.GREEN -> Color(0xFF388E3C)
-                    }
-                    ListItem(
-                        headlineContent = {
-                            Row {
-                                Text(station.name, modifier = Modifier.weight(1f))
-                                Spacer(modifier = Modifier.height(0.dp))
-                            }
-                        },
-                        trailingContent = {
-                            Row {
-                                Checkbox(
-                                    checked = station.selected,
-                                    onCheckedChange = {
-                                        filterContainer.intent(
-                                            FilterScreenAction.UpdateMetroFilter(
-                                                station.copy(selected = it)
+            AppSwitch(
+                label = stringResource(Res.string.location_metro_any_switch),
+                state = withAnyMetro,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+            ) {
+                filterContainer.intent(FilterScreenAction.UpdateWithAnyMetro(it))
+            }
+
+            val lineItems = listOf(
+                MetroLineUi(
+                    line = MetroLineState.RED,
+                    title = stringResource(Res.string.location_metro_line_red),
+                    color = Color(0xFFD32F2F),
+                    stations = stationsOf(MetroLineState.RED),
+                    allStationsOnLine = stations.filter { it.line == MetroLineState.RED },
+                ),
+                MetroLineUi(
+                    line = MetroLineState.BLUE,
+                    title = stringResource(Res.string.location_metro_line_blue),
+                    color = Color(0xFF1976D2),
+                    stations = stationsOf(MetroLineState.BLUE),
+                    allStationsOnLine = stations.filter { it.line == MetroLineState.BLUE },
+                ),
+                MetroLineUi(
+                    line = MetroLineState.GREEN,
+                    title = stringResource(Res.string.location_metro_line_green),
+                    color = Color(0xFF388E3C),
+                    stations = stationsOf(MetroLineState.GREEN),
+                    allStationsOnLine = stations.filter { it.line == MetroLineState.GREEN },
+                ),
+            ).filter { it.stations.isNotEmpty() }
+
+            if (lineItems.isNotEmpty()) {
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 8.dp)
+                ) {
+                    val gap = 8.dp
+                    val minColumnWidth = 140.dp
+                    val columnsCount = max(
+                        1,
+                        ((maxWidth + gap) / (minColumnWidth + gap)).toInt()
+                    ).coerceAtMost(lineItems.size)
+                    val rows = lineItems.chunked(columnsCount)
+
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(gap),
+                    ) {
+                        rows.forEach { rowItems ->
+                            Row(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(gap),
+                            ) {
+                                rowItems.forEach { lineUi ->
+                                    MetroLineColumn(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight(),
+                                        title = lineUi.title,
+                                        lineColor = lineUi.color,
+                                        stations = lineUi.stations,
+                                        allStationsOnLine = lineUi.allStationsOnLine,
+                                        enabled = !withAnyMetro,
+                                        onToggleLine = { selected ->
+                                            filterContainer.intent(
+                                                FilterScreenAction.UpdateMetroLine(
+                                                    lineUi.line,
+                                                    selected
+                                                )
                                             )
-                                        )
-                                    }
-                                )
-                                Surface(
-                                    color = dotColor,
-                                    shape = CircleShape,
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .clip(CircleShape)
-                                ) {}
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                filterContainer.intent(
-                                    FilterScreenAction.UpdateMetroFilter(
-                                        station.copy(selected = station.selected.not())
+                                        },
+                                        onToggleStation = { station, selected ->
+                                            filterContainer.intent(
+                                                FilterScreenAction.UpdateMetroFilter(
+                                                    station.copy(selected = selected)
+                                                )
+                                            )
+                                        },
                                     )
-                                )
-                            },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                    Divider()
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+        }
+    }
+}
+
+private data class MetroLineUi(
+    val line: MetroLineState,
+    val title: String,
+    val color: Color,
+    val stations: List<UiMetroStation>,
+    val allStationsOnLine: List<UiMetroStation>,
+)
+
+@Composable
+private fun MetroLineColumn(
+    modifier: Modifier,
+    title: String,
+    lineColor: Color,
+    stations: List<UiMetroStation>,
+    allStationsOnLine: List<UiMetroStation>,
+    enabled: Boolean,
+    onToggleLine: (Boolean) -> Unit,
+    onToggleStation: (UiMetroStation, Boolean) -> Unit,
+) {
+    val allSelected = allStationsOnLine.isNotEmpty() && allStationsOnLine.all { it.selected }
+
+    Column(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enabled) { onToggleLine(!allSelected) }
+                .padding(vertical = 4.dp)
+        ) {
+            Checkbox(
+                checked = allSelected,
+                onCheckedChange = { onToggleLine(it) },
+                enabled = enabled,
+                colors = CheckboxDefaults.colors(checkedColor = lineColor)
+            )
+            Surface(
+                color = lineColor,
+                shape = CircleShape,
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+            ) {}
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        HorizontalDivider(color = lineColor.copy(alpha = 0.4f))
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(stations, key = { it.name }) { station ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = enabled) {
+                            onToggleStation(station, !station.selected)
+                        }
+                        .padding(vertical = 6.dp, horizontal = 2.dp)
+                ) {
+                    Checkbox(
+                        checked = station.selected,
+                        onCheckedChange = { onToggleStation(station, it) },
+                        enabled = enabled,
+                    )
+                    Text(
+                        text = station.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                HorizontalDivider()
             }
         }
     }
@@ -450,10 +608,7 @@ fun DistrictSelectScreen() {
                     items(filteredDistricts) { district ->
                         ListItem(
                             headlineContent = {
-                                Row {
-                                    Text(district.nameLocal, modifier = Modifier.weight(1f))
-                                    Spacer(modifier = Modifier.height(0.dp))
-                                }
+                                Text(district.nameLocal)
                             },
                             trailingContent = {
                                 Row {

@@ -77,6 +77,7 @@ import flatzen.composeapp.generated.resources.filter_daily
 import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_districts_prefix
 import flatzen.composeapp.generated.resources.filter_location
+import flatzen.composeapp.generated.resources.filter_metro_any
 import flatzen.composeapp.generated.resources.filter_metro_prefix
 import flatzen.composeapp.generated.resources.filter_my_filters
 import flatzen.composeapp.generated.resources.filter_name_empty_error
@@ -118,6 +119,10 @@ import flatzen.composeapp.generated.resources.location_address_hint
 import flatzen.composeapp.generated.resources.location_city
 import flatzen.composeapp.generated.resources.location_districts
 import flatzen.composeapp.generated.resources.location_metro
+import flatzen.composeapp.generated.resources.location_metro_any_switch
+import flatzen.composeapp.generated.resources.location_metro_line_blue
+import flatzen.composeapp.generated.resources.location_metro_line_green
+import flatzen.composeapp.generated.resources.location_metro_line_red
 import flatzen.composeapp.generated.resources.location_saved_areas
 import flatzen.composeapp.generated.resources.location_search_district
 import flatzen.composeapp.generated.resources.location_search_station
@@ -334,6 +339,7 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.FILTER_ACTIVE_TITLE -> Res.string.filter_active_title
         LocalizationKeys.FILTER_TYPE_PREFIX -> Res.string.filter_type_prefix
         LocalizationKeys.FILTER_METRO_PREFIX -> Res.string.filter_metro_prefix
+        LocalizationKeys.FILTER_METRO_ANY -> Res.string.filter_metro_any
         LocalizationKeys.FILTER_ADDRESS_PREFIX -> Res.string.filter_address_prefix
         LocalizationKeys.FILTER_CITY_PREFIX -> Res.string.filter_city_prefix
         LocalizationKeys.FILTER_DISTRICTS_PREFIX -> Res.string.filter_districts_prefix
@@ -374,6 +380,10 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.LOCATION_ADDRESS_HINT -> Res.string.location_address_hint
         LocalizationKeys.LOCATION_CITY -> Res.string.location_city
         LocalizationKeys.LOCATION_METRO -> Res.string.location_metro
+        LocalizationKeys.LOCATION_METRO_ANY_SWITCH -> Res.string.location_metro_any_switch
+        LocalizationKeys.LOCATION_METRO_LINE_RED -> Res.string.location_metro_line_red
+        LocalizationKeys.LOCATION_METRO_LINE_BLUE -> Res.string.location_metro_line_blue
+        LocalizationKeys.LOCATION_METRO_LINE_GREEN -> Res.string.location_metro_line_green
         LocalizationKeys.LOCATION_DISTRICTS -> Res.string.location_districts
         LocalizationKeys.LOCATION_SAVED_AREAS -> Res.string.location_saved_areas
         LocalizationKeys.LOCATION_SEARCH_STATION -> Res.string.location_search_station

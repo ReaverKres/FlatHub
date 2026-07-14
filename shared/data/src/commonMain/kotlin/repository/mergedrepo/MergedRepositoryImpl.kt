@@ -299,11 +299,17 @@ class MergedRepositoryImpl(
             }
         }
 
-        val selectedMetroStation = currentFilter.metroStations.filter { it.selected }
-        if (selectedMetroStation.isNotEmpty()) {
+        if (currentFilter.withAnyMetro) {
             resultList = resultList.filter { flat ->
-                selectedMetroStation.any { filterMetroStation ->
-                    flat.metroStation == filterMetroStation.name
+                !flat.metroStation.isNullOrBlank()
+            }
+        } else {
+            val selectedMetroStation = currentFilter.metroStations.filter { it.selected }
+            if (selectedMetroStation.isNotEmpty()) {
+                resultList = resultList.filter { flat ->
+                    selectedMetroStation.any { filterMetroStation ->
+                        flat.metroStation == filterMetroStation.name
+                    }
                 }
             }
         }

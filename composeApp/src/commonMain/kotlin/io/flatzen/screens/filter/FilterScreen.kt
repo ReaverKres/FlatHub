@@ -308,14 +308,18 @@ fun FilterScreen() {
             FilterSectionTitle(title = stringResource(Res.string.filter_location))
             Spacer(Modifier.height(4.dp))
             Card {
+                val selectedMetro = if (filters.withAnyMetro) {
+                    localizedStringResource(LocalizationKeys.FILTER_METRO_ANY)
+                } else {
+                    filters.getSelectedMetroStation()
+                }
                 LocationItem(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                     selectedCity = filters.location?.selectedCity?.displayName,
-                    selectedMetro = filters.getSelectedMetroStation(),
+                    selectedMetro = selectedMetro,
                     selectedAddress = filters.getSelectedAddress(),
                     selectedUserAreas = filters.userMapAreas?.filter { it.isActive },
                     selectedDistricts = filters.districtsArea?.filter { it.isChecked },
-                    isLocationFilterActive = filters.isLocationFilterActive(),
                     onOpenLocation = {
                         filterContainer.intent(FilterScreenAction.OpenLocation)
                     }
@@ -727,7 +731,6 @@ private fun LocationItem(
     selectedAddress: String?,
     selectedDistricts: List<UiDistrict>?,
     selectedUserAreas: List<MapAreasUi>?,
-    isLocationFilterActive: Boolean,
     onOpenLocation: () -> Unit,
 ) {
     Row(
@@ -749,54 +752,50 @@ private fun LocationItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            if (selectedMetro.isNotEmpty()) {
-                Text(
-                    text = "${stringResource(Res.string.filter_metro_prefix)}: $selectedMetro",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            if (!selectedAddress.isNullOrEmpty()) {
-                Text(
-                    text = "${stringResource(Res.string.filter_address_prefix)}: $selectedAddress",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            if (!selectedDistricts.isNullOrEmpty()) {
-                val areasText = selectedDistricts.joinToString(separator = ", ") { it.nameLocal }
-                Text(
-                    text = "${stringResource(Res.string.filter_districts_prefix)}: $areasText",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            if (!selectedUserAreas.isNullOrEmpty()) {
-                val areasText = selectedUserAreas.joinToString(separator = ", ") { it.name }
-                Text(
-                    text = "${stringResource(Res.string.filter_active_areas_prefix)}: $areasText",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            LocationFilterHintRow(
+                label = stringResource(Res.string.filter_metro_prefix),
+                value = selectedMetro.takeIf { it.isNotEmpty() },
+            )
+            LocationFilterHintRow(
+                label = stringResource(Res.string.filter_address_prefix),
+                value = selectedAddress?.takeIf { it.isNotEmpty() },
+            )
+            LocationFilterHintRow(
+                label = stringResource(Res.string.filter_districts_prefix),
+                value = selectedDistricts
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ") { it.nameLocal },
+            )
+            LocationFilterHintRow(
+                label = stringResource(Res.string.filter_active_areas_prefix),
+                value = selectedUserAreas
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ") { it.name },
+            )
         }
+    }
+}
 
-//        if (isLocationFilterActive) {
-//            Icon(
-//                Icons.Default.CheckCircle,
-//                contentDescription = "Фильтр активен",
-//                tint = MaterialTheme.colorScheme.primary
-//            )
-//        }
+@Composable
+private fun LocationFilterHintRow(
+    label: String,
+    value: String?,
+) {
+    if (value != null) {
+        Text(
+            text = "$label: $value",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    } else {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+        )
     }
 }
 
