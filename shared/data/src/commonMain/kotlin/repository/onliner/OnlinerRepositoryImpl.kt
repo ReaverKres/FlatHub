@@ -2,7 +2,6 @@ package repository.onliner
 
 
 import api.OnlinerApi
-import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
@@ -13,7 +12,6 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.parsing.ParseException
@@ -23,13 +21,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
+import repository.emitFlats
 import repository.fillter.FilterRepository
 import repository.getFlatByIdFromDb
+import repository.parseResponseError
+import repository.runFlatSearch
 import server_response.OnlinerListResponse
 import server_response.OnlinerSearchErrorResponses
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 
 class OnlinerRepositoryImpl(
@@ -73,7 +74,6 @@ class OnlinerRepositoryImpl(
             minPrice = priceMin?.roundToInt(),
             maxPrice = priceMax?.roundToInt(),
             metroLines = metroLines,
-            // rooms parameter is now handled separately based on adType
             onlyOwner = filter.fromOwnerOnly,
             page = currentPage,
             boundsLbLng = cityBounds.southwest.longitude,
@@ -82,8 +82,17 @@ class OnlinerRepositoryImpl(
             boundsRtLat = cityBounds.northeast.latitude,
             sortOption = filter.sortOption
         )
-        try {
-            val request = if (filter.isRentType) {
+
+        runFlatSearch(
+            platform = FlatPlatform.ONLINER,
+            logTag = "Onliner",
+            parseHttpError = { e ->
+                parseResponseError(e, OnlinerSearchErrorResponses.serializer()) {
+                    it.errorMessages()
+                }
+            },
+        ) {
+            val response = if (filter.isRentType) {
                 val rentTypes: List<String> = when {
                     filter.roomOnly -> listOf("room")
                     else -> filter.numberOfRooms?.map {
@@ -95,44 +104,15 @@ class OnlinerRepositoryImpl(
                 val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
                 api.searchSaleFlats(params, numberOfRooms)
             }
-            when (request) {
-                is NetworkResponseWrapper.Success -> {
-                    val onlinerFlatList = request.data.apartments
-                        ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }?.filter {
-                            if (filter.isRoomForRent.not() && it.rooms == 0) false else true
-                        }
-                    onlinerFlatList?.let {
-                        emit(NetworkResponseWrapper.success(it))
-                    } ?: run {
-                        emit(networkEmptyList)
-                    }
+            val onlinerFlatList = response.apartments
+                ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }?.filter {
+                    if (filter.isRoomForRent.not() && it.rooms == 0) false else true
                 }
-
-                is NetworkResponseWrapper.Error -> {
-                    var parsedError: OnlinerSearchErrorResponses? = null
-
-                    if (request.ex is ClientRequestException) {
-                        val text = request.ex.response.bodyAsText()
-                        try {
-                            parsedError = Json.decodeFromString(
-                                OnlinerSearchErrorResponses.serializer(), text
-                            )
-                        } catch (_: Exception) {
-                            emit(networkEmptyList)
-                        }
-                    }
-                    emit(
-                        NetworkResponseWrapper.error(
-                            request.ex, NetworkErrorInfo(
-                                platform = FlatPlatform.ONLINER,
-                                errorMessages = parsedError?.errorMessages() ?: listOf()
-                            )
-                        )
-                    )
-                }
+            if (onlinerFlatList != null) {
+                emitFlats(onlinerFlatList, emptyIfNoItems = false)
+            } else {
+                emit(networkEmptyList)
             }
-        } catch (e: Exception) {
-//            emit(networkEmptyList)
         }
     }
 
@@ -155,6 +135,8 @@ class OnlinerRepositoryImpl(
     private suspend fun getApartmentHtml(url: String): String {
         return try {
             ktorClient.get(url).bodyAsText()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             throw ParseException("Error fetching HTML for $url: ${e.message}")
         }

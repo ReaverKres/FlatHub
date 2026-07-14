@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed interface LCE<T> {
     data class Loading<T>(private val stub: Unit = Unit) : LCE<T>
@@ -28,6 +29,7 @@ fun <I, O> Flow<I>.asLCE(contentMapper:(input: I) -> O): Flow<LCE<O>> {
     return map { LCE.Content(contentMapper(it)) as LCE<O> }
         .onStart { emit(LCE.Loading()) }
         .catch {
+            if (it is CancellationException) throw it
             if (it is Exception) {
 //                errorHandler.handle(it)
             }
@@ -39,6 +41,7 @@ fun <I> Flow<I>.asLCE(): Flow<LCE<I>> {
     return map { LCE.Content(it) as LCE<I> }
         .onStart { emit(LCE.Loading()) }
         .catch {
+            if (it is CancellationException) throw it
             if (it is Exception) {
 //                errorHandler.handle(it)
             }

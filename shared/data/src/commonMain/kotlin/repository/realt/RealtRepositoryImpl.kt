@@ -9,7 +9,6 @@ import api.SearchData
 import api.SortItem
 import api.Variables
 import api.Where
-import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
@@ -29,8 +28,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
 import mappers.base.ResponseToEntitiesFlatMapper
+import repository.emitDedupedFlats
 import repository.fillter.FilterRepository
 import repository.getFlatByIdFromDb
+import repository.runFlatSearch
 import server_request.Currency
 import server_response.RealtListResponse.RealtListResponseItem.Data.SearchObjects.Body.RealtFlatResponse
 
@@ -102,20 +103,22 @@ class RealtRepositoryImpl(
             else -> null
         }
 
-        try {
-            val request = api.searchFlats(
+        runFlatSearch(
+            platform = FlatPlatform.REALT,
+            logTag = "Realt",
+        ) {
+            val response = api.searchFlats(
                 RealtGraphqlRequest(
                     operationName = "searchObjects",
                     variables = Variables(
                         data = SearchData(
-                            //TODO Добавить метро
                             where = Where(
                                 addressV2 = listOf(AddressV2(townUUid)),
                                 category = category,
                                 rooms = filter.numberOfRooms?.map { it.toString() },
-                                seller = onlyOwner.toString(), // Только собственники
-                                priceFrom = priceMin.toNullableString(), // Цена от (можно null если не нужно)
-                                priceTo = priceMax.toNullableString(), // Цена до (можно null если не нужно)
+                                seller = onlyOwner.toString(),
+                                priceFrom = priceMin.toNullableString(),
+                                priceTo = priceMax.toNullableString(),
                                 priceType = priceType
                             ),
                             pagination = PaginationRequestRealt(
@@ -131,7 +134,7 @@ class RealtRepositoryImpl(
                                 FlatSort.MOST_EXPENSIVE_FIRST -> listOf(
                                     SortItem("price", "DESC")
                                 )
-                            }, // Updated sort implementation
+                            },
                             extraFields = listOf("minPriceAggregation")
                         )
                     ),
@@ -139,38 +142,19 @@ class RealtRepositoryImpl(
                 )
             )
 
-            val result: NetworkResponseWrapper<List<AppFlat>> = when (request) {
-                is NetworkResponseWrapper.Success -> {
-                    val flats = request.data.data?.searchObjects?.body?.results
-                        ?.filterNotNull()
-                        ?.map { realtResponseMapper.map(it.copy(
+            val flats = response.data?.searchObjects?.body?.results
+                ?.filterNotNull()
+                ?.map {
+                    realtResponseMapper.map(
+                        it.copy(
                             commercialPropertyType = filter.commercial?.commercialPropertyType,
                             adType = filter.adType
-                        )) }
-                        .orEmpty()
-
-                    if (lastEmitList == flats) {
-                        networkEmptyList
-                    } else {
-                        lastEmitList = flats
-                        NetworkResponseWrapper.success(flats)
-                    }
-                }
-
-                is NetworkResponseWrapper.Error -> {
-                    NetworkResponseWrapper.error(
-                        IllegalStateException(),
-                        NetworkErrorInfo(
-                            platform = FlatPlatform.REALT,
-                            errorMessages = listOf("Что-то пошло не так")
                         )
                     )
                 }
-            }
+                .orEmpty()
 
-            emit(result)
-        } catch (e: Exception) {
-//            emit(networkEmptyList)
+            emitDedupedFlats(flats, lastEmitList) { lastEmitList = it }
         }
     }
 

@@ -1,6 +1,5 @@
 package api
 
-import core.NetworkResponseWrapper
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.Query
@@ -16,14 +15,14 @@ interface OnlinerApi {
         @QueryMap params: Map<String, Any>,
         @Query("rent_type[]") rentTypes: List<String> = emptyList(),
         @Header("Accept") accept: String = "application/json"
-    ): NetworkResponseWrapper<OnlinerListResponse>
+    ): OnlinerListResponse
 
     @GET("sdapi/pk.api/search/apartments")
     suspend fun searchSaleFlats(
         @QueryMap params: Map<String, Any>,
         @Query("number_of_rooms[]") numberOfRooms: List<Int> = emptyList(),
         @Header("Accept") accept: String = "application/json"
-    ): NetworkResponseWrapper<OnlinerListResponse>
+    ): OnlinerListResponse
 
     companion object {
         fun createParams(

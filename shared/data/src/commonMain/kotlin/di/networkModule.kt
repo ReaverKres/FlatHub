@@ -1,6 +1,5 @@
 package di
 
-import core.KtorConverterFactory
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
@@ -81,7 +80,6 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(KUFAR_BASE_URL)
-            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -91,7 +89,6 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(ONLINER_BASE_URL)
-            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -101,7 +98,6 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(REALT_BASE_URL)
-            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -111,7 +107,6 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(DOMOVITA_BASE_URL)
-            .converterFactories(KtorConverterFactory())
             .build()
     }
 
@@ -121,8 +116,6 @@ val networkModule = module {
         Ktorfit.Builder()
             .httpClient(client)
             .baseUrl(FLATHUB_BASE_URL)
-            .converterFactories(KtorConverterFactory())
             .build()
     }
 }
-

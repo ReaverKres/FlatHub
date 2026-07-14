@@ -2,6 +2,7 @@ package repository.osm
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.coroutines.cancellation.CancellationException
 
 class OsmRepositoryImpl(private val osmApiService: OsmApiService): OsmRepository {
 
@@ -13,6 +14,8 @@ class OsmRepositoryImpl(private val osmApiService: OsmApiService): OsmRepository
             }
             val districts = osmApiService.getCityDistricts(cityId)
             emit(districts)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             emit(listOf())
         }
