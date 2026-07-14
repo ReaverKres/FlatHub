@@ -57,6 +57,7 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
+import flatzen.composeapp.generated.resources.swipe_ad_label
 import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
@@ -85,6 +86,7 @@ import io.flatzen.widgets.PremiumUpsellCardBanner
 import io.flatzen.widgets.PremiumUpsellState
 import io.flatzen.widgets.SwipeableCard
 import io.flatzen.widgets.rememberPremiumUpsellState
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import kotlin.math.abs
@@ -433,9 +435,20 @@ private fun SwipeAdCardFace(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .padding(top = FlatHubTheme.dimens.screenHorizontalCompact),
                 verticalArrangement = Arrangement.Top,
             ) {
+                Text(
+                    text = stringResource(Res.string.swipe_ad_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(
+                        start = FlatHubTheme.dimens.screenHorizontalCompact,
+                        end = FlatHubTheme.dimens.screenHorizontalCompact,
+                        bottom = 8.dp,
+                    ),
+                )
                 activeSlots.forEach { index ->
                     key(batchId, index) {
                         NativeAdSlot(

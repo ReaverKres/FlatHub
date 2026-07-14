@@ -1,9 +1,7 @@
 package io.flatzen.monetization.ads
 
-import kotlin.concurrent.Volatile
-import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UIKit.UIView
+import kotlin.concurrent.Volatile
 
 /**
  * Callback-based Appodeal API implemented in Swift (SDK is Swift/ObjC only).
@@ -15,6 +13,7 @@ interface AppodealNativeApi {
     fun initialize(appKey: String, onComplete: (Boolean) -> Unit)
     fun isInitialized(): Boolean
     fun showRewarded(placement: String, onResult: (String) -> Unit)
+    fun prefetchNative(placement: String, count: Int)
     fun createMrecView(placement: String): UIView
     fun createNativeView(placement: String, style: String): UIView
     fun showMrec(placement: String)
@@ -38,6 +37,7 @@ fun installAppodeal(
     initialize: (appKey: String, onComplete: (Boolean) -> Unit) -> Unit,
     isInitialized: () -> Boolean,
     showRewarded: (placement: String, onResult: (String) -> Unit) -> Unit,
+    prefetchNative: (placement: String, count: Int) -> Unit,
     createMrecView: (placement: String) -> UIView,
     createNativeView: (placement: String, style: String) -> UIView,
     showMrec: (placement: String) -> Unit,
@@ -53,6 +53,9 @@ fun installAppodeal(
 
             override fun showRewarded(placement: String, onResult: (String) -> Unit) =
                 showRewarded(placement, onResult)
+
+            override fun prefetchNative(placement: String, count: Int) =
+                prefetchNative(placement, count)
 
             override fun createMrecView(placement: String): UIView = createMrecView(placement)
 

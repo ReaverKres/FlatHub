@@ -17,6 +17,9 @@ enum AppodealSetup {
                     _ = onResult(result)
                 }
             },
+            prefetchNative: { placement, count in
+                AppodealBridge.shared.prefetchNative(placement: placement, count: count.intValue)
+            },
             createMrecView: { placement in
                 AppodealBridge.shared.createMrecView(placement: placement)
             },

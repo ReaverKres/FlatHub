@@ -2,6 +2,7 @@ package io.flatzen.viewmodel.swipe
 
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.monetization.ads.AdService
 import io.flatzen.monetization.config.MonetizationRemoteConfig
 import io.flatzen.monetization.tier.MonetizationSessionState
 import io.flatzen.monetization.tier.UserTierProvider
@@ -30,6 +31,7 @@ class SwipeContainer(
     private val filterRepository: FilterRepository,
     private val userTierProvider: UserTierProvider,
     private val monetizationRemoteConfig: MonetizationRemoteConfig,
+    private val adService: AdService,
     private val navigator: FlatHubNavigator,
 ) : Container<SwipeScreenState, SwipeIntent, SwipeAction> {
 
@@ -37,6 +39,15 @@ class SwipeContainer(
     private var wasSearchLoading = false
     private var pendingInitialSearch = false
     private var adCooldownJob: Job? = null
+    private var nativePrefetchJob: Job? = null
+
+    private companion object {
+        /** Match swipe ContentStream batch size / Appodeal native cache cap. */
+        const val SWIPE_NATIVE_PREFETCH_COUNT = 5
+
+        /** Start warming creative this many flats before the interval. */
+        const val SWIPE_NATIVE_PREFETCH_AHEAD = 6
+    }
 
     override val store = store(initial = SwipeScreenState.Initial) {
         reduce { intent ->
@@ -59,6 +70,8 @@ class SwipeContainer(
     private suspend fun SwipeCtx.handleScreenVisible() {
         pendingInitialSearch = true
         flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
+        // Warm native fill as soon as swipe opens; show-position logic stays unchanged.
+        prefetchSwipeNativeAds()
     }
 
     private suspend fun SwipeCtx.handleSyncListState(listState: FlatListScreenState) {
@@ -156,8 +169,12 @@ class SwipeContainer(
         val preQueueAd = shouldPreQueueAdOnSwipeComplete()
 
         updateState {
-            val queueNow = preQueueAd && !adCardQueued
-            copy(
+            // Apply dismiss first so orderedSwipeFlats() yields the *next* front.
+            // Using the old receiver would anchor the ad to the card we just swiped,
+            // which makes rebuildDeck() insert Ad at index 0 (instant pop) instead of
+            // behind the next flat.
+            val wasAlreadyQueued = adCardQueued
+            val afterDismiss = copy(
                 pinnedFrontKey = pinnedFrontKey?.takeUnless { it == deckKey },
                 pendingDismissKeys = pendingDismissKeys + deckKey,
                 animatingOutKeys = animatingOutKeys - deckKey,
@@ -166,13 +183,22 @@ class SwipeContainer(
                     flat.adId,
                     outcome
                 )).toImmutableList(),
-                adCardQueued = adCardQueued || preQueueAd,
-                adAnchorFlatKey = when {
-                    adAnchorFlatKey != null -> adAnchorFlatKey
-                    queueNow -> orderedSwipeFlats().firstOrNull()?.swipeDeckKey()
-                    else -> null
-                },
-            ).rebuildDeck()
+                adCardQueued = wasAlreadyQueued || preQueueAd,
+            )
+            val nextFrontKey = afterDismiss.orderedSwipeFlats().firstOrNull()?.swipeDeckKey()
+            val resolvedAnchor = when {
+                // Existing anchor still points at a remaining flat — keep it.
+                adAnchorFlatKey != null && adAnchorFlatKey != deckKey -> adAnchorFlatKey
+                // First pre-queue on this swipe: park Ad behind the new front.
+                preQueueAd && !wasAlreadyQueued -> nextFrontKey
+                // Anchored flat just left the deck — clear so Ad becomes front.
+                adAnchorFlatKey == deckKey -> null
+                else -> adAnchorFlatKey
+            }
+            afterDismiss.copy(adAnchorFlatKey = resolvedAnchor).rebuildDeck()
+        }
+        if (shouldPrefetchSwipeNativeEarly() || shouldQueueAdBehindFront()) {
+            prefetchSwipeNativeAds()
         }
         scheduleAdWhenCooldownReady()
     }
@@ -188,6 +214,9 @@ class SwipeContainer(
                 animatingOutKeys = animatingOutKeys - SWIPE_AD_DECK_KEY,
             ).rebuildDeck()
         }
+        // Next cycle: start filling cache while the minute cooldown runs.
+        prefetchSwipeNativeAds()
+        scheduleAdWhenCooldownReady()
     }
 
     private suspend fun SwipeCtx.handleUndoLastSwipe() {
@@ -262,15 +291,19 @@ class SwipeContainer(
 
         if (shouldQueueAdBehindFront()) {
             cancelAdCooldownJob()
+            prefetchSwipeNativeAds()
             maybeQueueAdCard()
             return
         }
 
         cancelAdCooldownJob()
         val minInterval = swipeAdMinIntervalMinutes()
+        // Warm creative during the wait so the card can show a ready fill at reveal.
+        prefetchSwipeNativeAds()
         adCooldownJob = launch {
             val waitMs = MonetizationSessionState.millisUntilCanShowAd(minInterval)
             if (waitMs > 0) delay(waitMs)
+            prefetchSwipeNativeAds()
             if (shouldQueueAdBehindFront()) {
                 maybeQueueAdCard()
             }
@@ -290,6 +323,28 @@ class SwipeContainer(
                 ).rebuildDeck()
             }
         }
+    }
+
+    /**
+     * Loads native creatives into Appodeal cache without inserting [SwipeDeckItem.Ad].
+     * Display still gated by interval / cooldown via [adCardQueued].
+     */
+    private fun SwipeCtx.prefetchSwipeNativeAds() {
+        if (!userTierProvider.shouldShowAds()) return
+        val placement = monetizationRemoteConfig.swipeCardPlacement
+        if (placement.isBlank() || !adService.isInitialized()) return
+        nativePrefetchJob?.cancel()
+        nativePrefetchJob = launch {
+            adService.prefetchNative(placement, SWIPE_NATIVE_PREFETCH_COUNT)
+        }
+    }
+
+    private fun shouldPrefetchSwipeNativeEarly(): Boolean {
+        if (!userTierProvider.shouldShowAds()) return false
+        val interval = monetizationRemoteConfig.swipeAdInterval
+        if (interval <= 0) return false
+        val threshold = (interval - SWIPE_NATIVE_PREFETCH_AHEAD).coerceAtLeast(0)
+        return flatsSinceLastAd >= threshold
     }
 
     private fun maybeRequestLoadMore(swipeState: SwipeScreenState) {
@@ -347,6 +402,9 @@ class SwipeContainer(
         val adAnimatingOut = SWIPE_AD_DECK_KEY in animatingOutKeys
         if (adCardQueued || adAnimatingOut) {
             val frontKey = orderedFlats.firstOrNull()?.swipeDeckKey()
+            // Keep Ad behind the current top flat while that flat is the anchor
+            // or still flying out. Once the anchored flat is gone from the deck,
+            // Ad becomes the front card.
             val keepBehindFront = !adAnimatingOut &&
                     frontKey != null &&
                     (frontKey in animatingOutKeys || frontKey == adAnchorFlatKey)

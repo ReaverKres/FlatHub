@@ -1,7 +1,7 @@
 package io.flatzen.monetization.ads
 
-import kotlin.concurrent.Volatile
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.concurrent.Volatile
 import kotlin.coroutines.resume
 
 /**
@@ -26,6 +26,7 @@ class IosAppodealAdService : AdService {
 
     override suspend fun prefetchNative(placement: String, count: Int): AdLoadResult {
         if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
+        AppodealNative.api?.prefetchNative(placement, count.coerceIn(1, 5))
         return AdLoadResult.Ready
     }
 

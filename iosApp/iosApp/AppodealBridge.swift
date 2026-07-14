@@ -145,6 +145,18 @@ final class NativeAdContainerView: UIView {
         }
     }
 
+    /// Warm native creatives into the Appodeal / APDNativeAdQueue cache without showing UI.
+    @objc public func prefetchNative(placement: String, count: Int) {
+        DispatchQueue.main.async {
+            Appodeal.cacheAd(.nativeAd)
+            let queue = self.nativeQueue(for: "content_stream", placement: placement)
+            queue.placement = placement
+            // loadAd fills the autocache; count is a soft hint — queue pulls as SDK allows.
+            _ = count
+            queue.loadAd()
+        }
+    }
+
     @objc public func createMrecView(placement: String) -> UIView {
         let view = APDMRECView() ?? APDMRECView(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
         view.translatesAutoresizingMaskIntoConstraints = false
