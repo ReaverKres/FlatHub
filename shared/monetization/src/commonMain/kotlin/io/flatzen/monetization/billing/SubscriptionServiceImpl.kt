@@ -70,12 +70,31 @@ class SubscriptionServiceImpl(
         scope.launch {
             if (premiumFallbackEnabled()) return@launch
             bridge.observeEntitlementChanges().collect { storeStatus ->
-                secureStore.saveSubscriptionCache(
-                    tier = storeStatus.tier.name,
-                    expiresAtEpochMs = storeStatus.expiresAtEpochMs,
-                    productId = storeStatus.productId,
-                )
+                persistStoreStatus(storeStatus)
             }
+        }
+        // When a cached Premium expiry elapses, re-query the store once so renewals
+        // extend access and true expirations clear the cache (esp. Play test SKUs).
+        scope.launch {
+            if (premiumFallbackEnabled()) return@launch
+            var lastRefreshForExpiryMs: Long? = null
+            combine(
+                secureStore.observeSubscriptionCache(),
+                trustedTime.state.map { it.nowEpochMs },
+            ) { cache, nowMs -> cache to nowMs }
+                .collect { (cache, nowMs) ->
+                    val expires = cache.expiresAtEpochMs
+                    if (cache.tier == SubscriptionTier.PREMIUM.name &&
+                        expires != null &&
+                        expires <= nowMs &&
+                        lastRefreshForExpiryMs != expires
+                    ) {
+                        lastRefreshForExpiryMs = expires
+                        if (bridge.isConfigured()) {
+                            runCatching { persistStoreStatus(bridge.restore()) }
+                        }
+                    }
+                }
         }
     }
 
@@ -91,12 +110,17 @@ class SubscriptionServiceImpl(
         if (!bridge.isConfigured()) return PurchaseResult.NotConfigured
         val result = bridge.purchase(productId)
         if (result is PurchaseResult.Success) {
-            val expires = bridge.currentExpiryEpochMs()
-            secureStore.saveSubscriptionCache(
-                tier = SubscriptionTier.PREMIUM.name,
-                expiresAtEpochMs = expires,
-                productId = productId,
-            )
+            // Prefer full store snapshot (tier + expiry); fall back to queried expiry.
+            val restored = bridge.restore()
+            if (restored.tier == SubscriptionTier.PREMIUM) {
+                persistStoreStatus(restored.copy(productId = restored.productId ?: productId))
+            } else {
+                secureStore.saveSubscriptionCache(
+                    tier = SubscriptionTier.PREMIUM.name,
+                    expiresAtEpochMs = bridge.currentExpiryEpochMs(),
+                    productId = productId,
+                )
+            }
         }
         return result
     }
@@ -106,14 +130,24 @@ class SubscriptionServiceImpl(
             return status.value
         }
         val restored = bridge.restore()
-        if (restored.tier == SubscriptionTier.PREMIUM) {
-            secureStore.saveSubscriptionCache(
+        persistStoreStatus(restored)
+        return restored
+    }
+
+    private suspend fun persistStoreStatus(storeStatus: SubscriptionStatus) {
+        when (storeStatus.tier) {
+            SubscriptionTier.PREMIUM -> secureStore.saveSubscriptionCache(
                 tier = SubscriptionTier.PREMIUM.name,
-                expiresAtEpochMs = restored.expiresAtEpochMs,
-                productId = restored.productId,
+                expiresAtEpochMs = storeStatus.expiresAtEpochMs,
+                productId = storeStatus.productId,
+            )
+
+            SubscriptionTier.FREE -> secureStore.saveSubscriptionCache(
+                tier = SubscriptionTier.FREE.name,
+                expiresAtEpochMs = null,
+                productId = null,
             )
         }
-        return restored
     }
 
     override suspend fun grantRewardedPremium(hours: Long) {
@@ -150,7 +184,12 @@ class SubscriptionServiceImpl(
                 source = SubscriptionStatus.StatusSource.REWARDED,
             )
         }
-        if (cachedTier == SubscriptionTier.PREMIUM.name && (expiresAt == null || expiresAt > now)) {
+        // Store/cache Premium must have a finite expiry. Null expiry used to mean
+        // "forever" and kept Premium after Play subscriptions ended.
+        if (cachedTier == SubscriptionTier.PREMIUM.name &&
+            expiresAt != null &&
+            expiresAt > now
+        ) {
             return SubscriptionStatus(
                 tier = SubscriptionTier.PREMIUM,
                 expiresAtEpochMs = expiresAt,
