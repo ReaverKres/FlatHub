@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -73,6 +74,7 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_rent
 import flatzen.composeapp.generated.resources.filter_sale
+import flatzen.composeapp.generated.resources.home_ad_label
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
@@ -83,9 +85,10 @@ import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
-import io.flatzen.ads.MrecAdSlot
+import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
+import io.flatzen.ads.clearNativeAdReuseCache
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.analytics.AppMetrcica
@@ -98,6 +101,7 @@ import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.monetization.ads.AdService
 import io.flatzen.monetization.ads.FeedItem
 import io.flatzen.monetization.ads.buildFeedItems
 import io.flatzen.monetization.config.MonetizationRemoteConfig
@@ -833,6 +837,7 @@ fun FlatList(
 ) {
     val userTierProvider: UserTierProvider = koinInject()
     val monetizationConfig: MonetizationRemoteConfig = koinInject()
+    val adService: AdService = koinInject()
     val adInterval = if (isListView == true) {
         monetizationConfig.homeListAdInterval
     } else {
@@ -847,6 +852,24 @@ fun FlatList(
             )
         }
     val gridRows = remember(feedItems) { buildGridRows(feedItems) }
+    val homeFeedPlacement = if (isListView == true) {
+        monetizationConfig.homeFeedListPlacement
+    } else {
+        monetizationConfig.homeFeedGridPlacement
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { clearNativeAdReuseCache() }
+    }
+
+    LaunchedEffect(feedItems, homeFeedPlacement, adService.isInitialized()) {
+        if (!adService.isInitialized() || homeFeedPlacement.isBlank()) return@LaunchedEffect
+        val adSlots = feedItems.count { it is FeedItem.Ad }
+            .coerceIn(0, MAX_NATIVE_ADS_PER_BATCH)
+        if (adSlots > 0) {
+            adService.prefetchNative(homeFeedPlacement, adSlots)
+        }
+    }
 
     LaunchedEffect(flats, isListView, isLoadingMore) {
         snapshotFlow {
@@ -899,7 +922,15 @@ fun FlatList(
                     }
 
                     FeedItem.Ad -> {
-                        MrecAdSlot(placement = monetizationConfig.homeFeedListPlacement)
+                        HomeFeedAdBlock(
+                            placement = monetizationConfig.homeFeedGridPlacement,
+                            reuseKey = "home-list-$index",
+                            style = NativeAdSlotStyle.AppWall,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .heightIn(max = GridFlatItemSpec.skeletonHeight),
+                        )
                     }
                 }
             }
@@ -939,13 +970,14 @@ fun FlatList(
                         }
                     }
 
-                    is GridRow.Ad -> NativeAdSlot(
+                    is GridRow.Ad -> HomeFeedAdBlock(
                         placement = monetizationConfig.homeFeedGridPlacement,
+                        reuseKey = "home-grid-$index",
+                        style = NativeAdSlotStyle.AppWall,
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .heightIn(max = GridFlatItemSpec.skeletonHeight),
-                        style = NativeAdSlotStyle.AppWall,
                     )
                 }
             }
@@ -974,6 +1006,34 @@ fun FlatList(
 private sealed class GridRow {
     data class Pair(val first: UiFlat, val second: UiFlat?) : GridRow()
     data object Ad : GridRow()
+}
+
+@Composable
+private fun HomeFeedAdBlock(
+    placement: String,
+    reuseKey: String,
+    style: NativeAdSlotStyle,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        // Native (not MREC): Appodeal MREC is a single shared view and breaks in LazyColumn recycle.
+        NativeAdSlot(
+            placement = placement,
+            reuseKey = reuseKey,
+            style = style,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        )
+        Text(
+            text = stringResource(Res.string.home_ad_label),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 8.dp, bottom = 6.dp),
+        )
+    }
 }
 
 private fun buildGridRows(feedItems: List<FeedItem<UiFlat>>): List<GridRow> {

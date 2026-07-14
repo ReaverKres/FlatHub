@@ -15,10 +15,11 @@ interface AppodealNativeApi {
     fun showRewarded(placement: String, onResult: (String) -> Unit)
     fun prefetchNative(placement: String, count: Int)
     fun createMrecView(placement: String): UIView
-    fun createNativeView(placement: String, style: String): UIView
+    fun createNativeView(placement: String, style: String, reuseKey: String?): UIView
     fun showMrec(placement: String)
     fun showNative(view: UIView, placement: String)
     fun releaseView(view: UIView)
+    fun clearNativeAdReuseCache()
 }
 
 object AppodealNative {
@@ -39,10 +40,11 @@ fun installAppodeal(
     showRewarded: (placement: String, onResult: (String) -> Unit) -> Unit,
     prefetchNative: (placement: String, count: Int) -> Unit,
     createMrecView: (placement: String) -> UIView,
-    createNativeView: (placement: String, style: String) -> UIView,
+    createNativeView: (placement: String, style: String, reuseKey: String?) -> UIView,
     showMrec: (placement: String) -> Unit,
     showNative: (view: UIView, placement: String) -> Unit,
     releaseView: (view: UIView) -> Unit,
+    clearNativeAdReuseCache: () -> Unit,
 ) {
     AppodealNative.install(
         object : AppodealNativeApi {
@@ -59,14 +61,19 @@ fun installAppodeal(
 
             override fun createMrecView(placement: String): UIView = createMrecView(placement)
 
-            override fun createNativeView(placement: String, style: String): UIView =
-                createNativeView(placement, style)
+            override fun createNativeView(
+                placement: String,
+                style: String,
+                reuseKey: String?,
+            ): UIView = createNativeView(placement, style, reuseKey)
 
             override fun showMrec(placement: String) = showMrec(placement)
 
             override fun showNative(view: UIView, placement: String) = showNative(view, placement)
 
             override fun releaseView(view: UIView) = releaseView(view)
+
+            override fun clearNativeAdReuseCache() = clearNativeAdReuseCache()
         },
     )
 }

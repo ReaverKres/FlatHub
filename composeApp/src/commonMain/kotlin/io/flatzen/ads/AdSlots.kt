@@ -25,6 +25,12 @@ expect fun NativeAdSlot(
     placement: String,
     modifier: Modifier = Modifier,
     style: NativeAdSlotStyle = NativeAdSlotStyle.ContentStream,
+    /**
+     * Stable id for a LazyColumn/RecyclerView slot. Keeps the same creative across
+     * off-screen dispose/recompose (Appodeal: unregister on scroll out, re-register on return —
+     * do not call getNativeAds again for the same slot).
+     */
+    reuseKey: String? = null,
     batchId: String? = null,
     slotIndex: Int = 0,
     batchSize: Int = 1,
@@ -32,6 +38,9 @@ expect fun NativeAdSlot(
 )
 
 expect fun clearNativeAdBatch(batchId: String)
+
+/** Drop cached native creatives retained by [NativeAdSlot] reuseKey (e.g. leave Home feed). */
+expect fun clearNativeAdReuseCache()
 
 @Composable
 fun AdSlotPlaceholder(

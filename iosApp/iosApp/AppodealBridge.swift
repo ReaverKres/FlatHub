@@ -88,10 +88,12 @@ class FlatHubNativeAdView: UIView, APDNativeAdView {
 
 final class NativeAdContainerView: UIView {
     let style: String
+    let reuseKey: String?
     var loadedAdView: UIView?
 
-    init(style: String) {
+    init(style: String, reuseKey: String?) {
         self.style = style
+        self.reuseKey = reuseKey
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .clear
@@ -113,6 +115,8 @@ final class NativeAdContainerView: UIView {
     private var trackedViews = NSHashTable<UIView>.weakObjects()
     private var mrecViews: [String: APDMRECView] = [:]
     private var nativeQueues: [String: APDNativeAdQueue] = [:]
+    /// Keeps APDNativeAd across LazyList dispose so scrolling back does not burn a new fill.
+    private var reusedNativeAds: [String: APDNativeAd] = [:]
 
     private override init() {
         super.init()
@@ -167,11 +171,17 @@ final class NativeAdContainerView: UIView {
         return view
     }
 
-    @objc public func createNativeView(placement: String, style: String) -> UIView {
-        let container = NativeAdContainerView(style: style)
+    @objc public func createNativeView(placement: String, style: String, reuseKey: String?) -> UIView {
+        let container = NativeAdContainerView(style: style, reuseKey: reuseKey)
         trackedViews.add(container)
         _ = nativeQueue(for: style, placement: placement)
         return container
+    }
+
+    @objc public func clearNativeAdReuseCache() {
+        DispatchQueue.main.async {
+            self.reusedNativeAds.removeAll()
+        }
     }
 
     @objc public func showMrec(placement: String) {
@@ -195,16 +205,29 @@ final class NativeAdContainerView: UIView {
             let queue = self.nativeQueue(for: container.style, placement: placement)
             queue.placement = placement
 
-            let ads = queue.getNativeAds(ofCount: 1)
-            guard let nativeAd = ads.first else {
+            let nativeAd: APDNativeAd
+            if let key = container.reuseKey, let existing = self.reusedNativeAds[key] {
+                nativeAd = existing
+            } else {
+                let ads = queue.getNativeAds(ofCount: 1)
+                guard let fetched = ads.first else {
+                    queue.loadAd()
+                    return
+                }
+                if let key = container.reuseKey {
+                    self.reusedNativeAds[key] = fetched
+                }
+                nativeAd = fetched
                 queue.loadAd()
-                return
             }
 
             guard let adView = try? nativeAd.getViewForPlacement(
                 placement,
                 withRootViewController: rootVC
             ) else {
+                if let key = container.reuseKey {
+                    self.reusedNativeAds.removeValue(forKey: key)
+                }
                 queue.loadAd()
                 return
             }
