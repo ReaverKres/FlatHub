@@ -22,6 +22,11 @@ private const val REALT_BASE_URL: String = "https://realt.by/"
 private const val DOMOVITA_BASE_URL: String = "https://api.domovita.by/"
 private const val FLATHUB_BASE_URL: String = "https://flathub.pro/"
 
+private val deviceTokenLogRegex = Regex("\"deviceToken\"\\s*:\\s*\"[^\"]*\"")
+
+private fun sanitizeHttpLog(message: String): String =
+    message.replace(deviceTokenLogRegex, "\"deviceToken\": \"***\"")
+
 val networkModule = module {
 
     single<Json>(named("defaultJson")) {
@@ -47,7 +52,7 @@ val networkModule = module {
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("HTTP Client: $message")
+                        println("HTTP Client: ${sanitizeHttpLog(message)}")
                     }
                 }
                 level = LogLevel.ALL

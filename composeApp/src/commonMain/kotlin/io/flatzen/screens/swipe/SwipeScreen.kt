@@ -188,6 +188,9 @@ fun SwipeScreen() {
                     onBeginCardDismiss = { deckKey ->
                         swipeContainer.store.intent(SwipeIntent.BeginCardDismiss(deckKey))
                     },
+                    onCancelCardDismiss = { deckKey ->
+                        swipeContainer.store.intent(SwipeIntent.CancelCardDismiss(deckKey))
+                    },
                     onSwipeFlat = { flat, outcome ->
                         swipeContainer.store.intent(SwipeIntent.SwipeFlat(flat, outcome))
                     },
@@ -247,6 +250,7 @@ private fun SwipeCardStack(
     onSwipeProgressChange: (progress: Float, promote: Float) -> Unit,
     onResetSwipeProgress: () -> Unit,
     onBeginCardDismiss: (deckKey: String) -> Unit,
+    onCancelCardDismiss: (deckKey: String) -> Unit,
     onSwipeFlat: (UiFlat, SwipeOutcome) -> Unit,
     onDismissAd: () -> Unit,
     onOpenDetail: (UiFlat) -> Unit,
@@ -281,6 +285,9 @@ private fun SwipeCardStack(
                                     alpha = stackTransform.alpha
                                 },
                             onSwipeWillDismiss = { onBeginCardDismiss(flat.swipeDeckKey()) },
+                            onSwipeDismissCancelled = {
+                                onCancelCardDismiss(flat.swipeDeckKey())
+                            },
                             onSwipedLeft = {
                                 onSwipeFlat(flat, SwipeOutcome.Disliked)
                                 onResetSwipeProgress()
@@ -322,6 +329,9 @@ private fun SwipeCardStack(
                                     alpha = stackTransform.alpha
                                 },
                             onSwipeWillDismiss = { onBeginCardDismiss(SWIPE_AD_DECK_KEY) },
+                            onSwipeDismissCancelled = {
+                                onCancelCardDismiss(SWIPE_AD_DECK_KEY)
+                            },
                             onSwipedLeft = {
                                 onDismissAd()
                                 onResetSwipeProgress()
