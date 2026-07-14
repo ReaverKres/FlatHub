@@ -44,16 +44,6 @@ fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
             ?: MonetizationDefaults.FEED_DELAY_MINUTES,
         trialDays = jsonConfig?.trialDays?.coerceAtLeast(0)
             ?: MonetizationDefaults.TRIAL_DAYS,
-        priceWeekUsd = jsonConfig?.premiumPriceWeekUsd?.takeIf { it.isNotBlank() }
-            ?: MonetizationDefaults.PRICE_WEEK_USD,
-        priceMonthUsd = jsonConfig?.premiumPriceMonthUsd?.takeIf { it.isNotBlank() }
-            ?: MonetizationDefaults.PRICE_MONTH_USD,
-        priceQuarterUsd = jsonConfig?.premiumPriceQuarterUsd?.takeIf { it.isNotBlank() }
-            ?: MonetizationDefaults.PRICE_QUARTER_USD,
-        appodealAndroidAppKey = jsonConfig?.appodealAndroidAppKey?.takeIf { it.isNotBlank() }
-            ?: MonetizationDefaults.APPODEAL_ANDROID_APP_KEY,
-        appodealIosAppKey = jsonConfig?.appodealIosAppKey?.takeIf { it.isNotBlank() }
-            ?: MonetizationDefaults.APPODEAL_IOS_APP_KEY,
         homeFeedListPlacement = jsonConfig?.homeFeedListPlacement?.takeIf { it.isNotBlank() }
             ?: MonetizationDefaults.HOME_FEED_LIST_PLACEMENT,
         homeFeedGridPlacement = jsonConfig?.homeFeedGridPlacement?.takeIf { it.isNotBlank() }
