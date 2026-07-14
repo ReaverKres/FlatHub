@@ -447,7 +447,10 @@ class FilterContainer(
                     }
                 }
 
-                FilterScreenAction.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
+                FilterScreenAction.NavigateBack -> {
+                    forceFilterNetworkReload()
+                    navigator.navigate(FlatHubCommand.NavigateBack)
+                }
                 FilterScreenAction.OpenLocation -> navigator.navigate(FlatHubCommand.OpenLocation)
                 FilterScreenAction.OpenCity -> navigator.navigate(FlatHubCommand.OpenCitySelect)
                 FilterScreenAction.OpenMetro -> {
@@ -497,6 +500,13 @@ class FilterContainer(
                 }
             }
         }
+    }
+
+    private suspend fun PipeCtx.forceFilterNetworkReload() {
+        var currentState = FilterScreenState.Initial
+        withState { currentState = this }
+        val filterModel = mapFilterStateToFilterModel(currentState.filters)
+        filterRepository.updateFilter(filterModel, doNetworkCall = true)
     }
 
     private suspend fun PipeCtx.applyFiltersUpdate(
