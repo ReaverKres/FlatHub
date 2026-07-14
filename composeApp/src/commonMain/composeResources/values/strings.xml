@@ -221,6 +221,7 @@
     <string name="premium_error_no_active_subscription">Активная подписка не найдена</string>
     <string name="premium_error_restore_failed">Не удалось восстановить покупки</string>
     <string name="premium_error_rewarded_activated">Premium на 1 час активирован</string>
+    <string name="swipe_ad_label">Реклама</string>
     <string name="premium_error_ad_unavailable">Реклама сейчас недоступна</string>
     <string name="premium_error_ad_disabled">Реклама отключена</string>
     <string name="premium_error_generic">Не удалось выполнить операцию</string>

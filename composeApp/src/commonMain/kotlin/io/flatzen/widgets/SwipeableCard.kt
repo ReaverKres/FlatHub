@@ -30,8 +30,8 @@ private const val EXIT_DISTANCE_FACTOR = 1.35f
  * (so promoting a back card to front does not remount its content).
  *
  * [onSwipeWillDismiss] fires once when the drag first crosses the dismiss
- * threshold (before the fly-out animation), so the parent can insert the next
- * deck card (e.g. an ad) behind this one while the gesture is still in progress.
+ * threshold (synchronously on the gesture thread), so the parent can insert the
+ * next deck card (e.g. an ad) behind this one while the gesture continues.
  * [onSwipeDismissCancelled] fires if the user returns below the threshold or
  * cancels the gesture after will-dismiss was notified.
  *
@@ -149,13 +149,15 @@ fun SwipeableCard(
                                 },
                                 onDrag = { change, dragAmount ->
                                     change.consume()
+                                    val nextX = offsetX.value + dragAmount.x
+                                    val nextY = offsetY.value + dragAmount.y * 0.35f
+                                    // Notify before coroutine so BeginCardDismiss is not queued behind
+                                    // a backlog of snapTo jobs from rapid drag events.
+                                    notifyWillDismissIfNeeded(abs(nextX))
+                                    onSwipeProgress((nextX / threshold).coerceIn(-1.5f, 1.5f))
                                     scope.launch {
-                                        offsetX.snapTo(offsetX.value + dragAmount.x)
-                                        offsetY.snapTo(offsetY.value + dragAmount.y * 0.35f)
-                                        notifyWillDismissIfNeeded(abs(offsetX.value))
-                                        onSwipeProgress(
-                                            (offsetX.value / threshold).coerceIn(-1.5f, 1.5f),
-                                        )
+                                        offsetX.snapTo(nextX)
+                                        offsetY.snapTo(nextY)
                                     }
                                 },
                             )

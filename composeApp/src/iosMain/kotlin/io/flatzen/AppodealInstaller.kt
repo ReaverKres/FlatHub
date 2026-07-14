@@ -1,7 +1,7 @@
 package io.flatzen
 
-import io.flatzen.monetization.ads.installAppodeal as monetizationInstallAppodeal
 import platform.UIKit.UIView
+import io.flatzen.monetization.ads.installAppodeal as monetizationInstallAppodeal
 
 /**
  * Re-export for Swift (`ComposeApp.AppodealInstallerKt.installAppodeal`).
@@ -11,6 +11,7 @@ fun installAppodeal(
     initialize: (appKey: String, onComplete: (Boolean) -> Unit) -> Unit,
     isInitialized: () -> Boolean,
     showRewarded: (placement: String, onResult: (String) -> Unit) -> Unit,
+    prefetchNative: (placement: String, count: Int) -> Unit,
     createMrecView: (placement: String) -> UIView,
     createNativeView: (placement: String, style: String) -> UIView,
     showMrec: (placement: String) -> Unit,
@@ -21,6 +22,7 @@ fun installAppodeal(
         initialize = initialize,
         isInitialized = isInitialized,
         showRewarded = showRewarded,
+        prefetchNative = prefetchNative,
         createMrecView = createMrecView,
         createNativeView = createNativeView,
         showMrec = showMrec,

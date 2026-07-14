@@ -82,6 +82,7 @@ val flatSearchPresentationModule = module {
             filterRepository = get(),
             userTierProvider = get(),
             monetizationRemoteConfig = get(),
+            adService = get(),
             navigator = get(),
         )
     }
