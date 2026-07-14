@@ -12,19 +12,20 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import kotlin.time.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -34,6 +35,8 @@ import repository.fillter.lastFilter
 import repository.kufar.KufarRepository
 import repository.onliner.OnlinerRepository
 import repository.realt.RealtRepository
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Clock
 
 class MergedRepositoryImpl(
     private val kufarRepository: KufarRepository,
@@ -55,83 +58,160 @@ class MergedRepositoryImpl(
         return searchByFilter(filter, currentPage)
     }
 
-    private fun searchByFilter(filter: CommonFilterRequestModel, currentPage: Int?): Flow<MergedFlatResponse> {
-        val finalFlow = when {
-            filter.isRoomForRent -> {
-                kufarRepository.searchFlats(filter, currentPage)
-                    .zip(onlinerRepository.searchFlats(
-                        filter,
-                        currentPage
-                    )) { kufarList, onlinerList ->
-                        listOf(kufarList, onlinerList)
-                    }
-            }
+    private fun searchByFilter(
+        filter: CommonFilterRequestModel,
+        currentPage: Int?
+    ): Flow<MergedFlatResponse> = flow {
+        val networkFlats = supervisorScope {
+            when {
+                filter.isRoomForRent -> listOf(
+                    async {
+                        awaitPlatformSearch(FlatPlatform.KUFAR) {
+                            kufarRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                    async {
+                        awaitPlatformSearch(FlatPlatform.ONLINER) {
+                            onlinerRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                ).awaitAll()
 
-            filter.isCommercial || filter.adType == AdType.DAILY -> {
-                kufarRepository.searchFlats(filter, currentPage)
-                    .zip(realtRepository.searchFlats(filter, currentPage)) { k, r -> listOf(k, r) }
-            }
+                filter.isCommercial || filter.adType == AdType.DAILY -> listOf(
+                    async {
+                        awaitPlatformSearch(FlatPlatform.KUFAR) {
+                            kufarRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                    async {
+                        awaitPlatformSearch(FlatPlatform.REALT) {
+                            realtRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                ).awaitAll()
 
-            else -> {
-                kufarRepository.searchFlats(filter, currentPage)
-                    .zip(onlinerRepository.searchFlats(filter, currentPage))
-                    { kufarList, onlinerList -> listOf(kufarList, onlinerList) }
-                    .zip(domovitaRepository.searchFlats(filter, currentPage)) { kor, d -> kor + d }
-                    .zip(realtRepository.searchFlats(filter, currentPage)) { kOn, r -> kOn + r }
+                else -> listOf(
+                    async {
+                        awaitPlatformSearch(FlatPlatform.KUFAR) {
+                            kufarRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                    async {
+                        awaitPlatformSearch(FlatPlatform.ONLINER) {
+                            onlinerRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                    async {
+                        awaitPlatformSearch(FlatPlatform.DOMOVITA) {
+                            domovitaRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                    async {
+                        awaitPlatformSearch(FlatPlatform.REALT) {
+                            realtRepository.searchFlats(
+                                filter,
+                                currentPage
+                            ).first()
+                        }
+                    },
+                ).awaitAll()
             }
         }
-        return finalFlow.mapLatest { networkFlats ->
-            val appFlats: MutableList<AppFlat> = mutableListOf()
-            val errors: MutableList<NetworkErrorInfo> = mutableListOf()
 
-            networkFlats.forEach { nett ->
-                when (nett) {
-                    is NetworkResponseWrapper.Success<List<AppFlat>> -> {
-                        nett.data.forEach { net ->
-                            val fromDb = flatsDao.getById(net.adId)
+        emit(mergeNetworkFlats(networkFlats, filter))
+    }.flowOn(Dispatchers.IO)
 
-                            val priceUsdSquare =
-                                if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
-                                    net.priceUsd / net.totalArea
-                                } else net.priceUsdSquare
+    private suspend fun awaitPlatformSearch(
+        platform: FlatPlatform,
+        search: suspend () -> NetworkResponseWrapper<List<AppFlat>>,
+    ): NetworkResponseWrapper<List<AppFlat>> {
+        return try {
+            search()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            println("MergedRepository $platform searchFlats ex ${e.message}")
+            NetworkResponseWrapper.error(
+                e,
+                NetworkErrorInfo(platform, listOf(e.message.orEmpty())),
+            )
+        }
+    }
 
-                            val priceBynSquare =
-                                if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
-                                    net.priceByn / net.totalArea
-                                } else net.priceBynSquare
+    private suspend fun mergeNetworkFlats(
+        networkFlats: List<NetworkResponseWrapper<List<AppFlat>>>,
+        filter: CommonFilterRequestModel,
+    ): MergedFlatResponse {
+        val appFlats: MutableList<AppFlat> = mutableListOf()
+        val errors: MutableList<NetworkErrorInfo> = mutableListOf()
 
-                            val updated = net.copy(
-                                adType = filter.adType,
-                                savedInFavorites = fromDb?.savedInFavorites == true,
-                                isViewed = fromDb?.isViewed == true,
-                                dislike = fromDb?.dislike == true,
-                                priceUsdSquare = priceUsdSquare,
-                                priceBynSquare = priceBynSquare
-                            )
+        networkFlats.forEach { nett ->
+            when (nett) {
+                is NetworkResponseWrapper.Success<List<AppFlat>> -> {
+                    nett.data.forEach { net ->
+                        val fromDb = flatsDao.getById(net.adId)
 
-                            appFlats.add(updated)
-                        }
+                        val priceUsdSquare =
+                            if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
+                                net.priceUsd / net.totalArea
+                            } else net.priceUsdSquare
+
+                        val priceBynSquare =
+                            if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
+                                net.priceByn / net.totalArea
+                            } else net.priceBynSquare
+
+                        val updated = net.copy(
+                            adType = filter.adType,
+                            savedInFavorites = fromDb?.savedInFavorites == true,
+                            isViewed = fromDb?.isViewed == true,
+                            dislike = fromDb?.dislike == true,
+                            priceUsdSquare = priceUsdSquare,
+                            priceBynSquare = priceBynSquare
+                        )
+
+                        appFlats.add(updated)
                     }
+                }
 
-                    is NetworkResponseWrapper.Error -> {
-                        nett.error?.let { err ->
-                            errors.add(err)
-                        }
+                is NetworkResponseWrapper.Error -> {
+                    nett.error?.let { err ->
+                        errors.add(err)
                     }
                 }
             }
-
-            flatsDao.upsertAll(appFlats)
-
-            val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
-            lastEmittedFlats.emit(sortedFlatList)
-
-            MergedFlatResponse(
-                flats = sortedFlatList,
-                errors = errors
-            )
         }
-            .flowOn(Dispatchers.IO)
+
+        flatsDao.upsertAll(appFlats)
+
+        val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
+        lastEmittedFlats.emit(sortedFlatList)
+
+        return MergedFlatResponse(
+            flats = sortedFlatList,
+            errors = errors
+        )
     }
 
     override suspend fun getFlatByIdWithDetails(
@@ -151,8 +231,9 @@ class MergedRepositoryImpl(
             }
         }.onEach { updatedFlat ->
             withContext(Dispatchers.IO) { flatsDao.upsert(updatedFlat) }
-        }.catch {
-            println("detailFlat LoadError")
+        }.catch { cause ->
+            if (cause is CancellationException) throw cause
+            println("detailFlat LoadError $cause")
         }
     }
 

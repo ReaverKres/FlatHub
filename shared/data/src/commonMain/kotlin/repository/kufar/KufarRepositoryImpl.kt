@@ -2,7 +2,6 @@ package repository.kufar
 
 
 import api.KufarApi
-import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
 import database.FlatsDao
@@ -15,7 +14,6 @@ import io.flatzen.commoncomponents.commonentities.Location
 import io.flatzen.commoncomponents.date.toKufarDateDays
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.parsing.ParseException
@@ -26,16 +24,19 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.serialization.json.Json
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
+import repository.emitFlats
 import repository.fillter.FilterRepository
 import repository.getFlatByIdFromDb
+import repository.parseResponseError
+import repository.runFlatSearch
 import server_response.KufarErrorResponse
 import server_response.kufar.KufarDailyListQuery
 import server_response.kufar.KufarDailyListResponse
 import server_response.kufar.KufarListQuery
 import server_response.kufar.KufarListResponse
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.enums.EnumEntries
 
 class KufarRepositoryImpl(
@@ -48,8 +49,6 @@ class KufarRepositoryImpl(
     private val flatsDao: FlatsDao,
     private val filterRepository: FilterRepository
 ) : KufarRepository {
-
-    private var lastEmitList: List<AppFlat>? = emptyList()
 
     private var pageCursor: String? = null
 
@@ -117,57 +116,29 @@ class KufarRepositoryImpl(
             commercialRequestModel = filter.commercial
         )
 
-        try {
-            val request = api.searchFlats(
+        runFlatSearch(
+            platform = FlatPlatform.KUFAR,
+            logTag = "Kufar",
+            parseHttpError = { e ->
+                parseResponseError(e, KufarErrorResponse.serializer()) { it.errorMessages() }
+            },
+            messageFallback = { it.message.orEmpty().substringBefore("[") },
+        ) {
+            val response = api.searchFlats(
                 queryParams = params,
                 searchId = generateSearchId()
             )
 
-            when (request) {
-                is NetworkResponseWrapper.Success -> {
-                    pageCursor = request.data.pagination?.pages
-                        ?.getOrNull(currentPage)
-                        ?.token
+            pageCursor = response.pagination?.pages
+                ?.getOrNull(currentPage)
+                ?.token
 
-                    val kufarFlatList = request.data.ads
-                        ?.filterNotNull()
-                        ?.map { kufarResponseMapper.map(it) }
-                        .orEmpty()
+            val kufarFlatList = response.ads
+                ?.filterNotNull()
+                ?.map { kufarResponseMapper.map(it) }
+                .orEmpty()
 
-                    if (kufarFlatList.isEmpty()) {
-                        emit(networkEmptyList)
-                    } else {
-                        emit(NetworkResponseWrapper.success(kufarFlatList))
-                    }
-                }
-
-                is NetworkResponseWrapper.Error -> {
-                    var parsedError: KufarErrorResponse? = null
-
-                    if (request.ex is ClientRequestException) {
-                        val text = request.ex.response.bodyAsText()
-                        try {
-                            parsedError = Json.decodeFromString(
-                                KufarErrorResponse.serializer(), text
-                            )
-                        } catch (_: Exception) {
-                            emit(networkEmptyList)
-                        }
-                    }
-
-                    emit(
-                        NetworkResponseWrapper.error(
-                            request.ex, NetworkErrorInfo(
-                                platform = FlatPlatform.KUFAR,
-                                errorMessages = parsedError?.errorMessages()
-                                    ?: listOf(request.ex.message.orEmpty().substringBefore("["))
-                            )
-                        )
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            //            emit(networkEmptyList)
+            emitFlats(kufarFlatList)
         }
     }
 
@@ -195,62 +166,33 @@ class KufarRepositoryImpl(
             dateTo = filter.bookingDatesFilter?.dateTo?.toKufarDateDays()
         )
 
-        try {
-            val request = api.searchFlatsDaily(queryParams = params)
+        runFlatSearch(
+            platform = FlatPlatform.KUFAR,
+            logTag = "Kufar daily",
+            parseHttpError = { e ->
+                parseResponseError(e, KufarErrorResponse.serializer()) { it.errorMessages() }
+            },
+            messageFallback = { it.message.orEmpty().substringBefore("[") },
+        ) {
+            val response = api.searchFlatsDaily(queryParams = params)
 
-            when (request) {
-                is NetworkResponseWrapper.Success -> {
+            val kufarUsualFlatList = response.rentalObjects
+                ?.filterNotNull()
+                ?.map { mapDailyFlat(it, currentCityName) }
+                .orEmpty()
+            val kufarPoleFlatList = response.polePosition
+                ?.filterNotNull()
+                ?.map { mapDailyFlat(it, currentCityName) }
+                .orEmpty()
+            val kufarFlatList = kufarUsualFlatList + kufarPoleFlatList
 
-                    val kufarUsualFlatList = request.data.rentalObjects
-                        ?.filterNotNull()
-                        ?.map {
-                            mapDailyFlat(it, currentCityName)
-                        }
-                        .orEmpty()
-                    val kufarPoleFlatList = request.data.polePosition
-                        ?.filterNotNull()
-                        ?.map {
-                            mapDailyFlat(it, currentCityName)
-                        }
-                        .orEmpty()
-                    val kufarFlatList = kufarUsualFlatList + kufarPoleFlatList
-
-                    if (kufarFlatList.isEmpty() || (request.data.paginator?.page ?: -1) >=
-                        (request.data.paginator?.pages ?: -1)
-                    ) {
-                        emit(networkEmptyList)
-                    } else {
-                        emit(NetworkResponseWrapper.success(kufarFlatList))
-                    }
-                }
-
-                is NetworkResponseWrapper.Error -> {
-                    var parsedError: KufarErrorResponse? = null
-
-                    if (request.ex is ClientRequestException) {
-                        val text = request.ex.response.bodyAsText()
-                        try {
-                            parsedError = Json.decodeFromString(
-                                KufarErrorResponse.serializer(), text
-                            )
-                        } catch (_: Exception) {
-                            emit(networkEmptyList)
-                        }
-                    }
-
-                    emit(
-                        NetworkResponseWrapper.error(
-                            request.ex, NetworkErrorInfo(
-                                platform = FlatPlatform.KUFAR,
-                                errorMessages = parsedError?.errorMessages()
-                                    ?: listOf(request.ex.message.orEmpty().substringBefore("["))
-                            )
-                        )
-                    )
-                }
+            if (kufarFlatList.isEmpty() || (response.paginator?.page ?: -1) >=
+                (response.paginator?.pages ?: -1)
+            ) {
+                emit(networkEmptyList)
+            } else {
+                emitFlats(kufarFlatList, emptyIfNoItems = false)
             }
-        } catch (e: Exception) {
-            //            emit(networkEmptyList)
         }
     }
 
@@ -283,6 +225,8 @@ class KufarRepositoryImpl(
     private suspend fun getApartmentHtml(url: String): String {
         return try {
             ktorClient.get(url).bodyAsText()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             throw ParseException("Error fetching HTML for $url: ${e.message}")
         }
