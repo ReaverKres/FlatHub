@@ -29,6 +29,7 @@ fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel 
                 filters.metroStationsState.find { it.name == requestStation.name }
             requestStation.copy(selected = sameStationFromUi?.selected == true)
         },
+        withAnyMetro = filters.withAnyMetro,
         location = filters.location?.let {
             LocationFilter(
                 country = filters.location.selectedCountry.code,
@@ -70,6 +71,7 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
             val sameStationFromRequest = model.metroStations.find { it.name == uiStation.name }
             uiStation.copy(selected = sameStationFromRequest?.selected == true)
         },
+        withAnyMetro = model.withAnyMetro,
         location = model.location?.let {
             LocationUiFilter(
                 selectedCountry = UiCountry(it.country),

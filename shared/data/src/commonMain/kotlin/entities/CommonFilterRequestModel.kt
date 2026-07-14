@@ -61,6 +61,7 @@ data class CommonFilterRequestModel(
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
+    val withAnyMetro: Boolean = false,
     val districtsArea: List<OsmDistricts> = emptyList(),
     val location: LocationFilter? = null,
     val userMapAreas: List<UserMapArea> = emptyList(),
@@ -163,6 +164,7 @@ data class CommonFilterRequestModel(
 
         if (roomOnly != other.roomOnly) return false
         if (withPhotoOnly != other.withPhotoOnly) return false
+        if (withAnyMetro != other.withAnyMetro) return false
         if (adType != other.adType) return false
         if (!isCommercialEqual) return false
         if (bookingDatesFilter != other.bookingDatesFilter) return false
@@ -194,6 +196,7 @@ data class CommonFilterRequestModel(
         result = 31 * result + (fromOwnerOnly ?: false).hashCode()
         result = 31 * result + roomOnly.hashCode()
         result = 31 * result + withPhotoOnly.hashCode()
+        result = 31 * result + withAnyMetro.hashCode()
         result = 31 * result + adType.hashCode()
         //TODO
 //        result = 31 * result + currency.hashCode()

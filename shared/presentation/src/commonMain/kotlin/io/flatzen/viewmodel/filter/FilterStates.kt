@@ -111,6 +111,7 @@ data class FilterState(
     val currency: Currency = Currency.USD,
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
+    val withAnyMetro: Boolean = false,
     val location: LocationUiFilter? = null,
     val userMapAreas: List<MapAreasUi>? = null,
     val districtsArea: List<UiDistrict>? = null,
@@ -124,16 +125,20 @@ data class FilterState(
     val isNotificationEnabled: Boolean = false,
 ) {
     fun isLocationFilterActive(): Boolean {
-        return address.isNullOrEmpty().not() || metroStationsState.any { it.selected }
+        return address.isNullOrEmpty().not() ||
+                withAnyMetro ||
+                metroStationsState.any { it.selected }
     }
 
     fun hasPaidLocationFilters(): Boolean =
-        metroStationsState.any { it.selected } ||
+        withAnyMetro ||
+                metroStationsState.any { it.selected } ||
                 !address.isNullOrEmpty() ||
                 districtsArea?.any { it.isChecked } == true ||
                 userMapAreas?.any { it.isActive } == true
 
     fun stripPaidLocationFilters(): FilterState = copy(
+        withAnyMetro = false,
         metroStationsState = metroStationsState.map { it.copy(selected = false) },
         address = null,
         districtsArea = districtsArea?.map { it.copy(isChecked = false) },
@@ -211,10 +216,16 @@ data class FilterState(
         }
 
         // Метро
-        val selectedMetro = metroStationsState.filter { it.selected }
-        if (selectedMetro.isNotEmpty()) {
-            val metroText = selectedMetro.joinToString(", ") { it.name }
-            activeFilters.add("${resolve(LocalizationKeys.FILTER_METRO_PREFIX)}: $metroText")
+        if (withAnyMetro) {
+            activeFilters.add(
+                "${resolve(LocalizationKeys.FILTER_METRO_PREFIX)}: ${resolve(LocalizationKeys.FILTER_METRO_ANY)}"
+            )
+        } else {
+            val selectedMetro = metroStationsState.filter { it.selected }
+            if (selectedMetro.isNotEmpty()) {
+                val metroText = selectedMetro.joinToString(", ") { it.name }
+                activeFilters.add("${resolve(LocalizationKeys.FILTER_METRO_PREFIX)}: $metroText")
+            }
         }
 
         // Адрес
@@ -276,7 +287,12 @@ private fun defaultRussianString(key: LocalizationKeys): String {
         LocalizationKeys.DETAIL_TOTAL_AREA -> "Общая площадь"
         LocalizationKeys.DETAIL_ROOMS_COUNT -> "Количество комнат"
         LocalizationKeys.FILTER_METRO_PREFIX -> "Метро"
+        LocalizationKeys.FILTER_METRO_ANY -> "Любая станция"
         LocalizationKeys.FILTER_ADDRESS_PREFIX -> "Адрес"
+        LocalizationKeys.LOCATION_METRO_LINE_RED -> "Красная"
+        LocalizationKeys.LOCATION_METRO_LINE_BLUE -> "Синяя"
+        LocalizationKeys.LOCATION_METRO_LINE_GREEN -> "Зелёная"
+        LocalizationKeys.LOCATION_METRO_ANY_SWITCH -> "Любая станция"
         LocalizationKeys.FILTER_CITY_PREFIX -> "Локация"
         LocalizationKeys.FILTER_ACTIVE_AREAS_PREFIX -> "Активные области"
         LocalizationKeys.FILTER_DISTRICTS_PREFIX -> "Районы"

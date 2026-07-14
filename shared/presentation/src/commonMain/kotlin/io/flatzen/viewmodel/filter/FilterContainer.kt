@@ -49,6 +49,8 @@ sealed interface FilterScreenAction : MVIIntent {
     ) : FilterScreenAction
 
     data class UpdateMetroFilter(val metroStation: UiMetroStation) : FilterScreenAction
+    data class UpdateMetroLine(val line: MetroLineState, val selected: Boolean) : FilterScreenAction
+    data class UpdateWithAnyMetro(val enabled: Boolean) : FilterScreenAction
     data class UpdateDistrictFilter(val allDistricts: List<UiDistrict>, val district: UiDistrict) :
         FilterScreenAction
 
@@ -178,8 +180,41 @@ class FilterContainer(
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val updatedFilterState = currentState.filters.copy(
+                        withAnyMetro = false,
                         metroStationsState = currentState.filters.metroStationsState.map {
                             if (it.name == intent.metroStation.name) intent.metroStation else it
+                        }
+                    )
+                    applyFiltersUpdate(updatedFilterState, false)
+                }
+
+                is FilterScreenAction.UpdateMetroLine -> {
+                    var currentState = FilterScreenState.Initial
+                    withState { currentState = this }
+                    val updatedFilterState = currentState.filters.copy(
+                        withAnyMetro = false,
+                        metroStationsState = currentState.filters.metroStationsState.map { station ->
+                            if (station.line == intent.line) {
+                                station.copy(selected = intent.selected)
+                            } else {
+                                station
+                            }
+                        }
+                    )
+                    applyFiltersUpdate(updatedFilterState, false)
+                }
+
+                is FilterScreenAction.UpdateWithAnyMetro -> {
+                    var currentState = FilterScreenState.Initial
+                    withState { currentState = this }
+                    val updatedFilterState = currentState.filters.copy(
+                        withAnyMetro = intent.enabled,
+                        metroStationsState = if (intent.enabled) {
+                            currentState.filters.metroStationsState.map {
+                                it.copy(selected = false)
+                            }
+                        } else {
+                            currentState.filters.metroStationsState
                         }
                     )
                     applyFiltersUpdate(updatedFilterState, false)
@@ -216,6 +251,7 @@ class FilterContainer(
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val filter = currentState.filters.copy(
+                        withAnyMetro = false,
                         metroStationsState = MetroStationsMapper.allStationsOrderedForUi()
                     )
                     applyFiltersUpdate(filter, false)
@@ -225,6 +261,7 @@ class FilterContainer(
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val filter = currentState.filters.copy(
+                        withAnyMetro = false,
                         metroStationsState = MetroStationsMapper.allStationsOrderedForUi(),
                         location = null,
                         address = null,

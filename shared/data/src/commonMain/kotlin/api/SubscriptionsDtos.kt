@@ -27,6 +27,7 @@ data class CommonFilterRequestDto(
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),
+    val withAnyMetro: Boolean = false,
     val districtsArea: List<OsmDistricts> = emptyList(),
     val location: LocationFilter? = null,
     val userMapAreas: List<UserMapArea> = emptyList(),
