@@ -71,6 +71,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.detail_agent
+import flatzen.composeapp.generated.resources.detail_owner
 import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_rent
 import flatzen.composeapp.generated.resources.filter_sale
@@ -1164,6 +1166,18 @@ private fun GridFlatCard(
 
                 Text(
                     text = date,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            flat.isOwner?.let { owner ->
+                Spacer(modifier.height(4.dp))
+                Text(
+                    text = if (owner) {
+                        stringResource(Res.string.detail_owner)
+                    } else {
+                        stringResource(Res.string.detail_agent)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

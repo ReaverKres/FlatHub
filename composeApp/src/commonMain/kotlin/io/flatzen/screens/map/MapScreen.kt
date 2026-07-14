@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.detail_agent
+import flatzen.composeapp.generated.resources.detail_owner
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
@@ -750,6 +752,19 @@ fun FlatItemContent(
             Spacer(Modifier.height(2.dp))
             Text(
                 text = date,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
+        flat.isOwner?.let { owner ->
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = if (owner) {
+                    stringResource(Res.string.detail_owner)
+                } else {
+                    stringResource(Res.string.detail_agent)
+                },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp)

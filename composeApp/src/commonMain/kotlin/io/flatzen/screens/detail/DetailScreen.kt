@@ -240,18 +240,18 @@ private fun FlatDetailContent(
             verticalArrangement = Arrangement.spacedBy(FlatHubTheme.dimens.listItemSpacing)
         ) {
             // Информация о публикации
-            if (flat.publishedAt != null || flat.isOwner != null) {
-                PublicationInfo(
-                    timeAgo = flat.publishedAt,
-                    isOwner = flat.isOwner
-                )
+            flat.publishedAt?.let { timeAgo ->
+                PublicationInfo(timeAgo = timeAgo)
             }
 
             SourceLinkSection(flat.platform, flat.flatUrl)
 
             if (flat.isDetailDataLoaded == true) {
-                if (hasContactData(flat.contactInformation)) {
-                    ContactInfoSection(contactInfo = flat.contactInformation)
+                if (hasContactData(flat.contactInformation) || flat.isOwner != null) {
+                    ContactInfoSection(
+                        contactInfo = flat.contactInformation,
+                        isOwner = flat.isOwner,
+                    )
                 } else {
                     Text(
                         text = stringResource(Res.string.detail_contact_on_source),
@@ -401,31 +401,13 @@ private fun hasBuildingData(flat: UiDetailFlat): Boolean {
 }
 
 @Composable
-private fun PublicationInfo(
-    timeAgo: String?,
-    isOwner: Boolean?
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        timeAgo?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-        isOwner?.let {
-            Text(
-                text = if (it) stringResource(Res.string.detail_owner) else stringResource(Res.string.detail_agent),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-    }
+private fun PublicationInfo(timeAgo: String) {
+    Text(
+        text = timeAgo,
+        style = MaterialTheme.typography.bodySmall.copy(
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    )
 }
 
 @Composable
@@ -551,22 +533,37 @@ private fun hasContactData(contactInfo: ContactInformationUi?): Boolean {
 }
 
 @Composable
-private fun ContactInfoSection(contactInfo: ContactInformationUi?) {
-    // Return early if there's no information to display.
-    if (contactInfo == null || (contactInfo.ownerName.isNullOrBlank() && contactInfo.phones.isNullOrEmpty())) {
+private fun ContactInfoSection(
+    contactInfo: ContactInformationUi?,
+    isOwner: Boolean?,
+) {
+    val hasNameOrPhones = contactInfo != null &&
+            (!contactInfo.ownerName.isNullOrBlank() || !contactInfo.phones.isNullOrEmpty())
+    if (!hasNameOrPhones && isOwner == null) {
         return
     }
 
     val uriHandler = LocalUriHandler.current
 
     SectionCard(title = stringResource(Res.string.detail_contact_info)) {
-        // Display the owner's name if available
-        contactInfo.ownerName?.takeIf { it.isNotBlank() }?.let { name ->
+        isOwner?.let { owner ->
+            Text(
+                text = if (owner) {
+                    stringResource(Res.string.detail_owner)
+                } else {
+                    stringResource(Res.string.detail_agent)
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
+
+        contactInfo?.ownerName?.takeIf { it.isNotBlank() }?.let { name ->
             InfoRow(label = stringResource(Res.string.detail_contact_person), value = name)
         }
 
-        // Display each phone number, making it clickable
-        contactInfo.phones?.forEach { phone ->
+        contactInfo?.phones?.forEach { phone ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

@@ -63,6 +63,7 @@ data class UiFlat(
     val numberOfRooms: String?,
     val totalArea: String?,
     val publishedAt: String?,
+    val isOwner: Boolean?,
     val metroStation: String?,
     val address: String,
     val description: String,
@@ -107,6 +108,7 @@ data class UiFlat(
                     },
                     totalArea = it.totalArea?.toInt().toNullableString(),
                     publishedAt = it.publishedAtUi,
+                    isOwner = it.owner,
                     address = it.address.orEmpty(),
                     description = it.description.orEmpty(),
                     metroStation = if (it.metroStation.isNullOrBlank()) {
