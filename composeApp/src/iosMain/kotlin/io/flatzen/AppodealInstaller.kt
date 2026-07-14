@@ -13,10 +13,11 @@ fun installAppodeal(
     showRewarded: (placement: String, onResult: (String) -> Unit) -> Unit,
     prefetchNative: (placement: String, count: Int) -> Unit,
     createMrecView: (placement: String) -> UIView,
-    createNativeView: (placement: String, style: String) -> UIView,
+    createNativeView: (placement: String, style: String, reuseKey: String?) -> UIView,
     showMrec: (placement: String) -> Unit,
     showNative: (view: UIView, placement: String) -> Unit,
     releaseView: (view: UIView) -> Unit,
+    clearNativeAdReuseCache: () -> Unit,
 ) {
     monetizationInstallAppodeal(
         initialize = initialize,
@@ -28,5 +29,6 @@ fun installAppodeal(
         showMrec = showMrec,
         showNative = showNative,
         releaseView = releaseView,
+        clearNativeAdReuseCache = clearNativeAdReuseCache,
     )
 }

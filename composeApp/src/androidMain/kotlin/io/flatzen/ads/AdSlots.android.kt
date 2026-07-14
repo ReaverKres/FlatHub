@@ -28,7 +28,7 @@ import io.flatzen.monetization.ads.AdService
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
-private const val NATIVE_LOAD_POLL_MS = 300L
+private const val NATIVE_LOAD_POLL_MS = 200L
 private const val NATIVE_LOAD_MAX_ATTEMPTS = 40
 
 private enum class NativeAdSlotState {
@@ -38,11 +38,20 @@ private enum class NativeAdSlotState {
 }
 
 private val nativeAdBatches = mutableMapOf<String, List<NativeAd>>()
+
+/** Keeps creatives across LazyColumn dispose (Appodeal: unregister off-screen, reuse on return). */
+private val nativeAdByReuseKey = mutableMapOf<String, NativeAd>()
 private val batchLock = Any()
 
 actual fun clearNativeAdBatch(batchId: String) {
     synchronized(batchLock) {
         nativeAdBatches.remove(batchId)
+    }
+}
+
+actual fun clearNativeAdReuseCache() {
+    synchronized(batchLock) {
+        nativeAdByReuseKey.clear()
     }
 }
 
@@ -92,6 +101,7 @@ actual fun NativeAdSlot(
     placement: String,
     modifier: Modifier,
     style: NativeAdSlotStyle,
+    reuseKey: String?,
     batchId: String?,
     slotIndex: Int,
     batchSize: Int,
@@ -115,21 +125,39 @@ actual fun NativeAdSlot(
     }
 
     val effectiveBatchSize = batchSize.coerceIn(1, MAX_NATIVE_ADS_PER_BATCH)
-    var nativeLoadTick by remember(placement, style, batchId, slotIndex, effectiveBatchSize) {
-        mutableIntStateOf(0)
+    var nativeLoadTick by remember(
+        placement,
+        style,
+        reuseKey,
+        batchId,
+        slotIndex,
+        effectiveBatchSize
+    ) {
+        mutableIntStateOf(
+            if (reuseKey != null && hasUsableReuseAd(activity, reuseKey, placement)) 1 else 0,
+        )
     }
-    var loadState by remember(placement, style, batchId, slotIndex, effectiveBatchSize) {
-        mutableStateOf(NativeAdSlotState.Loading)
+    var loadState by remember(placement, style, reuseKey, batchId, slotIndex, effectiveBatchSize) {
+        mutableStateOf(
+            if (reuseKey != null && hasUsableReuseAd(activity, reuseKey, placement)) {
+                NativeAdSlotState.Loaded
+            } else {
+                NativeAdSlotState.Loading
+            },
+        )
     }
 
-    LaunchedEffect(placement, style, batchId, slotIndex, effectiveBatchSize) {
+    LaunchedEffect(placement, style, reuseKey, batchId, slotIndex, effectiveBatchSize) {
+        if (reuseKey != null && hasUsableReuseAd(activity, reuseKey, placement)) {
+            nativeLoadTick++
+            return@LaunchedEffect
+        }
+
         if (batchId == null) {
             adService.prefetchNative(placement)
             repeat(NATIVE_LOAD_MAX_ATTEMPTS) {
-                if (Appodeal.isLoaded(Appodeal.NATIVE) && Appodeal.canShow(
-                        Appodeal.NATIVE,
-                        placement
-                    )
+                if (sdkHasNativeReady(placement) ||
+                    (reuseKey != null && hasUsableReuseAd(activity, reuseKey, placement))
                 ) {
                     nativeLoadTick++
                     return@LaunchedEffect
@@ -154,12 +182,11 @@ actual fun NativeAdSlot(
             Appodeal.cache(activity, Appodeal.NATIVE, prefetchCount)
         }
 
-        var sdkReady = false
         repeat(NATIVE_LOAD_MAX_ATTEMPTS) {
             val batchReady = synchronized(batchLock) {
                 (nativeAdBatches[batchId]?.size ?: 0) > slotIndex
             }
-            sdkReady = Appodeal.getAvailableNativeAdsCount() > 0 &&
+            val sdkReady = Appodeal.getAvailableNativeAdsCount() > 0 &&
                     Appodeal.canShow(Appodeal.NATIVE, placement)
             if (batchReady || sdkReady) {
                 nativeLoadTick++
@@ -226,6 +253,7 @@ actual fun NativeAdSlot(
                 activity = activity,
                 view = nativeView,
                 placement = placement,
+                reuseKey = reuseKey,
                 batchId = batchId,
                 slotIndex = slotIndex,
                 batchSize = effectiveBatchSize,
@@ -245,6 +273,7 @@ actual fun NativeAdSlot(
             }
         },
         onRelease = { container ->
+            // Appodeal: unregister when scrolling off-screen; keep NativeAd for reuseKey.
             when (val view = container.tag) {
                 is NativeAdViewAppWall -> view.unregisterView()
                 is NativeAdViewContentStream -> view.unregisterView()
@@ -289,6 +318,17 @@ private fun showMrecIfReady(activity: Activity, placement: String) {
     }
 }
 
+private fun sdkHasNativeReady(placement: String): Boolean =
+    Appodeal.isLoaded(Appodeal.NATIVE) && Appodeal.canShow(Appodeal.NATIVE, placement)
+
+private fun hasUsableReuseAd(activity: Activity, reuseKey: String, placement: String): Boolean =
+    synchronized(batchLock) {
+        val ad = nativeAdByReuseKey[reuseKey] ?: return false
+        if (ad.canShow(activity, placement)) return true
+        nativeAdByReuseKey.remove(reuseKey)
+        false
+    }
+
 private fun obtainBatchNativeAd(
     activity: Activity,
     batchId: String,
@@ -318,23 +358,63 @@ private fun obtainBatchNativeAd(
     merged.getOrNull(slotIndex)
 }
 
+private fun obtainNativeAd(
+    activity: Activity,
+    placement: String,
+    reuseKey: String?,
+    batchId: String?,
+    slotIndex: Int,
+    batchSize: Int,
+): NativeAd? {
+    if (reuseKey != null) {
+        synchronized(batchLock) {
+            nativeAdByReuseKey[reuseKey]?.let { existing ->
+                if (existing.canShow(activity, placement)) {
+                    return existing
+                }
+                nativeAdByReuseKey.remove(reuseKey)
+            }
+        }
+    }
+
+    val nativeAd = if (batchId != null) {
+        obtainBatchNativeAd(activity, batchId, slotIndex, batchSize, placement)
+    } else {
+        if (!sdkHasNativeReady(placement)) {
+            Appodeal.cache(activity, Appodeal.NATIVE)
+            return null
+        }
+        Appodeal.getNativeAds(1).firstOrNull().also {
+            // Refill SDK cache — getNativeAds removes creatives from the pool.
+            Appodeal.cache(activity, Appodeal.NATIVE)
+        }
+    } ?: return null
+
+    if (reuseKey != null) {
+        synchronized(batchLock) {
+            nativeAdByReuseKey[reuseKey] = nativeAd
+        }
+    }
+    return nativeAd
+}
+
 private fun registerNativeAd(
     activity: Activity,
-    view: android.view.View,
+    view: View,
     placement: String,
+    reuseKey: String?,
     batchId: String?,
     slotIndex: Int,
     batchSize: Int,
 ): Boolean {
-    val nativeAd = if (batchId != null) {
-        obtainBatchNativeAd(activity, batchId, slotIndex, batchSize, placement)
-    } else {
-        if (!Appodeal.isLoaded(Appodeal.NATIVE) || !Appodeal.canShow(Appodeal.NATIVE, placement)) {
-            Appodeal.cache(activity, Appodeal.NATIVE)
-            return false
-        }
-        Appodeal.getNativeAds(1).firstOrNull()
-    } ?: return false
+    val nativeAd = obtainNativeAd(
+        activity = activity,
+        placement = placement,
+        reuseKey = reuseKey,
+        batchId = batchId,
+        slotIndex = slotIndex,
+        batchSize = batchSize,
+    ) ?: return false
 
     return when (view) {
         is NativeAdViewAppWall -> view.registerView(nativeAd, placement)

@@ -23,8 +23,12 @@ enum AppodealSetup {
             createMrecView: { placement in
                 AppodealBridge.shared.createMrecView(placement: placement)
             },
-            createNativeView: { placement, style in
-                AppodealBridge.shared.createNativeView(placement: placement, style: style)
+            createNativeView: { placement, style, reuseKey in
+                AppodealBridge.shared.createNativeView(
+                    placement: placement,
+                    style: style,
+                    reuseKey: reuseKey as String?
+                )
             },
             showMrec: { placement in
                 AppodealBridge.shared.showMrec(placement: placement)
@@ -34,6 +38,9 @@ enum AppodealSetup {
             },
             releaseView: { view in
                 AppodealBridge.shared.releaseView(view)
+            },
+            clearNativeAdReuseCache: {
+                AppodealBridge.shared.clearNativeAdReuseCache()
             }
         )
     }

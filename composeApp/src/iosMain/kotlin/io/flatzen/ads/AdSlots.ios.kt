@@ -17,7 +17,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
-private const val NATIVE_LOAD_POLL_MS = 300L
+private const val NATIVE_LOAD_POLL_MS = 200L
 private const val NATIVE_LOAD_MAX_ATTEMPTS = 40
 
 private val AdUIKitProperties = UIKitInteropProperties(
@@ -26,6 +26,10 @@ private val AdUIKitProperties = UIKitInteropProperties(
 )
 
 actual fun clearNativeAdBatch(batchId: String) = Unit
+
+actual fun clearNativeAdReuseCache() {
+    AppodealNative.api?.clearNativeAdReuseCache()
+}
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -65,6 +69,7 @@ actual fun NativeAdSlot(
     placement: String,
     modifier: Modifier,
     style: NativeAdSlotStyle,
+    reuseKey: String?,
     batchId: String?,
     slotIndex: Int,
     batchSize: Int,
@@ -88,13 +93,28 @@ actual fun NativeAdSlot(
         NativeAdSlotStyle.AppWall -> "app_wall"
     }
     val effectiveBatchSize = batchSize.coerceIn(1, MAX_NATIVE_ADS_PER_BATCH)
-    var nativeLoadTick by remember(placement, styleName, batchId, slotIndex, effectiveBatchSize) {
+    var nativeLoadTick by remember(
+        placement,
+        styleName,
+        reuseKey,
+        batchId,
+        slotIndex,
+        effectiveBatchSize
+    ) {
         mutableIntStateOf(0)
     }
-    var isLoaded by remember(placement, styleName, batchId, slotIndex) { mutableStateOf(false) }
-    var loadFailed by remember(placement, styleName, batchId, slotIndex) { mutableStateOf(false) }
+    var isLoaded by remember(placement, styleName, reuseKey, batchId, slotIndex) {
+        mutableStateOf(
+            false
+        )
+    }
+    var loadFailed by remember(placement, styleName, reuseKey, batchId, slotIndex) {
+        mutableStateOf(
+            false
+        )
+    }
 
-    LaunchedEffect(placement, styleName, batchId, slotIndex, effectiveBatchSize) {
+    LaunchedEffect(placement, styleName, reuseKey, batchId, slotIndex, effectiveBatchSize) {
         if (batchId != null && slotIndex != 0) return@LaunchedEffect
         val prefetchCount = if (batchId != null) effectiveBatchSize else 1
         adService.prefetchNative(placement, prefetchCount)
@@ -122,9 +142,9 @@ actual fun NativeAdSlot(
         return
     }
 
-    key(placement, styleName, batchId, slotIndex) {
+    key(placement, styleName, reuseKey, batchId, slotIndex) {
         UIKitView(
-            factory = { api.createNativeView(placement, styleName) },
+            factory = { api.createNativeView(placement, styleName, reuseKey) },
             modifier = modifier,
             update = { view ->
                 api.showNative(view, placement)
@@ -135,6 +155,7 @@ actual fun NativeAdSlot(
                 }
             },
             onRelease = {
+                // Keep reusedNativeAds; only detach the view (Appodeal list guidance).
                 api.releaseView(it)
             },
             properties = AdUIKitProperties,
