@@ -10,6 +10,7 @@ import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.utils.normalizedToLonLat
+import metro.MetroStationsGeoCatalog
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.addPath
 import ovh.plrapps.mapcompose.api.enableRotation
@@ -73,8 +74,7 @@ class MapContainer(
         }
         reduce { intent ->
             when (intent) {
-                MapIntent.Initialize -> { /* no state change */
-                }
+                MapIntent.Initialize -> loadMetroStations()
 
                 MapIntent.CenterOnWorld -> {
                     mapState.scrollTo(0.5, 0.5, destScale = 1.0)
@@ -131,6 +131,11 @@ class MapContainer(
                 }
             }
         }
+    }
+
+    private suspend fun MapCtx.loadMetroStations() {
+        MetroStationsGeoCatalog.loadIfNeeded()
+        updateState { copy(metroStations = MetroStationsGeoCatalog.allStations()) }
     }
 
     private suspend fun MapCtx.handleClickOnMapArea() {

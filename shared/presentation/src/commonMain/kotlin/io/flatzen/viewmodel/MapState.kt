@@ -1,6 +1,7 @@
 package io.flatzen.viewmodel
 
 import androidx.compose.runtime.Immutable
+import entities.MetroStationGeo
 import io.flatzen.viewmodel.filter.SaveDialogState
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -11,6 +12,7 @@ data class MapUiState(
     val isMapAreaActive: Boolean = false,
     val undoBtnVisible: Boolean = true,
     val saveAreaDialogState: SaveDialogState = SaveDialogState(),
+    val metroStations: List<MetroStationGeo> = emptyList(),
 ) : MVIState {
     companion object {
         val Initial = MapUiState()

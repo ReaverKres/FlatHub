@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
+import metro.MetroStationsGeoCatalog
 import repository.emitFlats
 import repository.fillter.FilterRepository
 import repository.getFlatByIdFromDb
@@ -47,6 +48,7 @@ class OnlinerRepositoryImpl(
         filter: CommonFilterRequestModel,
         currentPage: Int?
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
+        MetroStationsGeoCatalog.loadIfNeeded()
         val currentPage = currentPage ?: filterRepository.currentHomePage
         val metroLines =
             filter.metroStations.filter { it.selected }.map { it.line.name.lowercase() }.distinct()
@@ -121,6 +123,7 @@ class OnlinerRepositoryImpl(
     }.flowOn(Dispatchers.IO)
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
+        MetroStationsGeoCatalog.loadIfNeeded()
         val flatFromList = getFlatByIdFromDb(flatId, flatsDao)
         if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
             val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
