@@ -43,7 +43,12 @@ class FlatDetailContainer(
     private val minLevel = 16
     private val mapSize = mapSizeAtLevel(maxLevel, tileSize = 256)
 
-    val mapState = MapState(levelCount = maxLevel + 1, mapSize, mapSize) {
+    val mapState = MapState(
+        levelCount = maxLevel + 1,
+        fullWidth = mapSize,
+        fullHeight = mapSize,
+        workerCount = 8,
+    ) {
         minimumScaleMode(Forced(1 / 2.0.pow(maxLevel - minLevel)))
         scale(0.0)
     }.apply {

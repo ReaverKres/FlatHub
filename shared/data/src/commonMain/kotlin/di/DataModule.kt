@@ -153,5 +153,10 @@ val dataModule = module {
         )
     }
 
-    single<TileStreamProvider> { TileProviderImpl(httpClient = get()) }
+    single<TileStreamProvider> {
+        TileProviderImpl(
+            httpClient = get(),
+            diskCache = get(),
+        )
+    }
 }

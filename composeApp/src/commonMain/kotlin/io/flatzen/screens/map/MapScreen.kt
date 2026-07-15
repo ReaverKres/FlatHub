@@ -1,6 +1,7 @@
 package io.flatzen.screens.map
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,11 +50,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import entities.MetroLine
 import entities.MetroStationGeo
 import flatzen.composeapp.generated.resources.Res
@@ -100,24 +102,25 @@ import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.rememberPremiumUpsellState
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
-import ovh.plrapps.mapcompose.api.ReferentialSnapshot
 import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.getPathData
+import ovh.plrapps.mapcompose.api.hasMarker
 import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.onTap
 import ovh.plrapps.mapcompose.api.referentialSnapshotFlow
 import ovh.plrapps.mapcompose.api.removeAllMarkers
 import ovh.plrapps.mapcompose.api.removeCallout
 import ovh.plrapps.mapcompose.api.removeMarker
-import ovh.plrapps.mapcompose.api.rotation
 import ovh.plrapps.mapcompose.api.scale
-import ovh.plrapps.mapcompose.api.scroll
 import ovh.plrapps.mapcompose.api.scrollTo
+import ovh.plrapps.mapcompose.api.updateMarkerVisibility
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
@@ -159,6 +162,27 @@ fun MapScreen(
         selectedLongitude?.let { lon -> Coordinates(lat, lon) }
     }
     val highlightedFlatCoordinates = detailFlat?.coordinates ?: selectedMarkerCoordinates
+
+    val metroChrome = remember { MetroMapChromeState() }
+    val metroStationPainter = rememberAsyncImagePainter(
+        model = Res.getUri("drawable/metro_station.svg"),
+    )
+    val selectedAdIdState = remember { mutableStateOf<Long?>(null) }
+    selectedAdIdState.value = detailFlatId
+    val trackedFlatMarkerIds = remember { mutableStateOf(emptySet<String>()) }
+    val trackedMetroMarkerIds = remember { mutableStateOf(emptySet<String>()) }
+
+    LaunchedEffect(mapViewModel.mapState) {
+        mapViewModel.mapState.referentialSnapshotFlow()
+            .map { snapshot ->
+                (snapshot.scale >= METRO_ICON_MIN_SCALE) to (snapshot.scale >= METRO_LABEL_MIN_SCALE)
+            }
+            .distinctUntilChanged()
+            .collect { (showIcon, showLabel) ->
+                metroChrome.showIcon = showIcon
+                metroChrome.showLabel = showLabel
+            }
+    }
 
     val filterContainer: FilterContainer = container()
     val filterState by filterContainer.store.subscribe { }
@@ -259,65 +283,93 @@ fun MapScreen(
         selectedMarker,
         highlightedFlatCoordinates,
         selectedRooms,
-        isMarkersSizeTooBig,
     ) {
         if (mapModelState.isMapAreaActive) {
             mapViewModel.mapState.removeAllMarkers()
+            trackedFlatMarkerIds.value = emptySet()
+            trackedMetroMarkerIds.value = emptySet()
         } else {
             mapViewModel.mapState.removeCallout(savePathCalloutId)
             mapViewModel.mapState.apply {
                 onMarkerClick { id, _, _ ->
                     selectedFlatId = id.toLongOrNull()
                 }
-                removeAllMarkers()
-                addMetroStationMarkers(mapModelState.metroStations)
 
-                if (flatsForMap.isNotEmpty()) {
-                    flatsForMap.forEach {
-                        val mercatorCoordinates =
-                            it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
-                                ?: return@forEach
+                val desiredFlatIds = flatsForMap.map { it.adId.toString() }.toSet()
+                val currentFlatIds = trackedFlatMarkerIds.value
+                (currentFlatIds - desiredFlatIds).forEach { id -> removeMarker(id) }
+
+                flatsForMap.forEach { flat ->
+                    val id = flat.adId.toString()
+                    if (id in currentFlatIds && hasMarker(id)) return@forEach
+                    val mercatorCoordinates =
+                        flat.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
+                            ?: return@forEach
+                    val adId = flat.adId
+                    val rooms = flat.numberOfRooms?.toIntOrNull()
+                    addMarker(
+                        id = id,
+                        x = mercatorCoordinates.first,
+                        y = mercatorCoordinates.second,
+                        clickableAreaScale = Offset(1.3f, 1.3f),
+                        renderingStrategy = RenderingStrategy.Clustering(clusterId)
+                    ) {
+                        val selectedId = selectedAdIdState.value
+                        RoomMarker(
+                            rooms = rooms,
+                            pinColor = if (selectedId == adId) Color.Green else Color(0xFFD32F2F),
+                            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                trackedFlatMarkerIds.value = desiredFlatIds
+
+                if (detailFlatId != null && highlightedFlatCoordinates != null) {
+                    val highlightId = detailFlatId.toString()
+                    val flatInMarkersWithCoordinates = flatsForMap.any {
+                        it.adId == detailFlatId && it.coordinates != null
+                    }
+                    if (!flatInMarkersWithCoordinates && !hasMarker(highlightId)) {
+                        val mercatorCoordinates = lonLatToNormalized(
+                            highlightedFlatCoordinates.latitude,
+                            highlightedFlatCoordinates.longitude,
+                        )
                         addMarker(
-                            id = it.adId.toString(),
+                            id = highlightId,
                             x = mercatorCoordinates.first,
                             y = mercatorCoordinates.second,
                             clickableAreaScale = Offset(1.3f, 1.3f),
                             renderingStrategy = RenderingStrategy.Clustering(clusterId)
                         ) {
                             RoomMarker(
-                                rooms = it.numberOfRooms?.toIntOrNull(),
-                                pinColor = if (detailFlatId == it.adId) Color.Green else Color(
-                                    0xFFD32F2F
-                                ),
+                                rooms = selectedRooms
+                                    ?: detailFlat?.numberOfRooms?.toIntOrNull(),
+                                pinColor = Color.Green,
                                 textColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
-                    if (detailFlatId != null && highlightedFlatCoordinates != null) {
-                        val flatInMarkersWithCoordinates = flatsForMap.any {
-                            it.adId == detailFlatId && it.coordinates != null
-                        }
-                        if (!flatInMarkersWithCoordinates) {
-                            val mercatorCoordinates = lonLatToNormalized(
-                                highlightedFlatCoordinates.latitude,
-                                highlightedFlatCoordinates.longitude,
-                            )
-                            addMarker(
-                                id = detailFlatId.toString(),
-                                x = mercatorCoordinates.first,
-                                y = mercatorCoordinates.second,
-                                clickableAreaScale = Offset(1.3f, 1.3f),
-                                renderingStrategy = RenderingStrategy.Clustering(clusterId)
-                            ) {
-                                RoomMarker(
-                                    rooms = selectedRooms
-                                        ?: detailFlat?.numberOfRooms?.toIntOrNull(),
-                                    pinColor = Color.Green,
-                                    textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
+                }
+
+                val desiredMetroIds = mapModelState.metroStations
+                    .map { "$METRO_MARKER_ID_PREFIX${it.metroId}" }
+                    .toSet()
+                if (trackedMetroMarkerIds.value != desiredMetroIds) {
+                    (trackedMetroMarkerIds.value - desiredMetroIds).forEach { removeMarker(it) }
+                    addMetroStationMarkers(
+                        stations = mapModelState.metroStations.filter {
+                            "$METRO_MARKER_ID_PREFIX${it.metroId}" !in trackedMetroMarkerIds.value
+                        },
+                        chrome = metroChrome,
+                        iconPainter = metroStationPainter,
+                    )
+                    trackedMetroMarkerIds.value = desiredMetroIds
+                }
+                desiredMetroIds.forEach { id ->
+                    updateMarkerVisibility(id, metroChrome.showIcon)
+                }
+
+                if (flatsForMap.isNotEmpty()) {
                     addClusterer(
                         id = clusterId,
                         clusteringThreshold = 30.dp
@@ -328,6 +380,12 @@ fun MapScreen(
                     }
                 }
             }
+        }
+    }
+
+    LaunchedEffect(metroChrome.showIcon, trackedMetroMarkerIds.value) {
+        trackedMetroMarkerIds.value.forEach { id ->
+            mapViewModel.mapState.updateMarkerVisibility(id, metroChrome.showIcon)
         }
     }
 
@@ -638,6 +696,12 @@ private const val MAX_MAP_MARKERS = 270
 private const val METRO_ICON_MIN_SCALE = 0.08
 private const val METRO_LABEL_MIN_SCALE = 0.25
 
+@Stable
+private class MetroMapChromeState {
+    var showIcon by mutableStateOf(false)
+    var showLabel by mutableStateOf(false)
+}
+
 private fun MetroLine.toMapColor(): Color = when (this) {
     MetroLine.RED -> Color(0xFFBC6B66)
     MetroLine.BLUE -> Color(0xFF6E8FAD)
@@ -651,56 +715,58 @@ private fun formatMetroStationName(name: String): String {
     return words.take(splitAt).joinToString(" ") + "\n" + words.drop(splitAt).joinToString(" ")
 }
 
-private fun MapState.addMetroStationMarkers(stations: List<MetroStationGeo>) {
-    val mapState = this
+private fun MapState.addMetroStationMarkers(
+    stations: List<MetroStationGeo>,
+    chrome: MetroMapChromeState,
+    iconPainter: Painter,
+) {
     stations.forEach { station ->
+        val id = "$METRO_MARKER_ID_PREFIX${station.metroId}"
+        if (hasMarker(id)) return@forEach
         val (x, y) = lonLatToNormalized(
             station.coordinates.latitude,
             station.coordinates.longitude,
         )
+        val lineColor = station.line.toMapColor()
+        val label = formatMetroStationName(station.canonicalName)
         addMarker(
-            id = "$METRO_MARKER_ID_PREFIX${station.metroId}",
+            id = id,
             x = x,
             y = y,
         ) {
             MetroStationMapMarker(
-                mapState = mapState,
-                name = station.canonicalName,
-                lineColor = station.line.toMapColor(),
+                chrome = chrome,
+                name = label,
+                lineColor = lineColor,
+                iconPainter = iconPainter,
             )
         }
+        updateMarkerVisibility(id, chrome.showIcon)
     }
 }
 
 @Composable
 private fun MetroStationMapMarker(
-    mapState: MapState,
+    chrome: MetroMapChromeState,
     name: String,
     lineColor: Color,
+    iconPainter: Painter,
 ) {
-    val snapshot by mapState.referentialSnapshotFlow().collectAsState(
-        ReferentialSnapshot(
-            scale = mapState.scale,
-            scroll = mapState.scroll,
-            rotation = mapState.rotation,
-        )
-    )
-    val scale = snapshot.scale
-    if (scale < METRO_ICON_MIN_SCALE) return
+    if (!chrome.showIcon) return
 
     Row(
         modifier = Modifier.wrapContentSize(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
-            model = Res.getUri("drawable/metro_station.svg"),
+        Image(
+            painter = iconPainter,
             contentDescription = null,
             modifier = Modifier.size(28.dp),
             colorFilter = ColorFilter.tint(lineColor),
         )
-        if (scale >= METRO_LABEL_MIN_SCALE) {
+        if (chrome.showLabel) {
             Text(
-                text = formatMetroStationName(name),
+                text = name,
                 style = MaterialTheme.typography.labelSmall,
                 color = lineColor,
                 maxLines = 2,
@@ -715,7 +781,6 @@ private fun MetroStationMapMarker(
 
 @Composable
 private fun Cluster(size: Int) {
-    /* Here we can customize the cluster style */
     Box(
         modifier = Modifier
             .background(
@@ -734,46 +799,36 @@ private fun Cluster(size: Int) {
 
 @Composable
 fun RoomMarker(
-    rooms: Int?,             // можно передавать "3" или "Ст"
-    pinColor: Color = Color(0xFFD32F2F),  // насыщенный красный
-    fillColor: Color = Color.White,       // белая внутренняя часть круга
-    textColor: Color = Color(0xFF757575), // серый текст как на примере
-    borderWidth: Dp = 2.dp,
-    circleSize: Dp = 16.dp,
-    tailWidth: Dp = 6.dp,
-    tailHeight: Dp = 4.dp,
+    rooms: Int?,
+    pinColor: Color = Color(0xFFD32F2F),
+    fillColor: Color = Color.White,
+    textColor: Color = Color(0xFF757575),
 ) {
+    val circleSize = 16.dp
+    val tailWidth = 6.dp
+    val tailHeight = 4.dp
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // Круг: белая заливка + красная обводка
         Box(
             modifier = Modifier
                 .size(circleSize)
-                .clip(CircleShape)
-                .background(fillColor)
-                .border(borderWidth, pinColor, CircleShape),
-            contentAlignment = Alignment.Center
+                .background(fillColor, CircleShape)
+                .border(2.dp, pinColor, CircleShape),
+            contentAlignment = Alignment.Center,
         ) {
-            rooms?.let {
+            if (rooms != null) {
                 Text(
                     text = rooms.toString(),
                     color = textColor,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
                 )
             }
         }
-
-        // Треугольный хвостик (залит красным)
-        Canvas(
-            modifier = Modifier.size(width = tailWidth, height = tailHeight)
-        ) {
+        Canvas(modifier = Modifier.size(width = tailWidth, height = tailHeight)) {
             val path = Path().apply {
-                // верхняя центральная точка (примыкает к кругу)
                 moveTo(size.width / 2f, 0f)
-                // левый нижний
                 lineTo(0f, size.height)
-                // правый нижний
                 lineTo(size.width, size.height)
                 close()
             }
