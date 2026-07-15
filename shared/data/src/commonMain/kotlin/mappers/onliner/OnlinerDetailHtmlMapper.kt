@@ -8,13 +8,14 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import mappers.base.AdditionalParamMapper
+import metro.MetroProximityEnricher
 import kotlin.time.ExperimentalTime
 
 class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
 
     @OptIn(ExperimentalTime::class)
     override fun map(baseFlat: AppFlat, html: String): AppFlat {
-        if (html.isBlank()) return baseFlat
+        if (html.isBlank()) return MetroProximityEnricher.enrich(baseFlat)
         val doc = Ksoup.parse(html)
 
         // Парсим количество комнат
@@ -61,8 +62,7 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
                     .substringBefore(")")
                     .takeIf { it.isNotBlank() }
             }
-
-        return baseFlat.copy(
+        val updatedFlat = baseFlat.copy(
             flatPlatform = FlatPlatform.ONLINER,
             flatDevInfo = FlatDevInfo(
                 isDetailData = true,
@@ -77,8 +77,8 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
             rooms = rooms,
             district = tableParams["Район"],
             address = address,
-            coordinates = coordinates,
-            metroStation = tableParams["Метро"],
+            coordinates = coordinates ?: baseFlat.coordinates,
+            metroStation = tableParams["Метро"] ?: baseFlat.metroStation,
             description = description,
             yearBuilt = tableParams["Год постройки"]?.toIntOrNull(),
             totalArea = baseFlat.totalArea ?: tableParams["Общая площадь"]?.replace("м²", "")
@@ -116,6 +116,11 @@ class OnlinerDetailHtmlMapper : AdditionalParamMapper<String, AppFlat> {
                 ownerName = extractOwnerName(doc)
             )
         )
+        val flatWithMetro = MetroProximityEnricher.enrich(
+            updatedFlat
+        )
+
+        return flatWithMetro
     }
 
     private fun extractRoomsFromText(text: String?): Int? {

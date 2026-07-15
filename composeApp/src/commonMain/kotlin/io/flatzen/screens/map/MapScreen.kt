@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,12 +47,15 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import entities.MetroLine
+import entities.MetroStationGeo
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.back
 import flatzen.composeapp.generated.resources.detail_agent
@@ -99,18 +103,23 @@ import io.flatzen.widgets.rememberPremiumUpsellState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
+import ovh.plrapps.mapcompose.api.ReferentialSnapshot
 import ovh.plrapps.mapcompose.api.addCallout
 import ovh.plrapps.mapcompose.api.addClusterer
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.getPathData
 import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.onTap
+import ovh.plrapps.mapcompose.api.referentialSnapshotFlow
 import ovh.plrapps.mapcompose.api.removeAllMarkers
 import ovh.plrapps.mapcompose.api.removeCallout
 import ovh.plrapps.mapcompose.api.removeMarker
+import ovh.plrapps.mapcompose.api.rotation
 import ovh.plrapps.mapcompose.api.scale
+import ovh.plrapps.mapcompose.api.scroll
 import ovh.plrapps.mapcompose.api.scrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
+import ovh.plrapps.mapcompose.ui.state.MapState
 import ovh.plrapps.mapcompose.ui.state.markers.model.RenderingStrategy
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
@@ -243,6 +252,7 @@ fun MapScreen(
     LaunchedEffect(
         listState.flatList,
         mapModelState.isMapAreaActive,
+        mapModelState.metroStations,
         selectedMarker,
         highlightedFlatCoordinates,
         selectedRooms,
@@ -252,12 +262,13 @@ fun MapScreen(
         } else {
             mapViewModel.mapState.removeCallout(savePathCalloutId)
             mapViewModel.mapState.apply {
-                onMarkerClick { id, x, y ->
+                onMarkerClick { id, _, _ ->
                     selectedFlatId = id.toLongOrNull()
                 }
-                if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
-                    removeAllMarkers()
+                removeAllMarkers()
+                addMetroStationMarkers(mapModelState.metroStations)
 
+                if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
                     listState.flatList.forEach {
                         val mercatorCoordinates =
                             it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
@@ -614,6 +625,85 @@ fun MapScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+private const val METRO_MARKER_ID_PREFIX = "metro_"
+private const val METRO_ICON_MIN_SCALE = 0.08
+private const val METRO_LABEL_MIN_SCALE = 0.25
+
+private fun MetroLine.toMapColor(): Color = when (this) {
+    MetroLine.RED -> Color(0xFFBC6B66)
+    MetroLine.BLUE -> Color(0xFF6E8FAD)
+    MetroLine.GREEN -> Color(0xFF729E78)
+}
+
+private fun formatMetroStationName(name: String): String {
+    val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+    if (words.size <= 1) return name
+    val splitAt = words.size / 2
+    return words.take(splitAt).joinToString(" ") + "\n" + words.drop(splitAt).joinToString(" ")
+}
+
+private fun MapState.addMetroStationMarkers(stations: List<MetroStationGeo>) {
+    val mapState = this
+    stations.forEach { station ->
+        val (x, y) = lonLatToNormalized(
+            station.coordinates.latitude,
+            station.coordinates.longitude,
+        )
+        addMarker(
+            id = "$METRO_MARKER_ID_PREFIX${station.metroId}",
+            x = x,
+            y = y,
+        ) {
+            MetroStationMapMarker(
+                mapState = mapState,
+                name = station.canonicalName,
+                lineColor = station.line.toMapColor(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun MetroStationMapMarker(
+    mapState: MapState,
+    name: String,
+    lineColor: Color,
+) {
+    val snapshot by mapState.referentialSnapshotFlow().collectAsState(
+        ReferentialSnapshot(
+            scale = mapState.scale,
+            scroll = mapState.scroll,
+            rotation = mapState.rotation,
+        )
+    )
+    val scale = snapshot.scale
+    if (scale < METRO_ICON_MIN_SCALE) return
+
+    Row(
+        modifier = Modifier.wrapContentSize(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AsyncImage(
+            model = Res.getUri("drawable/metro_station.svg"),
+            contentDescription = null,
+            modifier = Modifier.size(28.dp),
+            colorFilter = ColorFilter.tint(lineColor),
+        )
+        if (scale >= METRO_LABEL_MIN_SCALE) {
+            Text(
+                text = formatMetroStationName(name),
+                style = MaterialTheme.typography.labelSmall,
+                color = lineColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(start = 2.dp)
+                    .padding(horizontal = 4.dp, vertical = 1.dp),
+            )
         }
     }
 }

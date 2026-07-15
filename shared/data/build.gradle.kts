@@ -4,9 +4,17 @@ plugins {
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
+    android {
+        androidResources {
+            enable = true
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -24,6 +32,9 @@ kotlin {
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
                 implementation(libs.mp.maps)
+
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.components.resources)
             }
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }
@@ -36,6 +47,12 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
     }
+}
+
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "io.flatzen.data.generated.resources"
+    generateResClass = auto
 }
 
 dependencies {

@@ -18,7 +18,7 @@ materialIconsCore = "1.7.3"
 navigationCompose = "2.9.2"
 multiplatform-nav3-ui = "1.1.1"
 compose-multiplatform-lifecycle = "2.10.0-alpha07"
-mapComposeMP = "0.10.0"
+mapComposeMP = "1.1.1"
 lifecycleCompose = "2.9.1"
 kotlinStdlib = "2.4.0"
 jetbrainsKotlinJvm = "2.4.0"
@@ -76,6 +76,8 @@ navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-co
 jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
 jetbrains-lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "compose-multiplatform-lifecycle" }
 compose-multiplatform-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform-backhandler" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 compose-confetti = { module = "io.github.vinceglb:confettikit", version.ref = "compose-confetti"}
 mp-maps = { module = "ovh.plrapps:mapcompose-mp", version.ref = "mapComposeMP"}
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }

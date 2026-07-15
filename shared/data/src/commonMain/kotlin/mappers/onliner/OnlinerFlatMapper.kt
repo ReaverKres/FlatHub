@@ -8,6 +8,7 @@ import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.date.DateConverter.formatInstant
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
+import metro.MetroProximityEnricher
 import server_response.OnlinerListResponse
 import kotlin.time.ExperimentalTime
 
@@ -28,12 +29,11 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             }
         }
 
-
         val images = data.photo?.let { listOf(it) }
         val flatDateInstant = DateConverter.stringToInstant(data.lastTimeUp.orEmpty())
         val publishedAtUi = formatInstant(flatDateInstant, TimeZone.currentSystemDefault())
 
-        return AppFlat(
+        val flat = AppFlat(
             flatPlatform = FlatPlatform.ONLINER,
             flatDevInfo = FlatDevInfo(
                 isDetailData = false,
@@ -51,17 +51,16 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             district = null, // Отсутствует в Onliner
             address = data.location?.address,
             coordinates = coordinates,
-            metroStation = null, // Отсутствует в Onliner
+            metroStation = null, // Отсутствует в Onliner — обогащается по координатам
             description = null, // Отсутствует в Onliner
             yearBuilt = null, // Отсутствует в Onliner
-            // Новые поля - отсутствуют в Onliner
             totalArea = data.area?.total,
             livingArea = data.area?.living,
             kitchenArea = data.area?.kitchen,
             floor = null,
             totalFloors = null,
             sleepingPlaces = null,
-            isStudio = false, // Можно определить по rent_type, но лучше false по умолчанию
+            isStudio = false,
             bathroomType = null,
             repairType = null,
             windowDirections = null,
@@ -77,9 +76,8 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             contactInformation = null,
             commercialInfo = null
         )
+        return MetroProximityEnricher.enrich(flat)
     }
-
-    // === Вспомогательные функции ===
 
     private fun parseRoomsFromRentType(rentType: String?): Int {
         return when (rentType) {
@@ -91,7 +89,6 @@ class OnlinerFlatMapper : ResponseToEntitiesFlatMapper<OnlinerListResponse.Apart
             "5_rooms" -> 5
             "6_rooms" -> 6
             else -> {
-                // Попытка извлечь цифру из строки
                 rentType?.let {
                     Regex("(\\d+)_room").find(it)?.groupValues?.get(1)?.toIntOrNull()
                 } ?: 0
