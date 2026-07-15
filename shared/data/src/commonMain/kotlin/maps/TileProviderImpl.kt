@@ -3,45 +3,62 @@ package maps
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.io.Buffer
 import kotlinx.io.RawSource
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 
 /**
- * Простейший TileStreamProvider для OSM.
- * В бою добавьте кэш и троттлинг запросов.
+ * Tile provider for Carto/OSM raster tiles with memory LRU + optional disk cache.
  */
 class TileProviderImpl(
     private val httpClient: HttpClient,
-    private val cacheSize: Int = 1000
+    private val diskCache: MapTileDiskCache = NoOpMapTileDiskCache(),
+    memoryCacheSize: Int = 512,
 ) : TileStreamProvider {
 
-    private val cache = HashMap<String, ByteArray>()
+    private val maxMemoryEntries = memoryCacheSize.coerceAtLeast(32)
+    private val memoryMutex = Mutex()
+    private val memoryCache = LinkedHashMap<String, ByteArray>()
+    private val accessOrder = ArrayDeque<String>()
 
     override suspend fun getTileStream(row: Int, col: Int, zoomLvl: Int): RawSource? {
         val cacheKey = "$zoomLvl/$col/$row"
-
         return try {
-//            // Проверяем кэш
-            val cachedData = cache[cacheKey]
-            if (cachedData != null) {
-                return createRawSourceFromBytes(cachedData)
+            memoryGet(cacheKey)?.let { return createRawSourceFromBytes(it) }
+
+            diskCache.get(cacheKey)?.let { fromDisk ->
+                memoryPut(cacheKey, fromDisk)
+                return createRawSourceFromBytes(fromDisk)
             }
 
-            // Загружаем из сети
             val url = "https://basemaps.cartocdn.com/rastertiles/voyager/$zoomLvl/$col/$row.png"
             val bytes: ByteArray = httpClient.get(url).body()
-
-//            // Сохраняем в кэш (с ограничением размера)
-            if (cache.size >= cacheSize) {
-                clearCache() // Простая стратегия очистки
-            }
-            cache[cacheKey] = bytes
-
+            memoryPut(cacheKey, bytes)
+            diskCache.put(cacheKey, bytes)
             createRawSourceFromBytes(bytes)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
+        }
+    }
+
+    private suspend fun memoryGet(key: String): ByteArray? = memoryMutex.withLock {
+        val bytes = memoryCache[key] ?: return@withLock null
+        accessOrder.remove(key)
+        accessOrder.addLast(key)
+        bytes
+    }
+
+    private suspend fun memoryPut(key: String, bytes: ByteArray) = memoryMutex.withLock {
+        if (memoryCache.containsKey(key)) {
+            accessOrder.remove(key)
+        }
+        memoryCache[key] = bytes
+        accessOrder.addLast(key)
+        while (memoryCache.size > maxMemoryEntries) {
+            val eldest = accessOrder.removeFirstOrNull() ?: break
+            memoryCache.remove(eldest)
         }
     }
 
@@ -50,12 +67,4 @@ class TileProviderImpl(
         buffer.write(bytes)
         return buffer
     }
-
-    fun clearCache() {
-        cache.clear()
-    }
-
-    fun getCacheSize(): Int = cache.size
 }
-
-

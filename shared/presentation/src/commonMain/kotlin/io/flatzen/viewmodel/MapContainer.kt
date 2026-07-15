@@ -50,7 +50,12 @@ class MapContainer(
     private val x = minsk.first
     private val y = minsk.second
 
-    val mapState = MapComposeState(levelCount = maxLevel + 1, mapSize, mapSize) {
+    val mapState = MapComposeState(
+        levelCount = maxLevel + 1,
+        fullWidth = mapSize,
+        fullHeight = mapSize,
+        workerCount = TILE_HTTP_WORKER_COUNT,
+    ) {
         minimumScaleMode(Forced(1 / 2.0.pow(maxLevel - minLevel)))
         scroll(x, y)
         scale(0.0)
@@ -241,5 +246,9 @@ class MapContainer(
             val (lat, lon) = normalizedToLonLat(point.first, point.second)
             Coordinates(lat, lon)
         }
+    }
+
+    private companion object {
+        const val TILE_HTTP_WORKER_COUNT = 16
     }
 }
