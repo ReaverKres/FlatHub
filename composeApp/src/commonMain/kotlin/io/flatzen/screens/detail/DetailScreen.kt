@@ -537,8 +537,9 @@ private fun ContactInfoSection(
     contactInfo: ContactInformationUi?,
     isOwner: Boolean?,
 ) {
+    val phones = contactInfo?.phones?.filter { it.isNotBlank() }.orEmpty()
     val hasNameOrPhones = contactInfo != null &&
-            (!contactInfo.ownerName.isNullOrBlank() || !contactInfo.phones.isNullOrEmpty())
+            (!contactInfo.ownerName.isNullOrBlank() || phones.isNotEmpty())
     if (!hasNameOrPhones && isOwner == null) {
         return
     }
@@ -563,7 +564,16 @@ private fun ContactInfoSection(
             InfoRow(label = stringResource(Res.string.detail_contact_person), value = name)
         }
 
-        contactInfo?.phones?.forEach { phone ->
+        if (phones.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.detail_contact_on_source),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
+
+        phones.forEach { phone ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

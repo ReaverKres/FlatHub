@@ -147,7 +147,10 @@ fun MapScreen(
         listState.flatList.find { it.adId == id }
     }
     val clusterId = "default"
-    val isMarkersSizeTooBig = listState.flatList.size >= 270
+    val flatsForMap = remember(listState.flatList) {
+        listState.flatList.take(MAX_MAP_MARKERS)
+    }
+    val isMarkersSizeTooBig = listState.flatList.size > MAX_MAP_MARKERS
     val detailFlatId = selectedMarker
     val detailFlat = detailFlatId?.let { id ->
         listState.flatList.find { it.adId == id }
@@ -250,12 +253,13 @@ fun MapScreen(
     }
 
     LaunchedEffect(
-        listState.flatList,
+        flatsForMap,
         mapModelState.isMapAreaActive,
         mapModelState.metroStations,
         selectedMarker,
         highlightedFlatCoordinates,
         selectedRooms,
+        isMarkersSizeTooBig,
     ) {
         if (mapModelState.isMapAreaActive) {
             mapViewModel.mapState.removeAllMarkers()
@@ -268,8 +272,8 @@ fun MapScreen(
                 removeAllMarkers()
                 addMetroStationMarkers(mapModelState.metroStations)
 
-                if (listState.flatList.isNotEmpty() && isMarkersSizeTooBig.not()) {
-                    listState.flatList.forEach {
+                if (flatsForMap.isNotEmpty()) {
+                    flatsForMap.forEach {
                         val mercatorCoordinates =
                             it.coordinates?.let { lonLatToNormalized(it.latitude, it.longitude) }
                                 ?: return@forEach
@@ -290,10 +294,10 @@ fun MapScreen(
                         }
                     }
                     if (detailFlatId != null && highlightedFlatCoordinates != null) {
-                        val flatInListWithCoordinates = listState.flatList.any {
+                        val flatInMarkersWithCoordinates = flatsForMap.any {
                             it.adId == detailFlatId && it.coordinates != null
                         }
-                        if (!flatInListWithCoordinates) {
+                        if (!flatInMarkersWithCoordinates) {
                             val mercatorCoordinates = lonLatToNormalized(
                                 highlightedFlatCoordinates.latitude,
                                 highlightedFlatCoordinates.longitude,
@@ -630,6 +634,7 @@ fun MapScreen(
 }
 
 private const val METRO_MARKER_ID_PREFIX = "metro_"
+private const val MAX_MAP_MARKERS = 270
 private const val METRO_ICON_MIN_SCALE = 0.08
 private const val METRO_LABEL_MIN_SCALE = 0.25
 
