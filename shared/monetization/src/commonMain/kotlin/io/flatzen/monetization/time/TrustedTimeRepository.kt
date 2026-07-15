@@ -111,11 +111,7 @@ class TrustedTimeRepository(
         secureStore.saveTimeAnchor(newAnchor)
         beginSession(serverTimeMs)
 
-        val skew = abs(deviceTimeMs - serverTimeMs)
-        if (suspect && skew <= MAX_CLOCK_SKEW_MS) {
-            suspect = false
-            secureStore.saveSuspectFlag(false)
-        }
+        maybeClearSuspect(deviceTimeMs)
 
         lastObservedDeviceMs = deviceTimeMs
         publish()
@@ -143,6 +139,7 @@ class TrustedTimeRepository(
     private fun publish(): TrustedTimeState {
         val deviceNow = Clock.System.now().toEpochMilliseconds()
         detectRollback(deviceNow)
+        maybeClearSuspect(deviceNow)
         val trustedNow = computeTrustedNow(deviceNow).coerceAtLeast(lastTrustedNowMs)
         if (trustedNow > lastTrustedNowMs) {
             lastTrustedNowMs = trustedNow
@@ -197,6 +194,23 @@ class TrustedTimeRepository(
         }
     }
 
+    /**
+     * Clears [suspect] when device wall clock is close to the already known trusted timeline
+     * (monotonic session from last server/anchor sample) — no fresh network sync required.
+     */
+    private fun maybeClearSuspect(deviceNowMs: Long) {
+        if (!suspect) return
+        val mark = sessionMark ?: return
+        val sessionServer = sessionServerMs ?: return
+        val trusted = sessionServer + mark.elapsedNow().inWholeMilliseconds
+        if (abs(deviceNowMs - trusted) <= MAX_CLOCK_SKEW_MS) {
+            suspect = false
+            scope.launch(Dispatchers.IO) {
+                runCatching { secureStore.saveSuspectFlag(false) }
+            }
+        }
+    }
+
     private fun markSuspect() {
         if (suspect) return
         suspect = true
@@ -235,7 +249,7 @@ class TrustedTimeRepository(
 
     companion object {
         private val SYNC_INTERVAL = 1.minutes
-        private val TICK_INTERVAL = 30.seconds
+        private val TICK_INTERVAL = 5.seconds
         private const val MAX_CLOCK_SKEW_MS = 300_000L
         private const val ROLLBACK_THRESHOLD_MS = 5_000L
         private const val TIME_API_URL =
