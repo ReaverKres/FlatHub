@@ -35,7 +35,8 @@ class AppodealAdService(
         val adTypes = Appodeal.NATIVE or Appodeal.MREC or Appodeal.REWARDED_VIDEO
         Appodeal.setAutoCache(Appodeal.NATIVE, true)
         Appodeal.setAutoCache(Appodeal.MREC, true)
-        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true)
+        // Rewarded creatives are large video files under files/; cache only on demand in showRewarded.
+        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false)
         Appodeal.setTesting(false)
         Appodeal.setLogLevel(Log.LogLevel.none)
         Appodeal.initialize(activity, androidAppKey, adTypes) { _ ->

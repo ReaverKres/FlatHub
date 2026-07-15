@@ -1,7 +1,7 @@
 package io.flatzen.firebase
 
 enum class ConfigFields(val param: String) {
-    FreeVersionAvailable("freeVersionAvailable"),
+    FreeVersionAvailable("freeVersionAvailable2"),
     MoreConfigData("moreConfigData"),
     FaqConfigData("faqConfigData"),
 

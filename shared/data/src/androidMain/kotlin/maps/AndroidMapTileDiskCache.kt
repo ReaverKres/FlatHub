@@ -5,9 +5,11 @@ import java.io.File
 
 class AndroidMapTileDiskCache(
     context: Context,
-    maxFiles: Int = 2_000,
+    maxBytes: Long = DEFAULT_MAX_BYTES,
+    maxFiles: Int = DEFAULT_MAX_FILES,
 ) : MapTileDiskCache {
     private val root = File(context.cacheDir, "map_tiles").also { it.mkdirs() }
+    private val maxBytes = maxBytes.coerceAtLeast(1L * 1024 * 1024)
     private val maxFiles = maxFiles.coerceAtLeast(100)
 
     override fun get(key: String): ByteArray? {
@@ -34,12 +36,19 @@ class AndroidMapTileDiskCache(
     }
 
     private fun trimIfNeeded() {
-        val files = root.listFiles() ?: return
-        if (files.size <= maxFiles) return
-        files.sortBy { it.lastModified() }
-        val toRemove = files.size - maxFiles
-        repeat(toRemove) { index ->
-            files.getOrNull(index)?.delete()
+        val files = root.listFiles()?.filter { it.isFile }?.sortedBy { it.lastModified() } ?: return
+        var totalBytes = files.sumOf { it.length() }
+        var remaining = files.size
+        for (file in files) {
+            if (remaining <= maxFiles && totalBytes <= maxBytes) break
+            totalBytes -= file.length()
+            remaining--
+            file.delete()
         }
+    }
+
+    private companion object {
+        const val DEFAULT_MAX_BYTES = 30L * 1024 * 1024
+        const val DEFAULT_MAX_FILES = 1_500
     }
 }

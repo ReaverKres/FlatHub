@@ -5,19 +5,26 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSData
+import platform.Foundation.NSDate
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileModificationDate
+import platform.Foundation.NSFileSize
+import platform.Foundation.NSNumber
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.dataWithContentsOfFile
+import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class, kotlinx.cinterop.BetaInteropApi::class)
 class IosMapTileDiskCache(
-    maxFiles: Int = 2_000,
+    maxBytes: Long = DEFAULT_MAX_BYTES,
+    maxFiles: Int = DEFAULT_MAX_FILES,
 ) : MapTileDiskCache {
     private val root: String
+    private val maxBytes = maxBytes.coerceAtLeast(1L * 1024 * 1024)
     private val maxFiles = maxFiles.coerceAtLeast(100)
     private val fileManager = NSFileManager.defaultManager
 
@@ -38,7 +45,13 @@ class IosMapTileDiskCache(
     }
 
     override fun get(key: String): ByteArray? {
-        val data = NSData.dataWithContentsOfFile(pathFor(key)) ?: return null
+        val path = pathFor(key)
+        val data = NSData.dataWithContentsOfFile(path) ?: return null
+        fileManager.setAttributes(
+            mapOf(NSFileModificationDate to NSDate()),
+            ofItemAtPath = path,
+            error = null,
+        )
         return data.toByteArray()
     }
 
@@ -53,12 +66,27 @@ class IosMapTileDiskCache(
     }
 
     private fun trimIfNeeded() {
-        val contents = fileManager.contentsOfDirectoryAtPath(root, error = null) ?: return
-        if (contents.size <= maxFiles) return
-        val overflow = contents.size - maxFiles
-        contents.take(overflow).forEach { name ->
-            val fileName = name as? String ?: return@forEach
-            fileManager.removeItemAtPath("$root/$fileName", error = null)
+        val names = fileManager.contentsOfDirectoryAtPath(root, error = null) ?: return
+
+        data class Entry(val path: String, val modified: Double, val size: Long)
+
+        val entries = names.mapNotNull { name ->
+            val fileName = name as? String ?: return@mapNotNull null
+            val path = "$root/$fileName"
+            val attrs =
+                fileManager.attributesOfItemAtPath(path, error = null) ?: return@mapNotNull null
+            val size = (attrs[NSFileSize] as? NSNumber)?.longLongValue ?: 0L
+            val modified = (attrs[NSFileModificationDate] as? NSDate)?.timeIntervalSince1970 ?: 0.0
+            Entry(path, modified, size)
+        }.sortedBy { it.modified }
+
+        var totalBytes = entries.sumOf { it.size }
+        var remaining = entries.size
+        for (entry in entries) {
+            if (remaining <= maxFiles && totalBytes <= maxBytes) break
+            totalBytes -= entry.size
+            remaining--
+            fileManager.removeItemAtPath(entry.path, error = null)
         }
     }
 
@@ -74,5 +102,10 @@ class IosMapTileDiskCache(
 
     private fun ByteArray.toNSData(): NSData = usePinned { pinned ->
         NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+    }
+
+    private companion object {
+        const val DEFAULT_MAX_BYTES = 30L * 1024 * 1024
+        const val DEFAULT_MAX_FILES = 1_500
     }
 }
