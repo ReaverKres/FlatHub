@@ -41,6 +41,9 @@ object MonetizationDefaults {
 
     const val ADS_ENABLED = true
 
+    /** When false — skip GDPR/CCPA consent form and init ads directly. Default true (safer). */
+    const val CONSENT_MANAGER_ENABLED = true
+
     const val REWARDED_PREMIUM_HOURS = 1L
 
     /** Override via Remote Config when needed. Empty iOS key = ads SDK not initialized on iOS. */

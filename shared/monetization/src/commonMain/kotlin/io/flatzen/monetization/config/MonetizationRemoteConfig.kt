@@ -7,6 +7,7 @@ import io.flatzen.monetization.MonetizationDefaults
 
 data class MonetizationRemoteConfig(
     val adsEnabled: Boolean = MonetizationDefaults.ADS_ENABLED,
+    val consentManagerEnabled: Boolean = MonetizationDefaults.CONSENT_MANAGER_ENABLED,
     val homeGridAdInterval: Int = MonetizationDefaults.HOME_GRID_AD_INTERVAL,
     val homeListAdInterval: Int = MonetizationDefaults.HOME_LIST_AD_INTERVAL,
     val swipeAdInterval: Int = MonetizationDefaults.SWIPE_AD_INTERVAL,
@@ -30,6 +31,8 @@ fun ConfigFieldsChecker.resolveMonetizationConfig(): MonetizationRemoteConfig {
 
     return MonetizationRemoteConfig(
         adsEnabled = checkBoolean(ConfigFields.AdsEnabled) ?: MonetizationDefaults.ADS_ENABLED,
+        consentManagerEnabled = checkBoolean(ConfigFields.ConsentManagerEnabled)
+            ?: MonetizationDefaults.CONSENT_MANAGER_ENABLED,
         premiumFallbackEnabled = checkBoolean(ConfigFields.PremiumFallbackEnabled)
             ?: MonetizationDefaults.PREMIUM_FALLBACK_ENABLED,
         homeGridAdInterval = jsonConfig?.homeGridAdInterval?.coerceAtLeast(1)
