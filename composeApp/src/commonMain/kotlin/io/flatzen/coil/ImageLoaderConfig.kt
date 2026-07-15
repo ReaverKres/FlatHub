@@ -7,7 +7,7 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import okio.Path
 
-private const val DISK_CACHE_MAX_BYTES = 100L * 1024 * 1024
+private const val DISK_CACHE_MAX_BYTES = 40L * 1024 * 1024
 private const val MEMORY_CACHE_PERCENT = 0.20
 
 fun configureSingletonImageLoader() {

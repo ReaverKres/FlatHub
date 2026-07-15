@@ -130,7 +130,8 @@ final class NativeAdContainerView: UIView {
         let adTypes: AppodealAdType = [.nativeAd, .MREC, .rewardedVideo]
         Appodeal.setAutocache(true, types: .nativeAd)
         Appodeal.setAutocache(true, types: .MREC)
-        Appodeal.setAutocache(true, types: .rewardedVideo)
+        // Rewarded creatives are large video files; cache only on demand in showRewarded.
+        Appodeal.setAutocache(false, types: .rewardedVideo)
         Appodeal.setLogLevel(.verbose)
         Appodeal.initialize(withApiKey: appKey, types: adTypes)
         sdkInitialized = true
