@@ -10,17 +10,28 @@ import com.appodeal.consent.OnConsentFormDismissedListener
 
 /**
  * Requests GDPR/CCPA consent (Stack Consent Manager / UMP) then initializes Appodeal with [Activity].
- * Must run on the main thread from a visible activity (typically [android.app.Activity.onCreate]).
+ * When [consentManagerEnabled] is false, skips the form and initializes Appodeal directly
+ * (kill-switch via Remote Config `consentManagerEnabled`).
+ * Prefer calling after Remote Config first fetch (e.g. when splash finishes).
  */
 object AppodealConsentStartup {
 
     @Volatile
     private var started = false
 
-    fun start(activity: Activity, adService: AdService) {
+    fun start(
+        activity: Activity,
+        adService: AdService,
+        consentManagerEnabled: Boolean = true,
+    ) {
         val appodealService = adService as? AppodealAdService ?: return
         if (started || appodealService.isInitialized()) return
         started = true
+
+        if (!consentManagerEnabled) {
+            appodealService.initializeWithActivity(activity)
+            return
+        }
 
         ConsentManager.requestConsentInfoUpdate(
             parameters = ConsentUpdateRequestParameters(

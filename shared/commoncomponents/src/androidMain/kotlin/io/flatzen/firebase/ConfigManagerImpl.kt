@@ -31,6 +31,13 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
             fetchTimeoutInSeconds = connectionTimeout
         }
         remoteConfig?.setConfigSettingsAsync(configSettings)
+        remoteConfig?.setDefaultsAsync(
+            mapOf(
+                ConfigFields.ConsentManagerEnabled.param to true,
+                ConfigFields.AdsEnabled.param to true,
+                ConfigFields.PremiumFallbackEnabled.param to false,
+            )
+        )
     }
 
     override fun fetchAndActivate(): Flow<ConfigResult> = callbackFlow {

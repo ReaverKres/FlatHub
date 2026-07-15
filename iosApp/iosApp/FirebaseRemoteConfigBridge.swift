@@ -19,6 +19,11 @@ import ComposeApp
         settings.minimumFetchInterval = 0
         settings.fetchTimeout = TimeInterval(timeoutSeconds)
         config.configSettings = settings
+        config.setDefaults([
+            "consentManagerEnabled": true as NSObject,
+            "adsEnabled": true as NSObject,
+            "premiumFallbackEnabled": false as NSObject,
+        ])
         remoteConfig = config
     }
 
