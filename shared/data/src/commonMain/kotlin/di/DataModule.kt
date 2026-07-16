@@ -67,7 +67,12 @@ val dataModule = module {
 
     single<UserMapAreaRepository> { UserMapAreaRepositoryImpl(userMapAreasDao = get()) }
     single<OsmApiService> { OsmApiService(httpClient = get(), filterRepository = get()) }
-    single<OsmRepository> { OsmRepositoryImpl(osmApiService = get()) }
+    single<OsmRepository> {
+        OsmRepositoryImpl(
+            osmApiService = get(),
+            filterRepository = get(),
+        )
+    }
 
     single<UserPreferencesRepository> { UserPreferencesRepositoryImpl(userPreferencesDao = get()) }
 
