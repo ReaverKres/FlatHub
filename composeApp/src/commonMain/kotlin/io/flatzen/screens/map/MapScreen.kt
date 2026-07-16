@@ -596,7 +596,7 @@ fun MapScreen(
                                     modifier = Modifier
                                         .size(60.dp)
                                         .clickable {
-                                            mapViewModel.store.intent(MapIntent.RequestMapAreaOrPremium)
+                                            mapViewModel.store.intent(MapIntent.ClickOnMapArea)
                                         }
                                 )
                                 Spacer(Modifier.height(10.dp))

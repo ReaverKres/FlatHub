@@ -177,6 +177,7 @@ class FilterContainer(
                 }
 
                 is FilterScreenAction.UpdateMetroFilter -> {
+                    if (intent.metroStation.selected && requirePremiumForLocationFilter()) return@reduce
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val updatedFilterState = currentState.filters.copy(
@@ -189,6 +190,7 @@ class FilterContainer(
                 }
 
                 is FilterScreenAction.UpdateMetroLine -> {
+                    if (intent.selected && requirePremiumForLocationFilter()) return@reduce
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val updatedFilterState = currentState.filters.copy(
@@ -205,6 +207,7 @@ class FilterContainer(
                 }
 
                 is FilterScreenAction.UpdateWithAnyMetro -> {
+                    if (intent.enabled && requirePremiumForLocationFilter()) return@reduce
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val updatedFilterState = currentState.filters.copy(
@@ -221,6 +224,7 @@ class FilterContainer(
                 }
 
                 is FilterScreenAction.UpdateDistrictFilter -> {
+                    if (intent.district.isChecked && requirePremiumForLocationFilter()) return@reduce
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val allDistricts = if (currentState.filters.districtsArea.isNullOrEmpty()) {
@@ -490,21 +494,9 @@ class FilterContainer(
                 }
                 FilterScreenAction.OpenLocation -> navigator.navigate(FlatHubCommand.OpenLocation)
                 FilterScreenAction.OpenCity -> navigator.navigate(FlatHubCommand.OpenCitySelect)
-                FilterScreenAction.OpenMetro -> {
-                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-                        navigator.navigate(FlatHubCommand.OpenMetroSelect)
-                    } else {
-                        navigator.navigate(FlatHubCommand.OpenPremium)
-                    }
-                }
+                FilterScreenAction.OpenMetro -> navigator.navigate(FlatHubCommand.OpenMetroSelect)
 
-                FilterScreenAction.OpenDistricts -> {
-                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-                        navigator.navigate(FlatHubCommand.OpenDistrictSelect)
-                    } else {
-                        navigator.navigate(FlatHubCommand.OpenPremium)
-                    }
-                }
+                FilterScreenAction.OpenDistricts -> navigator.navigate(FlatHubCommand.OpenDistrictSelect)
 
                 FilterScreenAction.OpenPremiumForAddress -> navigator.navigate(FlatHubCommand.OpenPremium)
                 is FilterScreenAction.AddAddress -> {
@@ -537,6 +529,13 @@ class FilterContainer(
                 }
             }
         }
+    }
+
+    /** @return true if navigation to Premium was triggered (caller should skip applying the filter). */
+    private fun requirePremiumForLocationFilter(): Boolean {
+        if (userTierProvider.currentTier() == UserTier.PREMIUM) return false
+        navigator.navigate(FlatHubCommand.OpenPremium)
+        return true
     }
 
     private suspend fun PipeCtx.forceFilterNetworkReload() {

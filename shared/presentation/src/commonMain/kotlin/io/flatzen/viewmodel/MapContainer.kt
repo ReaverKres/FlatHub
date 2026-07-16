@@ -99,11 +99,6 @@ class MapContainer(
                     )
                 }
 
-                MapIntent.SaveArea -> handleSaveArea()
-                MapIntent.ShowSaveAreaDialog -> updateState {
-                    copy(saveAreaDialogState = saveAreaDialogState.copy(isVisible = true))
-                }
-
                 is MapIntent.UpdateAreaName -> updateState {
                     val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
                     val errorMessage = when {
@@ -127,9 +122,19 @@ class MapContainer(
                 MapIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
                 MapIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
                 MapIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
-                MapIntent.RequestMapAreaOrPremium -> {
+                MapIntent.ShowSaveAreaDialog -> {
                     if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-                        handleClickOnMapArea()
+                        updateState {
+                            copy(saveAreaDialogState = saveAreaDialogState.copy(isVisible = true))
+                        }
+                    } else {
+                        navigator.navigate(FlatHubCommand.OpenPremium)
+                    }
+                }
+
+                MapIntent.SaveArea -> {
+                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+                        handleSaveArea()
                     } else {
                         navigator.navigate(FlatHubCommand.OpenPremium)
                     }

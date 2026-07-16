@@ -38,7 +38,6 @@ sealed interface MapIntent : MVIIntent {
     data object OpenFilter : MapIntent
     data object NavigateBack : MapIntent
     data object OpenPremium : MapIntent
-    data object RequestMapAreaOrPremium : MapIntent
 }
 
 sealed interface MapAction : MVIAction {
