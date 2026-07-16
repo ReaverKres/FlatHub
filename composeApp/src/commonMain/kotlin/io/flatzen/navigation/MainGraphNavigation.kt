@@ -53,7 +53,9 @@ import flatzen.composeapp.generated.resources.tab_map
 import flatzen.composeapp.generated.resources.tab_more
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.network.ConnectionMonitor
+import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.commoncomponents.theme.ThemeMode
+import io.flatzen.localization.AppLocaleProvider
 import io.flatzen.screens.detail.DetailScreen
 import io.flatzen.screens.favorites.FavoritesScreen
 import io.flatzen.screens.filter.FilterScreen
@@ -129,24 +131,28 @@ fun MainGraphNavigation(
     val userPreferences: UserPreferencesRepository = koinInject()
     val themeMode by userPreferences.observeThemeMode()
         .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val appLanguage by userPreferences.observeAppLanguage()
+        .collectAsStateWithLifecycle(initialValue = AppLanguage.SYSTEM)
     val systemDark = isSystemInDarkTheme()
     val revealController = LocalThemeRevealController.current
 
-    ThemeRevealHost(
-        controller = revealController,
-        committedMode = themeMode,
-        isDark = themeMode.resolveDark(systemDark),
-        onCommit = { mode -> userPreferences.setThemeMode(mode) },
-        modifier = modifier,
-    ) {
-        MainGraphScaffold(
-            navigationState = navigationState,
-            navigator = navigator,
-            topLevelRoutes = topLevelRoutes,
-            isConnected = isConnected,
-            density = density,
-            onExitApp = onExitApp,
-        )
+    AppLocaleProvider(language = appLanguage) {
+        ThemeRevealHost(
+            controller = revealController,
+            committedMode = themeMode,
+            isDark = themeMode.resolveDark(systemDark),
+            onCommit = { mode -> userPreferences.setThemeMode(mode) },
+            modifier = modifier,
+        ) {
+            MainGraphScaffold(
+                navigationState = navigationState,
+                navigator = navigator,
+                topLevelRoutes = topLevelRoutes,
+                isConnected = isConnected,
+                density = density,
+                onExitApp = onExitApp,
+            )
+        }
     }
 }
 

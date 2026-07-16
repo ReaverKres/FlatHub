@@ -19,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -45,6 +47,12 @@ import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.copy_success
 import flatzen.composeapp.generated.resources.faq_title
+import flatzen.composeapp.generated.resources.language_georgian
+import flatzen.composeapp.generated.resources.language_kazakh
+import flatzen.composeapp.generated.resources.language_polish
+import flatzen.composeapp.generated.resources.language_russian
+import flatzen.composeapp.generated.resources.language_system
+import flatzen.composeapp.generated.resources.language_title
 import flatzen.composeapp.generated.resources.more_title
 import flatzen.composeapp.generated.resources.premium_menu
 import flatzen.composeapp.generated.resources.referral_code
@@ -55,8 +63,10 @@ import flatzen.composeapp.generated.resources.theme_light
 import flatzen.composeapp.generated.resources.theme_system
 import flatzen.composeapp.generated.resources.theme_title
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
+import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.commoncomponents.theme.ThemeMode
 import io.flatzen.di.container
+import io.flatzen.localization.LocalAppLanguage
 import io.flatzen.themes.LocalThemeRevealController
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -67,6 +77,7 @@ import io.flatzen.viewmodel.more.MoreConfigState
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.MoreIntent
 import io.flatzen.widgets.AppTextButton
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -87,8 +98,10 @@ fun MoreScreen(
     val userPreferences: UserPreferencesRepository = koinInject()
     val themeMode by userPreferences.observeThemeMode()
         .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val appLanguage = LocalAppLanguage.current
     val revealController = LocalThemeRevealController.current
     val displayMode = revealController.pendingMode ?: themeMode
+    val scope = rememberCoroutineScope()
 
     val telegramSupportDescription = stringResource(Res.string.telegram_support_description)
     val uriHandler = LocalUriHandler.current
@@ -131,6 +144,16 @@ fun MoreScreen(
                     onModeSelected = { mode, originInRoot ->
                         if (mode != displayMode && !revealController.isAnimating) {
                             revealController.start(originInRoot = originInRoot, targetMode = mode)
+                        }
+                    },
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                LanguageSelector(
+                    current = appLanguage,
+                    onSelected = { language ->
+                        if (language != appLanguage) {
+                            scope.launch { userPreferences.setAppLanguage(language) }
                         }
                     },
                 )
@@ -239,6 +262,49 @@ fun MoreScreen(
                         image = Res.getUri("drawable/telegram.svg"),
                         text = stringResource(Res.string.telegram_support),
                         onClick = { uriHandler.openUri("https://t.me/FlatHub_appbot") }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageSelector(
+    current: AppLanguage,
+    onSelected: (AppLanguage) -> Unit,
+) {
+    Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(Res.string.language_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.height(8.dp))
+            AppLanguage.entries.forEach { language ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelected(language) }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = current == language,
+                        onClick = { onSelected(language) },
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(
+                            when (language) {
+                                AppLanguage.SYSTEM -> Res.string.language_system
+                                AppLanguage.RU -> Res.string.language_russian
+                                AppLanguage.PL -> Res.string.language_polish
+                                AppLanguage.KK -> Res.string.language_kazakh
+                                AppLanguage.KA -> Res.string.language_georgian
+                            }
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }

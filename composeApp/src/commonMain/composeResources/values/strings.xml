@@ -31,6 +31,12 @@
     <string name="theme_system">Системная</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
+    <string name="language_title">Язык</string>
+    <string name="language_system">Системный</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_polish">Polski</string>
+    <string name="language_kazakh">Қазақша</string>
+    <string name="language_georgian">ქართული</string>
 
     <string name="filters_title">Фильтры</string>
     <string name="filter_my_filters">Мои фильтры</string>

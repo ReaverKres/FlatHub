@@ -106,6 +106,12 @@ import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.force_update_description
 import flatzen.composeapp.generated.resources.force_update_title
 import flatzen.composeapp.generated.resources.from
+import flatzen.composeapp.generated.resources.language_georgian
+import flatzen.composeapp.generated.resources.language_kazakh
+import flatzen.composeapp.generated.resources.language_polish
+import flatzen.composeapp.generated.resources.language_russian
+import flatzen.composeapp.generated.resources.language_system
+import flatzen.composeapp.generated.resources.language_title
 import flatzen.composeapp.generated.resources.list_area_format
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
@@ -304,6 +310,12 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.THEME_SYSTEM -> Res.string.theme_system
         LocalizationKeys.THEME_LIGHT -> Res.string.theme_light
         LocalizationKeys.THEME_DARK -> Res.string.theme_dark
+        LocalizationKeys.LANGUAGE_TITLE -> Res.string.language_title
+        LocalizationKeys.LANGUAGE_SYSTEM -> Res.string.language_system
+        LocalizationKeys.LANGUAGE_RUSSIAN -> Res.string.language_russian
+        LocalizationKeys.LANGUAGE_POLISH -> Res.string.language_polish
+        LocalizationKeys.LANGUAGE_KAZAKH -> Res.string.language_kazakh
+        LocalizationKeys.LANGUAGE_GEORGIAN -> Res.string.language_georgian
         LocalizationKeys.FILTERS_TITLE -> Res.string.filters_title
         LocalizationKeys.FILTER_MY_FILTERS -> Res.string.filter_my_filters
         LocalizationKeys.FILTER_PROPERTY_TYPE -> Res.string.filter_property_type
