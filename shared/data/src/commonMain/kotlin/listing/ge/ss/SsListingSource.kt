@@ -47,10 +47,18 @@ class SsListingSource(
                 page = page,
                 cityId = SsCities.cityId(filter.location?.city),
                 dealType = dealType,
+                priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                priceTo = filter.priceFull?.priceTo?.toInt(),
             )
             NetworkResponseWrapper.success(SsFlatMapper.mapSearch(json, filter.adType))
         } catch (e: CancellationException) {
             throw e
+        } catch (e: SsCloudflareBlockedException) {
+            // Soft-fail; Livo still covers GE. Do not invalidate on every page during backoff.
+            NetworkResponseWrapper.error(
+                e,
+                NetworkErrorInfo(platform, listOf(e.message.orEmpty())),
+            )
         } catch (e: Exception) {
             api.invalidateAuth()
             NetworkResponseWrapper.error(

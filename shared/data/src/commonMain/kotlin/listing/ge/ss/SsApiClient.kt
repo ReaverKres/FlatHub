@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -16,11 +17,15 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlin.concurrent.Volatile
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * SS.ge / home.ss.ge RealEstate LegendSearch client.
  * Auth: Bearer [credentialsToken] from `__NEXT_DATA__` + session cookies.
  * See tmp/ge/api/ss/NOTES.md.
+ *
+ * On Android, home.ss.ge is often behind Cloudflare challenge (403) — soft-fail with backoff.
  */
 class SsApiClient(
     private val httpClient: HttpClient,
@@ -32,12 +37,17 @@ class SsApiClient(
     @Volatile
     private var cachedCookie: String? = null
 
+    @Volatile
+    private var blockedUntilEpochMs: Long = 0L
+
     suspend fun legendSearch(
         page: Int,
         cityId: Int,
         dealType: Int,
         realEstateType: Int = REAL_ESTATE_FLAT,
         pageSize: Int = 40,
+        priceFrom: Int? = null,
+        priceTo: Int? = null,
     ): JsonObject {
         ensureAuth()
         val body = buildJsonObject {
@@ -46,10 +56,14 @@ class SsApiClient(
             putJsonArray("cityIdList") { add(JsonPrimitive(cityId)) }
             put("realEstateDealType", dealType)
             put("realEstateType", realEstateType)
+            if (priceFrom != null) put("priceFrom", priceFrom)
+            if (priceTo != null) put("priceTo", priceTo)
+            if (priceFrom != null || priceTo != null) put("currencyType", CURRENCY_USD)
         }
         return try {
             postLegend(body)
         } catch (e: Exception) {
+            if (e is SsCloudflareBlockedException) throw e
             if (e.message?.contains("401") == true || e is SsAuthException) {
                 invalidateAuth()
                 ensureAuth()
@@ -72,7 +86,7 @@ class SsApiClient(
             header(HttpHeaders.Accept, "application/json, text/plain, */*")
             header(HttpHeaders.AcceptLanguage, "ka")
             header(HttpHeaders.Origin, ORIGIN)
-            header(HttpHeaders.Referrer, HOME_URL)
+            header("Referer", HOME_URL)
             header(HttpHeaders.Authorization, "Bearer $token")
             cachedCookie?.let { header(HttpHeaders.Cookie, it) }
             contentType(ContentType.Application.Json)
@@ -90,18 +104,31 @@ class SsApiClient(
 
     private suspend fun ensureAuth() {
         if (cachedToken != null) return
+        val now = Clock.System.now().toEpochMilliseconds()
+        if (now < blockedUntilEpochMs) {
+            throw SsCloudflareBlockedException(CF_BLOCKED_MESSAGE)
+        }
         val htmlResponse = httpClient.get(HOME_URL) {
             header(HttpHeaders.UserAgent, USER_AGENT)
             header(HttpHeaders.Accept, "text/html,application/xhtml+xml")
             header(HttpHeaders.AcceptLanguage, "ka,en;q=0.9")
         }
+        val html = htmlResponse.bodyAsText()
+        if (isCloudflareChallenge(htmlResponse, html)) {
+            blockedUntilEpochMs = now + CF_BACKOFF.inWholeMilliseconds
+            invalidateAuth()
+            throw SsCloudflareBlockedException(CF_BLOCKED_MESSAGE)
+        }
         val setCookies = htmlResponse.headers.getAll(HttpHeaders.SetCookie).orEmpty()
         cachedCookie = setCookies.joinToString("; ") { cookie ->
             cookie.substringBefore(';').trim()
         }.ifBlank { null }
-        val html = htmlResponse.bodyAsText()
         val token = extractCredentialsToken(html)
-            ?: error("SS.ge credentialsToken not found in __NEXT_DATA__")
+        if (token == null) {
+            // Non-CF unexpected HTML — short backoff to avoid hammering.
+            blockedUntilEpochMs = now + 1.minutes.inWholeMilliseconds
+            throw SsAuthException("SS.ge auth page missing credentialsToken")
+        }
         cachedToken = token
     }
 
@@ -112,11 +139,15 @@ class SsApiClient(
             "https://api-gateway.ss.ge/v1/RealEstate/LegendSearch"
         private const val USER_AGENT =
             "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36"
+        private const val CF_BLOCKED_MESSAGE =
+            "SS.ge blocked by Cloudflare (try again later)"
+        private val CF_BACKOFF = 10.minutes
         const val REAL_ESTATE_FLAT = 5
         const val DEAL_RENT = 1
         const val DEAL_LEASE = 2
         const val DEAL_DAILY = 3
         const val DEAL_SALE = 4
+        const val CURRENCY_USD = 2
 
         fun extractCredentialsToken(html: String): String? {
             val marker = "\"credentialsToken\":\""
@@ -127,7 +158,18 @@ class SsApiClient(
             if (end <= from) return null
             return html.substring(from, end)
         }
+
+        fun isCloudflareChallenge(response: HttpResponse, body: String): Boolean {
+            if (response.status.value == 403) return true
+            if (response.headers["cf-mitigated"] != null) return true
+            val lower = body.lowercase()
+            return "just a moment" in lower ||
+                    "challenges.cloudflare.com" in lower ||
+                    "cf-browser-verification" in lower
+        }
     }
 }
 
-private class SsAuthException(message: String) : Exception(message)
+internal class SsAuthException(message: String) : Exception(message)
+
+internal class SsCloudflareBlockedException(message: String) : Exception(message)

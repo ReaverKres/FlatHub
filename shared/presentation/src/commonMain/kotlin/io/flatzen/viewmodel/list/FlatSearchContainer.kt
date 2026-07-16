@@ -457,27 +457,40 @@ class FlatSearchContainer(
         )
         val uiFlatList = UiFlat.appFlatListToUiFlatList(filtered)
         if (uiFlatList.isEmpty()) noFlatsToLoadMore = true
-        updateState {
-            when {
-                isLoadMore -> copy(
-                    noFlatsToLoadMore = noFlatsToLoadMore,
+
+        if (isLoadMore) {
+            var previous = emptyList<UiFlat>()
+            withState { previous = flatList }
+            val merged = (previous + uiFlatList)
+                .distinctBy { it.flatPlatform to it.adId }
+                .toImmutableList()
+            // Client-side filters / duplicate pages → nothing new → stop paging.
+            if (merged.size <= previous.size) noFlatsToLoadMore = true
+            val endReached = noFlatsToLoadMore
+            updateState {
+                copy(
+                    noFlatsToLoadMore = endReached,
                     isRefreshing = false,
                     isLoading = false,
                     isLoadingMore = false,
-                    // Composite identity — same adId can exist on SS_GE and LIVO.
-                    flatList = (flatList + uiFlatList)
-                        .distinctBy { it.flatPlatform to it.adId }
-                        .toImmutableList(),
-                    currentSearchPage = filterRepository.currentHomePage
+                    flatList = merged,
+                    currentSearchPage = filterRepository.currentHomePage,
                 )
+            }
+            return
+        }
 
+        if (uiFlatList.isNotEmpty()) noFlatsToLoadMore = false
+        val endReached = noFlatsToLoadMore
+        updateState {
+            when {
                 uiFlatList.isEmpty() -> copy(
                     isLoading = false,
                     isRefreshing = false,
                     isLoadingMore = false,
                     flatList = uiFlatList,
-                    noFlatsToLoadMore = noFlatsToLoadMore,
-                    currentSearchPage = filterRepository.currentHomePage
+                    noFlatsToLoadMore = endReached,
+                    currentSearchPage = filterRepository.currentHomePage,
                 )
 
                 else -> copy(
@@ -486,7 +499,7 @@ class FlatSearchContainer(
                     isLoading = false,
                     isLoadingMore = false,
                     flatList = uiFlatList,
-                    currentSearchPage = filterRepository.currentHomePage
+                    currentSearchPage = filterRepository.currentHomePage,
                 )
             }
         }

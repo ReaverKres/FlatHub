@@ -51,7 +51,9 @@ class MergedRepositoryImpl(
 
     override fun searchFlats(): Flow<MergedFlatResponse> {
         val filter = filterRepository.lastFilter()
-        return searchByFilter(filter, null)
+        // Must pass page — ListingSources use (currentPage ?: 1), they do not read
+        // FilterRepository themselves (unlike legacy BY repos).
+        return searchByFilter(filter, filterRepository.currentHomePage)
     }
 
     override fun searchFlats(filter: CommonFilterRequestModel, currentPage: Int): Flow<MergedFlatResponse> {

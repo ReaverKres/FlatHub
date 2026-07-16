@@ -47,6 +47,8 @@ class LivoListingSource(
                 page = page,
                 cityId = LivoCities.cityId(filter.location?.city),
                 dealType = dealType,
+                priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                priceTo = filter.priceFull?.priceTo?.toInt(),
             )
             NetworkResponseWrapper.success(LivoFlatMapper.mapSearch(json, filter.adType))
         } catch (e: CancellationException) {
