@@ -16,6 +16,7 @@ data class SearchErrorDialogState(
     val dialogType: DialogType,
     val title: LocalizationKeys,
     val errorInfo: List<ErrorInfo>,
+    val generalError: LocalizationKeys? = null,
 ) {
     class ErrorInfo(
         val platform: FlatPlatform,

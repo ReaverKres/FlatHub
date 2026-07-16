@@ -10,6 +10,8 @@ import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.localization.LocalizationKeys
+import io.flatzen.commoncomponents.network.ConnectionMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
@@ -45,6 +47,7 @@ class MergedRepositoryImpl(
     private val domovitaRepository: DomovitaRepository,
     private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
+    private val connectionMonitor: ConnectionMonitor,
 ) : MergedRepository {
 
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
@@ -164,7 +167,7 @@ class MergedRepositoryImpl(
         filter: CommonFilterRequestModel,
     ): MergedFlatResponse {
         val appFlats: MutableList<AppFlat> = mutableListOf()
-        val errors: MutableList<NetworkErrorInfo> = mutableListOf()
+        val platformErrors: MutableList<NetworkErrorInfo> = mutableListOf()
 
         networkFlats.forEach { nett ->
             when (nett) {
@@ -197,7 +200,7 @@ class MergedRepositoryImpl(
 
                 is NetworkResponseWrapper.Error -> {
                     nett.error?.let { err ->
-                        errors.add(err)
+                        platformErrors.add(err)
                     }
                 }
             }
@@ -208,9 +211,15 @@ class MergedRepositoryImpl(
         val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
         lastEmittedFlats.emit(sortedFlatList)
 
+        val generalError = LocalizationKeys.SEARCH_ERROR_VPN_HINT
+            .takeIf { platformErrors.isNotEmpty() && connectionMonitor.isVpnConnected() }
+
         return MergedFlatResponse(
             flats = sortedFlatList,
-            errors = errors
+            errors = MergedNetworkErrors(
+                platformErrors = platformErrors,
+                generalError = generalError,
+            ),
         )
     }
 

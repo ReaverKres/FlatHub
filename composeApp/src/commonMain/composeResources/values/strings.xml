@@ -186,6 +186,7 @@
     <string name="force_update_title">Доступна новая версия</string>
     <string name="force_update_description">Текущая версия неработоспособна, пожалуйста обновите приложение</string>
     <string name="search_error_title">Произошла ошибка</string>
+    <string name="search_error_vpn_hint">Похоже, у вас включён VPN. Отключите его и попробуйте снова</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Новые квартиры без задержки и все фильтры</string>

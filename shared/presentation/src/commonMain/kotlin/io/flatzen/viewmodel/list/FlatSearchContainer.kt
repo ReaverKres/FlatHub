@@ -417,16 +417,15 @@ class FlatSearchContainer(
                     is LCE.Content -> {
                         val response = lceResult.value
                         applyFlatsLoaded(response.flats, isLoadMore, isRefreshing)
-                        if (response.errors.isNotEmpty() &&
-                            response.errors.any { it.errorMessages.isNotEmpty() }
-                        ) {
+                        if (response.errors.hasDisplayableErrors) {
                             updateState {
                                 copy(
                                     errorDialogState = SearchErrorDialogState(
                                         isVisible = true,
                                         dialogType = DialogType.NetworkError,
                                         title = LocalizationKeys.SEARCH_ERROR_TITLE,
-                                        errorInfo = response.errors.map {
+                                        generalError = response.errors.generalError,
+                                        errorInfo = response.errors.platformErrors.map {
                                             SearchErrorDialogState.ErrorInfo(
                                                 platform = it.platform,
                                                 errorMessages = it.errorMessages

@@ -53,7 +53,6 @@ import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.system_notifications_description
 import flatzen.composeapp.generated.resources.system_notifications_title
 import flatzen.composeapp.generated.resources.system_open_settings
-import io.flatzen.common.localization.stringResource as localizedStringResource
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.SaveDialogState
@@ -61,6 +60,7 @@ import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import io.flatzen.widgets.AppSwitch
 import org.jetbrains.compose.resources.stringResource
+import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @Composable
 fun SaveDialog(
@@ -173,6 +173,14 @@ fun SearchErrorDialog(
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 ) {
+                    dialogState.generalError?.let { generalError ->
+                        Text(
+                            text = localizedStringResource(generalError),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                    }
+
                     // Scrollable Row with platforms
                     LazyRow(
                         modifier = Modifier
