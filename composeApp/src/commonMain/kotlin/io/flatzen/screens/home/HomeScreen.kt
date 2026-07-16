@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -1104,7 +1105,9 @@ private fun GridFlatCard(
     val dimens = FlatHubTheme.dimens
     Card(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
         shape = FlatHubTheme.shapes.medium,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -1170,18 +1173,19 @@ private fun GridFlatCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            flat.isOwner?.let { owner ->
-                Spacer(modifier.height(4.dp))
-                Text(
-                    text = if (owner) {
-                        stringResource(Res.string.detail_owner)
-                    } else {
-                        stringResource(Res.string.detail_agent)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            // Keep slot even when platform (e.g. Onliner) does not provide owner/agent.
+            Spacer(modifier.height(4.dp))
+            Text(
+                text = when (flat.isOwner) {
+                    true -> stringResource(Res.string.detail_owner)
+                    false -> stringResource(Res.string.detail_agent)
+                    null -> ""
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                minLines = 1,
+                maxLines = 1,
+            )
             val propertyTypeName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
             val propertyTypeRoom = flat.commercialUiInfo?.numberOfRooms
             propertyTypeName?.let { name ->

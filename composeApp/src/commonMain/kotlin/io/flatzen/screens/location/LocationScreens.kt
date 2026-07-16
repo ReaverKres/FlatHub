@@ -545,7 +545,7 @@ fun DistrictSelectScreen() {
     val districtsContainer: DistrictsContainer = container()
     val districtsState by districtsContainer.store.subscribe { }
 
-    //Todo need Refactoring
+    val selectedCityCode = filterState.filters.location?.selectedCity?.code
     val districts = if (filterState.filters.districtsArea.isNullOrEmpty()) {
         districtsState.districts
     } else {
@@ -558,7 +558,7 @@ fun DistrictSelectScreen() {
 
     val shimmerProgress by rememberShimmerProgress()
 
-    LaunchedEffectOnce(Unit) {
+    LaunchedEffectOnce(selectedCityCode) {
         districtsContainer.store.intent(DistrictsIntent.LoadDistricts)
     }
 

@@ -517,11 +517,15 @@ class FilterContainer(
                 is FilterScreenAction.SelectCity -> {
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
+                    val previousCity = currentState.filters.location?.selectedCity?.code
+                    val cityChanged = previousCity != intent.cityCode
                     applyFiltersUpdate(
                         currentState.filters.copy(
                             location = currentState.filters.location?.copy(
                                 selectedCity = LocationUiMapper.findSelectedCity(intent.cityCode)
-                            )
+                            ),
+                            // Districts belong to a city; keep previous selection only if city is unchanged.
+                            districtsArea = if (cityChanged) null else currentState.filters.districtsArea,
                         ),
                         doNetworkCall = false,
                     )
