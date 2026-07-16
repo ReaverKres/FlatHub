@@ -9,4 +9,10 @@ enum class ConfigFields(val param: String) {
     PremiumFallbackEnabled("premiumFallbackEnabled"),
     ConsentManagerEnabled("consentManagerEnabled"),
     MonetizationConfigData("monetizationConfigData"),
+
+    /** Comma-separated FlatPlatform names for Poland, e.g. `OTODOM,OLX_PL,GRATKA,MORIZON`. Empty = all. */
+    EnabledPlatformsPl("enabled_platforms_pl"),
+
+    /** Comma-separated FlatPlatform names for Georgia, e.g. `SS_GE,LIVO`. Empty = all. */
+    EnabledPlatformsGe("enabled_platforms_ge"),
 }

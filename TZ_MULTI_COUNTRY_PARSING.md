@@ -66,7 +66,7 @@ shared/data/.../listing/
 
 ### 3.3 Идентичность
 
-Планируется composite PK `(flatPlatform, adId)`.
+Composite PK `(flatPlatform, adId)` — implemented (Room DB v10).
 
 ### 3.4 Иконки
 

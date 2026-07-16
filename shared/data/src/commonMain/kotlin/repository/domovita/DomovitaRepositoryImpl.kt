@@ -79,7 +79,7 @@ class DomovitaRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        getFlatByIdFromDb(flatId, flatsDao)
+        getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.DOMOVITA)
     }.take(1).flowOn(Dispatchers.IO)
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat> {

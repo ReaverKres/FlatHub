@@ -159,7 +159,7 @@ class RealtRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        getFlatByIdFromDb(flatId, flatsDao)
+        getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.REALT)
     }.take(1).flowOn(Dispatchers.IO)
 
 

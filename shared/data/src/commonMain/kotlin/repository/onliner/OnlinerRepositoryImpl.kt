@@ -119,12 +119,12 @@ class OnlinerRepositoryImpl(
     }
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        getFlatByIdFromDb(flatId, flatsDao)
+        getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.ONLINER)
     }.flowOn(Dispatchers.IO)
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
         MetroStationsGeoCatalog.loadIfNeeded()
-        val flatFromList = getFlatByIdFromDb(flatId, flatsDao)
+        val flatFromList = getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.ONLINER)
         if (connectionMonitor.isNetworkAvailable.first() && flatFromList.flatDevInfo.isDetailData.not()) {
             val onlinerDetailFlatHtml = getApartmentHtml(flatFromList.flatDetailUrl)
             val onlinerDetailFlat = onlinerDetailHtmlMapper.map(flatFromList, onlinerDetailFlatHtml)

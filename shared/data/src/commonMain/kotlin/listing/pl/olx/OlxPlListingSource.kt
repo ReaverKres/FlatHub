@@ -65,10 +65,10 @@ class OlxPlListingSource(
         emit(result)
     }
 
-    override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(adId)
+    override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(platform, adId)
 
     override fun detail(adId: Long): Flow<AppFlat?> = flow {
-        val base = flatsDao.getById(adId)
+        val base = flatsDao.getById(platform, adId)
         if (base == null) {
             emit(null)
             return@flow

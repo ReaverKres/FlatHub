@@ -16,4 +16,6 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.OLX_PL -> "https://www.olx.pl/favicon.ico"
     FlatPlatform.GRATKA -> "https://gratka.pl/favicon.ico"
     FlatPlatform.MORIZON -> "https://www.morizon.pl/favicon.ico"
+    FlatPlatform.SS_GE -> "https://home.ss.ge/favicon.ico"
+    FlatPlatform.LIVO -> "https://livo.ge/favicon.ico"
 }

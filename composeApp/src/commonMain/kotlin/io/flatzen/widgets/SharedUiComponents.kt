@@ -49,13 +49,17 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.domovita32
 import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
+import flatzen.composeapp.generated.resources.gratka32
 import flatzen.composeapp.generated.resources.kufar32
+import flatzen.composeapp.generated.resources.livo32
+import flatzen.composeapp.generated.resources.morizon32
+import flatzen.composeapp.generated.resources.olxpl32
 import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.otodom32
 import flatzen.composeapp.generated.resources.realt32
+import flatzen.composeapp.generated.resources.ssge32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.commonentities.faviconUrl
 import io.flatzen.themes.FlatHubTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -324,38 +328,24 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.REALT -> painterResource(Res.drawable.realt32)
         FlatPlatform.DOMOVITA -> painterResource(Res.drawable.domovita32)
         FlatPlatform.OTODOM -> painterResource(Res.drawable.otodom32)
-        // Remaining PL markets: remote favicon via [PlatformIcon].
-        FlatPlatform.OLX_PL,
-        FlatPlatform.GRATKA,
-        FlatPlatform.MORIZON,
-            -> painterResource(Res.drawable.onliner32)
+        FlatPlatform.OLX_PL -> painterResource(Res.drawable.olxpl32)
+        FlatPlatform.GRATKA -> painterResource(Res.drawable.gratka32)
+        FlatPlatform.MORIZON -> painterResource(Res.drawable.morizon32)
+        FlatPlatform.SS_GE -> painterResource(Res.drawable.ssge32)
+        FlatPlatform.LIVO -> painterResource(Res.drawable.livo32)
     }
 }
 
 @Composable
 fun BoxScope.PlatformIcon(flatPlatform: FlatPlatform) {
-    when (flatPlatform) {
-        FlatPlatform.OLX_PL,
-        FlatPlatform.GRATKA,
-        FlatPlatform.MORIZON,
-            -> AsyncImage(
-            model = flatPlatform.faviconUrl(),
-            contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(8.dp)
-                .size(24.dp),
-        )
-
-        else -> Image(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(8.dp)
-                .size(24.dp),
-            painter = flatPlatform.platformImage(),
-            contentDescription = null,
-        )
-    }
+    Image(
+        modifier = Modifier
+            .align(Alignment.BottomStart)
+            .padding(8.dp)
+            .size(24.dp),
+        painter = flatPlatform.platformImage(),
+        contentDescription = null,
+    )
 }
 
 @Composable

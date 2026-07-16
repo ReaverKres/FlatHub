@@ -207,11 +207,11 @@ class KufarRepositoryImpl(
     )
 
     override fun getFlatById(flatId: Long): Flow<AppFlat> = flow {
-        getFlatByIdFromDb(flatId, flatsDao)
+        getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.KUFAR)
     }.flowOn(Dispatchers.IO)
 
     override fun getFlatByIdWithDetails(flatId: Long): Flow<AppFlat?> = flow {
-        val flatFromDb = getFlatByIdFromDb(flatId, flatsDao)
+        val flatFromDb = getFlatByIdFromDb(flatId, flatsDao, FlatPlatform.KUFAR)
         if (connectionMonitor.isNetworkAvailable.first() && flatFromDb.flatDevInfo.isDetailData.not()) {
             val kufarDetailFlatHtml = getApartmentHtml(flatFromDb.flatDetailUrl)
             val kufarDetailFlat = kufarDetailHtmlMapper.map(flatFromDb, kufarDetailFlatHtml)

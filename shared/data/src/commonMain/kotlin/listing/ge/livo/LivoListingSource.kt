@@ -1,10 +1,11 @@
-package listing.pl.gratka
+package listing.ge.livo
 
 import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
@@ -14,19 +15,21 @@ import listing.core.SourceCapabilities
 import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
-/** Gratka.pl GraphQL — see tmp/pl/api/gratka/NOTES.md */
-class GratkaListingSource(
-    private val api: GratkaApiClient,
+/**
+ * Livo.ge — GET /v1/statements. See tmp/ge/api/livo/NOTES.md.
+ */
+class LivoListingSource(
+    private val api: LivoApiClient,
     private val flatsDao: FlatsDao,
 ) : ListingSource {
-    override val platform = FlatPlatform.GRATKA
-    override val country = CountryCode.PL
+    override val platform = FlatPlatform.LIVO
+    override val country = CountryCode.GE
     override val capabilities = SourceCapabilities(
         supportsRent = true,
         supportsSale = true,
         supportsDaily = true,
-        supportsRoom = true,
-        supportsCommercial = true,
+        supportsRoom = false,
+        supportsCommercial = false,
     )
 
     override fun search(
@@ -35,15 +38,17 @@ class GratkaListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val url = GratkaCities.listingUrl(
-                city = filter.location?.city,
-                adType = filter.adType,
-                isRoom = filter.isRoomForRent || filter.roomOnly,
-                isCommercial = filter.isCommercial,
+            val dealType = when (filter.adType) {
+                is AdType.SALE -> LivoApiClient.DEAL_SALE
+                is AdType.DAILY -> LivoApiClient.DEAL_DAILY
+                else -> LivoApiClient.DEAL_RENT
+            }
+            val json = api.fetchStatements(
                 page = page,
+                cityId = LivoCities.cityId(filter.location?.city),
+                dealType = dealType,
             )
-            val json = api.searchProperties(url)
-            NetworkResponseWrapper.success(GratkaFlatMapper.mapSearch(json, filter.adType))
+            NetworkResponseWrapper.success(LivoFlatMapper.mapSearch(json, filter.adType))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -66,14 +71,14 @@ class GratkaListingSource(
         emit(base)
         if (base.flatDevInfo.isDetailLoaded) return@flow
         try {
-            val json = api.fetchProperty(base.flatDetailUrl)
-            val merged = GratkaDetailMapper.mergeInto(base, json)
+            val json = api.fetchStatement(adId)
+            val merged = LivoFlatMapper.mapDetail(json, base)
             flatsDao.upsert(merged)
             emit(merged)
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
-            // Keep list payload; soft-fail detail.
+            // Soft-fail detail; keep list payload.
         }
     }
 }

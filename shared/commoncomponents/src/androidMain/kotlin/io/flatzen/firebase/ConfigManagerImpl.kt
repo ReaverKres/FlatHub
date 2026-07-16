@@ -36,6 +36,10 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 ConfigFields.ConsentManagerEnabled.param to true,
                 ConfigFields.AdsEnabled.param to true,
                 ConfigFields.PremiumFallbackEnabled.param to false,
+                // Empty = all registered PL platforms (Otodom, OLX, Gratka, Morizon).
+                ConfigFields.EnabledPlatformsPl.param to "",
+                // Empty = all registered GE platforms (SS.ge, Livo).
+                ConfigFields.EnabledPlatformsGe.param to "",
             )
         )
     }

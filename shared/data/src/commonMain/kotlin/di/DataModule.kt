@@ -14,9 +14,14 @@ import api.createReferralsApi
 import api.createSubscriptionsApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
+import io.flatzen.firebase.ConfigFieldsChecker
 import listing.by.byListingSources
-import listing.core.AllListingPlatformsConfig
 import listing.core.ListingSourceRegistry
+import listing.core.RemoteListingPlatformConfig
+import listing.ge.livo.LivoApiClient
+import listing.ge.livo.LivoListingSource
+import listing.ge.ss.SsApiClient
+import listing.ge.ss.SsListingSource
 import listing.pl.gratka.GratkaApiClient
 import listing.pl.gratka.GratkaListingSource
 import listing.pl.morizon.MorizonApiClient
@@ -132,6 +137,21 @@ val dataModule = module {
     single { MorizonListingSource(api = get(), flatsDao = get()) }
 
     single {
+        SsApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { SsListingSource(api = get(), flatsDao = get()) }
+    single {
+        LivoApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { LivoListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -143,8 +163,10 @@ val dataModule = module {
                 get<OlxPlListingSource>(),
                 get<GratkaListingSource>(),
                 get<MorizonListingSource>(),
+                get<SsListingSource>(),
+                get<LivoListingSource>(),
             ),
-            platformConfig = AllListingPlatformsConfig,
+            platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )
     }
 

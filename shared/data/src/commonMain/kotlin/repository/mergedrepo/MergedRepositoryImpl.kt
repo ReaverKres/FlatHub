@@ -113,7 +113,7 @@ class MergedRepositoryImpl(
             when (nett) {
                 is NetworkResponseWrapper.Success<List<AppFlat>> -> {
                     nett.data.forEach { net ->
-                        val fromDb = flatsDao.getById(net.adId)
+                        val fromDb = flatsDao.getById(net.flatPlatform, net.adId)
 
                         val priceUsdSquare =
                             if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
@@ -287,7 +287,7 @@ class MergedRepositoryImpl(
             resultList = filterFlatsByPolygons(resultList, allActivePolygons)
         }
 
-        return resultList.distinctBy { it.adId }
+        return resultList.distinctBy { it.flatPlatform to it.adId }
     }
 
     private fun filterFlatsByPolygons(
@@ -384,7 +384,7 @@ class MergedRepositoryImpl(
                 dislike = if (willBeFavorite) false else flatFromDb.dislike,
             )
             flatsDao.upsert(updated)
-            emit(flatsDao.getById(adId))
+            emit(flatsDao.getById(flatPlatform, adId))
         }
     }
 
@@ -402,7 +402,7 @@ class MergedRepositoryImpl(
                 savedInFavorites = if (disliked) false else flatFromDb.savedInFavorites,
             )
             flatsDao.upsert(updated)
-            emit(flatsDao.getById(adId))
+            emit(flatsDao.getById(flatPlatform, adId))
         }
     }
 
@@ -426,7 +426,7 @@ class MergedRepositoryImpl(
             if (sourceFlat != null) {
                 emit(sourceFlat)
             } else {
-                emit(flatsDao.getById(adId))
+                emit(flatsDao.getById(platform, adId))
             }
         }
     }

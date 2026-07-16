@@ -464,7 +464,10 @@ class FlatSearchContainer(
                     isRefreshing = false,
                     isLoading = false,
                     isLoadingMore = false,
-                    flatList = (flatList + uiFlatList).toImmutableList(),
+                    // Composite identity — same adId can exist on SS_GE and LIVO.
+                    flatList = (flatList + uiFlatList)
+                        .distinctBy { it.flatPlatform to it.adId }
+                        .toImmutableList(),
                     currentSearchPage = filterRepository.currentHomePage
                 )
 

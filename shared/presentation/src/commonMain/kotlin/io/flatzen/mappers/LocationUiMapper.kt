@@ -10,15 +10,18 @@ object LocationUiMapper {
 
     val minskUiItem = UiCityItem(CityCode.MINSK, "Минск", Coordinates(53.902147, 27.561388))
     val warszawaUiItem = UiCityItem(CityCode.WARSZAWA, "Warszawa", Coordinates(52.2297, 21.0122))
+    val tbilisiUiItem = UiCityItem(CityCode.TBILISI, "Tbilisi", Coordinates(41.7151, 44.8271))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Беларусь"),
         UiCountryItem(CountryCode.PL, "Polska"),
+        UiCountryItem(CountryCode.GE, "Georgia"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
         CountryCode.PL -> warszawaUiItem
-        else -> minskUiItem
+        CountryCode.GE -> tbilisiUiItem
+        CountryCode.BY -> minskUiItem
     }
 
     fun cities(country: CountryCode = CountryCode.BY): List<UiCityItem> = when (country) {
@@ -43,18 +46,30 @@ object LocationUiMapper {
             UiCityItem(CityCode.BYDGOSZCZ, "Bydgoszcz", Coordinates(53.1235, 18.0084)),
             UiCityItem(CityCode.KATOWICE, "Katowice", Coordinates(50.2649, 19.0238)),
         )
+
+        CountryCode.GE -> listOf(
+            tbilisiUiItem,
+            UiCityItem(CityCode.BATUMI, "Batumi", Coordinates(41.6168, 41.6367)),
+            UiCityItem(CityCode.KUTAISI, "Kutaisi", Coordinates(42.2679, 42.6946)),
+            UiCityItem(CityCode.RUSTAVI, "Rustavi", Coordinates(41.5495, 44.9932)),
+        )
     }
 
     /** Backward-compatible default (BY). */
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
 
     fun findSelectedCity(cityCode: CityCode): UiCityItem =
-        (cities(CountryCode.BY) + cities(CountryCode.PL)).find { it.code == cityCode }
+        (
+                cities(CountryCode.BY) +
+                        cities(CountryCode.PL) +
+                        cities(CountryCode.GE)
+                ).find { it.code == cityCode }
             ?: minskUiItem
 
     fun countryForCity(cityCode: CityCode): CountryCode =
         when (cityCode) {
             in cities(CountryCode.PL).map { it.code } -> CountryCode.PL
+            in cities(CountryCode.GE).map { it.code } -> CountryCode.GE
             else -> CountryCode.BY
         }
 

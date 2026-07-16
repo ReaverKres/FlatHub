@@ -6,6 +6,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.longOrNull
 
 /** Safe cast — kotlinx `.jsonObject` throws on [kotlinx.serialization.json.JsonNull]. */
@@ -19,5 +20,10 @@ fun JsonElement?.contentOrNull(): String? = asPrimitiveOrNull()?.contentOrNull
 
 fun JsonElement?.longOrNull(): Long? = asPrimitiveOrNull()?.longOrNull
 
+fun JsonElement?.intOrNull(): Int? = asPrimitiveOrNull()?.intOrNull
+    ?: longOrNull()?.toInt()
+    ?: contentOrNull()?.toIntOrNull()
+
 fun JsonElement?.doubleOrNull(): Double? = asPrimitiveOrNull()?.doubleOrNull
     ?: contentOrNull()?.replace(',', '.')?.toDoubleOrNull()
+    ?: longOrNull()?.toDouble()

@@ -908,7 +908,8 @@ fun FlatList(
                 count = feedItems.size,
                 key = { index ->
                     when (val item = feedItems[index]) {
-                        is FeedItem.Flat -> "flat-${item.value.adId}"
+                        is FeedItem.Flat ->
+                            "flat-${item.value.flatPlatform.name}-${item.value.adId}"
                         FeedItem.Ad -> "ad-$index"
                     }
                 }
@@ -943,7 +944,13 @@ fun FlatList(
                 count = gridRows.size,
                 key = { index ->
                     when (val row = gridRows[index]) {
-                        is GridRow.Pair -> "row-${row.first.adId}"
+                        is GridRow.Pair -> {
+                            val a = "${row.first.flatPlatform.name}-${row.first.adId}"
+                            val b = row.second?.let {
+                                "${it.flatPlatform.name}-${it.adId}"
+                            } ?: "none"
+                            "row-$a-$b"
+                        }
                         is GridRow.Ad -> "ad-row-$index"
                     }
                 }

@@ -12,4 +12,8 @@ enum class FlatPlatform(val value: String) {
     OLX_PL("olx_pl"),
     GRATKA("gratka"),
     MORIZON("morizon"),
+
+    // Georgia (MVP)
+    SS_GE("ss_ge"),
+    LIVO("livo"),
 }

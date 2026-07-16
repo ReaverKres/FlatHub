@@ -1,10 +1,11 @@
-package listing.pl.gratka
+package listing.ge.ss
 
 import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
+import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
@@ -14,19 +15,21 @@ import listing.core.SourceCapabilities
 import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
-/** Gratka.pl GraphQL — see tmp/pl/api/gratka/NOTES.md */
-class GratkaListingSource(
-    private val api: GratkaApiClient,
+/**
+ * SS.ge (home.ss.ge) — LegendSearch API. See tmp/ge/api/ss/NOTES.md.
+ */
+class SsListingSource(
+    private val api: SsApiClient,
     private val flatsDao: FlatsDao,
 ) : ListingSource {
-    override val platform = FlatPlatform.GRATKA
-    override val country = CountryCode.PL
+    override val platform = FlatPlatform.SS_GE
+    override val country = CountryCode.GE
     override val capabilities = SourceCapabilities(
         supportsRent = true,
         supportsSale = true,
         supportsDaily = true,
-        supportsRoom = true,
-        supportsCommercial = true,
+        supportsRoom = false,
+        supportsCommercial = false,
     )
 
     override fun search(
@@ -35,18 +38,21 @@ class GratkaListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val url = GratkaCities.listingUrl(
-                city = filter.location?.city,
-                adType = filter.adType,
-                isRoom = filter.isRoomForRent || filter.roomOnly,
-                isCommercial = filter.isCommercial,
+            val dealType = when (filter.adType) {
+                is AdType.SALE -> SsApiClient.DEAL_SALE
+                is AdType.DAILY -> SsApiClient.DEAL_DAILY
+                else -> SsApiClient.DEAL_RENT
+            }
+            val json = api.legendSearch(
                 page = page,
+                cityId = SsCities.cityId(filter.location?.city),
+                dealType = dealType,
             )
-            val json = api.searchProperties(url)
-            NetworkResponseWrapper.success(GratkaFlatMapper.mapSearch(json, filter.adType))
+            NetworkResponseWrapper.success(SsFlatMapper.mapSearch(json, filter.adType))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            api.invalidateAuth()
             NetworkResponseWrapper.error(
                 e,
                 NetworkErrorInfo(platform, listOf(e.message.orEmpty())),
@@ -58,22 +64,7 @@ class GratkaListingSource(
     override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(platform, adId)
 
     override fun detail(adId: Long): Flow<AppFlat?> = flow {
-        val base = flatsDao.getById(platform, adId)
-        if (base == null) {
-            emit(null)
-            return@flow
-        }
-        emit(base)
-        if (base.flatDevInfo.isDetailLoaded) return@flow
-        try {
-            val json = api.fetchProperty(base.flatDetailUrl)
-            val merged = GratkaDetailMapper.mergeInto(base, json)
-            flatsDao.upsert(merged)
-            emit(merged)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            // Keep list payload; soft-fail detail.
-        }
+        // List payload already marked detail-loaded; emit base immediately.
+        emit(flatsDao.getById(platform, adId))
     }
 }

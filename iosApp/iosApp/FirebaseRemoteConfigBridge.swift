@@ -23,6 +23,8 @@ import ComposeApp
             "consentManagerEnabled": true as NSObject,
             "adsEnabled": true as NSObject,
             "premiumFallbackEnabled": false as NSObject,
+            // Empty = all registered PL platforms.
+            "enabled_platforms_pl": "" as NSObject,
         ])
         remoteConfig = config
     }

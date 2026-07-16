@@ -1,7 +1,6 @@
 package entities// entities.AppFlat.kt
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import database.RoomTypeConverter
 import io.flatzen.commoncomponents.commonentities.AdType
@@ -14,10 +13,10 @@ import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.commoncomponents.utils.formatSecondPrice
 import kotlin.time.Instant
 
-@Entity
+@Entity(primaryKeys = ["flatPlatform", "adId"])
 @TypeConverters(RoomTypeConverter::class)
 data class AppFlat(
-    @PrimaryKey val adId: Long,
+    val adId: Long,
     @Embedded val adType: AdType? = AdType.RENT,
     @Embedded val flatDevInfo: FlatDevInfo,
     @Embedded val contactInformation: ContactInformation?,
@@ -114,6 +113,10 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.GRATKA,
     FlatPlatform.MORIZON,
         -> "PLN"
+
+    FlatPlatform.SS_GE,
+    FlatPlatform.LIVO,
+        -> "GEL"
 
     else -> "BYN"
 }

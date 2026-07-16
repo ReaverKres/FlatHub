@@ -9,7 +9,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 
 data class Country(val country: CountryCode, val allCities: List<City>)
 
-enum class CountryCode { BY, PL }
+enum class CountryCode { BY, PL, GE }
 
 enum class CityCode {
     // Belarus
@@ -18,6 +18,9 @@ enum class CityCode {
     // Poland (major cities)
     WARSZAWA, KRAKOW, WROCLAW, POZNAN, GDANSK, LODZ,
     SZCZECIN, LUBLIN, BYDGOSZCZ, KATOWICE,
+
+    // Georgia (MVP)
+    TBILISI, BATUMI, KUTAISI, RUSTAVI,
 }
 
 object Location {
@@ -38,5 +41,9 @@ object Location {
         CityCode.LUBLIN -> "lublin"
         CityCode.BYDGOSZCZ -> "bydgoszcz"
         CityCode.KATOWICE -> "katowice"
+        CityCode.TBILISI -> "tbilisi"
+        CityCode.BATUMI -> "batumi"
+        CityCode.KUTAISI -> "kutaisi"
+        CityCode.RUSTAVI -> "rustavi"
     }
 }
