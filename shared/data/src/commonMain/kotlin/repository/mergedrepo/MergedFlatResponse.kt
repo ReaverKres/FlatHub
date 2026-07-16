@@ -2,6 +2,7 @@ package repository.mergedrepo
 
 import core.NetworkErrorInfo
 import entities.AppFlat
+import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 
 data class MergedNetworkErrors(
@@ -15,4 +16,6 @@ data class MergedNetworkErrors(
 data class MergedFlatResponse(
     val flats: List<AppFlat>,
     val errors: MergedNetworkErrors = MergedNetworkErrors(),
+    /** Platforms queried for this search (current market only). */
+    val searchedPlatforms: List<FlatPlatform> = emptyList(),
 )

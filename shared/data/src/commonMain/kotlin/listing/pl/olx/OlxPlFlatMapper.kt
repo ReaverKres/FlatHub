@@ -15,17 +15,18 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
+import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 object OlxPlFlatMapper {
     fun mapOffers(root: JsonObject, adType: AdType): List<AppFlat> {
         val data = root["data"]?.jsonArray ?: return emptyList()
         return data.mapNotNull { el ->
-            runCatching { mapOffer(el.jsonObject, adType) }.getOrNull()
+            runCatching { mapSingleOffer(el.jsonObject, adType) }.getOrNull()
         }
     }
 
-    private fun mapOffer(item: JsonObject, adType: AdType): AppFlat {
+    fun mapSingleOffer(item: JsonObject, adType: AdType): AppFlat {
         val id = item["id"]?.jsonPrimitive?.longOrNull ?: error("missing id")
         val url = item["url"]?.jsonPrimitive?.contentOrNull
             ?: "https://www.olx.pl/d/oferta/ID$id"
@@ -83,7 +84,7 @@ object OlxPlFlatMapper {
             district = district,
             address = address,
             metroStation = null,
-            description = description ?: title,
+            description = (description ?: title).stripHtmlToPlainText(),
             yearBuilt = null,
             totalArea = area,
             livingArea = null,

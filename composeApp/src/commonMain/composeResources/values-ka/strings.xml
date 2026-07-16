@@ -111,12 +111,17 @@
     <string name="location_title">მდებარეობა</string>
     <string name="location_address_hint">შეიყვანეთ მისამართი/ქუჩა</string>
     <string name="location_country">ქვეყანა</string>
+    <string name="location_country_city">ქვეყანა და ქალაქი</string>
+    <string name="location_select_country_hint">ჯერ აირჩიეთ ქვეყანა</string>
+    <string name="location_select_city_hint">აირჩიეთ ქალაქი ბაზარზე</string>
     <string name="location_city">ქალაქი</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>
     <string name="location_metro_line_red">წითელი</string>
     <string name="location_metro_line_blue">ლურჯი</string>
     <string name="location_metro_line_green">მწვანე</string>
+    <string name="location_metro_line_m1">M1</string>
+    <string name="location_metro_line_m2">M2</string>
     <string name="location_districts">უბნები</string>
     <string name="location_saved_areas">შენახული ზონები</string>
     <string name="location_search_station">სადგურის ძიება</string>

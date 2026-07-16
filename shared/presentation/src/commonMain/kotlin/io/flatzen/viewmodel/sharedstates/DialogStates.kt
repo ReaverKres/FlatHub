@@ -17,11 +17,16 @@ data class SearchErrorDialogState(
     val title: LocalizationKeys,
     val errorInfo: List<ErrorInfo>,
     val generalError: LocalizationKeys? = null,
+    /** Platforms that participated in this search (country-scoped). Empty → fall back to errorInfo only. */
+    val searchedPlatforms: List<FlatPlatform> = emptyList(),
 ) {
     class ErrorInfo(
         val platform: FlatPlatform,
         val errorMessages: List<String>
     )
+
+    val platformsForStatusRow: List<FlatPlatform>
+        get() = searchedPlatforms.ifEmpty { errorInfo.map { it.platform }.distinct() }
 }
 
 @Immutable

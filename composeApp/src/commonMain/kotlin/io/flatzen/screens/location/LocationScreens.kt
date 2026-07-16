@@ -1,10 +1,22 @@
 package io.flatzen.screens.location
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,10 +31,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.AssistChip
@@ -46,6 +60,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +69,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,15 +79,20 @@ import flatzen.composeapp.generated.resources.delete
 import flatzen.composeapp.generated.resources.location_address_hint
 import flatzen.composeapp.generated.resources.location_city
 import flatzen.composeapp.generated.resources.location_country
+import flatzen.composeapp.generated.resources.location_country_city
 import flatzen.composeapp.generated.resources.location_districts
 import flatzen.composeapp.generated.resources.location_metro
 import flatzen.composeapp.generated.resources.location_metro_any_switch
 import flatzen.composeapp.generated.resources.location_metro_line_blue
 import flatzen.composeapp.generated.resources.location_metro_line_green
+import flatzen.composeapp.generated.resources.location_metro_line_m1
+import flatzen.composeapp.generated.resources.location_metro_line_m2
 import flatzen.composeapp.generated.resources.location_metro_line_red
 import flatzen.composeapp.generated.resources.location_saved_areas
 import flatzen.composeapp.generated.resources.location_search_district
 import flatzen.composeapp.generated.resources.location_search_station
+import flatzen.composeapp.generated.resources.location_select_city_hint
+import flatzen.composeapp.generated.resources.location_select_country_hint
 import flatzen.composeapp.generated.resources.location_title
 import flatzen.composeapp.generated.resources.reset
 import io.flatzen.animations.rememberShimmerProgress
@@ -88,6 +109,7 @@ import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.viewmodel.filter.UiMetroStation
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.dialogs.SavedAreasDialog
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
@@ -213,8 +235,8 @@ fun LocationScreen() {
                 }
             }
 
-            if (state.filters.location?.selectedCity?.code == CityCode.MINSK) {
-                // Minsk metro filter (station catalog). Warsaw uses geo proximity only for now.
+            val selectedCityCode = state.filters.location?.selectedCity?.code
+            if (selectedCityCode == CityCode.MINSK || selectedCityCode == CityCode.WARSZAWA) {
                 ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
                 }) {
@@ -269,12 +291,42 @@ fun CitySelectScreen(
 ) {
     val state by filterContainer.store.subscribe { }
     val countries = remember { LocationUiMapper.countries() }
+    val selectedCountry = state.filters.location?.selectedCountry?.code
     val cities = state.filters.location?.availableCities.orEmpty()
+    val selectedCityCode = state.filters.location?.selectedCity?.code
+    // Lag content behind selection so the list never paints a new market while still visible.
+    var displayCountry by remember { mutableStateOf(selectedCountry) }
+    var displayCities by remember { mutableStateOf(cities) }
+    var citiesVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedCountry, cities) {
+        if (selectedCountry == displayCountry) {
+            displayCities = cities
+            if (selectedCountry != null && !citiesVisible) {
+                citiesVisible = true
+            }
+            return@LaunchedEffect
+        }
+        citiesVisible = false
+        delay(210)
+        displayCountry = selectedCountry
+        displayCities = cities
+        if (selectedCountry != null) {
+            delay(16)
+            citiesVisible = true
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text(stringResource(Res.string.location_city), style = MaterialTheme.typography.headlineSmall) },
+                title = {
+                    Text(
+                        stringResource(Res.string.location_country_city),
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
@@ -283,64 +335,232 @@ fun CitySelectScreen(
             )
         }
     ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 24.dp),
+        ) {
             item {
-                Text(
-                    text = stringResource(Res.string.location_country),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                )
-            }
-            items(countries) { country ->
-                val checked = state.filters.location?.selectedCountry?.code == country.code
-                ListItem(
-                    headlineContent = { Text(country.displayName) },
-                    trailingContent = {
-                        Checkbox(checked = checked, onCheckedChange = {
-                            if (!checked) {
-                                filterContainer.intent(
-                                    FilterScreenAction.SelectCountry(country.code)
-                                )
-                            }
-                        })
-                    },
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            filterContainer.intent(FilterScreenAction.SelectCountry(country.code))
-                        },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                )
-                HorizontalDivider()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Text(
+                        text = stringResource(Res.string.location_country),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    )
+                    Text(
+                        text = stringResource(Res.string.location_select_country_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        countries.forEach { country ->
+                            val selected = selectedCountry == country.code
+                            CountryMarketCard(
+                                name = country.displayName,
+                                selected = selected,
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    if (selectedCountry != country.code) {
+                                        citiesVisible = false
+                                    }
+                                    filterContainer.intent(
+                                        FilterScreenAction.SelectCountry(country.code)
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
             }
+
             item {
-                Text(
-                    text = stringResource(Res.string.location_city),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            items(cities) { city ->
-                ListItem(
-                    headlineContent = { Text(city.displayName) },
-                    trailingContent = {
-                        val checked = state.filters.location?.selectedCity?.code == city.code
-                        Checkbox(checked = checked, onCheckedChange = {
-                            if (!checked) {
-                                filterContainer.intent(
-                                    FilterScreenAction.SelectCity(city.code)
-                                )
-                            }
-                        })
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            filterContainer.intent(FilterScreenAction.SelectCity(city.code))
-                        },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+
+            item(key = "cities_block") {
+                AnimatedVisibility(
+                    visible = citiesVisible && displayCountry != null,
+                    enter = fadeIn(
+                        animationSpec = tween(360, easing = FastOutSlowInEasing),
+                    ) + expandVertically(
+                        animationSpec = tween(420, easing = FastOutSlowInEasing),
+                        expandFrom = Alignment.Top,
+                    ) + slideInVertically(
+                        animationSpec = tween(420, easing = FastOutSlowInEasing),
+                        initialOffsetY = { fullHeight -> fullHeight / 14 },
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(180, easing = FastOutSlowInEasing),
+                    ) + shrinkVertically(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing),
+                        shrinkTowards = Alignment.Top,
+                    ) + slideOutVertically(
+                        animationSpec = tween(200, easing = FastOutSlowInEasing),
+                        targetOffsetY = { fullHeight -> -fullHeight / 20 },
+                    ),
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 4.dp, bottom = 10.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.location_city),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                ),
+                            )
+                            Text(
+                                text = stringResource(Res.string.location_select_city_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+
+                        displayCities.forEachIndexed { index, city ->
+                            val checked = selectedCityCode == city.code
+                            CitySelectRow(
+                                name = city.displayName,
+                                checked = checked,
+                                index = index,
+                                onClick = {
+                                    filterContainer.intent(
+                                        FilterScreenAction.SelectCity(city.code)
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnimatedVisibilityScope.CitySelectRow(
+    name: String,
+    checked: Boolean,
+    index: Int,
+    onClick: () -> Unit,
+) {
+    val stagger = (36 * index).coerceAtMost(280)
+    Column(
+        modifier = Modifier.animateEnterExit(
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = 320,
+                    delayMillis = 60 + stagger,
+                    easing = FastOutSlowInEasing,
+                ),
+            ) + slideInVertically(
+                animationSpec = tween(
+                    durationMillis = 340,
+                    delayMillis = 60 + stagger,
+                    easing = FastOutSlowInEasing,
+                ),
+                initialOffsetY = { it / 5 },
+            ),
+            exit = fadeOut(tween(120, easing = FastOutSlowInEasing)),
+        ),
+    ) {
+        ListItem(
+            headlineContent = { Text(name) },
+            trailingContent = {
+                if (checked) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+            colors = ListItemDefaults.colors(
+                containerColor = if (checked) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                } else {
+                    Color.Transparent
+                },
+            ),
+        )
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+        )
+    }
+}
+
+@Composable
+private fun CountryMarketCard(
+    name: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = modifier
+            .height(72.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(14.dp),
+        color = if (selected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+        },
+        border = BorderStroke(
+            width = if (selected) 2.dp else 1.dp,
+            color = if (selected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outlineVariant
+            },
+        ),
+        tonalElevation = if (selected) 2.dp else 0.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                ),
+                color = if (selected) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+            )
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
-                HorizontalDivider()
             }
         }
     }
@@ -408,20 +628,30 @@ fun MetroSelectScreen(
                 filterContainer.intent(FilterScreenAction.UpdateWithAnyMetro(it))
             }
 
+            val isWarsaw =
+                state.filters.location?.selectedCity?.code == CityCode.WARSZAWA
             val lineItems = listOf(
                 MetroLineUi(
-                    line = MetroLineState.RED,
-                    title = stringResource(Res.string.location_metro_line_red),
-                    color = Color(0xFFD32F2F),
-                    stations = stationsOf(MetroLineState.RED),
-                    allStationsOnLine = stations.filter { it.line == MetroLineState.RED },
-                ),
-                MetroLineUi(
                     line = MetroLineState.BLUE,
-                    title = stringResource(Res.string.location_metro_line_blue),
+                    title = if (isWarsaw) {
+                        stringResource(Res.string.location_metro_line_m1)
+                    } else {
+                        stringResource(Res.string.location_metro_line_blue)
+                    },
                     color = Color(0xFF1976D2),
                     stations = stationsOf(MetroLineState.BLUE),
                     allStationsOnLine = stations.filter { it.line == MetroLineState.BLUE },
+                ),
+                MetroLineUi(
+                    line = MetroLineState.RED,
+                    title = if (isWarsaw) {
+                        stringResource(Res.string.location_metro_line_m2)
+                    } else {
+                        stringResource(Res.string.location_metro_line_red)
+                    },
+                    color = Color(0xFFD32F2F),
+                    stations = stationsOf(MetroLineState.RED),
+                    allStationsOnLine = stations.filter { it.line == MetroLineState.RED },
                 ),
                 MetroLineUi(
                     line = MetroLineState.GREEN,

@@ -119,12 +119,17 @@
     <string name="location_title">Расположение</string>
     <string name="location_address_hint">Введите адрес/улицу</string>
     <string name="location_country">Страна</string>
+    <string name="location_country_city">Страна и город</string>
+    <string name="location_select_country_hint">Сначала выберите страну</string>
+    <string name="location_select_city_hint">Выберите город на рынке</string>
     <string name="location_city">Город</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Любая станция</string>
     <string name="location_metro_line_red">Красная</string>
     <string name="location_metro_line_blue">Синяя</string>
     <string name="location_metro_line_green">Зелёная</string>
+    <string name="location_metro_line_m1">M1</string>
+    <string name="location_metro_line_m2">M2</string>
     <string name="location_districts">Районы</string>
     <string name="location_saved_areas">Сохранённые области</string>
     <string name="location_search_station">Поиск станции</string>

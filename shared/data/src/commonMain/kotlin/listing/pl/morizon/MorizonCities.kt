@@ -29,8 +29,10 @@ object MorizonCities {
         page: Int,
     ): String {
         val estate = if (isCommercial) "lokale-uzytkowe" else "mieszkania"
+        // Rent: /do-wynajecia/mieszkania/warszawa/
+        // Sale: /sprzedaz/mieszkania/warszawa/  (NOT /na-sprzedaz — that returns searchResult: null)
         val transaction = when (adType) {
-            is AdType.SALE -> "na-sprzedaz"
+            is AdType.SALE -> "sprzedaz"
             else -> "do-wynajecia"
         }
         val base = "/$transaction/$estate/${citySlug(city)}/"

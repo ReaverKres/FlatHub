@@ -51,6 +51,7 @@ import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.kufar32
 import flatzen.composeapp.generated.resources.onliner32
+import flatzen.composeapp.generated.resources.otodom32
 import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -322,8 +323,8 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.KUFAR -> painterResource(Res.drawable.kufar32)
         FlatPlatform.REALT -> painterResource(Res.drawable.realt32)
         FlatPlatform.DOMOVITA -> painterResource(Res.drawable.domovita32)
-        // New markets: bundled icons not required — use [PlatformIcon] favicon URL.
-        FlatPlatform.OTODOM,
+        FlatPlatform.OTODOM -> painterResource(Res.drawable.otodom32)
+        // Remaining PL markets: remote favicon via [PlatformIcon].
         FlatPlatform.OLX_PL,
         FlatPlatform.GRATKA,
         FlatPlatform.MORIZON,
@@ -334,7 +335,6 @@ fun FlatPlatform.platformImage(): Painter {
 @Composable
 fun BoxScope.PlatformIcon(flatPlatform: FlatPlatform) {
     when (flatPlatform) {
-        FlatPlatform.OTODOM,
         FlatPlatform.OLX_PL,
         FlatPlatform.GRATKA,
         FlatPlatform.MORIZON,

@@ -9,7 +9,10 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.KUFAR -> "https://www.kufar.by/favicon.ico"
     FlatPlatform.REALT -> "https://realt.by/favicon.ico"
     FlatPlatform.DOMOVITA -> "https://domovita.by/favicon.ico"
-    FlatPlatform.OTODOM -> "https://www.otodom.pl/favicon.ico"
+    // Root /favicon.ico is 404; use Otodom CDN asset.
+    FlatPlatform.OTODOM ->
+        "https://statics.otodom.pl/static/otodompl/naspersclassifieds-regional/" +
+                "verticalsre-atlas-web-otodompl/static/img/app-icon.png"
     FlatPlatform.OLX_PL -> "https://www.olx.pl/favicon.ico"
     FlatPlatform.GRATKA -> "https://gratka.pl/favicon.ico"
     FlatPlatform.MORIZON -> "https://www.morizon.pl/favicon.ico"

@@ -33,6 +33,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import listing.core.ListingSource
 import listing.core.ListingSourceRegistry
+import metro.MetroProximityEnricher
+import metro.MetroStationsGeoCatalog
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
 import kotlin.coroutines.cancellation.CancellationException
@@ -61,6 +63,7 @@ class MergedRepositoryImpl(
         currentPage: Int?,
     ): Flow<MergedFlatResponse> = flow {
         val sources = listingSourceRegistry.forFilter(filter)
+        val searchedPlatforms = sources.map { it.platform }
         val networkFlats = supervisorScope {
             sources.map { source ->
                 async {
@@ -71,7 +74,13 @@ class MergedRepositoryImpl(
             }.awaitAll()
         }
 
-        emit(mergeNetworkFlats(networkFlats, filter))
+        emit(
+            mergeNetworkFlats(
+                networkFlats = networkFlats,
+                filter = filter,
+                searchedPlatforms = searchedPlatforms,
+            ),
+        )
     }.flowOn(Dispatchers.IO)
 
     private suspend fun awaitPlatformSearch(
@@ -94,7 +103,9 @@ class MergedRepositoryImpl(
     private suspend fun mergeNetworkFlats(
         networkFlats: List<NetworkResponseWrapper<List<AppFlat>>>,
         filter: CommonFilterRequestModel,
+        searchedPlatforms: List<FlatPlatform>,
     ): MergedFlatResponse {
+        MetroStationsGeoCatalog.loadIfNeeded()
         val appFlats: MutableList<AppFlat> = mutableListOf()
         val platformErrors: MutableList<NetworkErrorInfo> = mutableListOf()
 
@@ -114,13 +125,15 @@ class MergedRepositoryImpl(
                                 net.priceByn / net.totalArea
                             } else net.priceBynSquare
 
-                        val updated = net.copy(
-                            adType = filter.adType,
-                            savedInFavorites = fromDb?.savedInFavorites == true,
-                            isViewed = fromDb?.isViewed == true,
-                            dislike = fromDb?.dislike == true,
-                            priceUsdSquare = priceUsdSquare,
-                            priceBynSquare = priceBynSquare,
+                        val updated = MetroProximityEnricher.enrich(
+                            net.copy(
+                                adType = filter.adType,
+                                savedInFavorites = fromDb?.savedInFavorites == true,
+                                isViewed = fromDb?.isViewed == true,
+                                dislike = fromDb?.dislike == true,
+                                priceUsdSquare = priceUsdSquare,
+                                priceBynSquare = priceBynSquare,
+                            ),
                         )
                         appFlats.add(updated)
                     }
@@ -148,6 +161,7 @@ class MergedRepositoryImpl(
                 platformErrors = platformErrors,
                 generalError = generalError,
             ),
+            searchedPlatforms = searchedPlatforms,
         )
     }
 
@@ -156,10 +170,12 @@ class MergedRepositoryImpl(
         flatId: Long,
         markAsViewed: Boolean,
     ): Flow<AppFlat> {
+        MetroStationsGeoCatalog.loadIfNeeded()
         val detailFlat = sourceFor(flatPlatform).detail(flatId).flowOn(Dispatchers.IO)
         return detailFlat.mapNotNull { flat ->
             flat?.let {
-                if (markAsViewed) it.copy(isViewed = true) else it
+                val viewed = if (markAsViewed) it.copy(isViewed = true) else it
+                MetroProximityEnricher.enrich(viewed)
             }
         }.onEach { updatedFlat ->
             withContext(Dispatchers.IO) { flatsDao.upsert(updatedFlat) }

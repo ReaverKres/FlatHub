@@ -159,14 +159,6 @@ fun DetailScreen(
         )
 
         when {
-            state.isLoading -> {
-                Box(Modifier.fillMaxSize())
-            }
-
-            state.error != null -> {
-                Box(Modifier.fillMaxSize())
-            }
-
             flat != null -> {
                 FlatDetailContent(
                     flat = flat,
@@ -184,6 +176,14 @@ fun DetailScreen(
                         container.store.intent(FlatDetailIntent.OpenOnMap(flat.adId))
                     },
                 )
+            }
+
+            state.isLoading -> {
+                Box(Modifier.fillMaxSize())
+            }
+
+            state.error != null -> {
+                Box(Modifier.fillMaxSize())
             }
 
             else -> {

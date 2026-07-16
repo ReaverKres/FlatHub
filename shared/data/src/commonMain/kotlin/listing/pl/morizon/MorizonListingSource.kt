@@ -56,5 +56,23 @@ class MorizonListingSource(
 
     override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(adId)
 
-    override fun detail(adId: Long): Flow<AppFlat?> = getById(adId)
+    override fun detail(adId: Long): Flow<AppFlat?> = flow {
+        val base = flatsDao.getById(adId)
+        if (base == null) {
+            emit(null)
+            return@flow
+        }
+        emit(base)
+        if (base.flatDevInfo.isDetailLoaded) return@flow
+        try {
+            val json = api.fetchProperty(base.flatDetailUrl)
+            val merged = MorizonDetailMapper.mergeInto(base, json)
+            flatsDao.upsert(merged)
+            emit(merged)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Keep list payload; soft-fail detail.
+        }
+    }
 }

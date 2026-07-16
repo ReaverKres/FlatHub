@@ -90,15 +90,19 @@ object MetroStationsGeoCatalog {
     private suspend fun loadWarsawStations(): List<MetroStationGeo> {
         val text = Res.readBytes(WARSAW_METRO_GEO_RESOURCE).decodeToString()
         val dtos = json.decodeFromString<List<MetroStationGeoDto>>(text)
+        val catalog = entities.WarsawMetroStations.allStationsRequest()
+            .groupBy { it.name.lowercase() }
         return dtos.mapIndexedNotNull { index, dto ->
             if (dto.coordinates.size < 2) return@mapIndexedNotNull null
+            val fromCatalog = catalog[dto.name.lowercase()]?.firstOrNull()
             MetroStationGeo(
                 jsonName = dto.name,
                 canonicalName = dto.name,
-                // Line metadata not in JSON yet; BLUE used for map/proximity only.
-                line = MetroLine.BLUE,
+                line = fromCatalog?.line
+                    ?: entities.WarsawMetroStations.lineForStationName(dto.name)
+                    ?: MetroLine.BLUE,
                 coordinates = Coordinates(dto.latitude, dto.longitude),
-                metroId = WARSAW_METRO_ID_BASE + index,
+                metroId = fromCatalog?.metroId ?: (WARSAW_METRO_ID_BASE + index),
             )
         }
     }

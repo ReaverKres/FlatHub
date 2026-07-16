@@ -5,7 +5,7 @@ import entities.MetroLine
 
 /**
  * Fills [AppFlat.metroStation] for flats without metro when coordinates
- * are within 1 km of a known Minsk metro station.
+ * are within 1 km of a known station (Minsk + Warsaw catalogs).
  */
 object MetroProximityEnricher {
     private const val RADIUS_METERS = 1_000.0

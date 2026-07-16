@@ -119,12 +119,17 @@
     <string name="location_title">Орналасқан жері</string>
     <string name="location_address_hint">Мекенжай/көшені енгізіңіз</string>
     <string name="location_country">Ел</string>
+    <string name="location_country_city">Ел және қала</string>
+    <string name="location_select_country_hint">Алдымен елді таңдаңыз</string>
+    <string name="location_select_city_hint">Нарықтағы қаланы таңдаңыз</string>
     <string name="location_city">Қала</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>
     <string name="location_metro_line_red">Қызыл</string>
     <string name="location_metro_line_blue">Көк</string>
     <string name="location_metro_line_green">Жасыл</string>
+    <string name="location_metro_line_m1">M1</string>
+    <string name="location_metro_line_m2">M2</string>
     <string name="location_districts">Аудандар</string>
     <string name="location_saved_areas">Сақталған аймақтар</string>
     <string name="location_search_station">Станция іздеу</string>

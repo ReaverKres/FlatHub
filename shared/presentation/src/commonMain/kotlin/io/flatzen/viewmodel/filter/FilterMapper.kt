@@ -24,7 +24,8 @@ fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel 
         withPhotoOnly = filters.withPhotoOnly,
         roomOnly = filters.roomOnly,
         isNotificationEnabled = filters.isNotificationEnabled,
-        metroStations = MetroStations.allStationsRequest().map { requestStation ->
+        metroStations = MetroStations.stationsForCity(filters.location?.selectedCity?.code)
+            .map { requestStation ->
             val sameStationFromUi =
                 filters.metroStationsState.find { it.name == requestStation.name }
             requestStation.copy(selected = sameStationFromUi?.selected == true)
@@ -67,7 +68,8 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         roomOnly = model.roomOnly,
         isNotificationEnabled = model.isNotificationEnabled,
         rooms = model.numberOfRooms ?: emptySet(),
-        metroStationsState = MetroStationsMapper.allStationsOrderedForUi().map { uiStation ->
+        metroStationsState = MetroStationsMapper.stationsForCity(model.location?.city)
+            .map { uiStation ->
             val sameStationFromRequest = model.metroStations.find { it.name == uiStation.name }
             uiStation.copy(selected = sameStationFromRequest?.selected == true)
         },

@@ -18,13 +18,19 @@ class GratkaApiClient(
     private val httpClient: HttpClient,
     private val json: Json,
 ) {
-    suspend fun searchProperties(listingUrl: String): JsonObject {
+    suspend fun searchProperties(listingUrl: String): JsonObject =
+        postGraphql(SEARCH_QUERY, listingUrl)
+
+    suspend fun fetchProperty(detailUrl: String): JsonObject =
+        postGraphql(PROPERTY_QUERY, toApiPath(detailUrl))
+
+    private suspend fun postGraphql(query: String, url: String): JsonObject {
         val body = buildJsonObject {
-            put("query", SEARCH_QUERY)
+            put("query", query)
             put(
                 "variables",
                 buildJsonObject {
-                    put("url", listingUrl)
+                    put("url", url)
                 },
             )
         }
@@ -43,6 +49,13 @@ class GratkaApiClient(
     }
 
     companion object {
+        private fun toApiPath(detailUrl: String): String {
+            return detailUrl
+                .removePrefix("https://gratka.pl")
+                .removePrefix("https://www.gratka.pl")
+                .ifBlank { detailUrl }
+        }
+
         private val SEARCH_QUERY =
             """
             query getPropertyListingData(${'$'}url: String!) {
@@ -59,15 +72,46 @@ class GratkaApiClient(
                     area
                     numberOfRooms
                     floorFormatted
-                    description(maxLength: 200)
+                    description
                     price { amount currency }
-                    location { location street }
+                    location {
+                      location
+                      street
+                      map { center { latitude longitude } }
+                    }
                     photos { id name alt }
                     contact {
                       person { name phones type }
                       company { name phones type }
                     }
                   }
+                }
+              }
+            }
+            """.trimIndent()
+
+        private val PROPERTY_QUERY =
+            """
+            query getProperty(${'$'}url: String!) {
+              getProperty(url: ${'$'}url) {
+                id
+                idOnFrontend
+                title
+                description
+                url
+                area
+                numberOfRooms
+                floorFormatted
+                price { amount currency }
+                location {
+                  location
+                  street
+                  map { center { latitude longitude } }
+                }
+                photos { id name alt }
+                contact {
+                  person { name phones type }
+                  company { name phones type }
                 }
               }
             }

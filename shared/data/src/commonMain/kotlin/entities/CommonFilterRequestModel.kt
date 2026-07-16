@@ -326,4 +326,12 @@ object MetroStations {
             }.map { MetroStation(it.line, it.metroId, it.name) }
         }
     }
+
+    fun stationsForCity(city: CityCode?): List<MetroStation> {
+        return when (city) {
+            CityCode.WARSZAWA -> WarsawMetroStations.allStationsRequest()
+            CityCode.MINSK, null -> allStationsRequest()
+            else -> emptyList()
+        }
+    }
 }

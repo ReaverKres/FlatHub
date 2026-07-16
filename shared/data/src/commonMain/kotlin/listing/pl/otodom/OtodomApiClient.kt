@@ -10,6 +10,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlin.concurrent.Volatile
 
 /**
  * Otodom Next.js data client.
@@ -40,6 +41,21 @@ class OtodomApiClient(
             "/_next/data/$buildId/pl/wyniki/$transactionPath/$estatePath/$cityPath.json?$query"
         val url = "https://www.otodom.pl$path"
         val text = httpClient.get(url) {
+            header("x-nextjs-data", "1")
+            header(HttpHeaders.Accept, "application/json")
+            header(HttpHeaders.AcceptLanguage, "pl-PL,pl;q=0.9")
+            header(
+                HttpHeaders.UserAgent,
+                "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36",
+            )
+        }.bodyAsText()
+        return json.parseToJsonElement(text).jsonObject
+    }
+
+    suspend fun fetchDetailJson(slug: String): JsonObject {
+        val buildId = ensureBuildId()
+        val path = "/_next/data/$buildId/pl/oferta/$slug.json"
+        val text = httpClient.get("https://www.otodom.pl$path") {
             header("x-nextjs-data", "1")
             header(HttpHeaders.Accept, "application/json")
             header(HttpHeaders.AcceptLanguage, "pl-PL,pl;q=0.9")

@@ -119,12 +119,17 @@
     <string name="location_title">Lokalizacja</string>
     <string name="location_address_hint">Wpisz adres/ulicę</string>
     <string name="location_country">Kraj</string>
+    <string name="location_country_city">Kraj i miasto</string>
+    <string name="location_select_country_hint">Najpierw wybierz kraj</string>
+    <string name="location_select_city_hint">Wybierz miasto na rynku</string>
     <string name="location_city">Miasto</string>
     <string name="location_metro">Metro</string>
     <string name="location_metro_any_switch">Dowolna stacja</string>
     <string name="location_metro_line_red">Czerwona</string>
     <string name="location_metro_line_blue">Niebieska</string>
     <string name="location_metro_line_green">Zielona</string>
+    <string name="location_metro_line_m1">M1</string>
+    <string name="location_metro_line_m2">M2</string>
     <string name="location_districts">Dzielnice</string>
     <string name="location_saved_areas">Zapisane obszary</string>
     <string name="location_search_station">Szukaj stacji</string>

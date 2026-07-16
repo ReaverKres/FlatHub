@@ -256,9 +256,10 @@ class FilterContainer(
                 FilterScreenAction.ClearMetroFilters -> {
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
+                    val city = currentState.filters.location?.selectedCity?.code
                     val filter = currentState.filters.copy(
                         withAnyMetro = false,
-                        metroStationsState = MetroStationsMapper.allStationsOrderedForUi()
+                        metroStationsState = MetroStationsMapper.stationsForCity(city),
                     )
                     applyFiltersUpdate(filter, false)
                 }
@@ -534,7 +535,7 @@ class FilterContainer(
                                 availableCities = cities,
                             ),
                             districtsArea = null,
-                            metroStationsState = MetroStationsMapper.allStationsOrderedForUi(),
+                            metroStationsState = MetroStationsMapper.stationsForCity(defaultCity.code),
                             withAnyMetro = false,
                         ),
                         doNetworkCall = false,
@@ -559,6 +560,12 @@ class FilterContainer(
                             ),
                             // Districts belong to a city; keep previous selection only if city is unchanged.
                             districtsArea = if (cityChanged) null else currentState.filters.districtsArea,
+                            metroStationsState = if (cityChanged) {
+                                MetroStationsMapper.stationsForCity(intent.cityCode)
+                            } else {
+                                currentState.filters.metroStationsState
+                            },
+                            withAnyMetro = if (cityChanged) false else currentState.filters.withAnyMetro,
                         ),
                         doNetworkCall = false,
                     )

@@ -68,5 +68,26 @@ class OtodomListingSource(
 
     override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(adId)
 
-    override fun detail(adId: Long): Flow<AppFlat?> = getById(adId)
+    override fun detail(adId: Long): Flow<AppFlat?> = flow {
+        val base = flatsDao.getById(adId)
+        if (base == null) {
+            emit(null)
+            return@flow
+        }
+        // Show list data immediately; enrich after network.
+        emit(base)
+        if (base.flatDevInfo.isDetailLoaded) return@flow
+
+        val slug = OtodomDetailMapper.slugFromDetailUrl(base.flatDetailUrl) ?: return@flow
+        try {
+            val json = api.fetchDetailJson(slug)
+            val merged = OtodomDetailMapper.mergeInto(base, json)
+            flatsDao.upsert(merged)
+            emit(merged)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            api.invalidateBuildId()
+        }
+    }
 }

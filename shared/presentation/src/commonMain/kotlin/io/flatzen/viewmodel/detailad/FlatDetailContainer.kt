@@ -104,7 +104,10 @@ class FlatDetailContainer(
         ).asLCE()
             .collect { lce ->
                 when (lce) {
-                    is LCE.Loading -> updateState { copy(isLoading = true, error = null) }
+                    is LCE.Loading -> updateState {
+                        // Keep existing flat if any — list payload may already be on screen.
+                        copy(isLoading = flat == null, error = null)
+                    }
                     is LCE.Error -> updateState {
                         copy(
                             isLoading = false,

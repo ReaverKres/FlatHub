@@ -417,7 +417,10 @@ class FlatSearchContainer(
                     is LCE.Content -> {
                         val response = lceResult.value
                         applyFlatsLoaded(response.flats, isLoadMore, isRefreshing)
-                        if (response.errors.hasDisplayableErrors) {
+                        // Soft-fail: show dialog only when search yielded nothing, or VPN hint.
+                        val shouldShowErrors = response.errors.hasDisplayableErrors &&
+                                (response.flats.isEmpty() || response.errors.generalError != null)
+                        if (shouldShowErrors) {
                             updateState {
                                 copy(
                                     errorDialogState = SearchErrorDialogState(
@@ -425,6 +428,7 @@ class FlatSearchContainer(
                                         dialogType = DialogType.NetworkError,
                                         title = LocalizationKeys.SEARCH_ERROR_TITLE,
                                         generalError = response.errors.generalError,
+                                        searchedPlatforms = response.searchedPlatforms,
                                         errorInfo = response.errors.platformErrors.map {
                                             SearchErrorDialogState.ErrorInfo(
                                                 platform = it.platform,
@@ -444,7 +448,7 @@ class FlatSearchContainer(
     private suspend fun PipeCtx.applyFlatsLoaded(
         flats: List<AppFlat>,
         isLoadMore: Boolean,
-        isRefreshing: Boolean
+        isRefreshing: Boolean,
     ) {
         val filtered = flats.applyFeedDelayFilter(
             tier = userTierProvider.currentTier(),

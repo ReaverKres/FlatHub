@@ -6,6 +6,7 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
@@ -13,6 +14,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
+import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 object OtodomFlatMapper {
@@ -44,9 +46,23 @@ object OtodomFlatMapper {
         val rooms = roomsNumber(item["roomsNumber"]?.jsonPrimitive?.contentOrNull)
         val area = item["areaInSquareMeters"]?.jsonPrimitive?.doubleOrNull
             ?: item["areaInSquareMeters"]?.jsonPrimitive?.intOrNull?.toDouble()
-        val street = item["street"]?.jsonPrimitive?.contentOrNull
-        val city = item["city"]?.jsonPrimitive?.contentOrNull
-        val address = listOfNotNull(street, city).joinToString(", ").ifBlank { city }
+        val location = item["location"]?.jsonObject
+        val street = location?.get("address")?.jsonObject
+            ?.get("street")?.jsonObject
+            ?.get("name")?.jsonPrimitive?.contentOrNull
+            ?: item["street"]?.jsonPrimitive?.contentOrNull
+        val city = location?.get("address")?.jsonObject
+            ?.get("city")?.jsonObject
+            ?.get("name")?.jsonPrimitive?.contentOrNull
+            ?: item["city"]?.jsonPrimitive?.contentOrNull
+        val district = location
+            ?.get("reverseGeocoding")?.jsonObject
+            ?.get("locations")?.jsonArray
+            ?.mapNotNull { it.jsonObject }
+            ?.firstOrNull { it["locationLevel"]?.jsonPrimitive?.contentOrNull == "district" }
+            ?.get("name")?.jsonPrimitive?.contentOrNull
+        val address = listOfNotNull(street, district, city).joinToString(", ").ifBlank { city }
+        val floor = parseFloorToken(item["floorNumber"]?.jsonPrimitive?.contentOrNull)
         val images = item["images"]?.jsonArray?.mapNotNull { img ->
             img.jsonObject["large"]?.jsonPrimitive?.contentOrNull
                 ?: img.jsonObject["medium"]?.jsonPrimitive?.contentOrNull
@@ -54,6 +70,9 @@ object OtodomFlatMapper {
         val created = item["createdAtFirst"]?.jsonPrimitive?.contentOrNull
             ?: item["dateCreated"]?.jsonPrimitive?.contentOrNull
         val publishedAt = created?.let { parseInstant(it) }
+        val isPrivateOwner = item["isPrivateOwner"]?.jsonPrimitive?.booleanOrNull
+        val title = item["title"]?.jsonPrimitive?.contentOrNull
+        val shortDescription = item["shortDescription"]?.jsonPrimitive?.contentOrNull
 
         return AppFlat(
             adId = id,
@@ -72,15 +91,15 @@ object OtodomFlatMapper {
             priceUsd = null,
             priceByn = pricePln,
             rooms = rooms,
-            district = null,
+            district = district,
             address = address,
             metroStation = null,
-            description = item["title"]?.jsonPrimitive?.contentOrNull,
+            description = (shortDescription ?: title).stripHtmlToPlainText(),
             yearBuilt = null,
             totalArea = area,
             livingArea = null,
             kitchenArea = null,
-            floor = null,
+            floor = floor,
             totalFloors = null,
             sleepingPlaces = null,
             isStudio = rooms == 0,
@@ -95,7 +114,7 @@ object OtodomFlatMapper {
             kitchenEquipment = null,
             forWhom = null,
             parkingInfo = null,
-            owner = null,
+            owner = isPrivateOwner,
         )
     }
 
@@ -107,6 +126,25 @@ object OtodomFlatMapper {
         "FIVE" -> 5
         "SIX_OR_MORE" -> 6
         else -> null
+    }
+
+    private fun parseFloorToken(raw: String?): Int? {
+        if (raw.isNullOrBlank()) return null
+        Regex("(\\d+)").find(raw)?.value?.toIntOrNull()?.let { return it }
+        return when (raw.uppercase()) {
+            "GROUND", "GROUND_FLOOR", "PARTER" -> 0
+            "FIRST" -> 1
+            "SECOND" -> 2
+            "THIRD" -> 3
+            "FOURTH" -> 4
+            "FIFTH" -> 5
+            "SIXTH" -> 6
+            "SEVENTH" -> 7
+            "EIGHTH" -> 8
+            "NINTH" -> 9
+            "TENTH" -> 10
+            else -> null
+        }
     }
 
     private fun parseInstant(raw: String): Instant? {

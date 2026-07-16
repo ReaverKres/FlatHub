@@ -4,88 +4,85 @@ import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
+import listing.core.asArrayOrNull
+import listing.core.asObjectOrNull
+import listing.core.contentOrNull
+import listing.core.doubleOrNull
+import listing.core.longOrNull
+import utils.stripHtmlToPlainText
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Instant
 
 object MorizonFlatMapper {
     fun mapSearch(root: JsonObject, adType: AdType): List<AppFlat> {
-        val nodes = root["data"]
-            ?.jsonObject
-            ?.get("searchResult")
-            ?.jsonObject
-            ?.get("properties")
-            ?.jsonObject
-            ?.get("nodes")
-            ?.jsonArray
+        val nodes = root["data"].asObjectOrNull()
+            ?.get("searchResult").asObjectOrNull()
+            ?.get("properties").asObjectOrNull()
+            ?.get("nodes").asArrayOrNull()
             ?: return emptyList()
         return nodes.mapNotNull { el ->
-            runCatching { mapNode(el.jsonObject, adType) }.getOrNull()
+            val node = el.asObjectOrNull() ?: return@mapNotNull null
+            runCatching { mapNode(node, adType) }.getOrNull()
         }
     }
 
     private fun mapNode(node: JsonObject, adType: AdType): AppFlat {
-        // Prefer Morizon id (GQL `id`); idOnFrontend is Gratka-side.
-        val adId = node["id"]?.jsonPrimitive?.longOrNull
-            ?: node["idOnFrontend"]?.jsonPrimitive?.contentOrNull?.toLongOrNull()
+        val adId = node["id"].longOrNull()
+            ?: node["idOnFrontend"].contentOrNull()?.toLongOrNull()
             ?: error("missing id")
-        val path = node["url"]?.jsonPrimitive?.contentOrNull
+        val path = node["url"].contentOrNull()
         val detailUrl = when {
             path == null -> "https://www.morizon.pl"
             path.startsWith("http") -> path
             else -> "https://www.morizon.pl$path"
         }
-        val pricePln = node["price"]?.jsonObject
-            ?.get("amount")
-            ?.jsonPrimitive
-            ?.contentOrNull
-            ?.toDoubleOrNull()
-            ?: node["price"]?.jsonObject?.get("amount")?.jsonPrimitive?.doubleOrNull
-        val rooms = parseRooms(node["numberOfRooms"]?.jsonPrimitive?.contentOrNull)
-        val area = node["area"]?.jsonPrimitive?.contentOrNull?.replace(',', '.')?.toDoubleOrNull()
-            ?: node["area"]?.jsonPrimitive?.doubleOrNull
-        val floorParts = parseFloor(node["floorFormatted"]?.jsonPrimitive?.contentOrNull)
-        val location = node["location"]?.jsonObject
-        val locationParts = location?.get("location")?.jsonArray
-            ?.mapNotNull { it.jsonPrimitive.contentOrNull }
+        val priceObj = node["price"].asObjectOrNull()
+        val pricePln = priceObj?.get("amount").doubleOrNull()
+        val rooms = parseRooms(node["numberOfRooms"].contentOrNull())
+        val area = node["area"].doubleOrNull()
+        val floorParts = parseFloor(node["floorFormatted"].contentOrNull())
+        val location = node["location"].asObjectOrNull()
+        val locationParts = location?.get("location").asArrayOrNull()
+            ?.mapNotNull { it.contentOrNull() }
             .orEmpty()
         val city = locationParts.getOrNull(0)
         val district = locationParts.getOrNull(1)
-        val street = location?.get("street")?.jsonPrimitive?.contentOrNull
+        val street = location?.get("street").contentOrNull()
         val address = listOfNotNull(street, district, city).joinToString(", ").ifBlank { city }
-        val photos = node["photos"]?.jsonArray?.mapNotNull { photo ->
-            decodePhotoUrl(photo.jsonObject["id"]?.jsonPrimitive?.contentOrNull)
+        val mapCenter = location?.get("map").asObjectOrNull()
+            ?.get("center").asObjectOrNull()
+        val lat = mapCenter?.get("latitude").doubleOrNull()
+        val lon = mapCenter?.get("longitude").doubleOrNull()
+        val coordinates = if (lat != null && lon != null) Coordinates(lat, lon) else null
+        val photos = node["photos"].asArrayOrNull()?.mapNotNull { photo ->
+            decodePhotoUrl(photo.asObjectOrNull()?.get("id").contentOrNull())
         }
-        val contact = node["contact"]?.jsonObject
-        val person = contact?.get("person")?.jsonObject
-        val company = contact?.get("company")?.jsonObject
-        val ownerName = person?.get("name")?.jsonPrimitive?.contentOrNull
-            ?: company?.get("name")?.jsonPrimitive?.contentOrNull
+        val contact = node["contact"].asObjectOrNull()
+        val person = contact?.get("person").asObjectOrNull()
+        val company = contact?.get("company").asObjectOrNull()
+        val ownerName = person?.get("name").contentOrNull()
+            ?: company?.get("name").contentOrNull()
         val phones = (person?.get("phones") ?: company?.get("phones"))
-            ?.jsonArray
-            ?.mapNotNull { it.jsonPrimitive.contentOrNull }
+            .asArrayOrNull()
+            ?.mapNotNull { it.contentOrNull() }
         val isOwner =
-            person?.get("type")?.jsonPrimitive?.contentOrNull.equals("OWNER", ignoreCase = true)
-        val created = node["addedAt"]?.jsonPrimitive?.contentOrNull
-            ?: node["refreshedAt"]?.jsonPrimitive?.contentOrNull
+            person?.get("type").contentOrNull().equals("OWNER", ignoreCase = true)
+        val created = node["addedAt"].contentOrNull()
+            ?: node["refreshedAt"].contentOrNull()
         val publishedAt = created?.let { parseLooseInstant(it) }
-        val title = node["title"]?.jsonPrimitive?.contentOrNull
-        val description = node["description"]?.jsonPrimitive?.contentOrNull ?: title
+        val title = node["title"].contentOrNull()
+        val description = (node["description"].contentOrNull() ?: title).stripHtmlToPlainText()
 
         return AppFlat(
             adId = adId,
             adType = adType,
             flatDevInfo = FlatDevInfo(isDetailData = false, isDetailLoaded = false),
             contactInformation = ContactInformation(phones = phones, ownerName = ownerName),
-            coordinates = null,
+            coordinates = coordinates,
             commercialInfo = null,
             flatPlatform = FlatPlatform.MORIZON,
             flatDetailUrl = detailUrl,

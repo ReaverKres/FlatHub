@@ -53,7 +53,6 @@ import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.system_notifications_description
 import flatzen.composeapp.generated.resources.system_notifications_title
 import flatzen.composeapp.generated.resources.system_open_settings
-import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
@@ -187,7 +186,7 @@ fun SearchErrorDialog(
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        items(FlatPlatform.entries) { platform ->
+                        items(dialogState.platformsForStatusRow) { platform ->
                             val hasError = dialogState.errorInfo.any { it.platform == platform }
                             val icon =
                                 if (hasError) Icons.Default.Lock else Icons.Default.CheckCircle
