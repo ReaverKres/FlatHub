@@ -110,6 +110,7 @@
     <string name="map_saved_areas_empty">შენახული ზონები ვერ მოიძებნა</string>
     <string name="location_title">მდებარეობა</string>
     <string name="location_address_hint">შეიყვანეთ მისამართი/ქუჩა</string>
+    <string name="location_country">ქვეყანა</string>
     <string name="location_city">ქალაქი</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>

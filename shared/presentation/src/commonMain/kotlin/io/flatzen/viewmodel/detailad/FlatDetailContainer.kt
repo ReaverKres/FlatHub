@@ -190,7 +190,8 @@ class FlatDetailContainer(
             priceByn = appFlat.priceByn,
             priceText = appFlat.getPricesText(),
             priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
-            priceBynSquare = appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
+            priceBynSquare = appFlat.getPricesText().localPerSquarePrice
+                ?: appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
             address = appFlat.address.orEmpty(),
             district = appFlat.district,
             metroStation = if (appFlat.metroStation.isNullOrBlank()) null else "🚇 ${appFlat.metroStation}",

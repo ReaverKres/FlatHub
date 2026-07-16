@@ -10,7 +10,10 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import kotlin.concurrent.Volatile
 
-private const val DISTRICTS_RESOURCE = "files/by_city_districts.json"
+private val DISTRICTS_RESOURCES = listOf(
+    "files/by_city_districts.json",
+    "files/pl_city_districts.json",
+)
 
 @Serializable
 private data class CityDistrictDto(
@@ -18,7 +21,7 @@ private data class CityDistrictDto(
     val nameEn: String,
     val nameLocal: String,
     val coordinates: List<Coordinates>,
-    val districtType: DistrictType,
+    val districtType: DistrictType = DistrictType.ADMINISTRATIVE,
 )
 
 object CityDistrictsCatalog {
@@ -47,20 +50,24 @@ object CityDistrictsCatalog {
 
     @OptIn(ExperimentalResourceApi::class)
     private suspend fun loadCatalog(): Map<String, List<OsmDistricts>> {
-        val text = Res.readBytes(DISTRICTS_RESOURCE).decodeToString()
-        val raw = json.decodeFromString<Map<String, List<CityDistrictDto>>>(text)
-        return raw.mapValues { (_, districts) ->
-            districts.map { dto ->
-                OsmDistricts(
-                    id = dto.id,
-                    nameEn = dto.nameEn,
-                    nameLocal = dto.nameLocal,
-                    coordinates = dto.coordinates,
-                    districtType = dto.districtType,
-                    isChecked = false,
-                )
+        val merged = linkedMapOf<String, List<OsmDistricts>>()
+        for (resource in DISTRICTS_RESOURCES) {
+            val text = Res.readBytes(resource).decodeToString()
+            val raw = json.decodeFromString<Map<String, List<CityDistrictDto>>>(text)
+            raw.forEach { (city, districts) ->
+                merged[city] = districts.map { dto ->
+                    OsmDistricts(
+                        id = dto.id,
+                        nameEn = dto.nameEn,
+                        nameLocal = dto.nameLocal,
+                        coordinates = dto.coordinates,
+                        districtType = dto.districtType,
+                        isChecked = false,
+                    )
+                }
             }
         }
+        return merged
     }
 
     private fun normalizeCityName(name: String): String =

@@ -54,6 +54,7 @@ import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.faviconUrl
 import io.flatzen.themes.FlatHubTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -321,19 +322,40 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.KUFAR -> painterResource(Res.drawable.kufar32)
         FlatPlatform.REALT -> painterResource(Res.drawable.realt32)
         FlatPlatform.DOMOVITA -> painterResource(Res.drawable.domovita32)
+        // New markets: bundled icons not required — use [PlatformIcon] favicon URL.
+        FlatPlatform.OTODOM,
+        FlatPlatform.OLX_PL,
+        FlatPlatform.GRATKA,
+        FlatPlatform.MORIZON,
+            -> painterResource(Res.drawable.onliner32)
     }
 }
 
 @Composable
 fun BoxScope.PlatformIcon(flatPlatform: FlatPlatform) {
-    Image(
-        modifier = Modifier
-            .align(Alignment.BottomStart)
-            .padding(8.dp)
-            .size(24.dp),
-        painter = flatPlatform.platformImage(),
-        contentDescription = null,
-    )
+    when (flatPlatform) {
+        FlatPlatform.OTODOM,
+        FlatPlatform.OLX_PL,
+        FlatPlatform.GRATKA,
+        FlatPlatform.MORIZON,
+            -> AsyncImage(
+            model = flatPlatform.faviconUrl(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+                .size(24.dp),
+        )
+
+        else -> Image(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(8.dp)
+                .size(24.dp),
+            painter = flatPlatform.platformImage(),
+            contentDescription = null,
+        )
+    }
 }
 
 @Composable

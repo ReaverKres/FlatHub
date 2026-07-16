@@ -74,9 +74,12 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
         withAnyMetro = model.withAnyMetro,
         location = model.location?.let {
             LocationUiFilter(
-                selectedCountry = UiCountry(it.country),
+                selectedCountry = UiCountry(
+                    code = it.country,
+                    name = LocationUiMapper.countryDisplayName(it.country),
+                ),
                 selectedCity = LocationUiMapper.findSelectedCity(it.city),
-                availableCities = LocationUiMapper.cities()
+                availableCities = LocationUiMapper.cities(it.country),
             )
         } ?: LocationUiFilter(),
         districtsArea = UiDistrict.mapFromModelToUi(model.districtsArea),

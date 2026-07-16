@@ -14,6 +14,17 @@ import api.createReferralsApi
 import api.createSubscriptionsApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
+import listing.by.byListingSources
+import listing.core.AllListingPlatformsConfig
+import listing.core.ListingSourceRegistry
+import listing.pl.gratka.GratkaApiClient
+import listing.pl.gratka.GratkaListingSource
+import listing.pl.morizon.MorizonApiClient
+import listing.pl.morizon.MorizonListingSource
+import listing.pl.olx.OlxPlApiClient
+import listing.pl.olx.OlxPlListingSource
+import listing.pl.otodom.OtodomApiClient
+import listing.pl.otodom.OtodomListingSource
 import mappers.DomovitaFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
@@ -24,6 +35,7 @@ import mappers.kufar.KufarFlatMapper
 import mappers.onliner.OnlinerDetailHtmlMapper
 import mappers.onliner.OnlinerFlatMapper
 import maps.TileProviderImpl
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import repository.domovita.DomovitaRepository
@@ -90,12 +102,55 @@ val dataModule = module {
         )
     }
 
+    single {
+        OtodomApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { OtodomListingSource(api = get(), flatsDao = get()) }
+    single {
+        OlxPlApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { OlxPlListingSource(api = get(), flatsDao = get()) }
+    single {
+        GratkaApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { GratkaListingSource(api = get(), flatsDao = get()) }
+    single {
+        MorizonApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { MorizonListingSource(api = get(), flatsDao = get()) }
+
+    single {
+        ListingSourceRegistry(
+            sources = byListingSources(
+                kufar = get(),
+                onliner = get(),
+                realt = get(),
+                domovita = get(),
+            ) + listOf(
+                get<OtodomListingSource>(),
+                get<OlxPlListingSource>(),
+                get<GratkaListingSource>(),
+                get<MorizonListingSource>(),
+            ),
+            platformConfig = AllListingPlatformsConfig,
+        )
+    }
+
     single<MergedRepository> {
         MergedRepositoryImpl(
-            kufarRepository = get(),
-            onlinerRepository = get(),
-            realtRepository = get(),
-            domovitaRepository = get(),
+            listingSourceRegistry = get(),
             filterRepository = get(),
             flatsDao = get(),
             connectionMonitor = get(),

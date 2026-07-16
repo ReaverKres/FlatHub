@@ -118,6 +118,7 @@
     <string name="map_saved_areas_empty">Сақталған аймақтар табылмады</string>
     <string name="location_title">Орналасқан жері</string>
     <string name="location_address_hint">Мекенжай/көшені енгізіңіз</string>
+    <string name="location_country">Ел</string>
     <string name="location_city">Қала</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>

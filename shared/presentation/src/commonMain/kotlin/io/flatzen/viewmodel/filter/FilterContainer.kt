@@ -9,6 +9,7 @@ import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
+import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.mappers.LocationUiMapper
@@ -96,6 +97,7 @@ sealed interface FilterScreenAction : MVIIntent {
     data object OpenCity : FilterScreenAction
     data object OpenMetro : FilterScreenAction
     data object OpenDistricts : FilterScreenAction
+    data class SelectCountry(val countryCode: CountryCode) : FilterScreenAction
     data class SelectCity(val cityCode: CityCode) : FilterScreenAction
 
     data object OpenPremiumForAddress : FilterScreenAction
@@ -514,15 +516,46 @@ class FilterContainer(
                     }
                 }
 
+                is FilterScreenAction.SelectCountry -> {
+                    var currentState = FilterScreenState.Initial
+                    withState { currentState = this }
+                    val previousCountry = currentState.filters.location?.selectedCountry?.code
+                    if (previousCountry == intent.countryCode) return@reduce
+                    val cities = LocationUiMapper.cities(intent.countryCode)
+                    val defaultCity = LocationUiMapper.defaultCity(intent.countryCode)
+                    applyFiltersUpdate(
+                        currentState.filters.copy(
+                            location = LocationUiFilter(
+                                selectedCountry = UiCountry(
+                                    code = intent.countryCode,
+                                    name = LocationUiMapper.countryDisplayName(intent.countryCode),
+                                ),
+                                selectedCity = defaultCity,
+                                availableCities = cities,
+                            ),
+                            districtsArea = null,
+                            metroStationsState = MetroStationsMapper.allStationsOrderedForUi(),
+                            withAnyMetro = false,
+                        ),
+                        doNetworkCall = false,
+                    )
+                }
+
                 is FilterScreenAction.SelectCity -> {
                     var currentState = FilterScreenState.Initial
                     withState { currentState = this }
                     val previousCity = currentState.filters.location?.selectedCity?.code
                     val cityChanged = previousCity != intent.cityCode
+                    val country = LocationUiMapper.countryForCity(intent.cityCode)
                     applyFiltersUpdate(
                         currentState.filters.copy(
                             location = currentState.filters.location?.copy(
-                                selectedCity = LocationUiMapper.findSelectedCity(intent.cityCode)
+                                selectedCountry = UiCountry(
+                                    code = country,
+                                    name = LocationUiMapper.countryDisplayName(country),
+                                ),
+                                selectedCity = LocationUiMapper.findSelectedCity(intent.cityCode),
+                                availableCities = LocationUiMapper.cities(country),
                             ),
                             // Districts belong to a city; keep previous selection only if city is unchanged.
                             districtsArea = if (cityChanged) null else currentState.filters.districtsArea,

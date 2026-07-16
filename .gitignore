@@ -23,3 +23,5 @@ captures
 
 # CocoaPods — never commit downloaded pods (regenerate via `pod install`)
 iosApp/Pods/
+
+tmp/

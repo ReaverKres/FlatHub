@@ -82,21 +82,22 @@ data class AppFlat(
 }
 
 fun AppFlat.getPricesText(): PriceText {
-    val bynMainPrice = this.priceUsd == null && this.priceByn != null
-    val mainPriceText = if (bynMainPrice) {
-        formatMainPrice(this.priceByn, "BYN")
-    } else if(this.priceUsd != null) {
+    val localCurrency = localCurrencyLabel(flatPlatform)
+    val localIsMain = this.priceUsd == null && this.priceByn != null
+    val mainPriceText = if (localIsMain) {
+        formatMainPrice(this.priceByn, localCurrency)
+    } else if (this.priceUsd != null) {
         formatMainPrice(this.priceUsd)
     } else null
 
-    val localPriceText = if (this.adType != AdType.DAILY && !bynMainPrice) {
-        formatSecondPrice(this.priceByn, mainPriceText != null)
+    val localPriceText = if (this.adType != AdType.DAILY && !localIsMain) {
+        formatSecondPrice(this.priceByn, mainPriceText != null, localCurrency)
     } else null
-    val priceLocalPerSquare = if(priceBynSquare != null) {
-        formatPricePerSquare(this.priceBynSquare, "BYN")
+    val priceLocalPerSquare = if (priceBynSquare != null) {
+        formatPricePerSquare(this.priceBynSquare, localCurrency)
     } else null
 
-    val priceMainPerSquare = if(priceUsdSquare != null) {
+    val priceMainPerSquare = if (priceUsdSquare != null) {
         formatPricePerSquare(this.priceUsdSquare, "$")
     } else null
     return PriceText(
@@ -105,6 +106,16 @@ fun AppFlat.getPricesText(): PriceText {
         localPrice = localPriceText,
         localPerSquarePrice = priceLocalPerSquare
     )
+}
+
+private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform) {
+    FlatPlatform.OTODOM,
+    FlatPlatform.OLX_PL,
+    FlatPlatform.GRATKA,
+    FlatPlatform.MORIZON,
+        -> "PLN"
+
+    else -> "BYN"
 }
 
 data class FlatDevInfo(

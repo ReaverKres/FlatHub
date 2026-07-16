@@ -118,6 +118,7 @@
     <string name="map_saved_areas_empty">Nie znaleziono zapisanych obszarów</string>
     <string name="location_title">Lokalizacja</string>
     <string name="location_address_hint">Wpisz adres/ulicę</string>
+    <string name="location_country">Kraj</string>
     <string name="location_city">Miasto</string>
     <string name="location_metro">Metro</string>
     <string name="location_metro_any_switch">Dowolna stacja</string>

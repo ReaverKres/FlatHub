@@ -40,9 +40,13 @@ fun formatMainPrice(price: Double?, currency: String = "$"): String? {
     }
 }
 
-fun formatSecondPrice(price: Double?, isUsdPricePresent: Boolean): String? {
+fun formatSecondPrice(
+    price: Double?,
+    isUsdPricePresent: Boolean,
+    currency: String = "BYN",
+): String? {
     return if (price != null) {
-        val formatedPrice = priceWithCurrency(price, "BYN")
+        val formatedPrice = priceWithCurrency(price, currency)
         if (!isUsdPricePresent) {
             formatedPrice
         } else {

@@ -86,8 +86,7 @@ import flatzen.composeapp.generated.resources.filter_rooms_count
 import flatzen.composeapp.generated.resources.list_rooms_suffix
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
-import io.flatzen.commoncomponents.utils.formatMainPrice
-import io.flatzen.commoncomponents.utils.priceWithCurrency
+import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
@@ -263,12 +262,7 @@ private fun FlatDetailContent(
             }
 
             // Цены
-            PriceSection(
-                priceUsd = flat.priceUsd,
-                priceByn = flat.priceByn,
-                priceUsdSquare = flat.priceUsdSquare,
-                priceBynSquare = flat.priceBynSquare
-            )
+            PriceSection(priceText = flat.priceText)
 
             val propertyName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
             propertyName?.let { name ->
@@ -459,25 +453,18 @@ private fun SourceLinkSection(
 }
 
 @Composable
-private fun PriceSection(
-    priceUsd: Double?,
-    priceByn: Double?,
-    priceUsdSquare: String?,
-    priceBynSquare: String?
-) {
-    val usdPriceText = formatMainPrice(priceUsd)
-
+private fun PriceSection(priceText: PriceText) {
     Column {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            if (usdPriceText != null) {
+            priceText.mainPrice?.let { main ->
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = usdPriceText,
+                    text = main,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
-            priceUsdSquare?.let {
+            priceText.mainPerSquarePrice?.let {
                 Text(
                     modifier = Modifier.alignByBaseline(),
                     text = "($it)",
@@ -487,20 +474,22 @@ private fun PriceSection(
                 )
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = priceWithCurrency(priceByn, "BYN"),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-            priceBynSquare?.let {
+        priceText.localPrice?.let { local ->
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    text = "($it)",
+                    text = local,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
+                priceText.localPerSquarePrice?.let {
+                    Text(
+                        text = "($it)",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
             }
         }
     }

@@ -62,6 +62,7 @@ import flatzen.composeapp.generated.resources.add
 import flatzen.composeapp.generated.resources.delete
 import flatzen.composeapp.generated.resources.location_address_hint
 import flatzen.composeapp.generated.resources.location_city
+import flatzen.composeapp.generated.resources.location_country
 import flatzen.composeapp.generated.resources.location_districts
 import flatzen.composeapp.generated.resources.location_metro
 import flatzen.composeapp.generated.resources.location_metro_any_switch
@@ -77,6 +78,7 @@ import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
+import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.DistrictsIntent
@@ -140,7 +142,12 @@ fun LocationScreen() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ListItem(
-                headlineContent = { Text(state.filters.location?.selectedCity?.displayName.orEmpty()) },
+                headlineContent = {
+                    val country = state.filters.location?.selectedCountry?.name
+                        ?: state.filters.location?.selectedCountry?.code?.name.orEmpty()
+                    val city = state.filters.location?.selectedCity?.displayName.orEmpty()
+                    Text(listOf(country, city).filter { it.isNotBlank() }.joinToString(" · "))
+                },
                 trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenCity)
@@ -207,7 +214,7 @@ fun LocationScreen() {
             }
 
             if (state.filters.location?.selectedCity?.code == CityCode.MINSK) {
-                // Плитки действий (минимум метро)
+                // Minsk metro filter (station catalog). Warsaw uses geo proximity only for now.
                 ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
                 }) {
@@ -261,6 +268,7 @@ fun CitySelectScreen(
     filterContainer: FilterContainer = container()
 ) {
     val state by filterContainer.store.subscribe { }
+    val countries = remember { LocationUiMapper.countries() }
     val cities = state.filters.location?.availableCities.orEmpty()
     Scaffold(
         topBar = {
@@ -276,6 +284,42 @@ fun CitySelectScreen(
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
+            item {
+                Text(
+                    text = stringResource(Res.string.location_country),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+            }
+            items(countries) { country ->
+                val checked = state.filters.location?.selectedCountry?.code == country.code
+                ListItem(
+                    headlineContent = { Text(country.displayName) },
+                    trailingContent = {
+                        Checkbox(checked = checked, onCheckedChange = {
+                            if (!checked) {
+                                filterContainer.intent(
+                                    FilterScreenAction.SelectCountry(country.code)
+                                )
+                            }
+                        })
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            filterContainer.intent(FilterScreenAction.SelectCountry(country.code))
+                        },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+                HorizontalDivider()
+            }
+            item {
+                Text(
+                    text = stringResource(Res.string.location_city),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+            }
             items(cities) { city ->
                 ListItem(
                     headlineContent = { Text(city.displayName) },
@@ -296,7 +340,7 @@ fun CitySelectScreen(
                         },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
-                Divider()
+                HorizontalDivider()
             }
         }
     }

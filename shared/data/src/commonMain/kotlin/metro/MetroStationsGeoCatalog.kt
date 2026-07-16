@@ -13,7 +13,11 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import kotlin.concurrent.Volatile
 
-private const val METRO_GEO_RESOURCE = "files/minsk_metro_stations.json"
+private const val MINSK_METRO_GEO_RESOURCE = "files/minsk_metro_stations.json"
+private const val WARSAW_METRO_GEO_RESOURCE = "files/warsaw_metro_stations.json"
+
+/** Synthetic metroId base for Warsaw stations (not used by BY site APIs). */
+private const val WARSAW_METRO_ID_BASE = 10_000
 
 object MetroStationsGeoCatalog {
     private val mutex = Mutex()
@@ -56,7 +60,14 @@ object MetroStationsGeoCatalog {
 
     @OptIn(ExperimentalResourceApi::class)
     private suspend fun loadStations(): List<MetroStationGeo> {
-        val text = Res.readBytes(METRO_GEO_RESOURCE).decodeToString()
+        val minsk = loadMinskStations()
+        val warsaw = loadWarsawStations()
+        return minsk + warsaw
+    }
+
+    @OptIn(ExperimentalResourceApi::class)
+    private suspend fun loadMinskStations(): List<MetroStationGeo> {
+        val text = Res.readBytes(MINSK_METRO_GEO_RESOURCE).decodeToString()
         val dtos = json.decodeFromString<List<MetroStationGeoDto>>(text)
         val catalogByNormalizedName = MetroStations.allStationsRequest()
             .groupBy { normalizeMetroName(it.name) }
@@ -71,6 +82,23 @@ object MetroStationsGeoCatalog {
                 line = resolved.line,
                 coordinates = Coordinates(dto.latitude, dto.longitude),
                 metroId = resolved.metroId,
+            )
+        }
+    }
+
+    @OptIn(ExperimentalResourceApi::class)
+    private suspend fun loadWarsawStations(): List<MetroStationGeo> {
+        val text = Res.readBytes(WARSAW_METRO_GEO_RESOURCE).decodeToString()
+        val dtos = json.decodeFromString<List<MetroStationGeoDto>>(text)
+        return dtos.mapIndexedNotNull { index, dto ->
+            if (dto.coordinates.size < 2) return@mapIndexedNotNull null
+            MetroStationGeo(
+                jsonName = dto.name,
+                canonicalName = dto.name,
+                // Line metadata not in JSON yet; BLUE used for map/proximity only.
+                line = MetroLine.BLUE,
+                coordinates = Coordinates(dto.latitude, dto.longitude),
+                metroId = WARSAW_METRO_ID_BASE + index,
             )
         }
     }

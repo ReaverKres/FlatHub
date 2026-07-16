@@ -118,6 +118,7 @@
     <string name="map_saved_areas_empty">Сохранённые области не найдены</string>
     <string name="location_title">Расположение</string>
     <string name="location_address_hint">Введите адрес/улицу</string>
+    <string name="location_country">Страна</string>
     <string name="location_city">Город</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Любая станция</string>

@@ -313,9 +313,14 @@ fun FilterScreen() {
                 } else {
                     filters.getSelectedMetroStation()
                 }
+                val countryLabel = filters.location?.selectedCountry?.name
+                    ?: filters.location?.selectedCountry?.code?.name
+                val cityLabel = filters.location?.selectedCity?.displayName
                 LocationItem(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    selectedCity = filters.location?.selectedCity?.displayName,
+                    selectedCity = listOfNotNull(countryLabel, cityLabel)
+                        .joinToString(" · ")
+                        .ifBlank { cityLabel },
                     selectedMetro = selectedMetro,
                     selectedAddress = filters.getSelectedAddress(),
                     selectedUserAreas = filters.userMapAreas?.filter { it.isActive },

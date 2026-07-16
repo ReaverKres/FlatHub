@@ -31,20 +31,15 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
-import repository.domovita.DomovitaRepository
+import listing.core.ListingSource
+import listing.core.ListingSourceRegistry
 import repository.fillter.FilterRepository
 import repository.fillter.lastFilter
-import repository.kufar.KufarRepository
-import repository.onliner.OnlinerRepository
-import repository.realt.RealtRepository
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 class MergedRepositoryImpl(
-    private val kufarRepository: KufarRepository,
-    private val onlinerRepository: OnlinerRepository,
-    private val realtRepository: RealtRepository,
-    private val domovitaRepository: DomovitaRepository,
+    private val listingSourceRegistry: ListingSourceRegistry,
     private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
     private val connectionMonitor: ConnectionMonitor,
@@ -63,83 +58,17 @@ class MergedRepositoryImpl(
 
     private fun searchByFilter(
         filter: CommonFilterRequestModel,
-        currentPage: Int?
+        currentPage: Int?,
     ): Flow<MergedFlatResponse> = flow {
+        val sources = listingSourceRegistry.forFilter(filter)
         val networkFlats = supervisorScope {
-            when {
-                filter.isRoomForRent -> listOf(
-                    async {
-                        awaitPlatformSearch(FlatPlatform.KUFAR) {
-                            kufarRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                    async {
-                        awaitPlatformSearch(FlatPlatform.ONLINER) {
-                            onlinerRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                ).awaitAll()
-
-                filter.isCommercial || filter.adType == AdType.DAILY -> listOf(
-                    async {
-                        awaitPlatformSearch(FlatPlatform.KUFAR) {
-                            kufarRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                    async {
-                        awaitPlatformSearch(FlatPlatform.REALT) {
-                            realtRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                ).awaitAll()
-
-                else -> listOf(
-                    async {
-                        awaitPlatformSearch(FlatPlatform.KUFAR) {
-                            kufarRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                    async {
-                        awaitPlatformSearch(FlatPlatform.ONLINER) {
-                            onlinerRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                    async {
-                        awaitPlatformSearch(FlatPlatform.DOMOVITA) {
-                            domovitaRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                    async {
-                        awaitPlatformSearch(FlatPlatform.REALT) {
-                            realtRepository.searchFlats(
-                                filter,
-                                currentPage
-                            ).first()
-                        }
-                    },
-                ).awaitAll()
-            }
+            sources.map { source ->
+                async {
+                    awaitPlatformSearch(source.platform) {
+                        source.search(filter, currentPage).first()
+                    }
+                }
+            }.awaitAll()
         }
 
         emit(mergeNetworkFlats(networkFlats, filter))
@@ -191,9 +120,8 @@ class MergedRepositoryImpl(
                             isViewed = fromDb?.isViewed == true,
                             dislike = fromDb?.dislike == true,
                             priceUsdSquare = priceUsdSquare,
-                            priceBynSquare = priceBynSquare
+                            priceBynSquare = priceBynSquare,
                         )
-
                         appFlats.add(updated)
                     }
                 }
@@ -228,12 +156,7 @@ class MergedRepositoryImpl(
         flatId: Long,
         markAsViewed: Boolean,
     ): Flow<AppFlat> {
-        val detailFlat = when (flatPlatform) {
-            FlatPlatform.KUFAR -> kufarRepository.getFlatByIdWithDetails(flatId)
-            FlatPlatform.ONLINER -> onlinerRepository.getFlatByIdWithDetails(flatId)
-            FlatPlatform.REALT -> realtRepository.getFlatByIdWithDetails(flatId)
-            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatByIdWithDetails(flatId)
-        }.flowOn(Dispatchers.IO)
+        val detailFlat = sourceFor(flatPlatform).detail(flatId).flowOn(Dispatchers.IO)
         return detailFlat.mapNotNull { flat ->
             flat?.let {
                 if (markAsViewed) it.copy(isViewed = true) else it
@@ -247,10 +170,7 @@ class MergedRepositoryImpl(
     }
 
     override fun clearCashedFlats() {
-        kufarRepository.clearCashedFlats()
-        onlinerRepository.clearCashedFlats()
-        realtRepository.clearCashedFlats()
-        domovitaRepository.clearCashedFlats()
+        listingSourceRegistry.all().forEach { it.clearCache() }
     }
 
     override fun getAllFlatsFromLocalDb(): Flow<List<AppFlat>> {
@@ -261,28 +181,25 @@ class MergedRepositoryImpl(
 
     private fun applyLocalSortOrFilters(
         flats: List<AppFlat>,
-        currentFilter: CommonFilterRequestModel = filterRepository.lastFilter()
+        currentFilter: CommonFilterRequestModel = filterRepository.lastFilter(),
     ): List<AppFlat> {
         var resultList = flats
 
-        // Filter by full price
         val priceIsAdInUsd = currentFilter.adType != AdType.DAILY
         resultList = filterByPrice(
             priceInFilter = currentFilter.priceFull,
-            priceInAd = { if(priceIsAdInUsd) it.priceUsd else it.priceByn },
-            resultList = resultList
+            priceInAd = { if (priceIsAdInUsd) it.priceUsd else it.priceByn },
+            resultList = resultList,
         )
 
-        // Filter by price per square meter
-        if(currentFilter.adType != AdType.DAILY) {
+        if (currentFilter.adType != AdType.DAILY) {
             resultList = filterByPrice(
                 priceInFilter = currentFilter.pricePerSquare,
                 priceInAd = { it.priceUsdSquare },
-                resultList = resultList
+                resultList = resultList,
             )
         }
 
-        //total area
         if (currentFilter.totalArea != null) {
             val from = currentFilter.totalArea.fromRange
             val to = currentFilter.totalArea.toRange
@@ -359,7 +276,7 @@ class MergedRepositoryImpl(
 
     private fun filterFlatsByPolygons(
         flats: List<AppFlat>,
-        activePolygons: List<List<Coordinates>>
+        activePolygons: List<List<Coordinates>>,
     ): List<AppFlat> {
         if (activePolygons.isEmpty()) return flats
 
@@ -406,7 +323,7 @@ class MergedRepositoryImpl(
     private fun filterByPrice(
         priceInFilter: Price?,
         priceInAd: (AppFlat) -> Double?,
-        resultList: List<AppFlat>
+        resultList: List<AppFlat>,
     ): List<AppFlat> {
         var resultList1 = resultList
         if (priceInFilter != null) {
@@ -435,24 +352,14 @@ class MergedRepositoryImpl(
     }
 
     override fun saveFlatToFavorite(flatPlatform: FlatPlatform, adId: Long): Flow<AppFlat?> {
-        val source: Flow<AppFlat> = when (flatPlatform) {
-            FlatPlatform.KUFAR -> kufarRepository.getFlatById(adId)
-            FlatPlatform.ONLINER -> onlinerRepository.getFlatById(adId)
-            FlatPlatform.REALT -> realtRepository.getFlatById(adId)
-            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(adId)
-        }
+        val source = flatByIdFlow(flatPlatform, adId)
         return flow {
             var flatFromDb = source.last()
+                ?: throw NoSuchElementException("Flat $adId not found")
             if (flatFromDb.savedInFavorites.not()) {
-                val flatFromDbWithDetailFlow = when (flatPlatform) {
-                    FlatPlatform.KUFAR -> kufarRepository.getFlatByIdWithDetails(adId)
-                    FlatPlatform.ONLINER -> onlinerRepository.getFlatByIdWithDetails(adId)
-                    FlatPlatform.REALT -> realtRepository.getFlatByIdWithDetails(adId)
-                    FlatPlatform.DOMOVITA -> domovitaRepository.getFlatByIdWithDetails(adId)
-                }
-                val flatFromDbWithDetail = flatFromDbWithDetailFlow.last()
-                if (flatFromDbWithDetail != null) {
-                    flatFromDb = flatFromDbWithDetail
+                val enriched = sourceFor(flatPlatform).detail(adId).last()
+                if (enriched != null) {
+                    flatFromDb = enriched
                 }
             }
             val willBeFavorite = flatFromDb.savedInFavorites.not()
@@ -470,14 +377,10 @@ class MergedRepositoryImpl(
         adId: Long,
         disliked: Boolean,
     ): Flow<AppFlat?> {
-        val source: Flow<AppFlat> = when (flatPlatform) {
-            FlatPlatform.KUFAR -> kufarRepository.getFlatById(adId)
-            FlatPlatform.ONLINER -> onlinerRepository.getFlatById(adId)
-            FlatPlatform.REALT -> realtRepository.getFlatById(adId)
-            FlatPlatform.DOMOVITA -> domovitaRepository.getFlatById(adId)
-        }
+        val source = flatByIdFlow(flatPlatform, adId)
         return flow {
             val flatFromDb = source.last()
+                ?: throw NoSuchElementException("Flat $adId not found")
             val updated = flatFromDb.copy(
                 dislike = disliked,
                 savedInFavorites = if (disliked) false else flatFromDb.savedInFavorites,
@@ -493,6 +396,22 @@ class MergedRepositoryImpl(
             .toEpochMilliseconds()
         withContext(Dispatchers.IO) {
             flatsDao.deleteNonFavoritesOlderThan(threshold)
+        }
+    }
+
+    private fun sourceFor(platform: FlatPlatform): ListingSource =
+        listingSourceRegistry.byPlatform(platform)
+            ?: error("No ListingSource registered for $platform")
+
+    private fun flatByIdFlow(platform: FlatPlatform, adId: Long): Flow<AppFlat?> {
+        val fromSource = sourceFor(platform).getById(adId)
+        return flow {
+            val sourceFlat = fromSource.last()
+            if (sourceFlat != null) {
+                emit(sourceFlat)
+            } else {
+                emit(flatsDao.getById(adId))
+            }
         }
     }
 }

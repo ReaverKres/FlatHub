@@ -41,11 +41,14 @@ data class UiCountry(val code: CountryCode, val name: String? = null)
 
 @Immutable
 data class LocationUiFilter(
-    val selectedCountry: UiCountry = UiCountry(CountryCode.BY),
+    val selectedCountry: UiCountry = UiCountry(
+        code = CountryCode.BY,
+        name = LocationUiMapper.countryDisplayName(CountryCode.BY),
+    ),
     val selectedCity: UiCityItem = UiCityItem(
         CityCode.MINSK, "Минск", Coordinates(53.902147, 27.561388)
     ),
-    val availableCities: List<UiCityItem> = LocationUiMapper.cities()
+    val availableCities: List<UiCityItem> = LocationUiMapper.cities(CountryCode.BY),
 )
 
 @Immutable
