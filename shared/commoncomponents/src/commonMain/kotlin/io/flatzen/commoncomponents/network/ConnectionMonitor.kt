@@ -7,5 +7,7 @@ interface ConnectionMonitor {
 
     fun isCellularAvailable(): Boolean
 
+    fun isVpnConnected(): Boolean
+
     val isNetworkAvailable: Flow<Boolean>
 }

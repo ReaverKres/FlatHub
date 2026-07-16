@@ -92,7 +92,8 @@ val dataModule = module {
             realtRepository = get(),
             domovitaRepository = get(),
             filterRepository = get(),
-            flatsDao = get()
+            flatsDao = get(),
+            connectionMonitor = get(),
         )
     }
 

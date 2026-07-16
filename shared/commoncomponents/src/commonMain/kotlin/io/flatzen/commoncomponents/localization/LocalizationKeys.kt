@@ -194,6 +194,7 @@ enum class LocalizationKeys {
     FORCE_UPDATE_TITLE,
     FORCE_UPDATE_DESCRIPTION,
     SEARCH_ERROR_TITLE,
+    SEARCH_ERROR_VPN_HINT,
 
     // Premium
     PREMIUM_TITLE,

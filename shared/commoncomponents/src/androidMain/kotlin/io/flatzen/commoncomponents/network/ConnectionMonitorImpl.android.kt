@@ -24,6 +24,14 @@ internal class ConnectionMonitorImpl(context: Context) : ConnectionMonitor {
         val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         return networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ?: false
     }
+
+    override fun isVpnConnected(): Boolean {
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities =
+            connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+    }
+
     override val isNetworkAvailable: Flow<Boolean> = callbackFlow {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
