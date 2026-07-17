@@ -24,7 +24,6 @@ enum class FlatPlatform(val value: String) {
     KN("kn"),
 
     // Spain (MVP)
-    IDEALISTA("idealista"),
     FOTOCASA("fotocasa"),
     PISOS("pisos"),
 }
@@ -52,7 +51,6 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.KN,
         -> CountryCode.KZ
 
-    FlatPlatform.IDEALISTA,
     FlatPlatform.FOTOCASA,
     FlatPlatform.PISOS,
         -> CountryCode.ES

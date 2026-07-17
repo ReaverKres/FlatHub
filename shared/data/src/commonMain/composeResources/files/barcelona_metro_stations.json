@@ -1,0 +1,751 @@
+[
+  {
+    "name": "Alfons X",
+    "coordinates": [
+      41.412101,
+      2.165506
+    ]
+  },
+  {
+    "name": "Arc de Triomf",
+    "coordinates": [
+      41.392114,
+      2.180909
+    ]
+  },
+  {
+    "name": "Avinguda Tibidabo",
+    "coordinates": [
+      41.40966,
+      2.137157
+    ]
+  },
+  {
+    "name": "Bac de Roda",
+    "coordinates": [
+      41.414881,
+      2.195106
+    ]
+  },
+  {
+    "name": "Badal",
+    "coordinates": [
+      41.375552,
+      2.128926
+    ]
+  },
+  {
+    "name": "Barcelona-Plaça Catalunya",
+    "coordinates": [
+      41.385743,
+      2.168382
+    ]
+  },
+  {
+    "name": "Barcelona-Plaça Espanya",
+    "coordinates": [
+      41.374578,
+      2.148613
+    ]
+  },
+  {
+    "name": "Barceloneta",
+    "coordinates": [
+      41.382117,
+      2.185482
+    ]
+  },
+  {
+    "name": "Baró de Viver",
+    "coordinates": [
+      41.449947,
+      2.199539
+    ]
+  },
+  {
+    "name": "Besòs",
+    "coordinates": [
+      41.420369,
+      2.209713
+    ]
+  },
+  {
+    "name": "Besòs Mar",
+    "coordinates": [
+      41.415094,
+      2.216085
+    ]
+  },
+  {
+    "name": "Bogatell",
+    "coordinates": [
+      41.395099,
+      2.19204
+    ]
+  },
+  {
+    "name": "Bon Pastor",
+    "coordinates": [
+      41.436126,
+      2.204808
+    ]
+  },
+  {
+    "name": "Camp de l'Arpa",
+    "coordinates": [
+      41.414686,
+      2.181013
+    ]
+  },
+  {
+    "name": "Canyelles",
+    "coordinates": [
+      41.44177,
+      2.166439
+    ]
+  },
+  {
+    "name": "Casa de l'Aigua",
+    "coordinates": [
+      41.451237,
+      2.184953
+    ]
+  },
+  {
+    "name": "Catalunya",
+    "coordinates": [
+      41.386547,
+      2.170084
+    ]
+  },
+  {
+    "name": "Ciutadella | Vila Olímpica",
+    "coordinates": [
+      41.387847,
+      2.193476
+    ]
+  },
+  {
+    "name": "Ciutat Meridiana",
+    "coordinates": [
+      41.460783,
+      2.1746
+    ]
+  },
+  {
+    "name": "Congrés | Indians",
+    "coordinates": [
+      41.423416,
+      2.181285
+    ]
+  },
+  {
+    "name": "Diagonal",
+    "coordinates": [
+      41.395956,
+      2.159963
+    ]
+  },
+  {
+    "name": "Ecoparc",
+    "coordinates": [
+      41.330184,
+      2.13709
+    ]
+  },
+  {
+    "name": "el Carmel",
+    "coordinates": [
+      41.424399,
+      2.155114
+    ]
+  },
+  {
+    "name": "El Clot",
+    "coordinates": [
+      41.410139,
+      2.186916
+    ]
+  },
+  {
+    "name": "El Coll | La Teixonera",
+    "coordinates": [
+      41.421657,
+      2.149362
+    ]
+  },
+  {
+    "name": "El Maresme | Fòrum",
+    "coordinates": [
+      41.411775,
+      2.216678
+    ]
+  },
+  {
+    "name": "El Poble-sec",
+    "coordinates": [
+      41.37498,
+      2.160572
+    ]
+  },
+  {
+    "name": "El Putxet",
+    "coordinates": [
+      41.405814,
+      2.139136
+    ]
+  },
+  {
+    "name": "Encants",
+    "coordinates": [
+      41.407075,
+      2.182523
+    ]
+  },
+  {
+    "name": "Entença",
+    "coordinates": [
+      41.383982,
+      2.14496
+    ]
+  },
+  {
+    "name": "Espanya",
+    "coordinates": [
+      41.375568,
+      2.149524
+    ]
+  },
+  {
+    "name": "Fabra i Puig",
+    "coordinates": [
+      41.429781,
+      2.183639
+    ]
+  },
+  {
+    "name": "Foc",
+    "coordinates": [
+      41.355851,
+      2.142162
+    ]
+  },
+  {
+    "name": "Foneria",
+    "coordinates": [
+      41.360491,
+      2.13874
+    ]
+  },
+  {
+    "name": "Fontana",
+    "coordinates": [
+      41.402056,
+      2.152979
+    ]
+  },
+  {
+    "name": "Girona",
+    "coordinates": [
+      41.395024,
+      2.17096
+    ]
+  },
+  {
+    "name": "Glòries",
+    "coordinates": [
+      41.402211,
+      2.187518
+    ]
+  },
+  {
+    "name": "Gràcia",
+    "coordinates": [
+      41.399757,
+      2.152155
+    ]
+  },
+  {
+    "name": "Guinardó | Hospital de Sant Pau",
+    "coordinates": [
+      41.416075,
+      2.174074
+    ]
+  },
+  {
+    "name": "Horta",
+    "coordinates": [
+      41.42969,
+      2.160315
+    ]
+  },
+  {
+    "name": "Hospital Clínic",
+    "coordinates": [
+      41.388162,
+      2.150542
+    ]
+  },
+  {
+    "name": "Hostafrancs",
+    "coordinates": [
+      41.375242,
+      2.143419
+    ]
+  },
+  {
+    "name": "Jaume I",
+    "coordinates": [
+      41.384001,
+      2.178706
+    ]
+  },
+  {
+    "name": "Joanic",
+    "coordinates": [
+      41.406267,
+      2.163188
+    ]
+  },
+  {
+    "name": "La Bonanova",
+    "coordinates": [
+      41.39779,
+      2.136153
+    ]
+  },
+  {
+    "name": "La Pau",
+    "coordinates": [
+      41.424039,
+      2.205618
+    ]
+  },
+  {
+    "name": "La Rambla | Drassanes",
+    "coordinates": [
+      41.376673,
+      2.175774
+    ]
+  },
+  {
+    "name": "La Sagrera",
+    "coordinates": [
+      41.422623,
+      2.187024
+    ]
+  },
+  {
+    "name": "les Corts",
+    "coordinates": [
+      41.384134,
+      2.130878
+    ]
+  },
+  {
+    "name": "Les Tres Torres",
+    "coordinates": [
+      41.397781,
+      2.130867
+    ]
+  },
+  {
+    "name": "Lesseps",
+    "coordinates": [
+      41.406163,
+      2.150025
+    ]
+  },
+  {
+    "name": "Liceu",
+    "coordinates": [
+      41.381396,
+      2.173071
+    ]
+  },
+  {
+    "name": "Llacuna",
+    "coordinates": [
+      41.399381,
+      2.197649
+    ]
+  },
+  {
+    "name": "Llucmajor | República",
+    "coordinates": [
+      41.437009,
+      2.173364
+    ]
+  },
+  {
+    "name": "Maragall",
+    "coordinates": [
+      41.425028,
+      2.176504
+    ]
+  },
+  {
+    "name": "Maria Cristina",
+    "coordinates": [
+      41.38794,
+      2.126222
+    ]
+  },
+  {
+    "name": "Marina",
+    "coordinates": [
+      41.394996,
+      2.186268
+    ]
+  },
+  {
+    "name": "Mercabarna",
+    "coordinates": [
+      41.33357,
+      2.111229
+    ]
+  },
+  {
+    "name": "Mercat Nou",
+    "coordinates": [
+      41.372795,
+      2.133331
+    ]
+  },
+  {
+    "name": "Montbau",
+    "coordinates": [
+      41.430595,
+      2.145035
+    ]
+  },
+  {
+    "name": "Monumental",
+    "coordinates": [
+      41.400524,
+      2.179454
+    ]
+  },
+  {
+    "name": "Mundet",
+    "coordinates": [
+      41.435542,
+      2.148383
+    ]
+  },
+  {
+    "name": "Muntaner",
+    "coordinates": [
+      41.398667,
+      2.142806
+    ]
+  },
+  {
+    "name": "Navas",
+    "coordinates": [
+      41.416044,
+      2.186938
+    ]
+  },
+  {
+    "name": "Onze de Setembre",
+    "coordinates": [
+      41.42976,
+      2.193435
+    ]
+  },
+  {
+    "name": "Pàdua",
+    "coordinates": [
+      41.40331,
+      2.143041
+    ]
+  },
+  {
+    "name": "Palau Reial",
+    "coordinates": [
+      41.385808,
+      2.117855
+    ]
+  },
+  {
+    "name": "Paral·lel",
+    "coordinates": [
+      41.374941,
+      2.169256
+    ]
+  },
+  {
+    "name": "Parc Logístic",
+    "coordinates": [
+      41.341806,
+      2.127982
+    ]
+  },
+  {
+    "name": "Passeig de Gràcia",
+    "coordinates": [
+      41.389443,
+      2.168277
+    ]
+  },
+  {
+    "name": "Penitents",
+    "coordinates": [
+      41.417541,
+      2.141133
+    ]
+  },
+  {
+    "name": "Plaça de Sants",
+    "coordinates": [
+      41.375376,
+      2.137913
+    ]
+  },
+  {
+    "name": "Plaça del Centre",
+    "coordinates": [
+      41.381821,
+      2.13563
+    ]
+  },
+  {
+    "name": "Plaça Molina",
+    "coordinates": [
+      41.401299,
+      2.147523
+    ]
+  },
+  {
+    "name": "Poblenou",
+    "coordinates": [
+      41.403642,
+      2.203275
+    ]
+  },
+  {
+    "name": "Provença",
+    "coordinates": [
+      41.392874,
+      2.157979
+    ]
+  },
+  {
+    "name": "Reina Elisenda",
+    "coordinates": [
+      41.39879,
+      2.119034
+    ]
+  },
+  {
+    "name": "Rocafort",
+    "coordinates": [
+      41.379237,
+      2.154573
+    ]
+  },
+  {
+    "name": "Roquetes",
+    "coordinates": [
+      41.447355,
+      2.175783
+    ]
+  },
+  {
+    "name": "Sagrada Família",
+    "coordinates": [
+      41.404034,
+      2.173882
+    ]
+  },
+  {
+    "name": "Sant Andreu",
+    "coordinates": [
+      41.436629,
+      2.191138
+    ]
+  },
+  {
+    "name": "Sant Antoni",
+    "coordinates": [
+      41.379786,
+      2.16327
+    ]
+  },
+  {
+    "name": "Sant Gervasi",
+    "coordinates": [
+      41.401067,
+      2.14708
+    ]
+  },
+  {
+    "name": "Sant Martí",
+    "coordinates": [
+      41.419057,
+      2.200731
+    ]
+  },
+  {
+    "name": "Sant Pau | Dos de Maig",
+    "coordinates": [
+      41.410731,
+      2.175983
+    ]
+  },
+  {
+    "name": "Santander",
+    "coordinates": [
+      41.426576,
+      2.201404
+    ]
+  },
+  {
+    "name": "Sants Estació",
+    "coordinates": [
+      41.381469,
+      2.141114
+    ]
+  },
+  {
+    "name": "Sarrià",
+    "coordinates": [
+      41.398843,
+      2.125175
+    ]
+  },
+  {
+    "name": "Selva de Mar",
+    "coordinates": [
+      41.408015,
+      2.209109
+    ]
+  },
+  {
+    "name": "Tarragona",
+    "coordinates": [
+      41.378444,
+      2.145367
+    ]
+  },
+  {
+    "name": "Tetuan",
+    "coordinates": [
+      41.394822,
+      2.175521
+    ]
+  },
+  {
+    "name": "Torras i Bages",
+    "coordinates": [
+      41.443127,
+      2.190714
+    ]
+  },
+  {
+    "name": "Torre Baró | Vallbona",
+    "coordinates": [
+      41.459218,
+      2.179945
+    ]
+  },
+  {
+    "name": "Trinitat Nova",
+    "coordinates": [
+      41.449483,
+      2.184162
+    ]
+  },
+  {
+    "name": "Trinitat Vella",
+    "coordinates": [
+      41.448768,
+      2.193737
+    ]
+  },
+  {
+    "name": "Universitat",
+    "coordinates": [
+      41.385694,
+      2.164305
+    ]
+  },
+  {
+    "name": "Urgell",
+    "coordinates": [
+      41.382486,
+      2.158889
+    ]
+  },
+  {
+    "name": "Urquinaona",
+    "coordinates": [
+      41.388085,
+      2.173311
+    ]
+  },
+  {
+    "name": "Vall d’Hebron | Sant Genís",
+    "coordinates": [
+      41.424913,
+      2.142396
+    ]
+  },
+  {
+    "name": "Vallcarca",
+    "coordinates": [
+      41.411907,
+      2.144524
+    ]
+  },
+  {
+    "name": "Valldaura",
+    "coordinates": [
+      41.438004,
+      2.156876
+    ]
+  },
+  {
+    "name": "Verdaguer",
+    "coordinates": [
+      41.400091,
+      2.168427
+    ]
+  },
+  {
+    "name": "Via Júlia",
+    "coordinates": [
+      41.443847,
+      2.178604
+    ]
+  },
+  {
+    "name": "Vilapicina",
+    "coordinates": [
+      41.43046,
+      2.168172
+    ]
+  },
+  {
+    "name": "Virrei Amat",
+    "coordinates": [
+      41.429594,
+      2.174999
+    ]
+  },
+  {
+    "name": "Zona Franca",
+    "coordinates": [
+      41.342985,
+      2.144972
+    ]
+  },
+  {
+    "name": "Zona Universitària",
+    "coordinates": [
+      41.384244,
+      2.111686
+    ]
+  }
+]

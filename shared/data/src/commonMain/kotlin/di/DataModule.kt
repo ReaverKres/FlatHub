@@ -26,7 +26,6 @@ import listing.core.ListingSourceRegistry
 import listing.core.RemoteListingPlatformConfig
 import listing.es.fotocasa.FotocasaApiClient
 import listing.es.fotocasa.FotocasaListingSource
-import listing.es.idealista.IdealistaListingSource
 import listing.es.pisos.PisosApiClient
 import listing.es.pisos.PisosListingSource
 import listing.ge.binebi.BinebiApiClient
@@ -196,7 +195,6 @@ val dataModule = module {
 
     single { PisosApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { PisosListingSource(api = get(), flatsDao = get()) }
-    single { IdealistaListingSource(flatsDao = get()) }
     single {
         FotocasaApiClient(
             httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
@@ -224,7 +222,6 @@ val dataModule = module {
                 get<OlxKzListingSource>(),
                 get<KnListingSource>(),
                 get<PisosListingSource>(),
-                get<IdealistaListingSource>(),
                 get<FotocasaListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),

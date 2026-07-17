@@ -3,6 +3,7 @@ package io.flatzen.commoncomponents.theme
 enum class AppLanguage(val tag: String?) {
     SYSTEM(null),
     EN("en"),
+    ES("es"),
     RU("ru"),
     PL("pl"),
     KK("kk"),

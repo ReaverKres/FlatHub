@@ -124,7 +124,6 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.KN,
         -> "KZT"
 
-    FlatPlatform.IDEALISTA,
     FlatPlatform.FOTOCASA,
     FlatPlatform.PISOS,
         -> "€"
