@@ -129,7 +129,9 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
 
 data class FlatDevInfo(
     val isDetailData: Boolean,
-    val isDetailLoaded: Boolean
+    val isDetailLoaded: Boolean,
+    /** True after background coord enrich finished for this ad (success or no coords). */
+    val coordsEnriched: Boolean = false,
 )
 
 data class ContactInformation(

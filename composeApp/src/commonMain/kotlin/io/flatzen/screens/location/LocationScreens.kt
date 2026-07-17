@@ -38,7 +38,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -163,19 +162,22 @@ fun LocationScreen() {
             modifier = Modifier.padding(padding).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ListItem(
-                headlineContent = {
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        filterContainer.intent(FilterScreenAction.OpenCity)
+                    },
+            ) {
+                Row(modifier = Modifier.padding(16.dp)) {
                     val country = state.filters.location?.selectedCountry?.name
                         ?: state.filters.location?.selectedCountry?.code?.name.orEmpty()
                     val city = state.filters.location?.selectedCity?.displayName.orEmpty()
-                    Text(listOf(country, city).filter { it.isNotBlank() }.joinToString(" · "))
-                },
-                trailingContent = { Icon(Icons.Default.Face, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth().clickable {
-                    filterContainer.intent(FilterScreenAction.OpenCity)
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
+                    Text(
+                        text = listOf(country, city).filter { it.isNotBlank() }.joinToString(" · "),
+                    )
+                }
+            }
 
             // Поле ввода адреса
             Row(

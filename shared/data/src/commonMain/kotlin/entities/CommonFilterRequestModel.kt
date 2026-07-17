@@ -43,7 +43,9 @@ import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
+import io.flatzen.commoncomponents.commonentities.defaultCityCode
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.location.networkCountryIso
 import kotlinx.serialization.Serializable
 import repository.osm.OsmDistricts
 import server_request.Currency
@@ -139,15 +141,15 @@ data class CommonFilterRequestModel(
         val thisDistrictsAreas = this.districtsArea.filter { it.isChecked }
         val otherDistrictsAreas = other.districtsArea.filter { it.isChecked }
 
-        //TODO
-        // Специальная логика сравнения location: null эквивалентен LocationFilter(BY, MINSK)
+        // null location ≡ network-default market (ISO → country/city, else BY/MINSK)
+        val defaultLocation = LocationFilter.networkDefault()
         val isLocationEqual = when {
             this.location == null && other.location == null -> true
             this.location == null && other.location != null ->
-                other.location.country == CountryCode.BY && other.location.city == CityCode.MINSK
+                other.location == defaultLocation
 
             this.location != null && other.location == null ->
-                this.location.country == CountryCode.BY && this.location.city == CityCode.MINSK
+                this.location == defaultLocation
 
             else -> this.location == other.location
         }
@@ -208,11 +210,8 @@ data class CommonFilterRequestModel(
         result = 31 * result + districtsArea.filter { it.isChecked }.hashCode()
         result = 31 * result + sortOption.hashCode() // Added sort option to hash code
 
-        //TODO
-        // Для hashCode тоже учитываем специальную логику
-        val locationForHashCode = location ?: LocationFilter(
-            country = CountryCode.BY, city = CityCode.MINSK
-        )
+        // null location ≡ network-default (same as equals)
+        val locationForHashCode = location ?: LocationFilter.networkDefault()
         result = 31 * result + (locationForHashCode.hashCode())
 
         return result
@@ -239,7 +238,14 @@ data class AddressRequestModel(
 )
 
 @Serializable
-data class LocationFilter(val country: CountryCode, val city: CityCode)
+data class LocationFilter(val country: CountryCode, val city: CityCode) {
+    companion object {
+        fun networkDefault(): LocationFilter {
+            val country = CountryCode.fromNetworkIso(networkCountryIso())
+            return LocationFilter(country = country, city = country.defaultCityCode())
+        }
+    }
+}
 
 @Serializable
 enum class MetroLine {

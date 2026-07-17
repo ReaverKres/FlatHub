@@ -11,6 +11,7 @@ import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
+import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
@@ -524,6 +525,12 @@ class FilterContainer(
                     if (previousCountry == intent.countryCode) return@reduce
                     val cities = LocationUiMapper.cities(intent.countryCode)
                     val defaultCity = LocationUiMapper.defaultCity(intent.countryCode)
+                    val commercial =
+                        if (intent.countryCode.supportsCommercialPropertyTypeFilter()) {
+                            currentState.filters.commercial
+                        } else {
+                            currentState.filters.commercial.copy(commercialPropertyType = null)
+                        }
                     applyFiltersUpdate(
                         currentState.filters.copy(
                             location = LocationUiFilter(
@@ -537,6 +544,7 @@ class FilterContainer(
                             districtsArea = null,
                             metroStationsState = MetroStationsMapper.stationsForCity(defaultCity.code),
                             withAnyMetro = false,
+                            commercial = commercial,
                         ),
                         doNetworkCall = false,
                     )

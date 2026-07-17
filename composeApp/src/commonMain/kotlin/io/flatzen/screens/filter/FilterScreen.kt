@@ -85,6 +85,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.utils.asIntPrice
@@ -428,7 +429,9 @@ fun FilterScreen() {
 
             Spacer(Modifier.height(10.dp))
 
-            if (filters.adType.isCommercial) {
+            if (filters.adType.isCommercial &&
+                filters.location?.selectedCountry?.code?.supportsCommercialPropertyTypeFilter() == true
+            ) {
                 Spacer(Modifier.height(8.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -751,7 +754,7 @@ private fun LocationItem(
         ) {
             Text(
                 text = selectedCity
-                    ?: LocationUiFilter().selectedCity.displayName,
+                    ?: LocationUiFilter.networkDefault().selectedCity.displayName,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

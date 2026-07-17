@@ -1,6 +1,5 @@
 package io.flatzen.commoncomponents.date
 
-import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -8,6 +7,7 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 /**
  * Утилитарный класс для преобразования дат в формате ISO 8601.

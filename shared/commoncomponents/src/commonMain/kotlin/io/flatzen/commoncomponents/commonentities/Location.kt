@@ -9,7 +9,19 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 
 data class Country(val country: CountryCode, val allCities: List<City>)
 
-enum class CountryCode { BY, PL, GE, KZ }
+enum class CountryCode {
+    BY, PL, GE, KZ;
+
+    companion object {
+        fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
+            "BY" -> BY
+            "PL" -> PL
+            "GE" -> GE
+            "KZ" -> KZ
+            else -> BY
+        }
+    }
+}
 
 enum class CityCode {
     // Belarus
@@ -24,6 +36,16 @@ enum class CityCode {
 
     // Kazakhstan (MVP)
     ALMATY, ASTANA, SHYMKENT, KARAGANDA,
+}
+
+/** Only BY sources currently map commercial property subtypes. */
+fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean = this == CountryCode.BY
+
+fun CountryCode.defaultCityCode(): CityCode = when (this) {
+    CountryCode.BY -> CityCode.MINSK
+    CountryCode.PL -> CityCode.WARSZAWA
+    CountryCode.GE -> CityCode.TBILISI
+    CountryCode.KZ -> CityCode.ALMATY
 }
 
 object Location {

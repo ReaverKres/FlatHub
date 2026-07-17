@@ -32,7 +32,8 @@ interface FilterRepository {
 
 fun FilterRepository.lastFilter(): CommonFilterRequestModel =
     cashedFilterFlow.replayCache.firstOrNull()?.commonFilterRequestModel
-        ?: CommonFilterRequestModel()
+        ?: CommonFilterRequestModel(location = entities.LocationFilter.networkDefault())
+
 
 suspend fun FilterRepository.areasInFilter(userMapAreaRepository: UserMapAreaRepository): List<UserMapArea> {
     val filter = this.lastFilter()

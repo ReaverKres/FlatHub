@@ -8,7 +8,6 @@ import io.flatzen.commoncomponents.commonentities.AdType.DAILY
 import io.flatzen.commoncomponents.commonentities.AdType.RENT
 import io.flatzen.commoncomponents.commonentities.AdType.SALE
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
-import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
@@ -16,7 +15,9 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
+import io.flatzen.commoncomponents.location.networkCountryIso
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
@@ -41,15 +42,25 @@ data class UiCountry(val code: CountryCode, val name: String? = null)
 
 @Immutable
 data class LocationUiFilter(
-    val selectedCountry: UiCountry = UiCountry(
-        code = CountryCode.BY,
-        name = LocationUiMapper.countryDisplayName(CountryCode.BY),
-    ),
-    val selectedCity: UiCityItem = UiCityItem(
-        CityCode.MINSK, "Минск", Coordinates(53.902147, 27.561388)
-    ),
-    val availableCities: List<UiCityItem> = LocationUiMapper.cities(CountryCode.BY),
-)
+    val selectedCountry: UiCountry,
+    val selectedCity: UiCityItem,
+    val availableCities: List<UiCityItem>,
+) {
+    companion object {
+        fun networkDefault(): LocationUiFilter {
+            val country = CountryCode.fromNetworkIso(networkCountryIso())
+            val city = LocationUiMapper.defaultCity(country)
+            return LocationUiFilter(
+                selectedCountry = UiCountry(
+                    code = country,
+                    name = LocationUiMapper.countryDisplayName(country),
+                ),
+                selectedCity = city,
+                availableCities = LocationUiMapper.cities(country),
+            )
+        }
+    }
+}
 
 @Immutable
 data class AddressUiState(
@@ -115,7 +126,7 @@ data class FilterState(
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val withAnyMetro: Boolean = false,
-    val location: LocationUiFilter? = null,
+    val location: LocationUiFilter? = LocationUiFilter.networkDefault(),
     val userMapAreas: List<MapAreasUi>? = null,
     val districtsArea: List<UiDistrict>? = null,
     val address: Set<AddressUiState>? = null,
@@ -171,10 +182,19 @@ data class FilterState(
             is DAILY -> resolve(LocalizationKeys.FILTER_DAILY)
         }}")
 
-        if(adType.isCommercial) {
-            commercial.commercialPropertyType?.find { it.selected }?.let { type ->
-                type.commercialPropertyTypeName?.let { key ->
-                    activeFilters.add("${resolve(LocalizationKeys.FILTER_PROPERTY_TYPE)}: ${resolve(key)}")
+        if (adType.isCommercial) {
+            val country = location?.selectedCountry?.code
+            if (country == null || country.supportsCommercialPropertyTypeFilter()) {
+                commercial.commercialPropertyType?.find { it.selected }?.let { type ->
+                    type.commercialPropertyTypeName?.let { key ->
+                        activeFilters.add(
+                            "${resolve(LocalizationKeys.FILTER_PROPERTY_TYPE)}: ${
+                                resolve(
+                                    key
+                                )
+                            }"
+                        )
+                    }
                 }
             }
         }

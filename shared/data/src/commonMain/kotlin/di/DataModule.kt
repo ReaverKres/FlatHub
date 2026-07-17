@@ -15,7 +15,13 @@ import api.createSubscriptionsApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import entities.AppFlat
 import io.flatzen.firebase.ConfigFieldsChecker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import listing.by.byListingSources
+import listing.core.CoordEnrichState
+import listing.core.CoordEnricher
 import listing.core.ListingSourceRegistry
 import listing.core.RemoteListingPlatformConfig
 import listing.ge.binebi.BinebiApiClient
@@ -206,12 +212,23 @@ val dataModule = module {
         )
     }
 
+    single { CoordEnrichState() }
+    single {
+        CoordEnricher(
+            flatsDao = get(),
+            registry = get(),
+            state = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+        )
+    }
+
     single<MergedRepository> {
         MergedRepositoryImpl(
             listingSourceRegistry = get(),
             filterRepository = get(),
             flatsDao = get(),
             connectionMonitor = get(),
+            coordEnricher = get(),
         )
     }
 

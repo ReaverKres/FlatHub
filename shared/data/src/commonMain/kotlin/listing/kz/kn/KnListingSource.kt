@@ -33,6 +33,7 @@ class KnListingSource(
         supportsRoom = false,
         supportsCommercial = false,
     )
+    override val needsBackgroundCoordEnrich: Boolean = true
 
     override fun search(
         filter: CommonFilterRequestModel,

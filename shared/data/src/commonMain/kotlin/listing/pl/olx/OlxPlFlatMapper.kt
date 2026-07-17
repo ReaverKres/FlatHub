@@ -6,6 +6,8 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.booleanOrNull
@@ -75,7 +77,9 @@ object OlxPlFlatMapper {
             flatDetailUrl = url,
             publishedAt = publishedAt,
             publishedAtServer = created,
-            publishedAtUi = created,
+            publishedAtUi = publishedAt?.let {
+                DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+            },
             imageUrls = photos,
             priceUsd = null,
             // PL: local currency stored in priceByn until price model rename

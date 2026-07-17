@@ -32,6 +32,9 @@ class LivoListingSource(
         supportsCommercial = false,
     )
 
+    /** List often has empty lat/lng; detail usually fills them. */
+    override val needsBackgroundCoordEnrich: Boolean = true
+
     override fun search(
         filter: CommonFilterRequestModel,
         currentPage: Int?,

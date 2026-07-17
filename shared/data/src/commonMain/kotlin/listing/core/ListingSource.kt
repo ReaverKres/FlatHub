@@ -32,6 +32,12 @@ interface ListingSource {
      */
     fun detail(adId: Long): Flow<AppFlat?> = getById(adId)
 
+    /**
+     * When list payloads omit lat/lng but detail (or map helper) has them,
+     * [CoordEnricher] fetches detail in the background after search.
+     */
+    val needsBackgroundCoordEnrich: Boolean get() = false
+
     /** Clears any in-memory / page caches for this source. */
     fun clearCache() {}
 }

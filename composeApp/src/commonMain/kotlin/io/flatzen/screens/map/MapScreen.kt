@@ -37,6 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,6 +105,7 @@ import io.flatzen.widgets.dialogs.SearchErrorDialog
 import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import listing.core.CoordEnrichState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.ExperimentalClusteringApi
@@ -142,6 +144,8 @@ fun MapScreen(
 ) {
     val flatSearchContainer: FlatSearchContainer = koinInject()
     val listState by flatSearchContainer.store.subscribe { }
+    val coordEnrichState: CoordEnrichState = koinInject()
+    val coordsEnrichLoading by coordEnrichState.isLoading.collectAsState()
     val premiumUpsell = rememberPremiumUpsellState(
         navigateToPremium = { mapViewModel.store.intent(MapIntent.OpenPremium) },
     )
@@ -532,7 +536,7 @@ fun MapScreen(
                     modifier = Modifier.fillMaxSize(),
                     state = mapViewModel.mapState
                 )
-                if (listState.isLoading || listState.isLoadingMore) {
+                if (listState.isLoading || listState.isLoadingMore || coordsEnrichLoading) {
                     LinearProgressIndicator(
                         Modifier
                             .align(Alignment.TopCenter)

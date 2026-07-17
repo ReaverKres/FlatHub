@@ -6,6 +6,8 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonObject
 import listing.core.asArrayOrNull
 import listing.core.asObjectOrNull
@@ -88,7 +90,9 @@ object MorizonFlatMapper {
             flatDetailUrl = detailUrl,
             publishedAt = publishedAt,
             publishedAtServer = created,
-            publishedAtUi = created,
+            publishedAtUi = publishedAt?.let {
+                DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+            },
             imageUrls = photos,
             priceUsd = null,
             priceByn = pricePln,

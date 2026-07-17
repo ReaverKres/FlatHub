@@ -6,6 +6,9 @@ import entities.CommonFilterRequestModel
 import entities.LocationFilter
 import entities.MetroStations
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
+import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
+import io.flatzen.commoncomponents.location.networkCountryIso
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.viewmodel.UiDistrict
@@ -45,9 +48,12 @@ fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel 
         sortOption = filters.sortOption,
         commercial = CommercialRequestModel(
             roomRange = filters.commercial.roomRange,
-            commercialPropertyType = filters.commercial.commercialPropertyType?.find {
-                it.selected
-            }?.commercialPropertyType
+            commercialPropertyType = filters.location?.selectedCountry?.code
+                ?.takeIf { it.supportsCommercialPropertyTypeFilter() }
+                ?.let {
+                    filters.commercial.commercialPropertyType?.find { it.selected }
+                        ?.commercialPropertyType
+                }
         ),
         bookingDatesFilter = filters.bookingDatesFilter
     )
@@ -83,7 +89,7 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
                 selectedCity = LocationUiMapper.findSelectedCity(it.city),
                 availableCities = LocationUiMapper.cities(it.country),
             )
-        } ?: LocationUiFilter(),
+        } ?: LocationUiFilter.networkDefault(),
         districtsArea = UiDistrict.mapFromModelToUi(model.districtsArea),
         userMapAreas = MapAreasUi.mapFromModelToUi(model.userMapAreas),
         address = model.addressRequestModel.map { AddressUiState(address = it.address) }
@@ -97,7 +103,10 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
     )
 }
 
-private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): List<CommercialPropertyTypeInfo> {
+private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): List<CommercialPropertyTypeInfo>? {
+    val country = model.location?.country ?: CountryCode.fromNetworkIso(networkCountryIso())
+    if (!country.supportsCommercialPropertyTypeFilter()) return null
+
     var list = CommercialPropertyType.allInstances.map {
         val selected = model.commercial?.commercialPropertyType == it
         CommercialPropertyTypeInfo(

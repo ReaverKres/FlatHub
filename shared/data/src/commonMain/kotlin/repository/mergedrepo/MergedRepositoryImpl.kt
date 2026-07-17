@@ -29,6 +29,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import listing.core.CoordEnricher
 import listing.core.ListingSource
 import listing.core.ListingSourceRegistry
 import metro.MetroProximityEnricher
@@ -43,6 +44,7 @@ class MergedRepositoryImpl(
     private val filterRepository: FilterRepository,
     private val flatsDao: FlatsDao,
     private val connectionMonitor: ConnectionMonitor,
+    private val coordEnricher: CoordEnricher,
 ) : MergedRepository {
 
     override val lastEmittedFlats: MutableSharedFlow<List<AppFlat>> = MutableSharedFlow(replay = 1)
@@ -125,6 +127,7 @@ class MergedRepositoryImpl(
                                 net.priceByn / net.totalArea
                             } else net.priceBynSquare
 
+                        val coords = net.coordinates ?: fromDb?.coordinates
                         val updated = MetroProximityEnricher.enrich(
                             net.copy(
                                 adType = filter.adType,
@@ -133,6 +136,11 @@ class MergedRepositoryImpl(
                                 dislike = fromDb?.dislike == true,
                                 priceUsdSquare = priceUsdSquare,
                                 priceBynSquare = priceBynSquare,
+                                coordinates = coords,
+                                flatDevInfo = net.flatDevInfo.copy(
+                                    coordsEnriched = coords != null ||
+                                            fromDb?.flatDevInfo?.coordsEnriched == true,
+                                ),
                             ),
                         )
                         appFlats.add(updated)
@@ -148,6 +156,7 @@ class MergedRepositoryImpl(
         }
 
         flatsDao.upsertAll(appFlats)
+        coordEnricher.enqueue(appFlats)
 
         val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
         lastEmittedFlats.emit(sortedFlatList)

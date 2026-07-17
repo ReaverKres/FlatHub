@@ -5,6 +5,8 @@ import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
@@ -85,7 +87,9 @@ object OtodomFlatMapper {
             flatDetailUrl = detailUrl,
             publishedAt = publishedAt,
             publishedAtServer = created,
-            publishedAtUi = created,
+            publishedAtUi = publishedAt?.let {
+                DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+            },
             imageUrls = images,
             // PL: local currency stored in priceByn field until price model rename
             priceUsd = null,
