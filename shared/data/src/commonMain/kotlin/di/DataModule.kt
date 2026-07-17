@@ -19,6 +19,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import listing.ae.dubizzle.DubizzleApiClient
+import listing.ae.dubizzle.DubizzleListingSource
+import listing.ae.opensooq.OpenSooqApiClient
+import listing.ae.opensooq.OpenSooqListingSource
+import listing.ae.propertyfinder.PropertyFinderApiClient
+import listing.ae.propertyfinder.PropertyFinderListingSource
 import listing.by.byListingSources
 import listing.core.CoordEnrichState
 import listing.core.CoordEnricher
@@ -226,6 +232,18 @@ val dataModule = module {
     single { EmlakjetApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { EmlakjetListingSource(api = get(), flatsDao = get()) }
 
+    single { PropertyFinderApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { PropertyFinderListingSource(api = get(), flatsDao = get()) }
+    single {
+        DubizzleApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { DubizzleListingSource(api = get(), flatsDao = get()) }
+    single { OpenSooqApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { OpenSooqListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -250,6 +268,9 @@ val dataModule = module {
                 get<ImmoweltListingSource>(),
                 get<KleinanzeigenListingSource>(),
                 get<EmlakjetListingSource>(),
+                get<PropertyFinderListingSource>(),
+                get<DubizzleListingSource>(),
+                get<OpenSooqListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

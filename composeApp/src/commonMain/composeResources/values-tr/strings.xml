@@ -41,6 +41,7 @@
     <string name="language_polish">Polski</string>
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
+    <string name="language_arabic">Arapça</string>
 
     <string name="filters_title">Filtreler</string>
     <string name="filter_my_filters">Filtrelerim</string>

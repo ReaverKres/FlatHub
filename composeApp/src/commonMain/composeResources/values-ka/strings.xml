@@ -39,6 +39,7 @@
     <string name="language_polish">Polski</string>
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
+    <string name="language_arabic">არაბული</string>
     <string name="filters_title">ფილტრები</string>
     <string name="filter_my_filters">ჩემი ფილტრები</string>
     <string name="filter_property_type">ფართის ტიპი</string>

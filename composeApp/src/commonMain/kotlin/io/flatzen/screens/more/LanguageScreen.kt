@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.language_arabic
 import flatzen.composeapp.generated.resources.language_english
 import flatzen.composeapp.generated.resources.language_georgian
 import flatzen.composeapp.generated.resources.language_german
@@ -134,6 +135,7 @@ internal fun AppLanguage.labelRes(): StringResource = when (this) {
     AppLanguage.DE -> Res.string.language_german
     AppLanguage.ES -> Res.string.language_spanish
     AppLanguage.TR -> Res.string.language_turkish
+    AppLanguage.AR -> Res.string.language_arabic
     AppLanguage.RU -> Res.string.language_russian
     AppLanguage.PL -> Res.string.language_polish
     AppLanguage.KK -> Res.string.language_kazakh

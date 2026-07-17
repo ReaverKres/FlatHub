@@ -1,19 +1,17 @@
 # Current stage — multi-country parsing
 
 **Updated:** 2026-07-17  
-**Active market:** Turkey (TR) MVP + DE polish  
+**Active market:** UAE / Dubai (AE) MVP  
 **Canonical:** [docs/current_stage.md](./docs/current_stage.md)
 
 ## Done recently
 
-- TR: Emlakjet SSR (Hepsiemlak/Sahibinden blocked — Cloudflare)
-- TR UI language (Türkçe) + TRY currency
-- Studio label removed → show as 1 room (`roomOnly` filter kept)
-- DE: IS24 `-firstactivation` sort + local rooms filter
+- AE: Property Finder + Dubizzle + OpenSooq (Bayut BLOCKED — captcha)
+- AR UI language (العربية) + AED currency
+- TR: Emlakjet only; DE polish earlier
 
 ## Verify on device
 
-- [ ] TR İstanbul rent/sale via Emlakjet; prices in ₺
-- [ ] Language → Türkçe
-- [ ] Rooms filter local; no «Студия» label
-- [ ] DE Berlin still OK
+- [ ] AE Dubai rent/sale; prices in AED
+- [ ] Language → العربية
+- [ ] TR İstanbul / DE Berlin still OK

@@ -106,6 +106,7 @@ import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.force_update_description
 import flatzen.composeapp.generated.resources.force_update_title
 import flatzen.composeapp.generated.resources.from
+import flatzen.composeapp.generated.resources.language_arabic
 import flatzen.composeapp.generated.resources.language_english
 import flatzen.composeapp.generated.resources.language_georgian
 import flatzen.composeapp.generated.resources.language_german
@@ -319,6 +320,7 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.LANGUAGE_ENGLISH -> Res.string.language_english
         LocalizationKeys.LANGUAGE_GERMAN -> Res.string.language_german
         LocalizationKeys.LANGUAGE_TURKISH -> Res.string.language_turkish
+        LocalizationKeys.LANGUAGE_ARABIC -> Res.string.language_arabic
         LocalizationKeys.LANGUAGE_SPANISH -> Res.string.language_spanish
         LocalizationKeys.LANGUAGE_RUSSIAN -> Res.string.language_russian
         LocalizationKeys.LANGUAGE_POLISH -> Res.string.language_polish

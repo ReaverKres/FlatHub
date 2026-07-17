@@ -34,6 +34,11 @@ enum class FlatPlatform(val value: String) {
 
     // Turkey (MVP)
     EMLAKJET("emlakjet"),
+
+    // UAE (MVP) — Bayut blocked (captcha); OpenSooq is the 3rd GO source
+    PROPERTY_FINDER("property_finder"),
+    DUBIZZLE("dubizzle"),
+    OPENSOOQ("opensooq"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -70,6 +75,11 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
 
     FlatPlatform.EMLAKJET,
         -> CountryCode.TR
+
+    FlatPlatform.PROPERTY_FINDER,
+    FlatPlatform.DUBIZZLE,
+    FlatPlatform.OPENSOOQ,
+        -> CountryCode.AE
 }
 
 fun platformsForMarket(country: CountryCode): List<FlatPlatform> =

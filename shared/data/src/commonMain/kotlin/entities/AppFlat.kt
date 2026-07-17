@@ -136,6 +136,11 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.EMLAKJET,
         -> "₺"
 
+    FlatPlatform.PROPERTY_FINDER,
+    FlatPlatform.DUBIZZLE,
+    FlatPlatform.OPENSOOQ,
+        -> "AED"
+
     else -> "BYN"
 }
 

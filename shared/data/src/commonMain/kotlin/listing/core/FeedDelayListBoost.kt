@@ -39,6 +39,9 @@ object FeedDelayListBoost {
         FlatPlatform.IMMOWELT to 2.0,
         FlatPlatform.KLEINANZEIGEN to 2.5,
         FlatPlatform.EMLAKJET to 2.5,
+        FlatPlatform.PROPERTY_FINDER to 3.0,
+        FlatPlatform.DUBIZZLE to 3.0,
+        FlatPlatform.OPENSOOQ to 1.5,
     )
 
     /** API list: inflate page size ≈ 2 × base × popularity. */
