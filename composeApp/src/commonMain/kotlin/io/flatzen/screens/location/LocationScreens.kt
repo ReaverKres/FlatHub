@@ -11,8 +11,10 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,10 +44,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -68,18 +72,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.add
 import flatzen.composeapp.generated.resources.delete
 import flatzen.composeapp.generated.resources.location_address_hint
+import flatzen.composeapp.generated.resources.location_beta
 import flatzen.composeapp.generated.resources.location_city
 import flatzen.composeapp.generated.resources.location_country
 import flatzen.composeapp.generated.resources.location_country_city
 import flatzen.composeapp.generated.resources.location_districts
+import flatzen.composeapp.generated.resources.location_market_beta_notice
 import flatzen.composeapp.generated.resources.location_metro
 import flatzen.composeapp.generated.resources.location_metro_any_switch
 import flatzen.composeapp.generated.resources.location_metro_line_blue
@@ -96,6 +104,8 @@ import flatzen.composeapp.generated.resources.location_title
 import flatzen.composeapp.generated.resources.reset
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.commoncomponents.commonentities.CityCode
+import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.platformsForMarket
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.mappers.LocationUiMapper
@@ -108,6 +118,7 @@ import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.viewmodel.filter.UiMetroStation
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.dialogs.SavedAreasDialog
+import io.flatzen.widgets.platformImage
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import pro.respawn.flowmvi.compose.dsl.subscribe
@@ -163,7 +174,7 @@ fun LocationScreen() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(Modifier.height(12.dp))
-            ElevatedCard(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
@@ -245,7 +256,7 @@ fun LocationScreen() {
                 selectedCityCode == CityCode.TBILISI ||
                 selectedCityCode == CityCode.ALMATY
             ) {
-                ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+                Card(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
                 }) {
                     Row(modifier = Modifier.padding(16.dp)) {
@@ -262,7 +273,7 @@ fun LocationScreen() {
                 }
             }
 
-            ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+            Card(modifier = Modifier.fillMaxWidth().clickable {
                 filterContainer.intent(FilterScreenAction.OpenDistricts)
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
@@ -275,7 +286,7 @@ fun LocationScreen() {
                 }
             }
 
-            ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
+            Card(modifier = Modifier.fillMaxWidth().clickable {
                 filterContainer.intent(FilterScreenAction.ShowSavedAreaListDialog)
             }) {
                 Row(modifier = Modifier.padding(16.dp)) {
@@ -379,6 +390,7 @@ fun CitySelectScreen(
                                 val selected = selectedCountry == country.code
                                 CountryMarketCard(
                                     name = country.displayName,
+                                    countryCode = country.code,
                                     selected = selected,
                                     modifier = Modifier.width(itemWidth),
                                     onClick = {
@@ -392,6 +404,16 @@ fun CitySelectScreen(
                                 )
                             }
                         }
+                    }
+
+                    val showBetaNotice = selectedCountry != null &&
+                            selectedCountry != CountryCode.BY
+                    AnimatedVisibility(
+                        visible = showBetaNotice,
+                        enter = fadeIn(tween(280)) + expandVertically(tween(320)),
+                        exit = fadeOut(tween(160)) + shrinkVertically(tween(180)),
+                    ) {
+                        MarketBetaNotice()
                     }
                 }
             }
@@ -525,56 +547,130 @@ private fun AnimatedVisibilityScope.CitySelectRow(
 }
 
 @Composable
+private fun MarketBetaNotice() {
+    val uriHandler = LocalUriHandler.current
+    val notice = stringResource(Res.string.location_market_beta_notice)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { uriHandler.openUri("https://t.me/FlatHub_appbot") },
+        shape = RoundedCornerShape(12.dp),
+        color = Color(0xFFFFE0B2).copy(alpha = 0.72f),
+        border = BorderStroke(1.dp, Color(0xFFFF9800).copy(alpha = 0.55f)),
+    ) {
+        Text(
+            text = notice,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+        )
+    }
+}
+
+@Composable
 private fun CountryMarketCard(
     name: String,
+    countryCode: CountryCode,
     selected: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier
-            .height(72.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
-        color = if (selected) {
-            MaterialTheme.colorScheme.primaryContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
-        },
-        border = BorderStroke(
-            width = if (selected) 2.dp else 1.dp,
-            color = if (selected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.outlineVariant
-            },
-        ),
-        tonalElevation = if (selected) 2.dp else 0.dp,
-    ) {
-        Row(
+    val platforms = remember(countryCode) { platformsForMarket(countryCode) }
+    val showBeta = countryCode != CountryCode.BY
+    val cardColors = if (selected) {
+        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    } else {
+        CardDefaults.cardColors()
+    }
+
+    Box(modifier = modifier) {
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = name,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-                ),
+                .fillMaxWidth()
+                .height(88.dp)
+                .clickable(onClick = onClick),
+            shape = RoundedCornerShape(14.dp),
+            colors = cardColors,
+            border = BorderStroke(
+                width = if (selected) 2.dp else 1.dp,
                 color = if (selected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    MaterialTheme.colorScheme.primary
                 } else {
-                    MaterialTheme.colorScheme.onSurface
+                    MaterialTheme.colorScheme.outlineVariant
                 },
-            )
-            if (selected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                        ),
+                        color = if (selected) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    if (selected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    platforms.forEach { platform ->
+                        Image(
+                            painter = platform.platformImage(),
+                            contentDescription = platform.value,
+                            modifier = Modifier
+                                .size(14.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            alpha = if (selected) 1f else 0.85f,
+                        )
+                    }
+                }
+            }
+        }
+        if (showBeta) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 6.dp, y = (-6).dp),
+                shape = RoundedCornerShape(6.dp),
+                color = Color(0xFFF57C00),
+                shadowElevation = 2.dp,
+            ) {
+                Text(
+                    text = stringResource(Res.string.location_beta),
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                    ),
+                    color = Color.White,
                 )
             }
         }

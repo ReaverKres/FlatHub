@@ -5,12 +5,15 @@ import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import listing.core.asObjectOrNull
+import listing.core.doubleOrNull
 import utils.stripHtmlToPlainText
 
 object OtodomDetailMapper {
@@ -18,21 +21,17 @@ object OtodomDetailMapper {
      * Merges detail payload into an existing list [base] flat.
      */
     fun mergeInto(base: AppFlat, root: JsonObject): AppFlat {
-        val pageProps = root["pageProps"]?.jsonObject ?: return base
+        // `/_next/data/.../oferta/*.json` → pageProps; HTML `__NEXT_DATA__` → props.pageProps
+        val pageProps = root["pageProps"]?.jsonObject
+            ?: root["props"]?.jsonObject?.get("pageProps")?.jsonObject
+            ?: return base
         val ad = pageProps["ad"]?.jsonObject ?: return base
         val contact = ad["contactDetails"]?.jsonObject
             ?: pageProps["contactDetails"]?.jsonObject
         val target = ad["target"]?.jsonObject
         val characteristics = charMap(ad["characteristics"]?.jsonArray)
 
-        val lat = ad["location"]?.jsonObject
-            ?.get("coordinates")?.jsonObject
-            ?.get("latitude")?.jsonPrimitive?.doubleOrNull
-        val lon = ad["location"]?.jsonObject
-            ?.get("coordinates")?.jsonObject
-            ?.get("longitude")?.jsonPrimitive?.doubleOrNull
-        val coordinates =
-            if (lat != null && lon != null) Coordinates(lat, lon) else base.coordinates
+        val coordinates = extractCoordinates(ad) ?: base.coordinates
 
         val phones = contact?.get("phones")?.jsonArray
             ?.mapNotNull { it.jsonPrimitive.contentOrNull }
@@ -170,6 +169,49 @@ object OtodomDetailMapper {
         if (idx < 0) return null
         val after = url.substring(idx + marker.length)
         return after.substringBefore('?').substringBefore('/').ifBlank { null }
+    }
+
+    /**
+     * Otodom puts GPS in several shapes across list/detail / `__NEXT_DATA__`:
+     * - `ad.coordinates.{latitude,longitude}` (common on detail)
+     * - `ad.location.coordinates.{latitude,longitude}`
+     * - `ad.location.{latitude,longitude}`
+     * - `ad.map.{lat,lon}` / `location.map…`
+     *
+     * Must use [asObjectOrNull] — list payloads often have `"coordinates": null`
+     * (JsonNull); kotlinx `.jsonObject` throws and wipes the whole Otodom page.
+     */
+    fun extractCoordinates(adOrItem: JsonObject): Coordinates? {
+        fun fromPair(latEl: JsonElement?, lonEl: JsonElement?): Coordinates? {
+            val lat = latEl.doubleOrNull() ?: return null
+            val lon = lonEl.doubleOrNull() ?: return null
+            return Coordinates(lat, lon)
+        }
+
+        fun fromObj(obj: JsonObject?, latKey: String, lonKey: String): Coordinates? =
+            fromPair(obj?.get(latKey), obj?.get(lonKey))
+
+        fromObj(
+            adOrItem["coordinates"].asObjectOrNull(),
+            "latitude",
+            "longitude"
+        )?.let { return it }
+        fromObj(adOrItem["coordinates"].asObjectOrNull(), "lat", "lon")?.let { return it }
+
+        val location = adOrItem["location"].asObjectOrNull()
+        fromObj(
+            location?.get("coordinates").asObjectOrNull(),
+            "latitude",
+            "longitude"
+        )?.let { return it }
+        fromObj(location, "latitude", "longitude")?.let { return it }
+        fromObj(location?.get("map").asObjectOrNull(), "lat", "lon")?.let { return it }
+        fromObj(location?.get("map").asObjectOrNull(), "latitude", "longitude")?.let { return it }
+
+        fromObj(adOrItem["map"].asObjectOrNull(), "lat", "lon")?.let { return it }
+        fromObj(adOrItem["map"].asObjectOrNull(), "latitude", "longitude")?.let { return it }
+
+        return null
     }
 
     private fun charMap(array: JsonArray?): Map<String, String> {

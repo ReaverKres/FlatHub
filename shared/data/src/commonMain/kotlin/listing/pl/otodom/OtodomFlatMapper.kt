@@ -81,7 +81,7 @@ object OtodomFlatMapper {
             adType = adType,
             flatDevInfo = FlatDevInfo(isDetailData = false, isDetailLoaded = false),
             contactInformation = ContactInformation(phones = null, ownerName = null),
-            coordinates = null,
+            coordinates = OtodomDetailMapper.extractCoordinates(item),
             commercialInfo = null,
             flatPlatform = FlatPlatform.OTODOM,
             flatDetailUrl = detailUrl,

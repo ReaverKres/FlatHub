@@ -48,6 +48,9 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
         -> CountryCode.KZ
 }
 
+fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
+    FlatPlatform.entries.filter { it.marketCountry() == country }
+
 /**
  * Structured list APIs expose a rooms field — missing value → show "Не указано".
  * Free-text list scrapers (Krisha/kn) often omit rooms → hide the field on the list.

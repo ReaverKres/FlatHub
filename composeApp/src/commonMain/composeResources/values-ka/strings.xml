@@ -115,6 +115,8 @@
     <string name="location_country_city">ქვეყანა და ქალაქი</string>
     <string name="location_select_country_hint">ჯერ აირჩიეთ ქვეყანა</string>
     <string name="location_select_city_hint">აირჩიეთ ქალაქი ბაზარზე</string>
+    <string name="location_beta">Beta</string>
+    <string name="location_market_beta_notice">ამ ბაზრის ფილტრები ჯერ იხვეწება და შეიძლება არაზუსტად იმუშაოს. თუ შეცდომას შეამჩნევთ — მოგვწერეთ Telegram-ზე, მადლობელი ვიქნებით.</string>
     <string name="location_city">ქალაქი</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>

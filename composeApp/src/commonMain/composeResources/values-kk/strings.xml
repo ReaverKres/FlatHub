@@ -123,6 +123,8 @@
     <string name="location_country_city">Ел және қала</string>
     <string name="location_select_country_hint">Алдымен елді таңдаңыз</string>
     <string name="location_select_city_hint">Нарықтағы қаланы таңдаңыз</string>
+    <string name="location_beta">Beta</string>
+    <string name="location_market_beta_notice">Бұл нарық сүзгілері әлі сынақтан өтуде және қате жұмыс істеуі мүмкін. Қате байқасаңыз — Telegram арқылы жазыңыз, ризамыз.</string>
     <string name="location_city">Қала</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>

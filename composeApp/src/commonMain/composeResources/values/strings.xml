@@ -123,6 +123,8 @@
     <string name="location_country_city">Страна и город</string>
     <string name="location_select_country_hint">Сначала выберите страну</string>
     <string name="location_select_city_hint">Выберите город на рынке</string>
+    <string name="location_beta">Beta</string>
+    <string name="location_market_beta_notice">Фильтры для этого рынка ещё обкатываются и могут срабатывать неточно. Если заметите ошибку — напишите нам в Telegram, будем благодарны.</string>
     <string name="location_city">Город</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Любая станция</string>
