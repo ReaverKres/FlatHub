@@ -18,10 +18,18 @@ import io.flatzen.firebase.ConfigFieldsChecker
 import listing.by.byListingSources
 import listing.core.ListingSourceRegistry
 import listing.core.RemoteListingPlatformConfig
+import listing.ge.binebi.BinebiApiClient
+import listing.ge.binebi.BinebiListingSource
 import listing.ge.livo.LivoApiClient
 import listing.ge.livo.LivoListingSource
 import listing.ge.ss.SsApiClient
 import listing.ge.ss.SsListingSource
+import listing.kz.kn.KnApiClient
+import listing.kz.kn.KnListingSource
+import listing.kz.krisha.KrishaApiClient
+import listing.kz.krisha.KrishaListingSource
+import listing.kz.olx.OlxKzApiClient
+import listing.kz.olx.OlxKzListingSource
 import listing.pl.gratka.GratkaApiClient
 import listing.pl.gratka.GratkaListingSource
 import listing.pl.morizon.MorizonApiClient
@@ -150,6 +158,30 @@ val dataModule = module {
         )
     }
     single { LivoListingSource(api = get(), flatsDao = get()) }
+    single {
+        BinebiApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { BinebiListingSource(api = get(), flatsDao = get()) }
+
+    single { KrishaApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { KrishaListingSource(api = get(), flatsDao = get()) }
+    single {
+        OlxKzApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { OlxKzListingSource(api = get(), flatsDao = get()) }
+    single {
+        KnApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { KnListingSource(api = get(), flatsDao = get()) }
 
     single {
         ListingSourceRegistry(
@@ -165,6 +197,10 @@ val dataModule = module {
                 get<MorizonListingSource>(),
                 get<SsListingSource>(),
                 get<LivoListingSource>(),
+                get<BinebiListingSource>(),
+                get<KrishaListingSource>(),
+                get<OlxKzListingSource>(),
+                get<KnListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

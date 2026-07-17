@@ -1,0 +1,284 @@
+{
+  "Tbilisi": [
+    {
+      "id": 90001,
+      "nameEn": "Mtatsminda",
+      "nameLocal": "მთაწმინდა",
+      "coordinates": [
+        {
+          "latitude": 41.677,
+          "longitude": 44.772
+        },
+        {
+          "latitude": 41.677,
+          "longitude": 44.808
+        },
+        {
+          "latitude": 41.713,
+          "longitude": 44.808
+        },
+        {
+          "latitude": 41.713,
+          "longitude": 44.772
+        },
+        {
+          "latitude": 41.677,
+          "longitude": 44.772
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90002,
+      "nameEn": "Vake",
+      "nameLocal": "ვაკე",
+      "coordinates": [
+        {
+          "latitude": 41.69,
+          "longitude": 44.742
+        },
+        {
+          "latitude": 41.69,
+          "longitude": 44.778
+        },
+        {
+          "latitude": 41.726,
+          "longitude": 44.778
+        },
+        {
+          "latitude": 41.726,
+          "longitude": 44.742
+        },
+        {
+          "latitude": 41.69,
+          "longitude": 44.742
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90003,
+      "nameEn": "Saburtalo",
+      "nameLocal": "საბურთალო",
+      "coordinates": [
+        {
+          "latitude": 41.708,
+          "longitude": 44.728
+        },
+        {
+          "latitude": 41.708,
+          "longitude": 44.772
+        },
+        {
+          "latitude": 41.751999999999995,
+          "longitude": 44.772
+        },
+        {
+          "latitude": 41.751999999999995,
+          "longitude": 44.728
+        },
+        {
+          "latitude": 41.708,
+          "longitude": 44.728
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90004,
+      "nameEn": "Krtsanisi",
+      "nameLocal": "კრწანისი",
+      "coordinates": [
+        {
+          "latitude": 41.65,
+          "longitude": 44.809999999999995
+        },
+        {
+          "latitude": 41.65,
+          "longitude": 44.85
+        },
+        {
+          "latitude": 41.690000000000005,
+          "longitude": 44.85
+        },
+        {
+          "latitude": 41.690000000000005,
+          "longitude": 44.809999999999995
+        },
+        {
+          "latitude": 41.65,
+          "longitude": 44.809999999999995
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90005,
+      "nameEn": "Isani",
+      "nameLocal": "ისანი",
+      "coordinates": [
+        {
+          "latitude": 41.67,
+          "longitude": 44.817
+        },
+        {
+          "latitude": 41.67,
+          "longitude": 44.853
+        },
+        {
+          "latitude": 41.706,
+          "longitude": 44.853
+        },
+        {
+          "latitude": 41.706,
+          "longitude": 44.817
+        },
+        {
+          "latitude": 41.67,
+          "longitude": 44.817
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90006,
+      "nameEn": "Samgori",
+      "nameLocal": "სამგორი",
+      "coordinates": [
+        {
+          "latitude": 41.668,
+          "longitude": 44.853
+        },
+        {
+          "latitude": 41.668,
+          "longitude": 44.897
+        },
+        {
+          "latitude": 41.711999999999996,
+          "longitude": 44.897
+        },
+        {
+          "latitude": 41.711999999999996,
+          "longitude": 44.853
+        },
+        {
+          "latitude": 41.668,
+          "longitude": 44.853
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90007,
+      "nameEn": "Chughureti",
+      "nameLocal": "ჩუღურეთი",
+      "coordinates": [
+        {
+          "latitude": 41.697,
+          "longitude": 44.797
+        },
+        {
+          "latitude": 41.697,
+          "longitude": 44.827
+        },
+        {
+          "latitude": 41.727000000000004,
+          "longitude": 44.827
+        },
+        {
+          "latitude": 41.727000000000004,
+          "longitude": 44.797
+        },
+        {
+          "latitude": 41.697,
+          "longitude": 44.797
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90008,
+      "nameEn": "Didube",
+      "nameLocal": "დიდუბე",
+      "coordinates": [
+        {
+          "latitude": 41.73,
+          "longitude": 44.766999999999996
+        },
+        {
+          "latitude": 41.73,
+          "longitude": 44.803
+        },
+        {
+          "latitude": 41.766,
+          "longitude": 44.803
+        },
+        {
+          "latitude": 41.766,
+          "longitude": 44.766999999999996
+        },
+        {
+          "latitude": 41.73,
+          "longitude": 44.766999999999996
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90009,
+      "nameEn": "Nadzaladevi",
+      "nameLocal": "ნაძალადევი",
+      "coordinates": [
+        {
+          "latitude": 41.717,
+          "longitude": 44.777
+        },
+        {
+          "latitude": 41.717,
+          "longitude": 44.813
+        },
+        {
+          "latitude": 41.753,
+          "longitude": 44.813
+        },
+        {
+          "latitude": 41.753,
+          "longitude": 44.777
+        },
+        {
+          "latitude": 41.717,
+          "longitude": 44.777
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 90010,
+      "nameEn": "Gldani",
+      "nameLocal": "გლდანი",
+      "coordinates": [
+        {
+          "latitude": 41.765,
+          "longitude": 44.800000000000004
+        },
+        {
+          "latitude": 41.765,
+          "longitude": 44.85
+        },
+        {
+          "latitude": 41.815,
+          "longitude": 44.85
+        },
+        {
+          "latitude": 41.815,
+          "longitude": 44.800000000000004
+        },
+        {
+          "latitude": 41.765,
+          "longitude": 44.800000000000004
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

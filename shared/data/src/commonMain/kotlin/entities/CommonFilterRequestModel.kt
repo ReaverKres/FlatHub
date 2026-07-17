@@ -330,6 +330,8 @@ object MetroStations {
     fun stationsForCity(city: CityCode?): List<MetroStation> {
         return when (city) {
             CityCode.WARSZAWA -> WarsawMetroStations.allStationsRequest()
+            CityCode.TBILISI -> TbilisiMetroStations.allStationsRequest()
+            CityCode.ALMATY -> AlmatyMetroStations.allStationsRequest()
             CityCode.MINSK, null -> allStationsRequest()
             else -> emptyList()
         }

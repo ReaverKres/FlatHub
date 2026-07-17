@@ -13,6 +13,8 @@ import kotlin.concurrent.Volatile
 private val DISTRICTS_RESOURCES = listOf(
     "files/by_city_districts.json",
     "files/pl_city_districts.json",
+    "files/ge_city_districts.json",
+    "files/kz_city_districts.json",
 )
 
 @Serializable

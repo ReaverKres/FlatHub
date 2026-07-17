@@ -1,4 +1,4 @@
-package listing.ge.ss
+package listing.kz.kn
 
 import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
@@ -16,14 +16,14 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * SS.ge (home.ss.ge) — LegendSearch API. See tmp/ge/api/ss/NOTES.md.
+ * kn.kz — HTML search + detail/phone/map enrich. See tmp/kz/api/kn/NOTES.md.
  */
-class SsListingSource(
-    private val api: SsApiClient,
+class KnListingSource(
+    private val api: KnApiClient,
     private val flatsDao: FlatsDao,
 ) : ListingSource {
-    override val platform = FlatPlatform.SS_GE
-    override val country = CountryCode.GE
+    override val platform = FlatPlatform.KN
+    override val country = CountryCode.KZ
     override val capabilities = SourceCapabilities(
         supportsRent = true,
         supportsSale = true,
@@ -38,28 +38,15 @@ class SsListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val dealType = when (filter.adType) {
-                is AdType.SALE -> SsApiClient.DEAL_SALE
-                is AdType.DAILY -> SsApiClient.DEAL_DAILY
-                else -> SsApiClient.DEAL_RENT
-            }
-            val json = api.legendSearch(
+            val html = api.fetchSearchHtml(
+                cityAlias = KnCities.cityAlias(filter.location?.city),
+                isSale = filter.adType is AdType.SALE,
                 page = page,
-                cityId = SsCities.cityId(filter.location?.city),
-                dealType = dealType,
-                priceFrom = filter.priceFull?.priceFrom?.toInt(),
-                priceTo = filter.priceFull?.priceTo?.toInt(),
             )
-            NetworkResponseWrapper.success(SsFlatMapper.mapSearch(json, filter.adType))
+            NetworkResponseWrapper.success(KnHtmlParser.parseSearch(html, filter.adType))
         } catch (e: CancellationException) {
             throw e
-        } catch (e: SsCloudflareBlockedException) {
-            // Silent skip while CF blocks Android clients — do not surface in error dialog.
-            // Livo remains the working GE source. See docs/current_stage.md.
-            println("SsListingSource: ${e.message}")
-            NetworkResponseWrapper.success(emptyList())
         } catch (e: Exception) {
-            api.invalidateAuth()
             NetworkResponseWrapper.error(
                 e,
                 NetworkErrorInfo(platform, listOf(e.message.orEmpty())),
@@ -71,7 +58,24 @@ class SsListingSource(
     override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(platform, adId)
 
     override fun detail(adId: Long): Flow<AppFlat?> = flow {
-        // List payload already marked detail-loaded; emit base immediately.
-        emit(flatsDao.getById(platform, adId))
+        val base = flatsDao.getById(platform, adId)
+        if (base == null) {
+            emit(null)
+            return@flow
+        }
+        emit(base)
+        if (base.flatDevInfo.isDetailLoaded) return@flow
+        try {
+            val detailHtml = api.fetchDetailHtml(adId)
+            val mapHtml = runCatching { api.fetchMapHtml(adId) }.getOrNull()
+            val phones = runCatching { api.fetchPhones(adId) }.getOrDefault(emptyList())
+            val merged = KnHtmlParser.mergeDetail(base, detailHtml, mapHtml, phones)
+            flatsDao.upsert(merged)
+            emit(merged)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Soft-fail detail.
+        }
     }
 }

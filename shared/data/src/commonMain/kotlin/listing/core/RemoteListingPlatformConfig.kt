@@ -18,6 +18,7 @@ class RemoteListingPlatformConfig(
         val raw = when (country) {
             CountryCode.PL -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsPl)
             CountryCode.GE -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsGe)
+            CountryCode.KZ -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsKz)
             else -> null
         }
         return parsePlatformList(raw)

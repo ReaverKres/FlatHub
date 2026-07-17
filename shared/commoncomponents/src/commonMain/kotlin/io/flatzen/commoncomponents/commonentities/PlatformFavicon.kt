@@ -18,4 +18,10 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.MORIZON -> "https://www.morizon.pl/favicon.ico"
     FlatPlatform.SS_GE -> "https://home.ss.ge/favicon.ico"
     FlatPlatform.LIVO -> "https://livo.ge/favicon.ico"
+    FlatPlatform.BINEBI -> "https://binebi.ge/favicon.ico"
+    FlatPlatform.KRISHA ->
+        "https://krisha.kz/static/frontend/favicons/apple-touch-icon.png"
+
+    FlatPlatform.OLX_KZ -> "https://www.olx.kz/favicon.ico"
+    FlatPlatform.KN -> "https://www.kn.kz/favicon/favicon-32x32.png"
 }

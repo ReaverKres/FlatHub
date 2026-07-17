@@ -3,6 +3,7 @@ package listing.ge.ss
 import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
+import entities.TbilisiMetroStations
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.serialization.json.JsonObject
@@ -46,11 +47,13 @@ object SsFlatMapper {
         val images = item["appImages"].asArrayOrNull()?.mapNotNull { img ->
             img.asObjectOrNull()?.get("fileName").contentOrNull()?.replace("_Thumb", "")
         }
-        val metro = item["nearbySubwayStations"].asArrayOrNull()
-            ?.firstOrNull()
-            ?.asObjectOrNull()
-            ?.get("stationTitle")
-            .contentOrNull()
+        val metro = TbilisiMetroStations.canonicalizeStationTitle(
+            item["nearbySubwayStations"].asArrayOrNull()
+                ?.firstOrNull()
+                ?.asObjectOrNull()
+                ?.get("stationTitle")
+                .contentOrNull()
+        )
         val created = item["createDate"].contentOrNull()
             ?: item["orderDate"].contentOrNull()
         val rooms = item["numberOfBedrooms"].intOrNull()

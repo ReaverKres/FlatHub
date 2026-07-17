@@ -9,7 +9,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 
 data class Country(val country: CountryCode, val allCities: List<City>)
 
-enum class CountryCode { BY, PL, GE }
+enum class CountryCode { BY, PL, GE, KZ }
 
 enum class CityCode {
     // Belarus
@@ -21,6 +21,9 @@ enum class CityCode {
 
     // Georgia (MVP)
     TBILISI, BATUMI, KUTAISI, RUSTAVI,
+
+    // Kazakhstan (MVP)
+    ALMATY, ASTANA, SHYMKENT, KARAGANDA,
 }
 
 object Location {
@@ -45,5 +48,9 @@ object Location {
         CityCode.BATUMI -> "batumi"
         CityCode.KUTAISI -> "kutaisi"
         CityCode.RUSTAVI -> "rustavi"
+        CityCode.ALMATY -> "almaty"
+        CityCode.ASTANA -> "astana"
+        CityCode.SHYMKENT -> "shymkent"
+        CityCode.KARAGANDA -> "karaganda"
     }
 }

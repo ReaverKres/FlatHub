@@ -15,4 +15,7 @@ enum class ConfigFields(val param: String) {
 
     /** Comma-separated FlatPlatform names for Georgia, e.g. `SS_GE,LIVO`. Empty = all. */
     EnabledPlatformsGe("enabled_platforms_ge"),
+
+    /** Comma-separated FlatPlatform names for Kazakhstan, e.g. `KRISHA,OLX_KZ,KN`. Empty = all. */
+    EnabledPlatformsKz("enabled_platforms_kz"),
 }

@@ -116,7 +116,13 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
 
     FlatPlatform.SS_GE,
     FlatPlatform.LIVO,
+    FlatPlatform.BINEBI,
         -> "GEL"
+
+    FlatPlatform.KRISHA,
+    FlatPlatform.OLX_KZ,
+    FlatPlatform.KN,
+        -> "KZT"
 
     else -> "BYN"
 }

@@ -40,6 +40,8 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 ConfigFields.EnabledPlatformsPl.param to "",
                 // Empty = all registered GE platforms (SS.ge, Livo).
                 ConfigFields.EnabledPlatformsGe.param to "",
+                // Empty = all registered KZ platforms (Krisha, OLX.kz, kn.kz).
+                ConfigFields.EnabledPlatformsKz.param to "",
             )
         )
     }

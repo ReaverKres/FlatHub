@@ -50,9 +50,8 @@ object LivoFlatMapper {
         base: AppFlat? = null,
     ): AppFlat {
         val id = item["id"].longOrNull() ?: error("missing id")
-        val slug = item["dynamic_slug"].contentOrNull()
-        val detailUrl = slug?.let { "https://livo.ge/ka/statement/$it" }
-            ?: "https://livo.ge/ka/statement/$id"
+        // Public page is /ka/statement/{id} (slug path 404s).
+        val detailUrl = "https://livo.ge/ka/statement/$id"
         val priceObj = item["price"].asObjectOrNull()
         // currency id 1 = GEL, 2 = USD (observed)
         val priceGel = priceObj?.get("1").asObjectOrNull()?.get("price_total").doubleOrNull()
@@ -72,7 +71,13 @@ object LivoFlatMapper {
             ?: item["bedroom"].contentOrNull()?.toIntOrNull()
         val created = item["last_updated"].contentOrNull()
         val title = item["dynamic_title"].contentOrNull()
-        val description = item["description"].contentOrNull() ?: title ?: base?.description
+        val comment = item["comment"].contentOrNull()
+        val description = item["description"].contentOrNull()
+            ?: comment
+            ?: title
+            ?: base?.description
+        val phonesFromText = extractPhones(comment ?: description)
+        val ownerName = item["user_title"].contentOrNull() ?: base?.contactInformation?.ownerName
         val street = item["address"].contentOrNull()
         val district = item["urban_name"].contentOrNull()
             ?: item["district_name"].contentOrNull()
@@ -85,8 +90,11 @@ object LivoFlatMapper {
             adId = id,
             adType = adType,
             flatDevInfo = FlatDevInfo(isDetailData = detailLoaded, isDetailLoaded = detailLoaded),
-            contactInformation = base?.contactInformation
-                ?: ContactInformation(phones = null, ownerName = null),
+            contactInformation = ContactInformation(
+                phones = phonesFromText
+                    ?: base?.contactInformation?.phones,
+                ownerName = ownerName,
+            ),
             coordinates = coords,
             commercialInfo = null,
             savedInFavorites = base?.savedInFavorites == true,
@@ -135,5 +143,19 @@ object LivoFlatMapper {
             if (it.endsWith('Z') || '+' in it || it.count { ch -> ch == '-' } >= 3) it else "${it}Z"
         }
         return runCatching { Instant.parse(normalized) }.getOrNull()
+    }
+
+    private fun extractPhones(text: String?): List<String>? {
+        if (text.isNullOrBlank()) return null
+        val found = Regex("""(?:\+?995)?[\s-]?(5\d{2})[\s-]?(\d{2})[\s-]?(\d{2})[\s-]?(\d{2})""")
+            .findAll(text)
+            .map { m ->
+                val digits =
+                    (m.groupValues[1] + m.groupValues[2] + m.groupValues[3] + m.groupValues[4])
+                "+995$digits"
+            }
+            .distinct()
+            .toList()
+        return found.ifEmpty { null }
     }
 }

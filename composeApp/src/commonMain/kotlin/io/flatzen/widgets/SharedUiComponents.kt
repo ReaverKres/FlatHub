@@ -46,13 +46,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.binebi32
 import flatzen.composeapp.generated.resources.domovita32
 import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.gratka32
+import flatzen.composeapp.generated.resources.kn32
+import flatzen.composeapp.generated.resources.krisha32
 import flatzen.composeapp.generated.resources.kufar32
 import flatzen.composeapp.generated.resources.livo32
 import flatzen.composeapp.generated.resources.morizon32
+import flatzen.composeapp.generated.resources.olxkz32
 import flatzen.composeapp.generated.resources.olxpl32
 import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.otodom32
@@ -333,6 +337,10 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.MORIZON -> painterResource(Res.drawable.morizon32)
         FlatPlatform.SS_GE -> painterResource(Res.drawable.ssge32)
         FlatPlatform.LIVO -> painterResource(Res.drawable.livo32)
+        FlatPlatform.BINEBI -> painterResource(Res.drawable.binebi32)
+        FlatPlatform.KRISHA -> painterResource(Res.drawable.krisha32)
+        FlatPlatform.OLX_KZ -> painterResource(Res.drawable.olxkz32)
+        FlatPlatform.KN -> painterResource(Res.drawable.kn32)
     }
 }
 

@@ -21,7 +21,7 @@ class LivoApiClient(
         cityId: Int,
         dealType: Int,
         realEstateType: Int = REAL_ESTATE_APARTMENT,
-        perPage: Int = 20,
+        perPage: Int = 40,
         priceFrom: Int? = null,
         priceTo: Int? = null,
         /** 1 = GEL, 2 = USD (observed) */

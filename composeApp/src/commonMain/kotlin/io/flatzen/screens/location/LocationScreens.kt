@@ -236,7 +236,12 @@ fun LocationScreen() {
             }
 
             val selectedCityCode = state.filters.location?.selectedCity?.code
-            if (selectedCityCode == CityCode.MINSK || selectedCityCode == CityCode.WARSZAWA) {
+            if (
+                selectedCityCode == CityCode.MINSK ||
+                selectedCityCode == CityCode.WARSZAWA ||
+                selectedCityCode == CityCode.TBILISI ||
+                selectedCityCode == CityCode.ALMATY
+            ) {
                 ElevatedCard(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
                 }) {
@@ -628,12 +633,15 @@ fun MetroSelectScreen(
                 filterContainer.intent(FilterScreenAction.UpdateWithAnyMetro(it))
             }
 
-            val isWarsaw =
-                state.filters.location?.selectedCity?.code == CityCode.WARSZAWA
+            val useNumberedMetroLines = when (state.filters.location?.selectedCity?.code) {
+                CityCode.WARSZAWA, CityCode.TBILISI -> true
+                // Almaty is a single line — keep "blue" title, not M1/M2.
+                else -> false
+            }
             val lineItems = listOf(
                 MetroLineUi(
                     line = MetroLineState.BLUE,
-                    title = if (isWarsaw) {
+                    title = if (useNumberedMetroLines) {
                         stringResource(Res.string.location_metro_line_m1)
                     } else {
                         stringResource(Res.string.location_metro_line_blue)
@@ -644,7 +652,7 @@ fun MetroSelectScreen(
                 ),
                 MetroLineUi(
                     line = MetroLineState.RED,
-                    title = if (isWarsaw) {
+                    title = if (useNumberedMetroLines) {
                         stringResource(Res.string.location_metro_line_m2)
                     } else {
                         stringResource(Res.string.location_metro_line_red)
