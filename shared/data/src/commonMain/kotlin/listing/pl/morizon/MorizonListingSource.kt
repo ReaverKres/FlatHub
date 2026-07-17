@@ -35,14 +35,21 @@ class MorizonListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val url = MorizonCities.listingUrl(
-                city = filter.location?.city,
-                adType = filter.adType,
-                isCommercial = filter.isCommercial,
-                page = page,
-            )
-            val json = api.searchProperties(url)
-            NetworkResponseWrapper.success(MorizonFlatMapper.mapSearch(json, filter.adType))
+            val flats = listing.core.FeedDelayListBoost.fetchPages(
+                startPage = page,
+                platform = platform,
+                key = { it.adId },
+            ) { p ->
+                val url = MorizonCities.listingUrl(
+                    city = filter.location?.city,
+                    adType = filter.adType,
+                    isCommercial = filter.isCommercial,
+                    page = p,
+                )
+                val json = api.searchProperties(url)
+                MorizonFlatMapper.mapSearch(json, filter.adType)
+            }
+            NetworkResponseWrapper.success(flats)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

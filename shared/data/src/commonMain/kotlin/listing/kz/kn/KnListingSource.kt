@@ -12,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import listing.core.FeedDelayListBoost
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
 import listing.core.flowById
@@ -46,12 +47,19 @@ class KnListingSource(
                 is AdType.DAILY -> "arenda-kvartir-posutochno"
                 else -> "arenda-kvartir"
             }
-            val html = api.fetchSearchHtml(
-                cityAlias = KnCities.cityAlias(filter.location?.city),
-                section = section,
-                page = page,
-            )
-            NetworkResponseWrapper.success(KnHtmlParser.parseSearch(html, filter.adType))
+            val flats = FeedDelayListBoost.fetchPages(
+                startPage = page,
+                platform = platform,
+                key = { it.adId },
+            ) { p ->
+                val html = api.fetchSearchHtml(
+                    cityAlias = KnCities.cityAlias(filter.location?.city),
+                    section = section,
+                    page = p,
+                )
+                KnHtmlParser.parseSearch(html, filter.adType)
+            }
+            NetworkResponseWrapper.success(flats)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

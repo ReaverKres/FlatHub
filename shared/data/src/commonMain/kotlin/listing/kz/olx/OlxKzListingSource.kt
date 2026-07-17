@@ -38,7 +38,7 @@ class OlxKzListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val limit = PAGE_SIZE
+            val limit = listing.core.FeedDelayListBoost.apiPageSize(platform, PAGE_SIZE)
             val offset = (page - 1) * limit
             val ids = OlxKzCities.idsFor(filter.location?.city)
             val categoryId = OlxKzCities.categoryId(isSale = filter.adType is AdType.SALE)

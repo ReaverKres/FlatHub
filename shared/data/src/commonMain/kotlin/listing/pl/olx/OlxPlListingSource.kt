@@ -38,7 +38,7 @@ class OlxPlListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val limit = PAGE_SIZE
+            val limit = listing.core.FeedDelayListBoost.apiPageSize(platform, PAGE_SIZE)
             val offset = (page - 1) * limit
             val ids = OlxPlCities.idsFor(filter.location?.city)
             val categoryId = OlxPlCities.categoryId(

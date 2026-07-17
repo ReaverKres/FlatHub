@@ -125,7 +125,9 @@ class FlatDetailContainer(
                         is LCE.Error -> updateState {
                             copy(
                                 isLoading = false,
-                                error = lce.message,
+                                error = lce.message
+                                    ?: lce.throwable.message
+                                    ?: lce.throwable.toString(),
                                 flat = null
                             )
                         }

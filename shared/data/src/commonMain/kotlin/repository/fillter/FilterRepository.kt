@@ -14,6 +14,12 @@ interface FilterRepository {
     val lastNetworkFilter: CommonFilterRequestModel?
     var currentHomePage: Int
 
+    /**
+     * When true, high-volume sources fetch ~2 pages / larger API page size
+     * so non-premium feed-delay filter still leaves enough ads on first load.
+     */
+    var listFetchBoostActive: Boolean
+
     suspend fun updateFilter(
         commonFilterRequestModel: CommonFilterRequestModel,
         doNetworkCall: Boolean

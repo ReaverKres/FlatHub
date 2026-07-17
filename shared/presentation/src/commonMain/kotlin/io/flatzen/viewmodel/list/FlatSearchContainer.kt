@@ -11,6 +11,7 @@ import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.firebase.ConfigFields
 import io.flatzen.firebase.ConfigFieldsChecker
+import io.flatzen.monetization.tier.UserTier
 import io.flatzen.monetization.tier.UserTierProvider
 import io.flatzen.monetization.tier.applyFeedDelayFilter
 import io.flatzen.navigation.FlatHubCommand
@@ -180,7 +181,13 @@ class FlatSearchContainer(
                                         description = flatFromDb.description.orEmpty().ifEmpty {
                                             flatOnScreen.description
                                         },
-                                        imageUrls = (flatFromDb.imageUrls ?: flatOnScreen.imageUrls).toImmutableList()
+                                        imageUrls = (flatFromDb.imageUrls ?: flatOnScreen.imageUrls)
+                                            .toImmutableList(),
+                                        // CoordEnricher writes lat/lng to Room; map markers need this.
+                                        coordinates = flatFromDb.coordinates
+                                            ?: flatOnScreen.coordinates,
+                                        isDetailDataLoaded = flatFromDb.flatDevInfo.isDetailLoaded ||
+                                                flatOnScreen.isDetailDataLoaded,
                                     )
                                 } else flatOnScreen
                             }.toImmutableList()
@@ -387,6 +394,10 @@ class FlatSearchContainer(
         isLoadMore: Boolean,
         isRefreshing: Boolean
     ) {
+        // First page only: inflate high-volume sources so delay filter still leaves ads.
+        filterRepository.listFetchBoostActive = !isLoadMore &&
+                userTierProvider.currentTier() != UserTier.PREMIUM &&
+                userTierProvider.feedDelayMinutes() > 0
         if (!connectionMonitor.isNetworkAvailable.first()) {
             mergedRepository.getAllFlatsFromLocalDb().asLCE().collect { lce ->
                 when (lce) {

@@ -43,12 +43,19 @@ class BinebiListingSource(
                 is AdType.DAILY -> BinebiApiClient.DEAL_DAILY
                 else -> BinebiApiClient.DEAL_RENT
             }
-            val json = api.fetchSearch(
-                page = page,
-                cityId = BinebiCities.cityId(filter.location?.city),
-                dealType = dealType,
-            )
-            NetworkResponseWrapper.success(BinebiFlatMapper.mapSearch(json, filter.adType))
+            val flats = listing.core.FeedDelayListBoost.fetchPages(
+                startPage = page,
+                platform = platform,
+                key = { it.adId },
+            ) { p ->
+                val json = api.fetchSearch(
+                    page = p,
+                    cityId = BinebiCities.cityId(filter.location?.city),
+                    dealType = dealType,
+                )
+                BinebiFlatMapper.mapSearch(json, filter.adType)
+            }
+            NetworkResponseWrapper.success(flats)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

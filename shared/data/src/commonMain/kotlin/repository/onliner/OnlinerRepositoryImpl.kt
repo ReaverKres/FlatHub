@@ -17,10 +17,14 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.parsing.ParseException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import listing.core.FeedDelayListBoost
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import metro.MetroStationsGeoCatalog
@@ -72,7 +76,7 @@ class OnlinerRepositoryImpl(
             filter.pricePerSquare?.priceFrom
         } else null
 
-        val params = OnlinerApi.createParams(
+        val baseParams = OnlinerApi.createParams(
             minPrice = priceMin?.roundToInt(),
             maxPrice = priceMax?.roundToInt(),
             metroLines = metroLines,
@@ -94,23 +98,34 @@ class OnlinerRepositoryImpl(
                 }
             },
         ) {
-            val response = if (filter.isRentType) {
-                val rentTypes: List<String> = when {
-                    filter.roomOnly -> listOf("room")
-                    else -> filter.numberOfRooms?.map {
-                        if (it == 1) "${it}_room" else "${it}_rooms"
-                    } ?: emptyList()
-                }
-                api.searchRentFlats(params, rentTypes)
-            } else {
-                val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
-                api.searchSaleFlats(params, numberOfRooms)
+            // Onliner has no page-size query — parallel pages when feed-delay boost is on.
+            val extra = FeedDelayListBoost.htmlExtraPages(FlatPlatform.ONLINER)
+            val pages = (currentPage..(currentPage + extra)).toList()
+            val apartments = coroutineScope {
+                pages.map { page ->
+                    async {
+                        val params = baseParams.toMutableMap().apply { put("page", page) }
+                        val response = if (filter.isRentType) {
+                            val rentTypes: List<String> = when {
+                                filter.roomOnly -> listOf("room")
+                                else -> filter.numberOfRooms?.map {
+                                    if (it == 1) "${it}_room" else "${it}_rooms"
+                                } ?: emptyList()
+                            }
+                            api.searchRentFlats(params, rentTypes)
+                        } else {
+                            val numberOfRooms = filter.numberOfRooms?.toList() ?: emptyList()
+                            api.searchSaleFlats(params, numberOfRooms)
+                        }
+                        response.apartments?.filterNotNull().orEmpty()
+                    }
+                }.awaitAll().flatten()
+            }.distinctBy { it.id }
+
+            val onlinerFlatList = apartments.map { onlinerResponseMapper.map(it) }.filter {
+                filter.isRoomForRent || it.rooms != 0
             }
-            val onlinerFlatList = response.apartments
-                ?.filterNotNull()?.map { onlinerResponseMapper.map(it) }?.filter {
-                    if (filter.isRoomForRent.not() && it.rooms == 0) false else true
-                }
-            if (onlinerFlatList != null) {
+            if (onlinerFlatList.isNotEmpty()) {
                 emitFlats(onlinerFlatList, emptyIfNoItems = false)
             } else {
                 emit(networkEmptyList)

@@ -23,6 +23,7 @@ class FilterRepositoryImpl(
     override var lastNetworkFilter: CommonFilterRequestModel? = null
 
     override var currentHomePage: Int = 1
+    override var listFetchBoostActive: Boolean = false
 
     override suspend fun updateFilter(
         commonFilterRequestModel: CommonFilterRequestModel,

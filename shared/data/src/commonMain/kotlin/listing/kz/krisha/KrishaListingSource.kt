@@ -10,6 +10,7 @@ import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import listing.core.FeedDelayListBoost
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
 import listing.core.flowById
@@ -43,15 +44,22 @@ class KrishaListingSource(
                 ?.filter { it > 0 }
                 ?.takeIf { it.size == 1 }
                 ?.firstOrNull()
-            val html = api.fetchSearchHtml(
-                cityAlias = KrishaCities.cityAlias(filter.location?.city),
-                isSale = filter.adType is AdType.SALE,
-                page = page,
-                rooms = rooms,
-                priceFrom = filter.priceFull?.priceFrom?.toInt(),
-                priceTo = filter.priceFull?.priceTo?.toInt(),
-            )
-            NetworkResponseWrapper.success(KrishaHtmlParser.parseSearch(html, filter.adType))
+            val flats = FeedDelayListBoost.fetchPages(
+                startPage = page,
+                platform = platform,
+                key = { it.adId },
+            ) { p ->
+                val html = api.fetchSearchHtml(
+                    cityAlias = KrishaCities.cityAlias(filter.location?.city),
+                    isSale = filter.adType is AdType.SALE,
+                    page = p,
+                    rooms = rooms,
+                    priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                    priceTo = filter.priceFull?.priceTo?.toInt(),
+                )
+                KrishaHtmlParser.parseSearch(html, filter.adType)
+            }
+            NetworkResponseWrapper.success(flats)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

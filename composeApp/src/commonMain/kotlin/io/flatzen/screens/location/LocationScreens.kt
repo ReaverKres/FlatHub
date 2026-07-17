@@ -162,6 +162,7 @@ fun LocationScreen() {
             modifier = Modifier.padding(padding).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Spacer(Modifier.height(12.dp))
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()

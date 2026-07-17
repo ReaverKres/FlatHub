@@ -50,6 +50,7 @@ class LivoListingSource(
                 page = page,
                 cityId = LivoCities.cityId(filter.location?.city),
                 dealType = dealType,
+                perPage = listing.core.FeedDelayListBoost.apiPageSize(platform, base = 40),
                 priceFrom = filter.priceFull?.priceFrom?.toInt(),
                 priceTo = filter.priceFull?.priceTo?.toInt(),
             )

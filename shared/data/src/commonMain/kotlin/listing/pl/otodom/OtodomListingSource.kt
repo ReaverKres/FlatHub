@@ -52,6 +52,7 @@ class OtodomListingSource(
                 page = page,
                 priceMin = filter.priceFull?.priceFrom?.toInt(),
                 priceMax = filter.priceFull?.priceTo?.toInt(),
+                limit = listing.core.FeedDelayListBoost.apiPageSize(platform, base = 36),
             )
             NetworkResponseWrapper.success(OtodomFlatMapper.mapSearchAds(json, adType))
         } catch (e: CancellationException) {

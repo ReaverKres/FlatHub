@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import listing.core.FeedDelayListBoost
 import mappers.base.AdditionalParamMapper
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.emitFlats
@@ -112,6 +113,7 @@ class KufarRepositoryImpl(
             rooms = numberOfRoms,
             cursor = pageCursor,
             geoTag = city,
+            pageSize = FeedDelayListBoost.apiPageSize(FlatPlatform.KUFAR, base = 30),
             sortOption = filter.sortOption,
             commercialRequestModel = filter.commercial
         )
@@ -161,6 +163,7 @@ class KufarRepositoryImpl(
             rooms = numberOfRoms,
             priceFull = filter.priceFull,
             geoTag = city,
+            pageSize = FeedDelayListBoost.apiPageSize(FlatPlatform.KUFAR, base = 30),
             sortOption = filter.sortOption,
             dateFrom = filter.bookingDatesFilter?.dateFrom?.toKufarDateDays(),
             dateTo = filter.bookingDatesFilter?.dateTo?.toKufarDateDays()

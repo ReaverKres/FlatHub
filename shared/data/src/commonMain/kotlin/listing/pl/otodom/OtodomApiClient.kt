@@ -30,10 +30,11 @@ class OtodomApiClient(
         page: Int,
         priceMin: Int?,
         priceMax: Int?,
+        limit: Int = 36,
     ): JsonObject {
         val buildId = ensureBuildId()
         val query = buildString {
-            append("page=$page&limit=36")
+            append("page=$page&limit=$limit")
             if (priceMin != null) append("&priceMin=$priceMin")
             if (priceMax != null) append("&priceMax=$priceMax")
         }

@@ -35,15 +35,22 @@ class GratkaListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
-            val url = GratkaCities.listingUrl(
-                city = filter.location?.city,
-                adType = filter.adType,
-                isRoom = filter.isRoomForRent || filter.roomOnly,
-                isCommercial = filter.isCommercial,
-                page = page,
-            )
-            val json = api.searchProperties(url)
-            NetworkResponseWrapper.success(GratkaFlatMapper.mapSearch(json, filter.adType))
+            val flats = listing.core.FeedDelayListBoost.fetchPages(
+                startPage = page,
+                platform = platform,
+                key = { it.adId },
+            ) { p ->
+                val url = GratkaCities.listingUrl(
+                    city = filter.location?.city,
+                    adType = filter.adType,
+                    isRoom = filter.isRoomForRent || filter.roomOnly,
+                    isCommercial = filter.isCommercial,
+                    page = p,
+                )
+                val json = api.searchProperties(url)
+                GratkaFlatMapper.mapSearch(json, filter.adType)
+            }
+            NetworkResponseWrapper.success(flats)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

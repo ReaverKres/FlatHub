@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
+import listing.core.FeedDelayListBoost
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.emitDedupedFlats
 import repository.fillter.FilterRepository
@@ -49,7 +50,7 @@ class DomovitaRepositoryImpl(
         val request = DomovitaApi.createRequestParams(
             locationSefAlias = city,
             page = currentPage,
-            limit = 20,
+            limit = FeedDelayListBoost.apiPageSize(FlatPlatform.DOMOVITA, base = 20),
             priceFull = filter.priceFull,
             pricePerSquare = if (filter.isPricePerSquareNeeded) filter.pricePerSquare else null,
             rooms = filter.numberOfRooms,

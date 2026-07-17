@@ -53,15 +53,20 @@ class CoordEnricher(
         val source = registry.byPlatform(flat.flatPlatform) ?: return
         val enriched = runCatching {
             source.detail(flat.adId).lastOrNull()
-        }.getOrNull()
+        }.getOrNull() ?: return
 
-        val withFlag = (enriched ?: flat).copy(
-            flatDevInfo = (enriched?.flatDevInfo ?: flat.flatDevInfo).copy(
-                coordsEnriched = true,
+        val coords = enriched.coordinates ?: flat.coordinates
+        val detailDone = enriched.flatDevInfo.isDetailLoaded
+        // Only mark done when we got coords or a completed detail (no coords on site).
+        // Soft-fail without progress → leave unset so a later search can retry.
+        if (coords == null && !detailDone) return
+
+        flatsDao.upsert(
+            enriched.copy(
+                coordinates = coords,
+                flatDevInfo = enriched.flatDevInfo.copy(coordsEnriched = true),
             ),
-            coordinates = enriched?.coordinates ?: flat.coordinates,
         )
-        flatsDao.upsert(withFlag)
     }
 
     companion object {

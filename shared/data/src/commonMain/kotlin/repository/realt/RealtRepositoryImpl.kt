@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
+import listing.core.FeedDelayListBoost
 import mappers.base.ResponseToEntitiesFlatMapper
 import repository.emitDedupedFlats
 import repository.fillter.FilterRepository
@@ -122,7 +123,11 @@ class RealtRepositoryImpl(
                                 priceType = priceType
                             ),
                             pagination = PaginationRequestRealt(
-                                page = currentPage, pageSize = 30
+                                page = currentPage,
+                                pageSize = FeedDelayListBoost.apiPageSize(
+                                    FlatPlatform.REALT,
+                                    base = 30,
+                                ),
                             ),
                             sort = when (filter.sortOption) {
                                 FlatSort.NEWEST_FIRST -> listOf(

@@ -30,6 +30,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import listing.core.CoordEnricher
+import listing.core.FeedDelayListBoost
 import listing.core.ListingSource
 import listing.core.ListingSourceRegistry
 import metro.MetroProximityEnricher
@@ -64,6 +65,7 @@ class MergedRepositoryImpl(
         filter: CommonFilterRequestModel,
         currentPage: Int?,
     ): Flow<MergedFlatResponse> = flow {
+        FeedDelayListBoost.active = filterRepository.listFetchBoostActive
         val sources = listingSourceRegistry.forFilter(filter)
         val searchedPlatforms = sources.map { it.platform }
         val networkFlats = supervisorScope {
