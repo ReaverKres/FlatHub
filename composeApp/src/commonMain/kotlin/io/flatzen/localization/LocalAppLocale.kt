@@ -16,11 +16,18 @@ expect object LocalAppLocale {
 
 /**
  * Survives [key]-based remounts inside [AppLocaleProvider], so UI that reads
- * the selected language (e.g. MoreScreen selector) does not flash SYSTEM while
+ * the selected language (e.g. LanguageScreen) does not flash SYSTEM while
  * repository Flows re-subscribe with their initialValue.
  */
 val LocalAppLanguage = compositionLocalOf { AppLanguage.SYSTEM }
 
+/**
+ * Provides locale and remounts content when [AppLanguage.tag] changes so
+ * Compose resources pick up the new language.
+ *
+ * Remount unsubscribes Home briefly; feed search must run on the store pipeline
+ * ([io.flatzen.viewmodel.list.FlatSearchContainer]) so it is not cancelled mid-flight.
+ */
 @Composable
 fun AppLocaleProvider(
     language: AppLanguage,

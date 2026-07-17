@@ -27,6 +27,7 @@ sealed interface FlatHubCommand {
     data object OpenMetroSelect : FlatHubCommand
     data object OpenDistrictSelect : FlatHubCommand
     data object OpenPremium : FlatHubCommand
+    data object OpenLanguage : FlatHubCommand
     data object NavigateBack : FlatHubCommand
 }
 

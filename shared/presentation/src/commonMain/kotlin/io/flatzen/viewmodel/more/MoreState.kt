@@ -28,6 +28,8 @@ sealed interface MoreIntent : MVIIntent {
     data object OpenFaq : MoreIntent
     data object OpenReferral : MoreIntent
     data object OpenPremium : MoreIntent
+    data object OpenLanguage : MoreIntent
+    data object NavigateBack : MoreIntent
 }
 
 // Action — no side effects for More screen

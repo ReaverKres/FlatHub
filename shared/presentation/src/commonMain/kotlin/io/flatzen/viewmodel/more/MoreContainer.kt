@@ -45,6 +45,8 @@ class MoreContainer(
                 MoreIntent.OpenFaq -> navigator.navigate(FlatHubCommand.OpenFaq)
                 MoreIntent.OpenReferral -> navigator.navigate(FlatHubCommand.OpenReferral)
                 MoreIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
+                MoreIntent.OpenLanguage -> navigator.navigate(FlatHubCommand.OpenLanguage)
+                MoreIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
             }
         }
     }

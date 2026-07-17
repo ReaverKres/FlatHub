@@ -20,6 +20,7 @@ val navigationConfig = SavedStateConfiguration {
             subclass(Route.MetroSelect::class, Route.MetroSelect.serializer())
             subclass(Route.DistrictSelect::class, Route.DistrictSelect.serializer())
             subclass(Route.Faq::class, Route.Faq.serializer())
+            subclass(Route.Language::class, Route.Language.serializer())
             subclass(Route.Referral::class, Route.Referral.serializer())
             subclass(Route.Premium::class, Route.Premium.serializer())
             subclass(Route.Notifications::class, Route.Notifications.serializer())

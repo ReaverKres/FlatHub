@@ -22,8 +22,10 @@ import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
 import io.flatzen.viewmodel.sharedstates.SearchErrorDialogState
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
@@ -32,6 +34,7 @@ import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.reduce
 import pro.respawn.flowmvi.plugins.whileSubscribed
 import repository.fillter.FilterRepository
@@ -56,9 +59,23 @@ class FlatSearchContainer(
     private var noFlatsToLoadMore: Boolean = false
     private var isNetworkAvailable: Boolean = true
 
+    /** Survives UI remounts (e.g. language key); only newer search generations clear loading. */
+    private var searchJob: Job? = null
+    private var searchGeneration: Int = 0
+
     override val store = store(
         initial = FlatListScreenState.Initial
     ) {
+        // Store-scoped: must not run inside whileSubscribed — language remount cancels that
+        // scope mid-flight and leaves isLoading=true with an empty list.
+        init {
+            launch {
+                filterRepository.forceReloadFlow.collect {
+                    noFlatsToLoadMore = false
+                    launchSearch { loadAllFlatsFromFilterUpdate() }
+                }
+            }
+        }
         whileSubscribed {
             connectionMonitor.isNetworkAvailable
                 .onEach { isNetworkAvailable = it }
@@ -70,12 +87,6 @@ class FlatSearchContainer(
                 .collect { newFilters ->
                     noFlatsToLoadMore = false
                     updateState { copy(isAnyFilterApplied = newFilters.commonFilterRequestModel != CommonFilterRequestModel()) }
-                }
-        }
-        whileSubscribed {
-            filterRepository.forceReloadFlow
-                .collect {
-                    loadAllFlatsFromFilterUpdate()
                 }
         }
         whileSubscribed {
@@ -138,6 +149,31 @@ class FlatSearchContainer(
                 FlatListIntent.OpenNotifications -> navigator.navigate(FlatHubCommand.OpenNotifications())
                 FlatListIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
             }
+        }
+    }
+
+    /**
+     * Runs search on the store pipeline (survives Home unsubscribe / locale remount).
+     * Cancels the previous search; only the active generation clears loading on cancel.
+     */
+    private fun PipeCtx.launchSearch(block: suspend PipeCtx.() -> Unit) {
+        searchJob?.cancel()
+        val generation = ++searchGeneration
+        searchJob = launch {
+            try {
+                block()
+            } catch (e: CancellationException) {
+                if (generation == searchGeneration) {
+                    clearLoadingFlags()
+                }
+                throw e
+            }
+        }
+    }
+
+    private suspend fun PipeCtx.clearLoadingFlags() {
+        updateState {
+            copy(isLoading = false, isLoadingMore = false, isRefreshing = false)
         }
     }
 
@@ -204,18 +240,34 @@ class FlatSearchContainer(
     }
 
     private suspend fun PipeCtx.handleScreenVisible() {
+        var triggeredNetworkReload = false
         val lastNet = filterRepository.lastNetworkFilter
         val selectedFilter = filterRepository.getSelectedSavedFilter()
         if (selectedFilter != null && selectedFilter.filterData != lastNet) {
             filterRepository.applySavedFilter(selectedFilter, true)
+            triggeredNetworkReload = true
         } else {
             if (filterRepository.cashedFilterFlow.replayCache.isEmpty()) {
                 filterRepository.updateFilter(CommonFilterRequestModel(), true)
+                triggeredNetworkReload = true
             } else {
                 val last = filterRepository.lastFilter()
                 if (lastNet != last) {
                     filterRepository.updateFilter(last, true)
+                    triggeredNetworkReload = true
                 }
+            }
+        }
+
+        // Recover from cancelled mid-flight search (locale remount / unsubscribe)
+        // when filters did not change and therefore forceReload was not emitted.
+        if (!triggeredNetworkReload) {
+            var stuckLoading = false
+            withState {
+                stuckLoading = isLoading && !isLoadingMore && searchJob?.isActive != true
+            }
+            if (stuckLoading) {
+                launchSearch { loadAllFlatsFromFilterUpdate() }
             }
         }
 
@@ -271,7 +323,7 @@ class FlatSearchContainer(
             action(FlatListAction.ScrollToTopEffect)
         }
 
-        loadAllFlats(intent.isLoadMore, intent.isRefreshing)
+        launchSearch { loadAllFlats(intent.isLoadMore, intent.isRefreshing) }
     }
 
     private suspend fun PipeCtx.handleClickOnFavorite(intent: FlatListIntent.ClickOnFavorite) {
@@ -412,7 +464,7 @@ class FlatSearchContainer(
                         )
                     }
 
-                    is LCE.Error -> updateState { copy(isRefreshing = false) }
+                    is LCE.Error -> clearLoadingFlags()
                     is LCE.Content -> applyFlatsLoaded(
                         lce.value.filterForCurrentMarket(),
                         isLoadMore,
@@ -431,7 +483,7 @@ class FlatSearchContainer(
                         )
                     }
 
-                    is LCE.Error -> updateState { copy(isRefreshing = false) }
+                    is LCE.Error -> clearLoadingFlags()
                     is LCE.Content -> {
                         val response = lceResult.value
                         applyFlatsLoaded(response.flats, isLoadMore, isRefreshing)

@@ -59,6 +59,9 @@ sealed interface Route : NavKey {
     data object Faq : Route
 
     @Serializable
+    data object Language : Route
+
+    @Serializable
     data object Referral : Route
 
     @Serializable

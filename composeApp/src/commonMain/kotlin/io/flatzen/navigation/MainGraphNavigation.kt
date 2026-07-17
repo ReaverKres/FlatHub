@@ -67,6 +67,7 @@ import io.flatzen.screens.location.LocationScreen
 import io.flatzen.screens.location.MetroSelectScreen
 import io.flatzen.screens.map.MapScreen
 import io.flatzen.screens.more.FaqScreen
+import io.flatzen.screens.more.LanguageScreen
 import io.flatzen.screens.more.MoreScreen
 import io.flatzen.screens.more.ReferralScreen
 import io.flatzen.screens.premium.PremiumScreen
@@ -259,6 +260,7 @@ private fun MainGraphScaffold(
                 entry<Route.MetroSelect> { MetroSelectScreen() }
                 entry<Route.DistrictSelect> { DistrictSelectScreen() }
                 entry<Route.Faq> { FaqScreen() }
+                entry<Route.Language> { LanguageScreen() }
                 entry<Route.Referral> { ReferralScreen() }
                 entry<Route.Premium> { PremiumScreen() }
                 entry<Route.Notifications> { key ->
@@ -344,6 +346,7 @@ private fun handleFlatHubCommand(command: FlatHubCommand, navigator: Navigator) 
             )
 
         FlatHubCommand.OpenFaq -> navigator.navigate(Route.Faq)
+        FlatHubCommand.OpenLanguage -> navigator.navigate(Route.Language)
         FlatHubCommand.OpenReferral -> navigator.navigate(Route.Referral)
         FlatHubCommand.OpenLocation -> navigator.navigate(Route.Location)
         FlatHubCommand.OpenCitySelect -> navigator.navigate(Route.CitySelect)
