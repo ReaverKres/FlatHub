@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,12 +29,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -43,8 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.back
+import flatzen.composeapp.generated.resources.cancel
 import flatzen.composeapp.generated.resources.detail_about_apartment
 import flatzen.composeapp.generated.resources.detail_about_commercial
 import flatzen.composeapp.generated.resources.detail_address
@@ -86,29 +93,47 @@ import flatzen.composeapp.generated.resources.detail_year_suffix
 import flatzen.composeapp.generated.resources.filter_property_type
 import flatzen.composeapp.generated.resources.filter_rooms_count
 import flatzen.composeapp.generated.resources.list_rooms_suffix
+import flatzen.composeapp.generated.resources.show_original
+import flatzen.composeapp.generated.resources.translate_listing
+import flatzen.composeapp.generated.resources.translate_to_title
+import flatzen.composeapp.generated.resources.translation_done
+import flatzen.composeapp.generated.resources.translation_failed
+import flatzen.composeapp.generated.resources.translation_quota_exhausted
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.theme.AppLanguage
+import io.flatzen.commoncomponents.theme.resolveTranslationTargetTag
+import io.flatzen.commoncomponents.theme.shouldAutoTranslateListing
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
+import io.flatzen.localization.LocalAppLanguage
+import io.flatzen.localization.LocalAppLocale
 import io.flatzen.screens.map.RoomMarker
+import io.flatzen.screens.more.labelRes
 import io.flatzen.themes.FlatHubTheme
+import io.flatzen.utils.ToastDurationType
+import io.flatzen.utils.ToastLauncher
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.shareLauncher
 import io.flatzen.viewmodel.detailad.ContactInformationUi
+import io.flatzen.viewmodel.detailad.FlatDetailAction
 import io.flatzen.viewmodel.detailad.FlatDetailContainer
 import io.flatzen.viewmodel.detailad.FlatDetailIntent
+import io.flatzen.viewmodel.detailad.TranslationToastKey
 import io.flatzen.viewmodel.detailad.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.FullscreenPhotoViewer
 import io.flatzen.widgets.OpenInMapButton
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.snapScrollTo
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
 import pro.respawn.flowmvi.compose.dsl.subscribe
+import repository.userpreferences.UserPreferencesRepository
 import io.flatzen.common.localization.stringResource as localizedStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,9 +147,41 @@ fun DetailScreen(
     val container: FlatDetailContainer = container(
         key = "detail-${flatPlatform.name}-$objectId",
     )
-    val state by container.store.subscribe()
+    val toastLauncher = remember { ToastLauncher() }
+    val quotaMsg = stringResource(Res.string.translation_quota_exhausted)
+    val failedMsg = stringResource(Res.string.translation_failed)
+    val doneMsg = stringResource(Res.string.translation_done)
+
+    val state by container.store.subscribe { action ->
+        when (action) {
+            is FlatDetailAction.ShowToast -> {
+                val msg = when (action.messageKey) {
+                    TranslationToastKey.QUOTA_EXHAUSTED -> quotaMsg
+                    TranslationToastKey.TRANSLATION_FAILED -> failedMsg
+                    TranslationToastKey.TRANSLATION_DONE -> doneMsg
+                }
+                toastLauncher.showToast(msg, ToastDurationType.LONG)
+            }
+        }
+    }
+
+    val userPreferences: UserPreferencesRepository = koinInject()
+    val alwaysTranslate by userPreferences.observeAlwaysTranslate()
+        .collectAsStateWithLifecycle(initialValue = false)
+    val preferredTarget by userPreferences.observeTranslateTargetLang()
+        .collectAsStateWithLifecycle(initialValue = null)
+    val appLanguage = LocalAppLanguage.current
+    val systemLocale = LocalAppLocale.current
+    val targetLangTag = remember(appLanguage, preferredTarget, systemLocale) {
+        resolveTranslationTargetTag(appLanguage, preferredTarget, systemLocale)
+    }
+
+    var showTranslateDialog by rememberSaveable { mutableStateOf(false) }
+    var autoTranslateTriggeredFor by rememberSaveable { mutableStateOf<Long?>(null) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(flatPlatform, objectId, markAsViewedOnOpen) {
+        autoTranslateTriggeredFor = null
         container.store.intent(
             FlatDetailIntent.LoadFlatDetails(
                 flatPlatform = flatPlatform,
@@ -145,6 +202,36 @@ fun DetailScreen(
 
     val flat = state.flat
 
+    LaunchedEffect(
+        flat?.adId,
+        flat?.isDetailDataLoaded,
+        alwaysTranslate,
+        targetLangTag,
+        flat?.platform
+    ) {
+        val current = flat ?: return@LaunchedEffect
+        if (!alwaysTranslate) return@LaunchedEffect
+        if (state.isShowingTranslation || state.isTranslating || state.translationQuotaExhausted) return@LaunchedEffect
+        if (current.description.isBlank() && current.address.isBlank()) return@LaunchedEffect
+        if (!shouldAutoTranslateListing(current.platform, targetLangTag)) return@LaunchedEffect
+        if (autoTranslateTriggeredFor == current.adId) return@LaunchedEffect
+        autoTranslateTriggeredFor = current.adId
+        container.store.intent(FlatDetailIntent.TranslateListing(targetLangTag))
+    }
+
+    if (showTranslateDialog) {
+        TranslateLanguageDialog(
+            onDismiss = { showTranslateDialog = false },
+            onLanguageSelected = { language ->
+                showTranslateDialog = false
+                language.tag?.let { tag ->
+                    scope.launch { userPreferences.setTranslateTargetLang(language) }
+                    container.store.intent(FlatDetailIntent.TranslateListing(tag))
+                }
+            },
+        )
+    }
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -159,6 +246,40 @@ fun DetailScreen(
                     )
                 }
             },
+            actions = {
+                if (flat != null) {
+                    when {
+                        state.isTranslating -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(24.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        }
+
+                        state.isShowingTranslation -> {
+                            TextButton(
+                                onClick = {
+                                    container.store.intent(FlatDetailIntent.ShowOriginalListing)
+                                },
+                                enabled = !state.translationQuotaExhausted,
+                            ) {
+                                Text(stringResource(Res.string.show_original))
+                            }
+                        }
+
+                        else -> {
+                            TextButton(
+                                onClick = { showTranslateDialog = true },
+                                enabled = !state.translationQuotaExhausted,
+                            ) {
+                                Text(stringResource(Res.string.translate_listing))
+                            }
+                        }
+                    }
+                }
+            },
         )
 
         when {
@@ -169,6 +290,13 @@ fun DetailScreen(
                     modifier = Modifier.fillMaxSize(),
                     detailError = state.error,
                     isLoadingMore = state.isLoading,
+                    isShowingTranslation = state.isShowingTranslation,
+                    isTranslating = state.isTranslating,
+                    translationActionsEnabled = !state.translationQuotaExhausted,
+                    onTranslateClick = { showTranslateDialog = true },
+                    onShowOriginalClick = {
+                        container.store.intent(FlatDetailIntent.ShowOriginalListing)
+                    },
                     clickOnFavorite = {
                         container.store.intent(
                             FlatDetailIntent.ClickOnFavorite(
@@ -203,12 +331,49 @@ fun DetailScreen(
 }
 
 @Composable
+private fun TranslateLanguageDialog(
+    onDismiss: () -> Unit,
+    onLanguageSelected: (AppLanguage) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.translate_to_title)) },
+        text = {
+            Column {
+                AppLanguage.entries
+                    .filter { it != AppLanguage.SYSTEM && it.tag != null }
+                    .forEach { language ->
+                        Text(
+                            text = stringResource(language.labelRes()),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onLanguageSelected(language) }
+                                .padding(vertical = 12.dp),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.cancel))
+            }
+        },
+    )
+}
+
+@Composable
 private fun FlatDetailContent(
     flat: UiDetailFlat,
     mapState: MapState,
     modifier: Modifier = Modifier,
     detailError: String? = null,
     isLoadingMore: Boolean = false,
+    isShowingTranslation: Boolean = false,
+    isTranslating: Boolean = false,
+    translationActionsEnabled: Boolean = true,
+    onTranslateClick: () -> Unit = {},
+    onShowOriginalClick: () -> Unit = {},
     clickOnFavorite: () -> Unit,
     navigateToMap: () -> Unit
 ) {
@@ -274,6 +439,14 @@ private fun FlatDetailContent(
             }
 
             SourceLinkSection(flat.platform, flat.flatUrl)
+
+            ListingTranslationButton(
+                isShowingTranslation = isShowingTranslation,
+                isTranslating = isTranslating,
+                enabled = translationActionsEnabled,
+                onTranslateClick = onTranslateClick,
+                onShowOriginalClick = onShowOriginalClick,
+            )
 
             if (flat.isDetailDataLoaded == true) {
                 if (hasContactData(flat.contactInformation) || flat.isOwner != null) {
@@ -432,6 +605,56 @@ private fun PublicationInfo(timeAgo: String) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     )
+}
+
+@Composable
+private fun ListingTranslationButton(
+    isShowingTranslation: Boolean,
+    isTranslating: Boolean,
+    enabled: Boolean,
+    onTranslateClick: () -> Unit,
+    onShowOriginalClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when {
+        isTranslating -> {
+            Row(
+                modifier = modifier.padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                )
+                Text(
+                    text = stringResource(Res.string.translate_listing),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                )
+            }
+        }
+
+        isShowingTranslation -> {
+            TextButton(
+                onClick = onShowOriginalClick,
+                enabled = enabled,
+                modifier = modifier.padding(vertical = 0.dp),
+            ) {
+                Text(stringResource(Res.string.show_original))
+            }
+        }
+
+        else -> {
+            TextButton(
+                onClick = onTranslateClick,
+                enabled = enabled,
+                modifier = modifier.padding(vertical = 0.dp),
+            ) {
+                Text(stringResource(Res.string.translate_listing))
+            }
+        }
+    }
 }
 
 @Composable

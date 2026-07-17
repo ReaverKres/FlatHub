@@ -8,6 +8,7 @@ import io.flatzen.analytics.di.analyticsModule
 import io.flatzen.monetization.di.monetizationModules
 import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.navigation.FlatHubNavigatorDelegate
+import io.flatzen.translation.di.translationModule
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.FavoritesContainer
 import io.flatzen.viewmodel.MapContainer
@@ -127,6 +128,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication {
             databaseModule(),
             dataUtilsModule(),
             analyticsModule,
+            translationModule,
             *monetizationModules().toTypedArray(),
         )
     }

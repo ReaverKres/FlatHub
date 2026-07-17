@@ -14,9 +14,13 @@ interface UserPreferencesRepository {
     fun getUserPreferences(): Flow<UserPreferences?>
     fun observeThemeMode(): Flow<ThemeMode>
     fun observeAppLanguage(): Flow<AppLanguage>
+    fun observeAlwaysTranslate(): Flow<Boolean>
+    fun observeTranslateTargetLang(): Flow<AppLanguage?>
     suspend fun saveListViewPreferences(isListView: Boolean)
     suspend fun setThemeMode(themeMode: ThemeMode)
     suspend fun setAppLanguage(language: AppLanguage)
+    suspend fun setAlwaysTranslate(enabled: Boolean)
+    suspend fun setTranslateTargetLang(language: AppLanguage?)
     suspend fun setUser(deviceDocumentResponse: DeviceDocumentResponse)
     suspend fun updateReferralStats(referralStats: ReferralStatsResponse?)
     suspend fun setSwipeOnboardingCompleted(completed: Boolean)
@@ -42,6 +46,18 @@ class UserPreferencesRepositoryImpl(
         }
     }
 
+    override fun observeAlwaysTranslate(): Flow<Boolean> {
+        return getUserPreferences().map { prefs -> prefs?.alwaysTranslate == true }
+    }
+
+    override fun observeTranslateTargetLang(): Flow<AppLanguage?> {
+        return getUserPreferences().map { prefs ->
+            prefs?.translateTargetLang
+                ?.let { AppLanguage.fromStored(it) }
+                ?.takeUnless { it == AppLanguage.SYSTEM }
+        }
+    }
+
     override suspend fun saveListViewPreferences(isListView: Boolean) {
         val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
         userPreferencesDao.saveUserPreferences(preferences.copy(isListView = isListView))
@@ -55,6 +71,22 @@ class UserPreferencesRepositoryImpl(
     override suspend fun setAppLanguage(language: AppLanguage) {
         val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
         userPreferencesDao.saveUserPreferences(preferences.copy(appLanguage = language.name))
+    }
+
+    override suspend fun setAlwaysTranslate(enabled: Boolean) {
+        val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
+        userPreferencesDao.saveUserPreferences(preferences.copy(alwaysTranslate = enabled))
+    }
+
+    override suspend fun setTranslateTargetLang(language: AppLanguage?) {
+        val preferences = getUserPreferences().firstOrNull() ?: UserPreferences()
+        userPreferencesDao.saveUserPreferences(
+            preferences.copy(
+                translateTargetLang = language
+                    ?.takeUnless { it == AppLanguage.SYSTEM }
+                    ?.name
+            )
+        )
     }
 
     override suspend fun setUser(deviceDocumentResponse: DeviceDocumentResponse) {

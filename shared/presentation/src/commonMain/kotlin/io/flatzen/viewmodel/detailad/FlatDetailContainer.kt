@@ -11,6 +11,10 @@ import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.navigation.FlatHubCommand
 import io.flatzen.navigation.FlatHubNavigator
+import io.flatzen.translation.QuotaExceededException
+import io.flatzen.translation.TranslateRequest
+import io.flatzen.translation.TranslationService
+import io.flatzen.translation.TranslationUnavailableException
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.collections.immutable.toImmutableList
@@ -39,12 +43,14 @@ class FlatDetailContainer(
     private val tileStreamProvider: TileStreamProvider,
     private val analytics: Analytics,
     private val navigator: FlatHubNavigator,
+    private val translationService: TranslationService,
 ) : Container<FlatDetailState, FlatDetailIntent, FlatDetailAction> {
 
     private val maxLevel = 18
     private val minLevel = 16
     private val mapSize = mapSizeAtLevel(maxLevel, tileSize = 256)
     private var loadJob: Job? = null
+    private var translateJob: Job? = null
 
     val mapState = MapState(
         levelCount = maxLevel + 1,
@@ -95,20 +101,29 @@ class FlatDetailContainer(
                         )
                     )
                 }
+
+                is FlatDetailIntent.TranslateListing -> handleTranslate(intent.targetLangTag)
+                FlatDetailIntent.ShowOriginalListing -> handleShowOriginal()
+                FlatDetailIntent.DismissTranslationQuotaMessage -> updateState {
+                    copy(translationQuotaExhausted = false)
+                }
             }
         }
     }
 
     private fun FlatDetailCtx.handleLoadFlatDetails(intent: FlatDetailIntent.LoadFlatDetails) {
-        // Cancel previous detail collect — sequential reduce + slow KZ enrich was blocking
-        // subsequent opens (blank / stuck after ~2–3 ads).
         loadJob?.cancel()
+        translateJob?.cancel()
         loadJob = launch {
             updateState {
                 val sameAd = flat?.adId == intent.flatId && flat?.platform == intent.flatPlatform
                 copy(
                     isLoading = !sameAd,
                     flat = if (sameAd) flat else null,
+                    originalFlat = if (sameAd) originalFlat else null,
+                    isShowingTranslation = if (sameAd) isShowingTranslation else false,
+                    isTranslating = false,
+                    translationQuotaExhausted = false,
                     error = null,
                 )
             }
@@ -129,16 +144,99 @@ class FlatDetailContainer(
                                 error = lce.message
                                     ?: lce.throwable.message
                                     ?: lce.throwable.toString(),
-                                // Keep list/base payload on screen; error is shown inline.
                             )
                         }
 
                         is LCE.Content -> {
                             val uiFlat = appFlatToUiFlat(lce.value)
-                            updateState { copy(isLoading = false, flat = uiFlat, error = null) }
+                            updateState {
+                                // Keep translation if same ad already translated and content refresh
+                                if (isShowingTranslation && originalFlat != null &&
+                                    originalFlat.adId == uiFlat.adId
+                                ) {
+                                    copy(isLoading = false, error = null)
+                                } else {
+                                    copy(
+                                        isLoading = false,
+                                        flat = uiFlat,
+                                        originalFlat = null,
+                                        isShowingTranslation = false,
+                                        error = null,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+        }
+    }
+
+    private fun FlatDetailCtx.handleTranslate(targetLangTag: String) {
+        translateJob?.cancel()
+        translateJob = launch {
+            try {
+                var sourceFlat: UiDetailFlat? = null
+                withState { sourceFlat = originalFlat ?: flat }
+                val flatToTranslate = sourceFlat ?: return@launch
+
+                updateState { copy(isTranslating = true, translationQuotaExhausted = false) }
+
+                val texts = ListingTextTranslator.collect(flatToTranslate)
+                val result = translationService.translate(
+                    TranslateRequest(
+                        texts = texts,
+                        targetLang = targetLangTag,
+                    )
+                )
+                val translatedFlat = ListingTextTranslator.apply(flatToTranslate, result.texts)
+                updateState {
+                    copy(
+                        originalFlat = flatToTranslate,
+                        flat = translatedFlat,
+                        isShowingTranslation = true,
+                        isTranslating = false,
+                        translationQuotaExhausted = false,
+                    )
+                }
+                action(FlatDetailAction.ShowToast(TranslationToastKey.TRANSLATION_DONE))
+            } catch (_: QuotaExceededException) {
+                updateState {
+                    copy(
+                        isTranslating = false,
+                        translationQuotaExhausted = true,
+                        flat = originalFlat ?: flat,
+                        isShowingTranslation = false,
+                    )
+                }
+                action(FlatDetailAction.ShowToast(TranslationToastKey.QUOTA_EXHAUSTED))
+            } catch (_: TranslationUnavailableException) {
+                updateState {
+                    copy(
+                        isTranslating = false,
+                        translationQuotaExhausted = true,
+                        flat = originalFlat ?: flat,
+                        isShowingTranslation = false,
+                    )
+                }
+                action(FlatDetailAction.ShowToast(TranslationToastKey.QUOTA_EXHAUSTED))
+            } catch (_: Throwable) {
+                updateState { copy(isTranslating = false) }
+                action(FlatDetailAction.ShowToast(TranslationToastKey.TRANSLATION_FAILED))
+            }
+        }
+    }
+
+    private suspend fun FlatDetailCtx.handleShowOriginal() {
+        updateState {
+            val original = originalFlat
+            if (original != null) {
+                copy(
+                    flat = original,
+                    isShowingTranslation = false,
+                )
+            } else {
+                this
+            }
         }
     }
 
@@ -161,7 +259,11 @@ class FlatDetailContainer(
                                     saveInFavoriteInProgress = false,
                                     savedInFavorite = lce.value.savedInFavorites,
                                     disliked = lce.value.dislike,
-                                )
+                                ),
+                                originalFlat = originalFlat?.copy(
+                                    savedInFavorite = lce.value.savedInFavorites,
+                                    disliked = lce.value.dislike,
+                                ),
                             )
                         }
                     }
@@ -176,7 +278,10 @@ class FlatDetailContainer(
                 if (lce is LCE.Content) {
                     lce.value?.let { updated ->
                         updateState {
-                            copy(flat = flat?.copy(disliked = updated.dislike))
+                            copy(
+                                flat = flat?.copy(disliked = updated.dislike),
+                                originalFlat = originalFlat?.copy(disliked = updated.dislike),
+                            )
                         }
                     }
                 }

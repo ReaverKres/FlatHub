@@ -15,4 +15,8 @@ data class UserPreferences(
     val themeMode: String? = null, // ThemeMode.name: SYSTEM | LIGHT | DARK
     val appLanguage: String? = null, // AppLanguage.name: SYSTEM | EN | DE | ES | TR | AR | RU | PL | KK | KA
     val swipeOnboardingCompleted: Boolean = false,
+    /** Auto-translate listing text when opening detail. */
+    val alwaysTranslate: Boolean = false,
+    /** AppLanguage.name without SYSTEM; null = use current UI language. */
+    val translateTargetLang: String? = null,
 )

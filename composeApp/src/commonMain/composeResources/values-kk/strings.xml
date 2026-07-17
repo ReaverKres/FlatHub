@@ -264,4 +264,12 @@
     <string name="premium_error_network">Интернет байланысын тексеріңіз</string>
     <string name="premium_error_item_already_owned">Жазылым қазірдің өзінде рәсімделген</string>
     <string name="premium_clock_tamper_warning">Жүйе уақыты өзгертілгені анықталды. Premium үшін жарнаманы қайта көру үшін құрылғы сағатын түзетіңіз.</string>
+
+    <string name="translate_listing">Translate</string>
+    <string name="show_original">Show original</string>
+    <string name="translate_to_title">Translate to</string>
+    <string name="always_translate">Always translate listings</string>
+    <string name="translation_quota_exhausted">Translation limit reached. Showing original text.</string>
+    <string name="translation_failed">Translation failed. Try again later.</string>
+    <string name="translation_done">Translated</string>
 </resources>

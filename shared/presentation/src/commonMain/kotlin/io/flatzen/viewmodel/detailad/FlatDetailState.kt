@@ -16,11 +16,18 @@ import pro.respawn.flowmvi.api.MVIState
 data class FlatDetailState(
     val isLoading: Boolean,
     val flat: UiDetailFlat?,
-    val error: String?
+    /** Original listing before translation; null when showing original. */
+    val originalFlat: UiDetailFlat? = null,
+    val isTranslating: Boolean = false,
+    val isShowingTranslation: Boolean = false,
+    val translationQuotaExhausted: Boolean = false,
+    val error: String?,
 ) : MVIState {
     companion object {
         val Initial = FlatDetailState(isLoading = false, flat = null, error = null)
     }
+
+    val displayFlat: UiDetailFlat? get() = flat
 }
 
 @Immutable
@@ -106,7 +113,20 @@ sealed interface FlatDetailIntent : MVIIntent {
 
     data object NavigateBack : FlatDetailIntent
     data class OpenOnMap(val flatId: Long) : FlatDetailIntent
+
+    /** Translate listing text to [targetLangTag] (e.g. "en", "ru"). */
+    data class TranslateListing(val targetLangTag: String) : FlatDetailIntent
+    data object ShowOriginalListing : FlatDetailIntent
+    data object DismissTranslationQuotaMessage : FlatDetailIntent
 }
 
-// Action — no side effects for FlatDetail screen
-sealed interface FlatDetailAction : MVIAction
+// Action
+sealed interface FlatDetailAction : MVIAction {
+    data class ShowToast(val messageKey: TranslationToastKey) : FlatDetailAction
+}
+
+enum class TranslationToastKey {
+    QUOTA_EXHAUSTED,
+    TRANSLATION_FAILED,
+    TRANSLATION_DONE,
+}

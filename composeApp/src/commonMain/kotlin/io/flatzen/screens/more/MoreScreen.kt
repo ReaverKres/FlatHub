@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
+import flatzen.composeapp.generated.resources.always_translate
 import flatzen.composeapp.generated.resources.copy_success
 import flatzen.composeapp.generated.resources.faq_title
 import flatzen.composeapp.generated.resources.language_title
@@ -72,7 +74,9 @@ import io.flatzen.viewmodel.more.FaqState
 import io.flatzen.viewmodel.more.MoreConfigState
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.MoreIntent
+import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.AppTextButton
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -93,9 +97,12 @@ fun MoreScreen(
     val userPreferences: UserPreferencesRepository = koinInject()
     val themeMode by userPreferences.observeThemeMode()
         .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+    val alwaysTranslate by userPreferences.observeAlwaysTranslate()
+        .collectAsStateWithLifecycle(initialValue = false)
     val appLanguage = LocalAppLanguage.current
     val revealController = LocalThemeRevealController.current
     val displayMode = revealController.pendingMode ?: themeMode
+    val scope = rememberCoroutineScope()
 
     val telegramSupportDescription = stringResource(Res.string.telegram_support_description)
     val uriHandler = LocalUriHandler.current
@@ -146,6 +153,14 @@ fun MoreScreen(
                 LanguageRow(
                     current = appLanguage,
                     onClick = { moreContainer.store.intent(MoreIntent.OpenLanguage) },
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                AlwaysTranslateRow(
+                    enabled = alwaysTranslate,
+                    onEnabledChange = { enabled ->
+                        scope.launch { userPreferences.setAlwaysTranslate(enabled) }
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -256,6 +271,28 @@ fun MoreScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AlwaysTranslateRow(
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 8.dp)
+            .fillMaxWidth(),
+    ) {
+        AppSwitch(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            label = stringResource(Res.string.always_translate),
+            state = enabled,
+            onStateChange = onEnabledChange,
+        )
     }
 }
 

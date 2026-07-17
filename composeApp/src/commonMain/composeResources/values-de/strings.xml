@@ -264,4 +264,12 @@
     <string name="premium_error_network">Prüfe deine Internetverbindung</string>
     <string name="premium_error_item_already_owned">Abo bereits vorhanden</string>
     <string name="premium_clock_tamper_warning">Manipulation der Geräteuhr erkannt. Korrigiere die Gerätezeit, um wieder Werbung für Premium anzusehen.</string>
+
+    <string name="translate_listing">Translate</string>
+    <string name="show_original">Show original</string>
+    <string name="translate_to_title">Translate to</string>
+    <string name="always_translate">Always translate listings</string>
+    <string name="translation_quota_exhausted">Translation limit reached. Showing original text.</string>
+    <string name="translation_failed">Translation failed. Try again later.</string>
+    <string name="translation_done">Translated</string>
 </resources>
