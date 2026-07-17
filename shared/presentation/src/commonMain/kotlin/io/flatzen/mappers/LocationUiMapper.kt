@@ -13,6 +13,7 @@ object LocationUiMapper {
     val tbilisiUiItem = UiCityItem(CityCode.TBILISI, "Tbilisi", Coordinates(41.7151, 44.8271))
     val almatyUiItem = UiCityItem(CityCode.ALMATY, "Алматы", Coordinates(43.2389, 76.9455))
     val madridUiItem = UiCityItem(CityCode.MADRID, "Madrid", Coordinates(40.4168, -3.7038))
+    val berlinUiItem = UiCityItem(CityCode.BERLIN, "Berlin", Coordinates(52.5200, 13.4050))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Беларусь"),
@@ -20,6 +21,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.GE, "Georgia"),
         UiCountryItem(CountryCode.KZ, "Қазақстан"),
         UiCountryItem(CountryCode.ES, "España"),
+        UiCountryItem(CountryCode.DE, "Deutschland"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -27,6 +29,7 @@ object LocationUiMapper {
         CountryCode.GE -> tbilisiUiItem
         CountryCode.KZ -> almatyUiItem
         CountryCode.ES -> madridUiItem
+        CountryCode.DE -> berlinUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -75,6 +78,17 @@ object LocationUiMapper {
             UiCityItem(CityCode.MALAGA, "Málaga", Coordinates(36.7213, -4.4214)),
             UiCityItem(CityCode.ZARAGOZA, "Zaragoza", Coordinates(41.6488, -0.8891)),
         )
+
+        CountryCode.DE -> listOf(
+            berlinUiItem,
+            UiCityItem(CityCode.MUENCHEN, "München", Coordinates(48.1351, 11.5820)),
+            UiCityItem(CityCode.HAMBURG, "Hamburg", Coordinates(53.5511, 9.9937)),
+            UiCityItem(CityCode.KOELN, "Köln", Coordinates(50.9375, 6.9603)),
+            UiCityItem(CityCode.FRANKFURT, "Frankfurt am Main", Coordinates(50.1109, 8.6821)),
+            UiCityItem(CityCode.STUTTGART, "Stuttgart", Coordinates(48.7758, 9.1829)),
+            UiCityItem(CityCode.DUESSELDORF, "Düsseldorf", Coordinates(51.2277, 6.7735)),
+            UiCityItem(CityCode.LEIPZIG, "Leipzig", Coordinates(51.3397, 12.3731)),
+        )
     }
 
     /** Backward-compatible default (BY). */
@@ -86,7 +100,8 @@ object LocationUiMapper {
                         cities(CountryCode.PL) +
                         cities(CountryCode.GE) +
                         cities(CountryCode.KZ) +
-                        cities(CountryCode.ES)
+                        cities(CountryCode.ES) +
+                        cities(CountryCode.DE)
                 ).find { it.code == cityCode }
             ?: minskUiItem
 
@@ -96,6 +111,7 @@ object LocationUiMapper {
             in cities(CountryCode.GE).map { it.code } -> CountryCode.GE
             in cities(CountryCode.KZ).map { it.code } -> CountryCode.KZ
             in cities(CountryCode.ES).map { it.code } -> CountryCode.ES
+            in cities(CountryCode.DE).map { it.code } -> CountryCode.DE
             else -> CountryCode.BY
         }
 

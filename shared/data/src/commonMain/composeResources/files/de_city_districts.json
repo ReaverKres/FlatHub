@@ -1,0 +1,340 @@
+{
+  "Berlin": [
+    {
+      "id": 404538,
+      "nameEn": "Charlottenburg-Wilmersdorf",
+      "nameLocal": "Charlottenburg-Wilmersdorf",
+      "coordinates": [
+        {
+          "latitude": 52.485969000000004,
+          "longitude": 13.242011999999999
+        },
+        {
+          "latitude": 52.485969000000004,
+          "longitude": 13.286012
+        },
+        {
+          "latitude": 52.529969,
+          "longitude": 13.286012
+        },
+        {
+          "latitude": 52.529969,
+          "longitude": 13.242011999999999
+        },
+        {
+          "latitude": 52.485969000000004,
+          "longitude": 13.242011999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 55764,
+      "nameEn": "Friedrichshain-Kreuzberg",
+      "nameLocal": "Friedrichshain-Kreuzberg",
+      "coordinates": [
+        {
+          "latitude": 52.484909,
+          "longitude": 13.407836
+        },
+        {
+          "latitude": 52.484909,
+          "longitude": 13.451836
+        },
+        {
+          "latitude": 52.528909,
+          "longitude": 13.451836
+        },
+        {
+          "latitude": 52.528909,
+          "longitude": 13.407836
+        },
+        {
+          "latitude": 52.484909,
+          "longitude": 13.407836
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 404554,
+      "nameEn": "Lichtenberg",
+      "nameLocal": "Lichtenberg",
+      "coordinates": [
+        {
+          "latitude": 52.510149,
+          "longitude": 13.48995
+        },
+        {
+          "latitude": 52.510149,
+          "longitude": 13.53395
+        },
+        {
+          "latitude": 52.554148999999995,
+          "longitude": 13.53395
+        },
+        {
+          "latitude": 52.554148999999995,
+          "longitude": 13.48995
+        },
+        {
+          "latitude": 52.510149,
+          "longitude": 13.48995
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 164712,
+      "nameEn": "Marzahn-Hellersdorf",
+      "nameLocal": "Marzahn-Hellersdorf",
+      "coordinates": [
+        {
+          "latitude": 52.500492,
+          "longitude": 13.565694
+        },
+        {
+          "latitude": 52.500492,
+          "longitude": 13.609694000000001
+        },
+        {
+          "latitude": 52.544492,
+          "longitude": 13.609694000000001
+        },
+        {
+          "latitude": 52.544492,
+          "longitude": 13.565694
+        },
+        {
+          "latitude": 52.500492,
+          "longitude": 13.565694
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 16347,
+      "nameEn": "Mitte",
+      "nameLocal": "Mitte",
+      "coordinates": [
+        {
+          "latitude": 52.511195,
+          "longitude": 13.34347
+        },
+        {
+          "latitude": 52.511195,
+          "longitude": 13.38747
+        },
+        {
+          "latitude": 52.555195,
+          "longitude": 13.38747
+        },
+        {
+          "latitude": 52.555195,
+          "longitude": 13.34347
+        },
+        {
+          "latitude": 52.511195,
+          "longitude": 13.34347
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 162902,
+      "nameEn": "Neukölln",
+      "nameLocal": "Neukölln",
+      "coordinates": [
+        {
+          "latitude": 52.423905000000005,
+          "longitude": 13.439813
+        },
+        {
+          "latitude": 52.423905000000005,
+          "longitude": 13.483813
+        },
+        {
+          "latitude": 52.467905,
+          "longitude": 13.483813
+        },
+        {
+          "latitude": 52.467905,
+          "longitude": 13.439813
+        },
+        {
+          "latitude": 52.423905000000005,
+          "longitude": 13.439813
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 164723,
+      "nameEn": "Pankow",
+      "nameLocal": "Pankow",
+      "coordinates": [
+        {
+          "latitude": 52.575718,
+          "longitude": 13.41329
+        },
+        {
+          "latitude": 52.575718,
+          "longitude": 13.45729
+        },
+        {
+          "latitude": 52.619718,
+          "longitude": 13.45729
+        },
+        {
+          "latitude": 52.619718,
+          "longitude": 13.41329
+        },
+        {
+          "latitude": 52.575718,
+          "longitude": 13.41329
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 16334,
+      "nameEn": "Reinickendorf",
+      "nameLocal": "Reinickendorf",
+      "coordinates": [
+        {
+          "latitude": 52.582774,
+          "longitude": 13.27345
+        },
+        {
+          "latitude": 52.582774,
+          "longitude": 13.317450000000001
+        },
+        {
+          "latitude": 52.626774,
+          "longitude": 13.317450000000001
+        },
+        {
+          "latitude": 52.626774,
+          "longitude": 13.27345
+        },
+        {
+          "latitude": 52.582774,
+          "longitude": 13.27345
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 16343,
+      "nameEn": "Spandau",
+      "nameLocal": "Spandau",
+      "coordinates": [
+        {
+          "latitude": 52.497206,
+          "longitude": 13.173881
+        },
+        {
+          "latitude": 52.497206,
+          "longitude": 13.217881
+        },
+        {
+          "latitude": 52.541205999999995,
+          "longitude": 13.217881
+        },
+        {
+          "latitude": 52.541205999999995,
+          "longitude": 13.173881
+        },
+        {
+          "latitude": 52.497206,
+          "longitude": 13.173881
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 55734,
+      "nameEn": "Steglitz-Zehlendorf",
+      "nameLocal": "Steglitz-Zehlendorf",
+      "coordinates": [
+        {
+          "latitude": 52.407531,
+          "longitude": 13.207958
+        },
+        {
+          "latitude": 52.407531,
+          "longitude": 13.251958
+        },
+        {
+          "latitude": 52.451530999999996,
+          "longitude": 13.251958
+        },
+        {
+          "latitude": 52.451530999999996,
+          "longitude": 13.207958
+        },
+        {
+          "latitude": 52.407531,
+          "longitude": 13.207958
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 158437,
+      "nameEn": "Tempelhof-Schöneberg",
+      "nameLocal": "Tempelhof-Schöneberg",
+      "coordinates": [
+        {
+          "latitude": 52.418537,
+          "longitude": 13.351726
+        },
+        {
+          "latitude": 52.418537,
+          "longitude": 13.395726
+        },
+        {
+          "latitude": 52.462537,
+          "longitude": 13.395726
+        },
+        {
+          "latitude": 52.462537,
+          "longitude": 13.351726
+        },
+        {
+          "latitude": 52.418537,
+          "longitude": 13.351726
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 55754,
+      "nameEn": "Treptow-Köpenick",
+      "nameLocal": "Treptow-Köpenick",
+      "coordinates": [
+        {
+          "latitude": 52.395976000000005,
+          "longitude": 13.578409
+        },
+        {
+          "latitude": 52.395976000000005,
+          "longitude": 13.622409000000001
+        },
+        {
+          "latitude": 52.439976,
+          "longitude": 13.622409000000001
+        },
+        {
+          "latitude": 52.439976,
+          "longitude": 13.578409
+        },
+        {
+          "latitude": 52.395976000000005,
+          "longitude": 13.578409
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

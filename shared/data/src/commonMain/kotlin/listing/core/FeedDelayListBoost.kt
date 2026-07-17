@@ -35,6 +35,9 @@ object FeedDelayListBoost {
         FlatPlatform.KN to 1.5,
         FlatPlatform.FOTOCASA to 2.5,
         FlatPlatform.PISOS to 2.0,
+        FlatPlatform.IS24 to 3.0,
+        FlatPlatform.IMMOWELT to 2.0,
+        FlatPlatform.KLEINANZEIGEN to 2.5,
     )
 
     /** API list: inflate page size ≈ 2 × base × popularity. */
@@ -55,6 +58,8 @@ object FeedDelayListBoost {
      */
     fun htmlExtraPages(platform: FlatPlatform): Int {
         if (!active) return 0
+        // Immowelt pagination is DataDome-broken / ignored — first page only.
+        if (platform == FlatPlatform.IMMOWELT) return 0
         val pop = popularity[platform] ?: 1.5
         return if (pop >= 1.5) 1 else 0
     }

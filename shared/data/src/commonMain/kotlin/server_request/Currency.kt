@@ -47,4 +47,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.GE -> Currency.GEL
     CountryCode.KZ -> Currency.KZT
     CountryCode.ES -> Currency.EUR
+    CountryCode.DE -> Currency.EUR
 }

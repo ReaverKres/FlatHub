@@ -24,6 +24,12 @@ import listing.core.CoordEnrichState
 import listing.core.CoordEnricher
 import listing.core.ListingSourceRegistry
 import listing.core.RemoteListingPlatformConfig
+import listing.de.immowelt.ImmoweltApiClient
+import listing.de.immowelt.ImmoweltListingSource
+import listing.de.is24.Is24ApiClient
+import listing.de.is24.Is24ListingSource
+import listing.de.kleinanzeigen.KleinanzeigenApiClient
+import listing.de.kleinanzeigen.KleinanzeigenListingSource
 import listing.es.fotocasa.FotocasaApiClient
 import listing.es.fotocasa.FotocasaListingSource
 import listing.es.pisos.PisosApiClient
@@ -204,6 +210,18 @@ val dataModule = module {
     single { FotocasaListingSource(api = get(), flatsDao = get()) }
 
     single {
+        Is24ApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { Is24ListingSource(api = get(), flatsDao = get()) }
+    single { ImmoweltApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { ImmoweltListingSource(api = get(), flatsDao = get()) }
+    single { KleinanzeigenApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { KleinanzeigenListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -223,6 +241,9 @@ val dataModule = module {
                 get<KnListingSource>(),
                 get<PisosListingSource>(),
                 get<FotocasaListingSource>(),
+                get<Is24ListingSource>(),
+                get<ImmoweltListingSource>(),
+                get<KleinanzeigenListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

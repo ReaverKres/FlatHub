@@ -1,0 +1,2011 @@
+[
+  {
+    "name": "Adenauerplatz",
+    "coordinates": [
+      52.500003,
+      13.307323
+    ]
+  },
+  {
+    "name": "Adlershof",
+    "coordinates": [
+      52.434735,
+      13.541558
+    ]
+  },
+  {
+    "name": "Afrikanische Straße",
+    "coordinates": [
+      52.560238,
+      13.334618
+    ]
+  },
+  {
+    "name": "Ahrensfelde",
+    "coordinates": [
+      52.57134,
+      13.565658
+    ]
+  },
+  {
+    "name": "Alexanderplatz",
+    "coordinates": [
+      52.521576,
+      13.412594
+    ]
+  },
+  {
+    "name": "Alt-Mariendorf",
+    "coordinates": [
+      52.439675,
+      13.387514
+    ]
+  },
+  {
+    "name": "Alt-Reinickendorf",
+    "coordinates": [
+      52.577784,
+      13.351243
+    ]
+  },
+  {
+    "name": "Alt-Tegel",
+    "coordinates": [
+      52.589457,
+      13.283751
+    ]
+  },
+  {
+    "name": "Alt-Tempelhof",
+    "coordinates": [
+      52.465522,
+      13.38563
+    ]
+  },
+  {
+    "name": "Altglienicke",
+    "coordinates": [
+      52.406953,
+      13.558255
+    ]
+  },
+  {
+    "name": "Altstadt Spandau",
+    "coordinates": [
+      52.538838,
+      13.206257
+    ]
+  },
+  {
+    "name": "Amrumer Straße",
+    "coordinates": [
+      52.542333,
+      13.350155
+    ]
+  },
+  {
+    "name": "Anton-Wilhelm-Amo-Straße",
+    "coordinates": [
+      52.511792,
+      13.385092
+    ]
+  },
+  {
+    "name": "Attilastraße",
+    "coordinates": [
+      52.448031,
+      13.36075
+    ]
+  },
+  {
+    "name": "Augsburger Straße",
+    "coordinates": [
+      52.500442,
+      13.336464
+    ]
+  },
+  {
+    "name": "Baumschulenweg",
+    "coordinates": [
+      52.4674,
+      13.489862
+    ]
+  },
+  {
+    "name": "Bayerischer Platz",
+    "coordinates": [
+      52.488576,
+      13.340544
+    ]
+  },
+  {
+    "name": "Bellevue",
+    "coordinates": [
+      52.519985,
+      13.34807
+    ]
+  },
+  {
+    "name": "Berlin Hauptbahnhof Tunnel (S-Bahn)",
+    "coordinates": [
+      52.526621,
+      13.369585
+    ]
+  },
+  {
+    "name": "Berliner Straße",
+    "coordinates": [
+      52.48733,
+      13.33101
+    ]
+  },
+  {
+    "name": "Bernauer Straße",
+    "coordinates": [
+      52.537438,
+      13.396618
+    ]
+  },
+  {
+    "name": "Betriebsbahnhof Rummelsburg",
+    "coordinates": [
+      52.493887,
+      13.49773
+    ]
+  },
+  {
+    "name": "Beusselstraße",
+    "coordinates": [
+      52.534408,
+      13.329387
+    ]
+  },
+  {
+    "name": "Biesdorf",
+    "coordinates": [
+      52.513087,
+      13.555846
+    ]
+  },
+  {
+    "name": "Biesdorf-Süd",
+    "coordinates": [
+      52.499605,
+      13.546532
+    ]
+  },
+  {
+    "name": "Birkenstraße",
+    "coordinates": [
+      52.532382,
+      13.341353
+    ]
+  },
+  {
+    "name": "Bismarckstraße",
+    "coordinates": [
+      52.511515,
+      13.305239
+    ]
+  },
+  {
+    "name": "Blankenburg",
+    "coordinates": [
+      52.591466,
+      13.443482
+    ]
+  },
+  {
+    "name": "Blaschkoallee",
+    "coordinates": [
+      52.45208,
+      13.449202
+    ]
+  },
+  {
+    "name": "Blissestraße",
+    "coordinates": [
+      52.48649,
+      13.320545
+    ]
+  },
+  {
+    "name": "Boddinstraße",
+    "coordinates": [
+      52.480169,
+      13.425281
+    ]
+  },
+  {
+    "name": "Bornholmer Straße",
+    "coordinates": [
+      52.554771,
+      13.397845
+    ]
+  },
+  {
+    "name": "Borsigwerke",
+    "coordinates": [
+      52.581841,
+      13.290592
+    ]
+  },
+  {
+    "name": "Botanischer Garten",
+    "coordinates": [
+      52.447956,
+      13.307128
+    ]
+  },
+  {
+    "name": "Brandenburger Tor",
+    "coordinates": [
+      52.516524,
+      13.381416
+    ]
+  },
+  {
+    "name": "Breitenbachplatz",
+    "coordinates": [
+      52.467027,
+      13.308871
+    ]
+  },
+  {
+    "name": "Britz-Süd",
+    "coordinates": [
+      52.437792,
+      13.448187
+    ]
+  },
+  {
+    "name": "Buch",
+    "coordinates": [
+      52.635835,
+      13.491638
+    ]
+  },
+  {
+    "name": "Buckower Chaussee",
+    "coordinates": [
+      52.410542,
+      13.382756
+    ]
+  },
+  {
+    "name": "Bülowstraße",
+    "coordinates": [
+      52.497586,
+      13.363221
+    ]
+  },
+  {
+    "name": "Bundesplatz",
+    "coordinates": [
+      52.477653,
+      13.329024
+    ]
+  },
+  {
+    "name": "Bundestag",
+    "coordinates": [
+      52.520112,
+      13.372955
+    ]
+  },
+  {
+    "name": "Charlottenburg",
+    "coordinates": [
+      52.505048,
+      13.304516
+    ]
+  },
+  {
+    "name": "Cottbusser Platz",
+    "coordinates": [
+      52.533833,
+      13.596402
+    ]
+  },
+  {
+    "name": "Dahlem-Dorf",
+    "coordinates": [
+      52.45741,
+      13.289705
+    ]
+  },
+  {
+    "name": "Deutsche Oper",
+    "coordinates": [
+      52.511837,
+      13.310533
+    ]
+  },
+  {
+    "name": "Eberswalder Straße",
+    "coordinates": [
+      52.541515,
+      13.412177
+    ]
+  },
+  {
+    "name": "Eichborndamm",
+    "coordinates": [
+      52.577629,
+      13.31662
+    ]
+  },
+  {
+    "name": "Eisenacher Straße",
+    "coordinates": [
+      52.489553,
+      13.350169
+    ]
+  },
+  {
+    "name": "Elsterwerdaer Platz",
+    "coordinates": [
+      52.505293,
+      13.560878
+    ]
+  },
+  {
+    "name": "Ernst-Reuter-Platz",
+    "coordinates": [
+      52.511885,
+      13.322161
+    ]
+  },
+  {
+    "name": "Fehrbelliner Platz",
+    "coordinates": [
+      52.490299,
+      13.314844
+    ]
+  },
+  {
+    "name": "Feuerbachstraße",
+    "coordinates": [
+      52.463673,
+      13.332699
+    ]
+  },
+  {
+    "name": "Frankfurter Allee",
+    "coordinates": [
+      52.513623,
+      13.475436
+    ]
+  },
+  {
+    "name": "Frankfurter Tor",
+    "coordinates": [
+      52.515818,
+      13.453975
+    ]
+  },
+  {
+    "name": "Franz-Neumann-Platz",
+    "coordinates": [
+      52.564539,
+      13.363924
+    ]
+  },
+  {
+    "name": "Freie Universität (Thielplatz)",
+    "coordinates": [
+      52.451039,
+      13.281744
+    ]
+  },
+  {
+    "name": "Friedenau",
+    "coordinates": [
+      52.470716,
+      13.3415
+    ]
+  },
+  {
+    "name": "Friedrich-Wilhelm-Platz",
+    "coordinates": [
+      52.472122,
+      13.32873
+    ]
+  },
+  {
+    "name": "Friedrichsfelde",
+    "coordinates": [
+      52.506164,
+      13.512839
+    ]
+  },
+  {
+    "name": "Friedrichsfelde Ost",
+    "coordinates": [
+      52.514113,
+      13.520088
+    ]
+  },
+  {
+    "name": "Friedrichshagen",
+    "coordinates": [
+      52.457376,
+      13.623293
+    ]
+  },
+  {
+    "name": "Frohnau",
+    "coordinates": [
+      52.632409,
+      13.290221
+    ]
+  },
+  {
+    "name": "Gehrenseestraße",
+    "coordinates": [
+      52.556498,
+      13.524762
+    ]
+  },
+  {
+    "name": "Gesundbrunnen",
+    "coordinates": [
+      52.548998,
+      13.389191
+    ]
+  },
+  {
+    "name": "Gleisdreieck",
+    "coordinates": [
+      52.499526,
+      13.374032
+    ]
+  },
+  {
+    "name": "Gneisenaustraße",
+    "coordinates": [
+      52.49129,
+      13.395825
+    ]
+  },
+  {
+    "name": "Görlitzer Bahnhof",
+    "coordinates": [
+      52.499263,
+      13.428036
+    ]
+  },
+  {
+    "name": "Greifswalder Straße",
+    "coordinates": [
+      52.540246,
+      13.438989
+    ]
+  },
+  {
+    "name": "Grenzallee",
+    "coordinates": [
+      52.462883,
+      13.444772
+    ]
+  },
+  {
+    "name": "Grünau",
+    "coordinates": [
+      52.412879,
+      13.573638
+    ]
+  },
+  {
+    "name": "Grünbergallee",
+    "coordinates": [
+      52.3993,
+      13.541904
+    ]
+  },
+  {
+    "name": "Grunewald",
+    "coordinates": [
+      52.488248,
+      13.26101
+    ]
+  },
+  {
+    "name": "Güntzelstraße",
+    "coordinates": [
+      52.492084,
+      13.331006
+    ]
+  },
+  {
+    "name": "Hackescher Markt",
+    "coordinates": [
+      52.522681,
+      13.402342
+    ]
+  },
+  {
+    "name": "Halemweg",
+    "coordinates": [
+      52.536626,
+      13.286104
+    ]
+  },
+  {
+    "name": "Halensee",
+    "coordinates": [
+      52.496025,
+      13.290556
+    ]
+  },
+  {
+    "name": "Hallesches Tor",
+    "coordinates": [
+      52.498393,
+      13.391182
+    ]
+  },
+  {
+    "name": "Hansaplatz",
+    "coordinates": [
+      52.518008,
+      13.342037
+    ]
+  },
+  {
+    "name": "Haselhorst",
+    "coordinates": [
+      52.538718,
+      13.233094
+    ]
+  },
+  {
+    "name": "Hauptbahnhof",
+    "coordinates": [
+      52.525239,
+      13.369728
+    ]
+  },
+  {
+    "name": "Hausvogteiplatz",
+    "coordinates": [
+      52.51335,
+      13.395591
+    ]
+  },
+  {
+    "name": "Heerstraße",
+    "coordinates": [
+      52.507854,
+      13.259859
+    ]
+  },
+  {
+    "name": "Heidelberger Platz",
+    "coordinates": [
+      52.480046,
+      13.31216
+    ]
+  },
+  {
+    "name": "Heiligensee",
+    "coordinates": [
+      52.624665,
+      13.229194
+    ]
+  },
+  {
+    "name": "Heinrich-Heine-Straße",
+    "coordinates": [
+      52.510448,
+      13.416027
+    ]
+  },
+  {
+    "name": "Hellersdorf",
+    "coordinates": [
+      52.536688,
+      13.606672
+    ]
+  },
+  {
+    "name": "Hermannplatz",
+    "coordinates": [
+      52.486286,
+      13.424553
+    ]
+  },
+  {
+    "name": "Hermannstraße",
+    "coordinates": [
+      52.467448,
+      13.431354
+    ]
+  },
+  {
+    "name": "Hermsdorf",
+    "coordinates": [
+      52.617454,
+      13.307519
+    ]
+  },
+  {
+    "name": "Hirschgarten",
+    "coordinates": [
+      52.457903,
+      13.603139
+    ]
+  },
+  {
+    "name": "Hohenschönhausen",
+    "coordinates": [
+      52.566276,
+      13.512499
+    ]
+  },
+  {
+    "name": "Hohenzollerndamm",
+    "coordinates": [
+      52.488627,
+      13.300242
+    ]
+  },
+  {
+    "name": "Hohenzollernplatz",
+    "coordinates": [
+      52.494085,
+      13.324755
+    ]
+  },
+  {
+    "name": "Holzhauser Straße",
+    "coordinates": [
+      52.575692,
+      13.296113
+    ]
+  },
+  {
+    "name": "Hönow",
+    "coordinates": [
+      52.538434,
+      13.633123
+    ]
+  },
+  {
+    "name": "Humboldthain",
+    "coordinates": [
+      52.544952,
+      13.379468
+    ]
+  },
+  {
+    "name": "Innsbrucker Platz",
+    "coordinates": [
+      52.478547,
+      13.342608
+    ]
+  },
+  {
+    "name": "Jakob-Kaiser-Platz",
+    "coordinates": [
+      52.536279,
+      13.293301
+    ]
+  },
+  {
+    "name": "Jannowitzbrücke",
+    "coordinates": [
+      52.514785,
+      13.418833
+    ]
+  },
+  {
+    "name": "Johannisthal",
+    "coordinates": [
+      52.44699,
+      13.523544
+    ]
+  },
+  {
+    "name": "Johannisthaler Chaussee",
+    "coordinates": [
+      52.429321,
+      13.453338
+    ]
+  },
+  {
+    "name": "Julius-Leber-Brücke",
+    "coordinates": [
+      52.486505,
+      13.361168
+    ]
+  },
+  {
+    "name": "Jungfernheide",
+    "coordinates": [
+      52.530596,
+      13.29995
+    ]
+  },
+  {
+    "name": "Kaiserdamm",
+    "coordinates": [
+      52.510092,
+      13.283126
+    ]
+  },
+  {
+    "name": "Kaiserin-Augusta-Straße",
+    "coordinates": [
+      52.459976,
+      13.384635
+    ]
+  },
+  {
+    "name": "Karl-Bonhoeffer-Nervenklinik",
+    "coordinates": [
+      52.578321,
+      13.331339
+    ]
+  },
+  {
+    "name": "Karl-Marx-Straße",
+    "coordinates": [
+      52.47627,
+      13.439338
+    ]
+  },
+  {
+    "name": "Karlshorst",
+    "coordinates": [
+      52.480467,
+      13.527279
+    ]
+  },
+  {
+    "name": "Karow",
+    "coordinates": [
+      52.615215,
+      13.469465
+    ]
+  },
+  {
+    "name": "Kaulsdorf",
+    "coordinates": [
+      52.512135,
+      13.590192
+    ]
+  },
+  {
+    "name": "Kaulsdorf-Nord",
+    "coordinates": [
+      52.521154,
+      13.588918
+    ]
+  },
+  {
+    "name": "Kienberg (Gärten der Welt)",
+    "coordinates": [
+      52.528615,
+      13.590637
+    ]
+  },
+  {
+    "name": "Kleistpark",
+    "coordinates": [
+      52.490367,
+      13.36022
+    ]
+  },
+  {
+    "name": "Klosterstraße",
+    "coordinates": [
+      52.517235,
+      13.412432
+    ]
+  },
+  {
+    "name": "Kochstraße/Checkpoint Charlie",
+    "coordinates": [
+      52.506045,
+      13.390613
+    ]
+  },
+  {
+    "name": "Köllnische Heide",
+    "coordinates": [
+      52.469646,
+      13.467966
+    ]
+  },
+  {
+    "name": "Konstanzer Straße",
+    "coordinates": [
+      52.494532,
+      13.309075
+    ]
+  },
+  {
+    "name": "Köpenick",
+    "coordinates": [
+      52.458577,
+      13.581519
+    ]
+  },
+  {
+    "name": "Kottbusser Tor",
+    "coordinates": [
+      52.498985,
+      13.418311
+    ]
+  },
+  {
+    "name": "Krumme Lanke",
+    "coordinates": [
+      52.443448,
+      13.241392
+    ]
+  },
+  {
+    "name": "Kurfürstendamm",
+    "coordinates": [
+      52.503822,
+      13.331437
+    ]
+  },
+  {
+    "name": "Kurfürstenstraße",
+    "coordinates": [
+      52.49996,
+      13.361941
+    ]
+  },
+  {
+    "name": "Kurt-Schumacher-Platz",
+    "coordinates": [
+      52.563227,
+      13.327129
+    ]
+  },
+  {
+    "name": "Landsberger Allee",
+    "coordinates": [
+      52.529482,
+      13.45478
+    ]
+  },
+  {
+    "name": "Lankwitz",
+    "coordinates": [
+      52.438785,
+      13.342063
+    ]
+  },
+  {
+    "name": "Leinestraße",
+    "coordinates": [
+      52.472979,
+      13.428355
+    ]
+  },
+  {
+    "name": "Leopoldplatz",
+    "coordinates": [
+      52.546383,
+      13.359167
+    ]
+  },
+  {
+    "name": "Lichtenberg",
+    "coordinates": [
+      52.510674,
+      13.498208
+    ]
+  },
+  {
+    "name": "Lichtenrade",
+    "coordinates": [
+      52.386939,
+      13.39645
+    ]
+  },
+  {
+    "name": "Lichterfelde Ost",
+    "coordinates": [
+      52.429863,
+      13.328082
+    ]
+  },
+  {
+    "name": "Lichterfelde Süd",
+    "coordinates": [
+      52.409967,
+      13.308553
+    ]
+  },
+  {
+    "name": "Lichterfelde West",
+    "coordinates": [
+      52.443306,
+      13.293586
+    ]
+  },
+  {
+    "name": "Lindauer Allee",
+    "coordinates": [
+      52.575416,
+      13.338425
+    ]
+  },
+  {
+    "name": "Lipschitzallee",
+    "coordinates": [
+      52.424643,
+      13.462698
+    ]
+  },
+  {
+    "name": "Louis-Lewin-Straße",
+    "coordinates": [
+      52.538977,
+      13.618346
+    ]
+  },
+  {
+    "name": "Magdalenenstraße (Campus für Demokratie)",
+    "coordinates": [
+      52.512454,
+      13.487079
+    ]
+  },
+  {
+    "name": "Mahlsdorf",
+    "coordinates": [
+      52.51209,
+      13.610413
+    ]
+  },
+  {
+    "name": "Marienfelde",
+    "coordinates": [
+      52.424212,
+      13.374684
+    ]
+  },
+  {
+    "name": "Märkisches Museum",
+    "coordinates": [
+      52.512335,
+      13.410175
+    ]
+  },
+  {
+    "name": "Marzahn",
+    "coordinates": [
+      52.543655,
+      13.541355
+    ]
+  },
+  {
+    "name": "Mehringdamm",
+    "coordinates": [
+      52.494131,
+      13.388617
+    ]
+  },
+  {
+    "name": "Mehrower Allee",
+    "coordinates": [
+      52.557608,
+      13.553551
+    ]
+  },
+  {
+    "name": "Mendelssohn-Bartholdy-Park",
+    "coordinates": [
+      52.503724,
+      13.374861
+    ]
+  },
+  {
+    "name": "Messe Nord/ZOB",
+    "coordinates": [
+      52.507706,
+      13.28347
+    ]
+  },
+  {
+    "name": "Messe Süd (Eichkamp)",
+    "coordinates": [
+      52.498638,
+      13.270233
+    ]
+  },
+  {
+    "name": "Mexikoplatz",
+    "coordinates": [
+      52.436766,
+      13.23324
+    ]
+  },
+  {
+    "name": "Mierendorffplatz",
+    "coordinates": [
+      52.526344,
+      13.304772
+    ]
+  },
+  {
+    "name": "Möckernbrücke",
+    "coordinates": [
+      52.498906,
+      13.383011
+    ]
+  },
+  {
+    "name": "Moritzplatz",
+    "coordinates": [
+      52.503662,
+      13.410748
+    ]
+  },
+  {
+    "name": "Museumsinsel",
+    "coordinates": [
+      52.517263,
+      13.398884
+    ]
+  },
+  {
+    "name": "Naturkundemuseum",
+    "coordinates": [
+      52.531272,
+      13.382161
+    ]
+  },
+  {
+    "name": "Nauener Platz",
+    "coordinates": [
+      52.551406,
+      13.36717
+    ]
+  },
+  {
+    "name": "Neu-Westend",
+    "coordinates": [
+      52.516215,
+      13.259236
+    ]
+  },
+  {
+    "name": "Neukölln",
+    "coordinates": [
+      52.469055,
+      13.442788
+    ]
+  },
+  {
+    "name": "Nikolassee",
+    "coordinates": [
+      52.432055,
+      13.19316
+    ]
+  },
+  {
+    "name": "Nöldnerplatz",
+    "coordinates": [
+      52.50369,
+      13.484936
+    ]
+  },
+  {
+    "name": "Nollendorfplatz",
+    "coordinates": [
+      52.499597,
+      13.35373
+    ]
+  },
+  {
+    "name": "Nordbahnhof",
+    "coordinates": [
+      52.532275,
+      13.387839
+    ]
+  },
+  {
+    "name": "Oberspree",
+    "coordinates": [
+      52.452415,
+      13.538075
+    ]
+  },
+  {
+    "name": "Olympia-Stadion",
+    "coordinates": [
+      52.516864,
+      13.250448
+    ]
+  },
+  {
+    "name": "Olympiastadion",
+    "coordinates": [
+      52.511264,
+      13.242828
+    ]
+  },
+  {
+    "name": "Onkel Toms Hütte",
+    "coordinates": [
+      52.449891,
+      13.253075
+    ]
+  },
+  {
+    "name": "Oranienburger Straße",
+    "coordinates": [
+      52.525225,
+      13.393015
+    ]
+  },
+  {
+    "name": "Oranienburger Tor",
+    "coordinates": [
+      52.5256,
+      13.387358
+    ]
+  },
+  {
+    "name": "Osdorfer Straße",
+    "coordinates": [
+      52.418874,
+      13.31425
+    ]
+  },
+  {
+    "name": "Oskar-Helene-Heim",
+    "coordinates": [
+      52.450361,
+      13.269071
+    ]
+  },
+  {
+    "name": "Osloer Straße",
+    "coordinates": [
+      52.55716,
+      13.373272
+    ]
+  },
+  {
+    "name": "Ostbahnhof",
+    "coordinates": [
+      52.510745,
+      13.435171
+    ]
+  },
+  {
+    "name": "Ostkreuz",
+    "coordinates": [
+      52.503152,
+      13.469578
+    ]
+  },
+  {
+    "name": "Ostkreuz (Ringbahn)",
+    "coordinates": [
+      52.502981,
+      13.46912
+    ]
+  },
+  {
+    "name": "Otisstraße",
+    "coordinates": [
+      52.571034,
+      13.302925
+    ]
+  },
+  {
+    "name": "Pankow",
+    "coordinates": [
+      52.566528,
+      13.41103
+    ]
+  },
+  {
+    "name": "Pankow-Heinersdorf",
+    "coordinates": [
+      52.578065,
+      13.429509
+    ]
+  },
+  {
+    "name": "Pankstraße",
+    "coordinates": [
+      52.552262,
+      13.381458
+    ]
+  },
+  {
+    "name": "Paracelsus-Bad",
+    "coordinates": [
+      52.574243,
+      13.348511
+    ]
+  },
+  {
+    "name": "Paradestraße",
+    "coordinates": [
+      52.478019,
+      13.386256
+    ]
+  },
+  {
+    "name": "Parchimer Allee",
+    "coordinates": [
+      52.444774,
+      13.4496
+    ]
+  },
+  {
+    "name": "Paulsternstraße",
+    "coordinates": [
+      52.537982,
+      13.247818
+    ]
+  },
+  {
+    "name": "Pichelsberg",
+    "coordinates": [
+      52.51015,
+      13.22763
+    ]
+  },
+  {
+    "name": "Plänterwald",
+    "coordinates": [
+      52.478589,
+      13.47324
+    ]
+  },
+  {
+    "name": "Platz der Luftbrücke",
+    "coordinates": [
+      52.486084,
+      13.385951
+    ]
+  },
+  {
+    "name": "Podbielskiallee",
+    "coordinates": [
+      52.464103,
+      13.295752
+    ]
+  },
+  {
+    "name": "Poelchaustraße",
+    "coordinates": [
+      52.535871,
+      13.535578
+    ]
+  },
+  {
+    "name": "Potsdamer Platz",
+    "coordinates": [
+      52.509404,
+      13.37664
+    ]
+  },
+  {
+    "name": "Prenzlauer Allee",
+    "coordinates": [
+      52.54479,
+      13.425981
+    ]
+  },
+  {
+    "name": "Priesterweg",
+    "coordinates": [
+      52.459923,
+      13.356253
+    ]
+  },
+  {
+    "name": "Prinzenstraße",
+    "coordinates": [
+      52.498397,
+      13.40591
+    ]
+  },
+  {
+    "name": "Rahnsdorf",
+    "coordinates": [
+      52.451637,
+      13.689978
+    ]
+  },
+  {
+    "name": "Raoul-Wallenberg-Straße",
+    "coordinates": [
+      52.550733,
+      13.54756
+    ]
+  },
+  {
+    "name": "Rathaus Neukölln",
+    "coordinates": [
+      52.481652,
+      13.434179
+    ]
+  },
+  {
+    "name": "Rathaus Reinickendorf",
+    "coordinates": [
+      52.588406,
+      13.325733
+    ]
+  },
+  {
+    "name": "Rathaus Schöneberg",
+    "coordinates": [
+      52.483177,
+      13.341972
+    ]
+  },
+  {
+    "name": "Rathaus Spandau",
+    "coordinates": [
+      52.535171,
+      13.199774
+    ]
+  },
+  {
+    "name": "Rathaus Steglitz",
+    "coordinates": [
+      52.456164,
+      13.321717
+    ]
+  },
+  {
+    "name": "Rehberge",
+    "coordinates": [
+      52.556689,
+      13.340984
+    ]
+  },
+  {
+    "name": "Reinickendorfer Straße",
+    "coordinates": [
+      52.540043,
+      13.370289
+    ]
+  },
+  {
+    "name": "Residenzstraße",
+    "coordinates": [
+      52.57119,
+      13.360474
+    ]
+  },
+  {
+    "name": "Richard-Wagner-Platz",
+    "coordinates": [
+      52.517387,
+      13.306588
+    ]
+  },
+  {
+    "name": "Rohrdamm",
+    "coordinates": [
+      52.536995,
+      13.262306
+    ]
+  },
+  {
+    "name": "Rosa-Luxemburg-Platz",
+    "coordinates": [
+      52.527695,
+      13.410487
+    ]
+  },
+  {
+    "name": "Rosenthaler Platz",
+    "coordinates": [
+      52.5299,
+      13.401121
+    ]
+  },
+  {
+    "name": "Rotes Rathaus",
+    "coordinates": [
+      52.518843,
+      13.408083
+    ]
+  },
+  {
+    "name": "Rüdesheimer Platz",
+    "coordinates": [
+      52.473246,
+      13.314415
+    ]
+  },
+  {
+    "name": "Rudow",
+    "coordinates": [
+      52.41617,
+      13.495398
+    ]
+  },
+  {
+    "name": "Ruhleben",
+    "coordinates": [
+      52.525674,
+      13.241419
+    ]
+  },
+  {
+    "name": "Rummelsburg",
+    "coordinates": [
+      52.501288,
+      13.478367
+    ]
+  },
+  {
+    "name": "S Anhalter Bahnhof",
+    "coordinates": [
+      52.503579,
+      13.381476
+    ]
+  },
+  {
+    "name": "S Frankfurter Allee",
+    "coordinates": [
+      52.514884,
+      13.474631
+    ]
+  },
+  {
+    "name": "S Friedrichstraße",
+    "coordinates": [
+      52.520633,
+      13.386756
+    ]
+  },
+  {
+    "name": "Samariterstraße",
+    "coordinates": [
+      52.51474,
+      13.464441
+    ]
+  },
+  {
+    "name": "Savignyplatz",
+    "coordinates": [
+      52.505175,
+      13.319066
+    ]
+  },
+  {
+    "name": "Scharnweberstraße",
+    "coordinates": [
+      52.566817,
+      13.312622
+    ]
+  },
+  {
+    "name": "Schichauweg",
+    "coordinates": [
+      52.398545,
+      13.38941
+    ]
+  },
+  {
+    "name": "Schillingstraße",
+    "coordinates": [
+      52.52079,
+      13.421113
+    ]
+  },
+  {
+    "name": "Schlachtensee",
+    "coordinates": [
+      52.440088,
+      13.215437
+    ]
+  },
+  {
+    "name": "Schlesisches Tor",
+    "coordinates": [
+      52.500834,
+      13.441463
+    ]
+  },
+  {
+    "name": "Schloßstraße",
+    "coordinates": [
+      52.461481,
+      13.325095
+    ]
+  },
+  {
+    "name": "Schöneberg",
+    "coordinates": [
+      52.479349,
+      13.351918
+    ]
+  },
+  {
+    "name": "Schöneweide",
+    "coordinates": [
+      52.454906,
+      13.509765
+    ]
+  },
+  {
+    "name": "Schönhauser Allee",
+    "coordinates": [
+      52.549366,
+      13.414654
+    ]
+  },
+  {
+    "name": "Schönholz",
+    "coordinates": [
+      52.5715,
+      13.38099
+    ]
+  },
+  {
+    "name": "Schönleinstraße",
+    "coordinates": [
+      52.493055,
+      13.422057
+    ]
+  },
+  {
+    "name": "Schulzendorf (b Tegel)",
+    "coordinates": [
+      52.612917,
+      13.246023
+    ]
+  },
+  {
+    "name": "Schwartzkopffstraße",
+    "coordinates": [
+      52.535157,
+      13.377318
+    ]
+  },
+  {
+    "name": "Seestraße",
+    "coordinates": [
+      52.549803,
+      13.353118
+    ]
+  },
+  {
+    "name": "Senefelderplatz",
+    "coordinates": [
+      52.53239,
+      13.412686
+    ]
+  },
+  {
+    "name": "Siemensdamm",
+    "coordinates": [
+      52.536775,
+      13.272764
+    ]
+  },
+  {
+    "name": "Sonnenallee",
+    "coordinates": [
+      52.472981,
+      13.45569
+    ]
+  },
+  {
+    "name": "Sophie-Charlotte-Platz",
+    "coordinates": [
+      52.510914,
+      13.296331
+    ]
+  },
+  {
+    "name": "Spandau",
+    "coordinates": [
+      52.534772,
+      13.197453
+    ]
+  },
+  {
+    "name": "Spichernstraße",
+    "coordinates": [
+      52.496445,
+      13.331009
+    ]
+  },
+  {
+    "name": "Spindlersfeld",
+    "coordinates": [
+      52.446898,
+      13.561574
+    ]
+  },
+  {
+    "name": "Spittelmarkt",
+    "coordinates": [
+      52.511296,
+      13.404116
+    ]
+  },
+  {
+    "name": "Springpfuhl",
+    "coordinates": [
+      52.52704,
+      13.536552
+    ]
+  },
+  {
+    "name": "Stadtmitte",
+    "coordinates": [
+      52.51135,
+      13.389753
+    ]
+  },
+  {
+    "name": "Storkower Straße",
+    "coordinates": [
+      52.523743,
+      13.464889
+    ]
+  },
+  {
+    "name": "Strausberger Platz",
+    "coordinates": [
+      52.518098,
+      13.431526
+    ]
+  },
+  {
+    "name": "Stresow",
+    "coordinates": [
+      52.531942,
+      13.209345
+    ]
+  },
+  {
+    "name": "Südende",
+    "coordinates": [
+      52.448279,
+      13.353749
+    ]
+  },
+  {
+    "name": "Südkreuz (Nord-Süd)",
+    "coordinates": [
+      52.476214,
+      13.365138
+    ]
+  },
+  {
+    "name": "Südkreuz (Ringbahn)",
+    "coordinates": [
+      52.475981,
+      13.365073
+    ]
+  },
+  {
+    "name": "Südstern",
+    "coordinates": [
+      52.489298,
+      13.407667
+    ]
+  },
+  {
+    "name": "Sundgauer Straße",
+    "coordinates": [
+      52.43644,
+      13.274201
+    ]
+  },
+  {
+    "name": "Tegel",
+    "coordinates": [
+      52.588191,
+      13.289697
+    ]
+  },
+  {
+    "name": "Tempelhof",
+    "coordinates": [
+      52.470258,
+      13.385037
+    ]
+  },
+  {
+    "name": "Theodor-Heuss-Platz",
+    "coordinates": [
+      52.509987,
+      13.272222
+    ]
+  },
+  {
+    "name": "Tiergarten",
+    "coordinates": [
+      52.514375,
+      13.33645
+    ]
+  },
+  {
+    "name": "Tierpark",
+    "coordinates": [
+      52.497724,
+      13.52296
+    ]
+  },
+  {
+    "name": "Treptower Park",
+    "coordinates": [
+      52.493849,
+      13.46183
+    ]
+  },
+  {
+    "name": "Turmstraße",
+    "coordinates": [
+      52.526149,
+      13.341297
+    ]
+  },
+  {
+    "name": "U Friedrichstraße",
+    "coordinates": [
+      52.520264,
+      13.388286
+    ]
+  },
+  {
+    "name": "U Potsdamer Platz",
+    "coordinates": [
+      52.509159,
+      13.378215
+    ]
+  },
+  {
+    "name": "Uhlandstraße",
+    "coordinates": [
+      52.502812,
+      13.326697
+    ]
+  },
+  {
+    "name": "Ullsteinstraße",
+    "coordinates": [
+      52.453745,
+      13.384466
+    ]
+  },
+  {
+    "name": "Unter den Linden",
+    "coordinates": [
+      52.516988,
+      13.38882
+    ]
+  },
+  {
+    "name": "Viktoria-Luise-Platz",
+    "coordinates": [
+      52.496176,
+      13.343186
+    ]
+  },
+  {
+    "name": "Vinetastraße",
+    "coordinates": [
+      52.559325,
+      13.413278
+    ]
+  },
+  {
+    "name": "Voltastraße",
+    "coordinates": [
+      52.54229,
+      13.392876
+    ]
+  },
+  {
+    "name": "Waidmannslust",
+    "coordinates": [
+      52.606272,
+      13.321194
+    ]
+  },
+  {
+    "name": "Walther-Schreiber-Platz",
+    "coordinates": [
+      52.465325,
+      13.32826
+    ]
+  },
+  {
+    "name": "Wannsee",
+    "coordinates": [
+      52.421407,
+      13.179808
+    ]
+  },
+  {
+    "name": "Warschauer Straße",
+    "coordinates": [
+      52.505692,
+      13.449564
+    ]
+  },
+  {
+    "name": "Wartenberg",
+    "coordinates": [
+      52.572982,
+      13.503832
+    ]
+  },
+  {
+    "name": "Weberwiese",
+    "coordinates": [
+      52.516747,
+      13.444714
+    ]
+  },
+  {
+    "name": "Wedding",
+    "coordinates": [
+      52.542925,
+      13.366019
+    ]
+  },
+  {
+    "name": "Weinmeisterstraße",
+    "coordinates": [
+      52.525467,
+      13.405019
+    ]
+  },
+  {
+    "name": "Westend",
+    "coordinates": [
+      52.518014,
+      13.28442
+    ]
+  },
+  {
+    "name": "Westhafen",
+    "coordinates": [
+      52.536506,
+      13.343495
+    ]
+  },
+  {
+    "name": "Westkreuz",
+    "coordinates": [
+      52.500792,
+      13.283919
+    ]
+  },
+  {
+    "name": "Westkreuz (Stadtbahn)",
+    "coordinates": [
+      52.501029,
+      13.284745
+    ]
+  },
+  {
+    "name": "Westphalweg",
+    "coordinates": [
+      52.446267,
+      13.385691
+    ]
+  },
+  {
+    "name": "Wilhelmshagen",
+    "coordinates": [
+      52.438492,
+      13.722329
+    ]
+  },
+  {
+    "name": "Wilhelmsruh",
+    "coordinates": [
+      52.581694,
+      13.36224
+    ]
+  },
+  {
+    "name": "Wilmersdorfer Straße",
+    "coordinates": [
+      52.506675,
+      13.306637
+    ]
+  },
+  {
+    "name": "Wittenau",
+    "coordinates": [
+      52.596346,
+      13.334486
+    ]
+  },
+  {
+    "name": "Wittenbergplatz",
+    "coordinates": [
+      52.501798,
+      13.343001
+    ]
+  },
+  {
+    "name": "Wollankstraße",
+    "coordinates": [
+      52.565153,
+      13.392363
+    ]
+  },
+  {
+    "name": "Wuhletal",
+    "coordinates": [
+      52.512612,
+      13.575213
+    ]
+  },
+  {
+    "name": "Wuhlheide",
+    "coordinates": [
+      52.468551,
+      13.554336
+    ]
+  },
+  {
+    "name": "Wutzkyallee",
+    "coordinates": [
+      52.423326,
+      13.474567
+    ]
+  },
+  {
+    "name": "Yorckstraße",
+    "coordinates": [
+      52.49252,
+      13.371418
+    ]
+  },
+  {
+    "name": "Yorckstraße (Großgörschenstraße)",
+    "coordinates": [
+      52.492275,
+      13.367859
+    ]
+  },
+  {
+    "name": "Zehlendorf",
+    "coordinates": [
+      52.431074,
+      13.258589
+    ]
+  },
+  {
+    "name": "Zitadelle",
+    "coordinates": [
+      52.537652,
+      13.217536
+    ]
+  },
+  {
+    "name": "Zoologischer Garten",
+    "coordinates": [
+      52.506503,
+      13.332446
+    ]
+  },
+  {
+    "name": "Zwickauer Damm",
+    "coordinates": [
+      52.42338,
+      13.48394
+    ]
+  }
+]

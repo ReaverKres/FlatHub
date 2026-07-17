@@ -27,4 +27,7 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.FOTOCASA ->
         "https://frtassets.fotocasa.es/statics/img/favicon-96x96.png"
     FlatPlatform.PISOS -> "https://www.pisos.com/favicon.ico"
+    FlatPlatform.IS24 -> "https://www.immobilienscout24.de/favicon.ico"
+    FlatPlatform.IMMOWELT -> "https://www.immowelt.de/favicon.ico"
+    FlatPlatform.KLEINANZEIGEN -> "https://www.kleinanzeigen.de/favicon.ico"
 }

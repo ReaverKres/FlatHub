@@ -52,6 +52,9 @@ import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.fotocasa32
 import flatzen.composeapp.generated.resources.gratka32
+import flatzen.composeapp.generated.resources.immowelt32
+import flatzen.composeapp.generated.resources.is2432
+import flatzen.composeapp.generated.resources.kleinanzeigen32
 import flatzen.composeapp.generated.resources.kn32
 import flatzen.composeapp.generated.resources.krisha32
 import flatzen.composeapp.generated.resources.kufar32
@@ -345,6 +348,9 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.KN -> painterResource(Res.drawable.kn32)
         FlatPlatform.FOTOCASA -> painterResource(Res.drawable.fotocasa32)
         FlatPlatform.PISOS -> painterResource(Res.drawable.pisos32)
+        FlatPlatform.IS24 -> painterResource(Res.drawable.is2432)
+        FlatPlatform.IMMOWELT -> painterResource(Res.drawable.immowelt32)
+        FlatPlatform.KLEINANZEIGEN -> painterResource(Res.drawable.kleinanzeigen32)
     }
 }
 

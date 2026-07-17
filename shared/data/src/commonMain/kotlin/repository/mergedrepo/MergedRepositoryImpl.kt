@@ -274,6 +274,13 @@ class MergedRepositoryImpl(
             }
         }
 
+        val selectedRooms = currentFilter.numberOfRooms.orEmpty()
+        if (selectedRooms.isNotEmpty() && !currentFilter.roomOnly) {
+            resultList = resultList.filter { flat ->
+                flat.rooms != null && flat.rooms in selectedRooms
+            }
+        }
+
         if (currentFilter.addressRequestModel.isNotEmpty()) {
             resultList = resultList.filter { flat ->
                 currentFilter.addressRequestModel.any { filterAddress ->

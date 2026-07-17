@@ -256,7 +256,8 @@ fun LocationScreen() {
                 selectedCityCode == CityCode.TBILISI ||
                 selectedCityCode == CityCode.ALMATY ||
                 selectedCityCode == CityCode.MADRID ||
-                selectedCityCode == CityCode.BARCELONA
+                selectedCityCode == CityCode.BARCELONA ||
+                selectedCityCode == CityCode.BERLIN
             ) {
                 Card(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
@@ -742,7 +743,9 @@ fun MetroSelectScreen(
             }
 
             val useNumberedMetroLines = when (state.filters.location?.selectedCity?.code) {
-                CityCode.WARSZAWA, CityCode.TBILISI, CityCode.MADRID, CityCode.BARCELONA -> true
+                CityCode.WARSZAWA, CityCode.TBILISI, CityCode.MADRID, CityCode.BARCELONA,
+                CityCode.BERLIN,
+                    -> true
                 // Almaty is a single line — keep "blue" title, not M1/M2.
                 else -> false
             }

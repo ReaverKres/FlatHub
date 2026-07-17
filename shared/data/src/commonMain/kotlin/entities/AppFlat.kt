@@ -128,6 +128,11 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.PISOS,
         -> "€"
 
+    FlatPlatform.IS24,
+    FlatPlatform.IMMOWELT,
+    FlatPlatform.KLEINANZEIGEN,
+        -> "€"
+
     else -> "BYN"
 }
 
