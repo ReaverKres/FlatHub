@@ -39,6 +39,11 @@ enum class FlatPlatform(val value: String) {
     PROPERTY_FINDER("property_finder"),
     DUBIZZLE("dubizzle"),
     OPENSOOQ("opensooq"),
+
+    // Thailand (MVP) — DDproperty/FazWaz blocked (CF); RentHub rent-only apartments
+    PROPERTYHUB("propertyhub"),
+    LIVINGINSIDER("livinginsider"),
+    RENTHUB("renthub"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -80,6 +85,11 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.DUBIZZLE,
     FlatPlatform.OPENSOOQ,
         -> CountryCode.AE
+
+    FlatPlatform.PROPERTYHUB,
+    FlatPlatform.LIVINGINSIDER,
+    FlatPlatform.RENTHUB,
+        -> CountryCode.TH
 }
 
 fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
@@ -90,6 +100,6 @@ fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
  * Free-text list scrapers (Krisha/kn) often omit rooms → hide the field on the list.
  */
 fun FlatPlatform.listExpectsRoomsField(): Boolean = when (this) {
-    FlatPlatform.KRISHA, FlatPlatform.KN -> false
+    FlatPlatform.KRISHA, FlatPlatform.KN, FlatPlatform.LIVINGINSIDER, FlatPlatform.RENTHUB -> false
     else -> true
 }

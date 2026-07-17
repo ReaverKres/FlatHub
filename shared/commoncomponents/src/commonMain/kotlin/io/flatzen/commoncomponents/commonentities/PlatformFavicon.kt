@@ -34,4 +34,7 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.PROPERTY_FINDER -> "https://www.propertyfinder.ae/favicon.ico"
     FlatPlatform.DUBIZZLE -> "https://dubai.dubizzle.com/favicon.ico"
     FlatPlatform.OPENSOOQ -> "https://ae.opensooq.com/favicon.ico"
+    FlatPlatform.PROPERTYHUB -> "https://propertyhub.in.th/favicon.ico"
+    FlatPlatform.LIVINGINSIDER -> "https://www.livinginsider.com/favicon.ico"
+    FlatPlatform.RENTHUB -> "https://www.renthub.in.th/favicon.ico"
 }

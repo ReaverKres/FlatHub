@@ -60,6 +60,7 @@ import flatzen.composeapp.generated.resources.kleinanzeigen32
 import flatzen.composeapp.generated.resources.kn32
 import flatzen.composeapp.generated.resources.krisha32
 import flatzen.composeapp.generated.resources.kufar32
+import flatzen.composeapp.generated.resources.livinginsider32
 import flatzen.composeapp.generated.resources.livo32
 import flatzen.composeapp.generated.resources.morizon32
 import flatzen.composeapp.generated.resources.olxkz32
@@ -69,7 +70,9 @@ import flatzen.composeapp.generated.resources.opensooq32
 import flatzen.composeapp.generated.resources.otodom32
 import flatzen.composeapp.generated.resources.pisos32
 import flatzen.composeapp.generated.resources.propertyfinder32
+import flatzen.composeapp.generated.resources.propertyhub32
 import flatzen.composeapp.generated.resources.realt32
+import flatzen.composeapp.generated.resources.renthub32
 import flatzen.composeapp.generated.resources.ssge32
 import flatzen.composeapp.generated.resources.tab_favorites
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
@@ -359,6 +362,9 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.PROPERTY_FINDER -> painterResource(Res.drawable.propertyfinder32)
         FlatPlatform.DUBIZZLE -> painterResource(Res.drawable.dubizzle32)
         FlatPlatform.OPENSOOQ -> painterResource(Res.drawable.opensooq32)
+        FlatPlatform.PROPERTYHUB -> painterResource(Res.drawable.propertyhub32)
+        FlatPlatform.LIVINGINSIDER -> painterResource(Res.drawable.livinginsider32)
+        FlatPlatform.RENTHUB -> painterResource(Res.drawable.renthub32)
     }
 }
 

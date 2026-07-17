@@ -30,4 +30,7 @@ enum class ConfigFields(val param: String) {
 
     /** Comma-separated FlatPlatform names for UAE, e.g. `PROPERTY_FINDER,DUBIZZLE,OPENSOOQ`. Empty = all. */
     EnabledPlatformsAe("enabled_platforms_ae"),
+
+    /** Comma-separated FlatPlatform names for Thailand, e.g. `PROPERTYHUB,LIVINGINSIDER,RENTHUB`. Empty = all. */
+    EnabledPlatformsTh("enabled_platforms_th"),
 }

@@ -42,6 +42,9 @@ object FeedDelayListBoost {
         FlatPlatform.PROPERTY_FINDER to 3.0,
         FlatPlatform.DUBIZZLE to 3.0,
         FlatPlatform.OPENSOOQ to 1.5,
+        FlatPlatform.PROPERTYHUB to 3.0,
+        FlatPlatform.LIVINGINSIDER to 2.5,
+        FlatPlatform.RENTHUB to 2.0,
     )
 
     /** API list: inflate page size ≈ 2 × base × popularity. */

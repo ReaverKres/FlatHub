@@ -10,7 +10,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 data class Country(val country: CountryCode, val allCities: List<City>)
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, TR, AE;
+    BY, PL, GE, KZ, ES, DE, TR, AE, TH;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -22,6 +22,7 @@ enum class CountryCode {
             "DE" -> DE
             "TR" -> TR
             "AE" -> AE
+            "TH" -> TH
             else -> BY
         }
     }
@@ -52,6 +53,9 @@ enum class CityCode {
 
     // UAE (MVP)
     DUBAI, ABU_DHABI, SHARJAH, AJMAN, AL_AIN, RAS_AL_KHAIMAH, FUJAIRAH, UMM_AL_QUWAIN,
+
+    // Thailand (MVP)
+    BANGKOK, PHUKET, CHIANG_MAI, PATTAYA, HUA_HIN, KOH_SAMUI,
 }
 
 /** BY and AE map commercial property subtypes in filter + ListingSources. */
@@ -67,6 +71,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.DE -> CityCode.BERLIN
     CountryCode.TR -> CityCode.ISTANBUL
     CountryCode.AE -> CityCode.DUBAI
+    CountryCode.TH -> CityCode.BANGKOK
 }
 
 object Location {
@@ -125,5 +130,11 @@ object Location {
         CityCode.RAS_AL_KHAIMAH -> "ras-al-khaimah"
         CityCode.FUJAIRAH -> "fujairah"
         CityCode.UMM_AL_QUWAIN -> "umm-al-quwain"
+        CityCode.BANGKOK -> "bangkok"
+        CityCode.PHUKET -> "phuket"
+        CityCode.CHIANG_MAI -> "chiang-mai"
+        CityCode.PATTAYA -> "pattaya"
+        CityCode.HUA_HIN -> "hua-hin"
+        CityCode.KOH_SAMUI -> "koh-samui"
     }
 }

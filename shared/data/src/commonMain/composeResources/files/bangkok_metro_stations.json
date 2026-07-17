@@ -1,0 +1,604 @@
+[
+  {
+    "name": "Airport Link Ban Thap Chang",
+    "coordinates": [
+      13.732802882754616,
+      100.69134756536258
+    ]
+  },
+  {
+    "name": "Airport Link Hua Mak",
+    "coordinates": [
+      13.738056714987314,
+      100.64464696924004
+    ]
+  },
+  {
+    "name": "Airport Link Lat Krabang",
+    "coordinates": [
+      13.72768897310057,
+      100.74927059635895
+    ]
+  },
+  {
+    "name": "Airport Link Makkasan",
+    "coordinates": [
+      13.751016508773914,
+      100.56076338145208
+    ]
+  },
+  {
+    "name": "Airport Link Ramkhamhaeng",
+    "coordinates": [
+      13.742965632524674,
+      100.60087279762071
+    ]
+  },
+  {
+    "name": "Airport Link Ratchaprarop",
+    "coordinates": [
+      13.754884349055631,
+      100.54275122001171
+    ]
+  },
+  {
+    "name": "Bang Son Station",
+    "coordinates": [
+      13.822147892859732,
+      100.53526461525698
+    ]
+  },
+  {
+    "name": "BTS 11 Infantry Regiment",
+    "coordinates": [
+      13.867296953890254,
+      100.59173996582354
+    ]
+  },
+  {
+    "name": "BTS Ari",
+    "coordinates": [
+      13.780003019962836,
+      100.54487784191492
+    ]
+  },
+  {
+    "name": "BTS Asok",
+    "coordinates": [
+      13.737573737744983,
+      100.5594301462914
+    ]
+  },
+  {
+    "name": "BTS Bang Chak",
+    "coordinates": [
+      13.697475910797191,
+      100.60499307283133
+    ]
+  },
+  {
+    "name": "BTS Bang Na",
+    "coordinates": [
+      13.667922652403904,
+      100.60473668882406
+    ]
+  },
+  {
+    "name": "BTS Bearing",
+    "coordinates": [
+      13.661471292302599,
+      100.60186020856132
+    ]
+  },
+  {
+    "name": "BTS Chang Erawan",
+    "coordinates": [
+      13.621945470481858,
+      100.59015552209215
+    ]
+  },
+  {
+    "name": "BTS Chit Lom",
+    "coordinates": [
+      13.744295810976825,
+      100.54235070396042
+    ]
+  },
+  {
+    "name": "BTS Chong Nonsi",
+    "coordinates": [
+      13.72406293811761,
+      100.52905257440278
+    ]
+  },
+  {
+    "name": "BTS Ekkamai",
+    "coordinates": [
+      13.719767259842483,
+      100.58493552282583
+    ]
+  },
+  {
+    "name": "BTS Khu Khot",
+    "coordinates": [
+      13.932189694064947,
+      100.64691533030994
+    ]
+  },
+  {
+    "name": "BTS Krung Thon Buri",
+    "coordinates": [
+      13.721037104938448,
+      100.50196463346995
+    ]
+  },
+  {
+    "name": "BTS Ladphrao Intersection",
+    "coordinates": [
+      13.817030740393912,
+      100.56215400827098
+    ]
+  },
+  {
+    "name": "BTS Mo Chit",
+    "coordinates": [
+      13.802297930779142,
+      100.55354341841952
+    ]
+  },
+  {
+    "name": "BTS Nana",
+    "coordinates": [
+      13.74068074861063,
+      100.55505293121173
+    ]
+  },
+  {
+    "name": "BTS National Stadium",
+    "coordinates": [
+      13.746461189733216,
+      100.52939309243423
+    ]
+  },
+  {
+    "name": "BTS On Nut",
+    "coordinates": [
+      13.705325365648145,
+      100.60108243120472
+    ]
+  },
+  {
+    "name": "BTS Pak Nam",
+    "coordinates": [
+      13.601820941011074,
+      100.59713280415698
+    ]
+  },
+  {
+    "name": "BTS Phaholyothin 24",
+    "coordinates": [
+      13.823641514389559,
+      100.56610439004848
+    ]
+  },
+  {
+    "name": "BTS Phaya Thai",
+    "coordinates": [
+      13.757239877377186,
+      100.53415222831094
+    ]
+  },
+  {
+    "name": "BTS Phra Khanong",
+    "coordinates": [
+      13.715425089959192,
+      100.59104189712488
+    ]
+  },
+  {
+    "name": "BTS Phrom Phong",
+    "coordinates": [
+      13.730585572093592,
+      100.5697044418013
+    ]
+  },
+  {
+    "name": "BTS Punnawithi",
+    "coordinates": [
+      13.68904438978906,
+      100.60924479277024
+    ]
+  },
+  {
+    "name": "BTS Ratchadamri",
+    "coordinates": [
+      13.73924173622944,
+      100.53932690826954
+    ]
+  },
+  {
+    "name": "BTS Ratchathewi",
+    "coordinates": [
+      13.751558434604515,
+      100.53163143855576
+    ]
+  },
+  {
+    "name": "BTS Saint Louis",
+    "coordinates": [
+      13.72057013277704,
+      100.52604301035232
+    ]
+  },
+  {
+    "name": "BTS Sala Daeng",
+    "coordinates": [
+      13.72846796713633,
+      100.53394464806163
+    ]
+  },
+  {
+    "name": "BTS Samrong",
+    "coordinates": [
+      13.646487198285694,
+      100.59596268400118
+    ]
+  },
+  {
+    "name": "BTS Saphan Khwai",
+    "coordinates": [
+      13.79411558920378,
+      100.54972537301478
+    ]
+  },
+  {
+    "name": "BTS Saphan Mai",
+    "coordinates": [
+      13.89687816017651,
+      100.60915803846498
+    ]
+  },
+  {
+    "name": "BTS Saphan Taksin",
+    "coordinates": [
+      13.71889010098093,
+      100.51388614305078
+    ]
+  },
+  {
+    "name": "BTS Siam",
+    "coordinates": [
+      13.745633256410459,
+      100.5333394063582
+    ]
+  },
+  {
+    "name": "BTS Talat Phlu",
+    "coordinates": [
+      13.715421441411346,
+      100.47803878784131
+    ]
+  },
+  {
+    "name": "BTS Thong Lo (Thong Lor)",
+    "coordinates": [
+      13.724440896978225,
+      100.57838932587089
+    ]
+  },
+  {
+    "name": "BTS Udom Suk",
+    "coordinates": [
+      13.679217419112323,
+      100.60929252715692
+    ]
+  },
+  {
+    "name": "BTS Victory Monument",
+    "coordinates": [
+      13.762409206014366,
+      100.53706769856423
+    ]
+  },
+  {
+    "name": "BTS Wat Phra Sri Mahathat",
+    "coordinates": [
+      13.874645272819837,
+      100.59657744599797
+    ]
+  },
+  {
+    "name": "BTS Wongwian Yai",
+    "coordinates": [
+      13.720969707819824,
+      100.4955631502233
+    ]
+  },
+  {
+    "name": "BTS Wutthakat",
+    "coordinates": [
+      13.712391281915577,
+      100.47034727230012
+    ]
+  },
+  {
+    "name": "BTS Yaek Kor Por Aor",
+    "coordinates": [
+      13.924780448507592,
+      100.625598554228
+    ]
+  },
+  {
+    "name": "Charoen Nakhon Station",
+    "coordinates": [
+      13.72551538043042,
+      100.50910803868285
+    ]
+  },
+  {
+    "name": "Krung Thep Aphiwat Station",
+    "coordinates": [
+      13.804019492782288,
+      100.54171850464029
+    ]
+  },
+  {
+    "name": "MRT Bang Kapi",
+    "coordinates": [
+      13.767841335350633,
+      100.64183881769102
+    ]
+  },
+  {
+    "name": "MRT Bang Khae",
+    "coordinates": [
+      13.711799284743002,
+      100.42279482645235
+    ]
+  },
+  {
+    "name": "MRT Bang Kraso",
+    "coordinates": [
+      13.861640381232045,
+      100.50601556897163
+    ]
+  },
+  {
+    "name": "MRT Bang Phlu",
+    "coordinates": [
+      13.876228613415437,
+      100.43567075894217
+    ]
+  },
+  {
+    "name": "MRT Bang Pho",
+    "coordinates": [
+      13.806421428901515,
+      100.52144597396634
+    ]
+  },
+  {
+    "name": "MRT Bang Son",
+    "coordinates": [
+      13.81886220050678,
+      100.53253857435963
+    ]
+  },
+  {
+    "name": "MRT Bang Wa",
+    "coordinates": [
+      13.720174699410617,
+      100.45682102503535
+    ]
+  },
+  {
+    "name": "MRT Charan 13",
+    "coordinates": [
+      13.740385225744582,
+      100.47082397524947
+    ]
+  },
+  {
+    "name": "MRT Chatuchak Park",
+    "coordinates": [
+      13.803521881171642,
+      100.55386265409686
+    ]
+  },
+  {
+    "name": "MRT Fai Chai",
+    "coordinates": [
+      13.756212009052511,
+      100.4693710603444
+    ]
+  },
+  {
+    "name": "MRT Hua Lamphong",
+    "coordinates": [
+      13.737296544864162,
+      100.51711587070395
+    ]
+  },
+  {
+    "name": "MRT Huai Khwang",
+    "coordinates": [
+      13.779015496743337,
+      100.57399776074622
+    ]
+  },
+  {
+    "name": "MRT Itsaraphap",
+    "coordinates": [
+      13.738039120493234,
+      100.48524044470145
+    ]
+  },
+  {
+    "name": "MRT Kamphaeng Phet",
+    "coordinates": [
+      13.798022364482009,
+      100.5476031484779
+    ]
+  },
+  {
+    "name": "MRT Khlong Toei",
+    "coordinates": [
+      13.722466482215438,
+      100.55413222138051
+    ]
+  },
+  {
+    "name": "MRT Lat Phrao",
+    "coordinates": [
+      13.806936350980612,
+      100.57161563409333
+    ]
+  },
+  {
+    "name": "MRT Lat Phrao 83",
+    "coordinates": [
+      13.78391333979046,
+      100.61330452195132
+    ]
+  },
+  {
+    "name": "MRT Lumphini",
+    "coordinates": [
+      13.725303630445874,
+      100.54617317196447
+    ]
+  },
+  {
+    "name": "MRT Ministry of Public Health",
+    "coordinates": [
+      13.847637641851467,
+      100.51381203771251
+    ]
+  },
+  {
+    "name": "MRT Nonthaburi Civic Center",
+    "coordinates": [
+      13.860105819940355,
+      100.51120953458243
+    ]
+  },
+  {
+    "name": "MRT Phahon Yothin",
+    "coordinates": [
+      13.81242720952648,
+      100.56180537301472
+    ]
+  },
+  {
+    "name": "MRT Phetchaburi",
+    "coordinates": [
+      13.749495575406563,
+      100.56374305522372
+    ]
+  },
+  {
+    "name": "MRT Phra Ram 9",
+    "coordinates": [
+      13.756982001151918,
+      100.56496816930982
+    ]
+  },
+  {
+    "name": "MRT Queen Sirikit National Convention Center",
+    "coordinates": [
+      13.72194220886614,
+      100.55939060915028
+    ]
+  },
+  {
+    "name": "MRT Ratchada",
+    "coordinates": [
+      13.8053147,
+      100.5749545
+    ]
+  },
+  {
+    "name": "MRT Sam Yaek Bang Yai",
+    "coordinates": [
+      13.87497557020117,
+      100.41807465255285
+    ]
+  },
+  {
+    "name": "MRT Si Dan",
+    "coordinates": [
+      13.631052979113507,
+      100.62886899725436
+    ]
+  },
+  {
+    "name": "MRT Si Lom",
+    "coordinates": [
+      13.729424999999896,
+      100.53777299999847
+    ]
+  },
+  {
+    "name": "MRT Si Thepha",
+    "coordinates": [
+      13.628354372906854,
+      100.6256148330658
+    ]
+  },
+  {
+    "name": "MRT Sirindhorn",
+    "coordinates": [
+      13.783315278942938,
+      100.49281053476453
+    ]
+  },
+  {
+    "name": "MRT Sukhumvit",
+    "coordinates": [
+      13.737156282675626,
+      100.56160724094644
+    ]
+  },
+  {
+    "name": "MRT Sutthisan",
+    "coordinates": [
+      13.788824317245915,
+      100.57388735512066
+    ]
+  },
+  {
+    "name": "MRT Talad Bang Yai",
+    "coordinates": [
+      13.88006362423114,
+      100.40891759097576
+    ]
+  },
+  {
+    "name": "MRT Tao Poon",
+    "coordinates": [
+      13.805899687524946,
+      100.53102836240247
+    ]
+  },
+  {
+    "name": "MRT Tha Phra",
+    "coordinates": [
+      13.729131420559082,
+      100.4746292805001
+    ]
+  },
+  {
+    "name": "MRT Thailand Cultural Centre",
+    "coordinates": [
+      13.766985399041419,
+      100.57124728835893
+    ]
+  },
+  {
+    "name": "MRT Yaek Lam Sali",
+    "coordinates": [
+      13.76289055048342,
+      100.64529919496763
+    ]
+  }
+]

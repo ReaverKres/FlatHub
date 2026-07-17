@@ -23,6 +23,9 @@ enum class Currency {
 
     @SerialName("AED")
     AED,
+
+    @SerialName("THB")
+    THB,
     ;
 
     /** Short label for filter UI / chips. */
@@ -35,6 +38,7 @@ enum class Currency {
         KZT -> "KZT"
         TRY -> "₺"
         AED -> "AED"
+        THB -> "฿"
     }
 
     /**
@@ -43,7 +47,7 @@ enum class Currency {
      * EUR included so Spain (and any EUR market) shows € as main via localIsMain.
      */
     fun usesLocalPriceField(): Boolean = when (this) {
-        PLN, GEL, KZT, BYR, EUR, TRY, AED -> true
+        PLN, GEL, KZT, BYR, EUR, TRY, AED, THB -> true
         USD -> false
     }
 }
@@ -58,4 +62,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.DE -> Currency.EUR
     CountryCode.TR -> Currency.TRY
     CountryCode.AE -> Currency.AED
+    CountryCode.TH -> Currency.THB
 }

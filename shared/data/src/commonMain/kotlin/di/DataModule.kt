@@ -60,6 +60,12 @@ import listing.pl.olx.OlxPlApiClient
 import listing.pl.olx.OlxPlListingSource
 import listing.pl.otodom.OtodomApiClient
 import listing.pl.otodom.OtodomListingSource
+import listing.th.livinginsider.LivinginsiderApiClient
+import listing.th.livinginsider.LivinginsiderListingSource
+import listing.th.propertyhub.PropertyHubApiClient
+import listing.th.propertyhub.PropertyHubListingSource
+import listing.th.renthub.RentHubApiClient
+import listing.th.renthub.RentHubListingSource
 import listing.tr.emlakjet.EmlakjetApiClient
 import listing.tr.emlakjet.EmlakjetListingSource
 import mappers.DomovitaFlatMapper
@@ -244,6 +250,13 @@ val dataModule = module {
     single { OpenSooqApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { OpenSooqListingSource(api = get(), flatsDao = get()) }
 
+    single { PropertyHubApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { PropertyHubListingSource(api = get(), flatsDao = get()) }
+    single { LivinginsiderApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { LivinginsiderListingSource(api = get(), flatsDao = get()) }
+    single { RentHubApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { RentHubListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -271,6 +284,9 @@ val dataModule = module {
                 get<PropertyFinderListingSource>(),
                 get<DubizzleListingSource>(),
                 get<OpenSooqListingSource>(),
+                get<PropertyHubListingSource>(),
+                get<LivinginsiderListingSource>(),
+                get<RentHubListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

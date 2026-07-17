@@ -141,6 +141,11 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.OPENSOOQ,
         -> "AED"
 
+    FlatPlatform.PROPERTYHUB,
+    FlatPlatform.LIVINGINSIDER,
+    FlatPlatform.RENTHUB,
+        -> "฿"
+
     else -> "BYN"
 }
 
