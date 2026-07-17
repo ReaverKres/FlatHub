@@ -6,6 +6,8 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -37,6 +39,9 @@ object OlxKzFlatMapper {
         val created = item["created_time"]?.jsonPrimitive?.contentOrNull
             ?: item["last_refresh_time"]?.jsonPrimitive?.contentOrNull
         val publishedAt = created?.let { runCatching { Instant.parse(it) }.getOrNull() }
+        val publishedAtUi = publishedAt?.let {
+            DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+        }
 
         val params = item["params"]?.jsonArray ?: JsonArray(emptyList())
         val priceKzt = paramPrice(params)
@@ -79,7 +84,7 @@ object OlxKzFlatMapper {
             flatDetailUrl = url,
             publishedAt = publishedAt,
             publishedAtServer = created,
-            publishedAtUi = created,
+            publishedAtUi = publishedAtUi,
             imageUrls = photos,
             priceUsd = null,
             priceByn = priceKzt,

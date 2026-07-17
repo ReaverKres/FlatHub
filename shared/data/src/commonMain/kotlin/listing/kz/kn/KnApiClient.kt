@@ -19,8 +19,7 @@ class KnApiClient(
     private val httpClient: HttpClient,
     private val json: Json,
 ) {
-    suspend fun fetchSearchHtml(cityAlias: String, isSale: Boolean, page: Int): String {
-        val section = if (isSale) "prodazha-kvartir" else "arenda-kvartir"
+    suspend fun fetchSearchHtml(cityAlias: String, section: String, page: Int): String {
         return httpClient.get("https://www.kn.kz/$cityAlias/$section") {
             header(HttpHeaders.UserAgent, USER_AGENT)
             header(HttpHeaders.Accept, "text/html,application/xhtml+xml")

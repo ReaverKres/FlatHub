@@ -1,0 +1,454 @@
+{
+  "Алматы": [
+    {
+      "id": 91003,
+      "nameEn": "Alatau",
+      "nameLocal": "Алатауский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2413,
+          "longitude": 76.812
+        },
+        {
+          "latitude": 43.2413,
+          "longitude": 76.89200000000001
+        },
+        {
+          "latitude": 43.3213,
+          "longitude": 76.89200000000001
+        },
+        {
+          "latitude": 43.3213,
+          "longitude": 76.812
+        },
+        {
+          "latitude": 43.2413,
+          "longitude": 76.812
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91026,
+      "nameEn": "Almaly",
+      "nameLocal": "Алмалинский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2211,
+          "longitude": 76.85449999999999
+        },
+        {
+          "latitude": 43.2211,
+          "longitude": 76.9345
+        },
+        {
+          "latitude": 43.3011,
+          "longitude": 76.9345
+        },
+        {
+          "latitude": 43.3011,
+          "longitude": 76.85449999999999
+        },
+        {
+          "latitude": 43.2211,
+          "longitude": 76.85449999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91029,
+      "nameEn": "Auezov",
+      "nameLocal": "Ауэзовский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.79899999999999
+        },
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.879
+        },
+        {
+          "latitude": 43.2809,
+          "longitude": 76.879
+        },
+        {
+          "latitude": 43.2809,
+          "longitude": 76.79899999999999
+        },
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.79899999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91073,
+      "nameEn": "Bostandyk",
+      "nameLocal": "Бостандыкский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1734,
+          "longitude": 76.848
+        },
+        {
+          "latitude": 43.1734,
+          "longitude": 76.92800000000001
+        },
+        {
+          "latitude": 43.2534,
+          "longitude": 76.92800000000001
+        },
+        {
+          "latitude": 43.2534,
+          "longitude": 76.848
+        },
+        {
+          "latitude": 43.1734,
+          "longitude": 76.848
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91083,
+      "nameEn": "Jetysu",
+      "nameLocal": "Жетысуский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2611,
+          "longitude": 76.8583
+        },
+        {
+          "latitude": 43.2611,
+          "longitude": 76.93830000000001
+        },
+        {
+          "latitude": 43.3411,
+          "longitude": 76.93830000000001
+        },
+        {
+          "latitude": 43.3411,
+          "longitude": 76.8583
+        },
+        {
+          "latitude": 43.2611,
+          "longitude": 76.8583
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91089,
+      "nameEn": "Medeu",
+      "nameLocal": "Медеуский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1883,
+          "longitude": 76.9186
+        },
+        {
+          "latitude": 43.1883,
+          "longitude": 76.99860000000001
+        },
+        {
+          "latitude": 43.268299999999996,
+          "longitude": 76.99860000000001
+        },
+        {
+          "latitude": 43.268299999999996,
+          "longitude": 76.9186
+        },
+        {
+          "latitude": 43.1883,
+          "longitude": 76.9186
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91783,
+      "nameEn": "Nauryzbai",
+      "nameLocal": "Наурызбайский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1492,
+          "longitude": 76.7769
+        },
+        {
+          "latitude": 43.1492,
+          "longitude": 76.85690000000001
+        },
+        {
+          "latitude": 43.2292,
+          "longitude": 76.85690000000001
+        },
+        {
+          "latitude": 43.2292,
+          "longitude": 76.7769
+        },
+        {
+          "latitude": 43.1492,
+          "longitude": 76.7769
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91099,
+      "nameEn": "Turksib",
+      "nameLocal": "Турксибский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.3059,
+          "longitude": 76.93759999999999
+        },
+        {
+          "latitude": 43.3059,
+          "longitude": 77.0176
+        },
+        {
+          "latitude": 43.3859,
+          "longitude": 77.0176
+        },
+        {
+          "latitude": 43.3859,
+          "longitude": 76.93759999999999
+        },
+        {
+          "latitude": 43.3059,
+          "longitude": 76.93759999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ],
+  "Almaty": [
+    {
+      "id": 91003,
+      "nameEn": "Alatau",
+      "nameLocal": "Алатауский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2413,
+          "longitude": 76.812
+        },
+        {
+          "latitude": 43.2413,
+          "longitude": 76.89200000000001
+        },
+        {
+          "latitude": 43.3213,
+          "longitude": 76.89200000000001
+        },
+        {
+          "latitude": 43.3213,
+          "longitude": 76.812
+        },
+        {
+          "latitude": 43.2413,
+          "longitude": 76.812
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91026,
+      "nameEn": "Almaly",
+      "nameLocal": "Алмалинский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2211,
+          "longitude": 76.85449999999999
+        },
+        {
+          "latitude": 43.2211,
+          "longitude": 76.9345
+        },
+        {
+          "latitude": 43.3011,
+          "longitude": 76.9345
+        },
+        {
+          "latitude": 43.3011,
+          "longitude": 76.85449999999999
+        },
+        {
+          "latitude": 43.2211,
+          "longitude": 76.85449999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91029,
+      "nameEn": "Auezov",
+      "nameLocal": "Ауэзовский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.79899999999999
+        },
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.879
+        },
+        {
+          "latitude": 43.2809,
+          "longitude": 76.879
+        },
+        {
+          "latitude": 43.2809,
+          "longitude": 76.79899999999999
+        },
+        {
+          "latitude": 43.200900000000004,
+          "longitude": 76.79899999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91073,
+      "nameEn": "Bostandyk",
+      "nameLocal": "Бостандыкский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1734,
+          "longitude": 76.848
+        },
+        {
+          "latitude": 43.1734,
+          "longitude": 76.92800000000001
+        },
+        {
+          "latitude": 43.2534,
+          "longitude": 76.92800000000001
+        },
+        {
+          "latitude": 43.2534,
+          "longitude": 76.848
+        },
+        {
+          "latitude": 43.1734,
+          "longitude": 76.848
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91083,
+      "nameEn": "Jetysu",
+      "nameLocal": "Жетысуский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.2611,
+          "longitude": 76.8583
+        },
+        {
+          "latitude": 43.2611,
+          "longitude": 76.93830000000001
+        },
+        {
+          "latitude": 43.3411,
+          "longitude": 76.93830000000001
+        },
+        {
+          "latitude": 43.3411,
+          "longitude": 76.8583
+        },
+        {
+          "latitude": 43.2611,
+          "longitude": 76.8583
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91089,
+      "nameEn": "Medeu",
+      "nameLocal": "Медеуский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1883,
+          "longitude": 76.9186
+        },
+        {
+          "latitude": 43.1883,
+          "longitude": 76.99860000000001
+        },
+        {
+          "latitude": 43.268299999999996,
+          "longitude": 76.99860000000001
+        },
+        {
+          "latitude": 43.268299999999996,
+          "longitude": 76.9186
+        },
+        {
+          "latitude": 43.1883,
+          "longitude": 76.9186
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91783,
+      "nameEn": "Nauryzbai",
+      "nameLocal": "Наурызбайский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.1492,
+          "longitude": 76.7769
+        },
+        {
+          "latitude": 43.1492,
+          "longitude": 76.85690000000001
+        },
+        {
+          "latitude": 43.2292,
+          "longitude": 76.85690000000001
+        },
+        {
+          "latitude": 43.2292,
+          "longitude": 76.7769
+        },
+        {
+          "latitude": 43.1492,
+          "longitude": 76.7769
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91099,
+      "nameEn": "Turksib",
+      "nameLocal": "Турксибский р-н",
+      "coordinates": [
+        {
+          "latitude": 43.3059,
+          "longitude": 76.93759999999999
+        },
+        {
+          "latitude": 43.3059,
+          "longitude": 77.0176
+        },
+        {
+          "latitude": 43.3859,
+          "longitude": 77.0176
+        },
+        {
+          "latitude": 43.3859,
+          "longitude": 76.93759999999999
+        },
+        {
+          "latitude": 43.3059,
+          "longitude": 76.93759999999999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

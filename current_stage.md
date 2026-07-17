@@ -6,12 +6,13 @@
 
 ## Done recently
 
-- Binebi CSRF POST + `home_types=985` + CDN images
-- Almaty metro (Line A) + 8 rayons districts
-- KZ platforms wired (Krisha / OLX / kn)
+- Binebi: dates, district/city coords, slug detail URLs
+- Livo/SS/OLX/Krisha readable dates
+- Country picker FlowRow (≤3/row)
+- kn.kz daily path
 
 ## Verify on device
 
-- [ ] GE Tbilisi: Livo + Binebi photos
+- [ ] GE Tbilisi: Livo + Binebi (photos/dates/map) + detail
 - [ ] KZ Almaty: 3 platforms + Metro/Districts
-- [ ] Sale smoke both
+- [ ] Sale + kn daily smoke

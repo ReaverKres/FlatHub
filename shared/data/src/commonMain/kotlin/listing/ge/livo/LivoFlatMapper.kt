@@ -6,6 +6,8 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonObject
 import listing.core.asArrayOrNull
 import listing.core.asObjectOrNull
@@ -70,6 +72,10 @@ object LivoFlatMapper {
             ?: item["bedroom"].intOrNull()
             ?: item["bedroom"].contentOrNull()?.toIntOrNull()
         val created = item["last_updated"].contentOrNull()
+        val publishedAt = created?.let { parseInstant(it) } ?: base?.publishedAt
+        val publishedAtUi = publishedAt?.let {
+            DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+        } ?: base?.publishedAtUi
         val title = item["dynamic_title"].contentOrNull()
         val comment = item["comment"].contentOrNull()
         val description = item["description"].contentOrNull()
@@ -102,9 +108,9 @@ object LivoFlatMapper {
             dislike = base?.dislike == true,
             flatPlatform = FlatPlatform.LIVO,
             flatDetailUrl = detailUrl,
-            publishedAt = created?.let { parseInstant(it) } ?: base?.publishedAt,
+            publishedAt = publishedAt,
             publishedAtServer = created ?: base?.publishedAtServer,
-            publishedAtUi = created ?: base?.publishedAtUi,
+            publishedAtUi = publishedAtUi,
             imageUrls = images,
             priceUsd = priceUsd ?: base?.priceUsd,
             priceByn = priceGel ?: base?.priceByn,

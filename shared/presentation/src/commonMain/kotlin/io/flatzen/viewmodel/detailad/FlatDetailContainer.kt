@@ -13,6 +13,7 @@ import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.utils.mapSizeAtLevel
 import io.flatzen.viewmodel.filter.CommercialPropertyTypeInfo
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.disableRotation
@@ -42,6 +43,7 @@ class FlatDetailContainer(
     private val maxLevel = 18
     private val minLevel = 16
     private val mapSize = mapSizeAtLevel(maxLevel, tileSize = 256)
+    private var loadJob: Job? = null
 
     val mapState = MapState(
         levelCount = maxLevel + 1,
@@ -96,32 +98,45 @@ class FlatDetailContainer(
         }
     }
 
-    private suspend fun FlatDetailCtx.handleLoadFlatDetails(intent: FlatDetailIntent.LoadFlatDetails) {
-        mergedRepository.getFlatByIdWithDetails(
-            flatPlatform = intent.flatPlatform,
-            flatId = intent.flatId,
-            markAsViewed = intent.markAsViewed,
-        ).asLCE()
-            .collect { lce ->
-                when (lce) {
-                    is LCE.Loading -> updateState {
-                        // Keep existing flat if any — list payload may already be on screen.
-                        copy(isLoading = flat == null, error = null)
-                    }
-                    is LCE.Error -> updateState {
-                        copy(
-                            isLoading = false,
-                            error = lce.message,
-                            flat = null
-                        )
-                    }
+    private fun FlatDetailCtx.handleLoadFlatDetails(intent: FlatDetailIntent.LoadFlatDetails) {
+        // Cancel previous detail collect — sequential reduce + slow KZ enrich was blocking
+        // subsequent opens (blank / stuck after ~2–3 ads).
+        loadJob?.cancel()
+        loadJob = launch {
+            updateState {
+                val sameAd = flat?.adId == intent.flatId && flat?.platform == intent.flatPlatform
+                copy(
+                    isLoading = !sameAd,
+                    flat = if (sameAd) flat else null,
+                    error = null,
+                )
+            }
+            mergedRepository.getFlatByIdWithDetails(
+                flatPlatform = intent.flatPlatform,
+                flatId = intent.flatId,
+                markAsViewed = intent.markAsViewed,
+            ).asLCE()
+                .collect { lce ->
+                    when (lce) {
+                        is LCE.Loading -> updateState {
+                            copy(isLoading = flat == null, error = null)
+                        }
 
-                    is LCE.Content -> {
-                        val uiFlat = appFlatToUiFlat(lce.value)
-                        updateState { copy(isLoading = false, flat = uiFlat, error = null) }
+                        is LCE.Error -> updateState {
+                            copy(
+                                isLoading = false,
+                                error = lce.message,
+                                flat = null
+                            )
+                        }
+
+                        is LCE.Content -> {
+                            val uiFlat = appFlatToUiFlat(lce.value)
+                            updateState { copy(isLoading = false, flat = uiFlat, error = null) }
+                        }
                     }
                 }
-            }
+        }
     }
 
     private suspend fun FlatDetailCtx.handleClickOnFavorite(intent: FlatDetailIntent.ClickOnFavorite) {

@@ -4,6 +4,7 @@ import entities.AppFlat
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
+import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import utils.stripHtmlToPlainText
 
@@ -57,9 +58,23 @@ object BinebiHtmlParser {
             .take(3)
             .toList()
             .ifEmpty { null }
+        val lat = Regex("""var\s+map_lat\s*=\s*'([-\d.]+)'""").find(html)?.groupValues?.get(1)
+            ?.toDoubleOrNull()
+            ?: Regex(""""map_lat"\s*:\s*"?([-\d.]+)"""").find(html)?.groupValues?.get(1)
+                ?.toDoubleOrNull()
+        val lon = Regex("""var\s+map_lon\s*=\s*'([-\d.]+)'""").find(html)?.groupValues?.get(1)
+            ?.toDoubleOrNull()
+            ?: Regex(""""map_lon"\s*:\s*"?([-\d.]+)"""").find(html)?.groupValues?.get(1)
+                ?.toDoubleOrNull()
+        val coords = if (lat != null && lon != null && lat != 0.0 && lon != 0.0) {
+            Coordinates(lat, lon)
+        } else {
+            base.coordinates
+        }
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
             description = desc ?: base.description,
+            coordinates = coords,
             contactInformation = ContactInformation(
                 phones = phones ?: base.contactInformation?.phones,
                 ownerName = base.contactInformation?.ownerName,

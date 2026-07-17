@@ -8,6 +8,8 @@ import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import listing.core.ListingSource
@@ -38,9 +40,14 @@ class KnListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
+            val section = when (filter.adType) {
+                is AdType.SALE -> "prodazha-kvartir"
+                is AdType.DAILY -> "arenda-kvartir-posutochno"
+                else -> "arenda-kvartir"
+            }
             val html = api.fetchSearchHtml(
                 cityAlias = KnCities.cityAlias(filter.location?.city),
-                isSale = filter.adType is AdType.SALE,
+                section = section,
                 page = page,
             )
             NetworkResponseWrapper.success(KnHtmlParser.parseSearch(html, filter.adType))
@@ -66,16 +73,29 @@ class KnListingSource(
         emit(base)
         if (base.flatDevInfo.isDetailLoaded) return@flow
         try {
-            val detailHtml = api.fetchDetailHtml(adId)
-            val mapHtml = runCatching { api.fetchMapHtml(adId) }.getOrNull()
-            val phones = runCatching { api.fetchPhones(adId) }.getOrDefault(emptyList())
-            val merged = KnHtmlParser.mergeDetail(base, detailHtml, mapHtml, phones)
+            // Detail HTML first (required); map/phones in parallel so one slow call
+            // does not block the whole enrich for ~20s×N.
+            val merged = coroutineScope {
+                val detailHtml = api.fetchDetailHtml(adId)
+                val mapDeferred = async {
+                    runCatching { api.fetchMapHtml(adId) }.getOrNull()
+                }
+                val phonesDeferred = async {
+                    runCatching { api.fetchPhones(adId) }.getOrDefault(emptyList())
+                }
+                KnHtmlParser.mergeDetail(
+                    base,
+                    detailHtml,
+                    mapDeferred.await(),
+                    phonesDeferred.await(),
+                )
+            }
             flatsDao.upsert(merged)
             emit(merged)
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
-            // Soft-fail detail.
+            // Soft-fail detail — list payload already emitted.
         }
     }
 }

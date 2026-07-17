@@ -362,25 +362,32 @@ fun CitySelectScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        countries.forEach { country ->
-                            val selected = selectedCountry == country.code
-                            CountryMarketCard(
-                                name = country.displayName,
-                                selected = selected,
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    if (selectedCountry != country.code) {
-                                        citiesVisible = false
-                                    }
-                                    filterContainer.intent(
-                                        FilterScreenAction.SelectCountry(country.code)
-                                    )
-                                },
-                            )
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        val gap = 10.dp
+                        val maxPerRow = 3
+                        val itemWidth = (maxWidth - gap * (maxPerRow - 1)) / maxPerRow
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(gap),
+                            verticalArrangement = Arrangement.spacedBy(gap),
+                            maxItemsInEachRow = maxPerRow,
+                        ) {
+                            countries.forEach { country ->
+                                val selected = selectedCountry == country.code
+                                CountryMarketCard(
+                                    name = country.displayName,
+                                    selected = selected,
+                                    modifier = Modifier.width(itemWidth),
+                                    onClick = {
+                                        if (selectedCountry != country.code) {
+                                            citiesVisible = false
+                                        }
+                                        filterContainer.intent(
+                                            FilterScreenAction.SelectCountry(country.code)
+                                        )
+                                    },
+                                )
+                            }
                         }
                     }
                 }

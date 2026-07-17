@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,7 +92,6 @@ import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.screens.map.RoomMarker
 import io.flatzen.themes.FlatHubTheme
-import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.lonLatToNormalized
 import io.flatzen.utils.shareLauncher
 import io.flatzen.viewmodel.detailad.ContactInformationUi
@@ -118,10 +118,12 @@ fun DetailScreen(
     markAsViewedOnOpen: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    val container: FlatDetailContainer = container()
+    val container: FlatDetailContainer = container(
+        key = "detail-${flatPlatform.name}-$objectId",
+    )
     val state by container.store.subscribe()
 
-    LaunchedEffectOnce(objectId) {
+    LaunchedEffect(flatPlatform, objectId, markAsViewedOnOpen) {
         container.store.intent(
             FlatDetailIntent.LoadFlatDetails(
                 flatPlatform = flatPlatform,

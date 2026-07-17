@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
@@ -173,17 +171,23 @@ class MergedRepositoryImpl(
         markAsViewed: Boolean,
     ): Flow<AppFlat> {
         MetroStationsGeoCatalog.loadIfNeeded()
-        val detailFlat = sourceFor(flatPlatform).detail(flatId).flowOn(Dispatchers.IO)
-        return detailFlat.mapNotNull { flat ->
-            flat?.let {
-                val viewed = if (markAsViewed) it.copy(isViewed = true) else it
-                MetroProximityEnricher.enrich(viewed)
+        return flow {
+            var emitted = false
+            sourceFor(flatPlatform).detail(flatId).collect { flat ->
+                if (flat == null) return@collect
+                val viewed = if (markAsViewed) flat.copy(isViewed = true) else flat
+                val enriched = MetroProximityEnricher.enrich(viewed)
+                withContext(Dispatchers.IO) { flatsDao.upsert(enriched) }
+                emitted = true
+                emit(enriched)
             }
-        }.onEach { updatedFlat ->
-            withContext(Dispatchers.IO) { flatsDao.upsert(updatedFlat) }
-        }.catch { cause ->
+            if (!emitted) {
+                error("Flat not found: $flatPlatform/$flatId")
+            }
+        }.flowOn(Dispatchers.IO).catch { cause ->
             if (cause is CancellationException) throw cause
             println("detailFlat LoadError $cause")
+            throw cause
         }
     }
 

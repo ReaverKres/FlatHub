@@ -6,6 +6,8 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.date.DateConverter
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -27,8 +29,13 @@ object KrishaHtmlParser {
         Regex("""<div[^>]*class="[^"]*a-card[^"]*"[^>]*data-id="(\d{6,})"[^>]*>""")
     private val titleRe =
         Regex("""class="a-card__title[^"]*"[^>]*>\s*([^<]+)\s*<""", RegexOption.IGNORE_CASE)
+
+    // Nested: <span class="a-card__price-text">300&nbsp;000&nbsp;<span class="currency…
     private val priceRe =
-        Regex("""class="a-card__price"[^>]*>\s*([\d\s\u00a0&;]+)\s*<""", RegexOption.IGNORE_CASE)
+        Regex(
+            """class="a-card__price-text"[^>]*>\s*((?:\d|&nbsp;|\s|\u00a0)+)""",
+            RegexOption.IGNORE_CASE,
+        )
     private val subtitleRe =
         Regex("""class="a-card__subtitle[^"]*"[^>]*>\s*([^<]+)\s*<""", RegexOption.IGNORE_CASE)
     private val previewRe =
@@ -48,10 +55,10 @@ object KrishaHtmlParser {
     fun parseSearch(html: String, adType: AdType): List<AppFlat> {
         val matches = cardSplitRe.findAll(html).toList()
         if (matches.isEmpty()) return emptyList()
-        return matches.mapNotNull { match ->
-            val id = match.groupValues[1].toLongOrNull() ?: return@mapNotNull null
+        return matches.mapIndexedNotNull { index, match ->
+            val id = match.groupValues[1].toLongOrNull() ?: return@mapIndexedNotNull null
             val start = match.range.first
-            val end = matches.getOrNull(matches.indexOf(match) + 1)?.range?.first ?: (start + 8000)
+            val end = matches.getOrNull(index + 1)?.range?.first ?: (start + 12_000)
             val chunk = html.substring(start, minOf(end, html.length))
             runCatching { mapCard(id, chunk, adType) }.getOrNull()
         }.distinctBy { it.adId }
@@ -88,6 +95,13 @@ object KrishaHtmlParser {
         }?.ifEmpty { null } ?: base.imageUrls
         val created = advertUi?.get("createdAt")?.jsonPrimitive?.contentOrNull
             ?: advertUi?.get("addedAt")?.jsonPrimitive?.contentOrNull
+        val publishedAt = created?.let {
+            runCatching { Instant.parse("${it}T00:00:00Z") }.getOrNull()
+                ?: runCatching { Instant.parse(it) }.getOrNull()
+        } ?: base.publishedAt
+        val publishedAtUi = publishedAt?.let {
+            DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
+        } ?: base.publishedAtUi
         val ownerName = advert?.get("ownerName")?.jsonPrimitive?.contentOrNull
             ?: base.contactInformation?.ownerName
         val floor =
@@ -106,9 +120,8 @@ object KrishaHtmlParser {
             coordinates = coordinates,
             imageUrls = photos,
             publishedAtServer = created ?: base.publishedAtServer,
-            publishedAtUi = created ?: base.publishedAtUi,
-            publishedAt = created?.let { runCatching { Instant.parse("${it}T00:00:00Z") }.getOrNull() }
-                ?: base.publishedAt,
+            publishedAtUi = publishedAtUi,
+            publishedAt = publishedAt,
             contactInformation = ContactInformation(
                 phones = base.contactInformation?.phones,
                 ownerName = ownerName,
@@ -121,9 +134,10 @@ object KrishaHtmlParser {
             ?.replace("&nbsp;", " ")
             ?.decodeHtmlEntities()
         val price = priceRe.find(chunk)?.groupValues?.get(1)
-            ?.replace("&nbsp;", "")
+            ?.replace("&nbsp;", "", ignoreCase = true)
             ?.replace(Regex("""[^\d]"""), "")
             ?.toDoubleOrNull()
+            ?.takeIf { it > 0 }
         val subtitle = subtitleRe.find(chunk)?.groupValues?.get(1)?.trim()
             ?.replace("&nbsp;", " ")
             ?.decodeHtmlEntities()
