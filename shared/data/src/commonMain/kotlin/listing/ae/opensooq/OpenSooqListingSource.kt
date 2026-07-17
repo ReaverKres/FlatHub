@@ -5,11 +5,12 @@ import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import listing.ae.AeCommercialTypes
+import listing.ae.isAeSaleDeal
 import listing.core.FeedDelayListBoost
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
@@ -18,8 +19,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * OpenSooq UAE — SSR `__NEXT_DATA__`. AED → [AppFlat.priceByn].
- * Dubai inventory is thin; other emirates healthier. Bayut is blocked — this is the 3rd GO source.
- * See tmp/ae/api/opensooq/NOTES.md.
+ * Residential apartments + commercial SERP. See tmp/ae/api/opensooq/NOTES.md.
  */
 class OpenSooqListingSource(
     private val api: OpenSooqApiClient,
@@ -32,7 +32,7 @@ class OpenSooqListingSource(
         supportsSale = true,
         supportsDaily = false,
         supportsRoom = false,
-        supportsCommercial = false,
+        supportsCommercial = true,
     )
     override val needsBackgroundCoordEnrich: Boolean = true
 
@@ -43,7 +43,15 @@ class OpenSooqListingSource(
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
             val citySlug = OpenSooqCities.slug(filter.location?.city)
-            val isSale = filter.adType is AdType.SALE
+            val isSale = filter.adType.isAeSaleDeal()
+            val commercialKind = if (filter.isCommercial) {
+                AeCommercialTypes.openSooqKind(
+                    type = filter.commercial?.commercialPropertyType,
+                    isSale = isSale,
+                )
+            } else {
+                null
+            }
             val flats = FeedDelayListBoost.fetchPages(
                 startPage = page,
                 platform = platform,
@@ -52,6 +60,8 @@ class OpenSooqListingSource(
                 val html = api.fetchSearchHtml(
                     citySlug = citySlug,
                     isSale = isSale,
+                    isCommercial = filter.isCommercial,
+                    commercialKind = commercialKind,
                     page = p,
                 )
                 OpenSooqMapper.parseSearch(html, filter.adType)

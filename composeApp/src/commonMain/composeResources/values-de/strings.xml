@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Dienstleistungen</string>
     <string name="commercial_property_warehouses">Lager</string>
     <string name="commercial_property_other">Sonstiges Gewerbe</string>
+    <string name="commercial_property_land">Grundstück</string>
+    <string name="commercial_property_showroom">Showroom</string>
 
     <string name="sort_newest">Neueste zuerst</string>
     <string name="sort_cheapest">Günstigste zuerst</string>

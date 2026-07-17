@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Қызмет көрсету саласы</string>
     <string name="commercial_property_warehouses">Қоймалар</string>
     <string name="commercial_property_other">Басқа коммерциялық</string>
+    <string name="commercial_property_land">Жер учаскесі</string>
+    <string name="commercial_property_showroom">Шоурум</string>
 
     <string name="sort_newest">Жаңалығы бойынша</string>
     <string name="sort_cheapest">Алдымен арзан</string>

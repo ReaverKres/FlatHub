@@ -97,6 +97,8 @@ private fun CommercialPropertyType.toDto(): CommercialPropertyTypeDto =
         CommercialPropertyType.Industrial -> CommercialPropertyTypeDto("Industrial")
         CommercialPropertyType.Warehouses -> CommercialPropertyTypeDto("Warehouses")
         CommercialPropertyType.Other -> CommercialPropertyTypeDto("Other")
-        is CommercialPropertyType.All -> CommercialPropertyTypeDto("Other")
+        CommercialPropertyType.Land -> CommercialPropertyTypeDto("Land")
+        CommercialPropertyType.Showroom -> CommercialPropertyTypeDto("Showroom")
+        is CommercialPropertyType.All -> CommercialPropertyTypeDto("All")
     }
 

@@ -67,6 +67,8 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                             CommercialAdType.RENT)) "rent-services" else "sale-services"
                     CommercialPropertyType.Warehouses -> if (response.adType == AdType.COMMERCIAL(
                             CommercialAdType.RENT)) "rent-warehouses" else "sale-warehouses"
+                    CommercialPropertyType.Land,
+                    CommercialPropertyType.Showroom,
                     null -> null
                 }
             }

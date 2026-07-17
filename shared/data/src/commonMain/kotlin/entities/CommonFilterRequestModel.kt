@@ -93,9 +93,11 @@ data class CommonFilterRequestModel(
         commercial1: CommercialRequestModel?,
         commercial2: CommercialRequestModel?
     ): Boolean {
+        val country = location?.country
         val isCommercialPropertyTypeEqual = compareCommercialPropertyType(
             commercial1?.commercialPropertyType,
-            commercial2?.commercialPropertyType
+            commercial2?.commercialPropertyType,
+            country,
         )
 
         return when {
@@ -112,17 +114,11 @@ data class CommonFilterRequestModel(
 
     private fun compareCommercialPropertyType(
         propertyType1: CommercialPropertyType?,
-        propertyType2: CommercialPropertyType?
-    ): Boolean {
-        return when {
-            propertyType1 == null && propertyType2 == null -> true
-            propertyType1 == null -> propertyType2 == CommercialPropertyType.Office
-            propertyType2 == null -> propertyType1 == CommercialPropertyType.Office
-            else -> propertyType1 == propertyType2 ||
-                    (propertyType1 == CommercialPropertyType.Office && propertyType2 == null) ||
-                    (propertyType1 == null && propertyType2 == CommercialPropertyType.Office)
-        }
-    }
+        propertyType2: CommercialPropertyType?,
+        country: CountryCode?,
+    ): Boolean =
+        normalizeCommercialPropertyType(propertyType1, country) ==
+                normalizeCommercialPropertyType(propertyType2, country)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -191,7 +187,8 @@ data class CommonFilterRequestModel(
 
     override fun hashCode(): Int {
         var result = priceFull?.hashCode() ?: 0
-        val commercialForHashCode = normalizeCommercialForHashCode(commercial)
+        val commercialForHashCode =
+            normalizeCommercialForHashCode(commercial, location?.country)
         result = 31 * result + (commercialForHashCode?.hashCode() ?: 0)
         result = 31 * result + (bookingDatesFilter?.hashCode() ?: 0)
         result = 31 * result + (totalArea?.hashCode() ?: 0)
@@ -219,13 +216,32 @@ data class CommonFilterRequestModel(
     }
 }
 
-private fun normalizeCommercialForHashCode(commercial: CommercialRequestModel?): CommercialRequestModel? {
+/** Default/All commercial subtype ≡ unset filter (null) for equals/hashCode. */
+private fun normalizeCommercialPropertyType(
+    type: CommercialPropertyType?,
+    country: CountryCode?,
+): CommercialPropertyType? {
+    if (type == null || type == CommercialPropertyType.All) return null
+    val defaultType = country?.let { CommercialPropertyType.defaultFor(it) }
+        ?: CommercialPropertyType.Office
+    return if (type == defaultType) null else type
+}
+
+private fun normalizeCommercialForHashCode(
+    commercial: CommercialRequestModel?,
+    country: CountryCode?,
+): CommercialRequestModel? {
     return when {
         commercial == null -> null
-        commercial.commercialPropertyType == null || commercial.commercialPropertyType == CommercialPropertyType.Office ->
-            commercial.copy(commercialPropertyType = null)
-
-        else -> commercial
+        else -> {
+            val normalizedType =
+                normalizeCommercialPropertyType(commercial.commercialPropertyType, country)
+            if (normalizedType == null && commercial.roomRange == null) {
+                null
+            } else {
+                commercial.copy(commercialPropertyType = normalizedType)
+            }
+        }
     }
 }
 

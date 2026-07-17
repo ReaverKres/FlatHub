@@ -5,6 +5,7 @@ import entities.getPricesText
 import io.flatzen.analytics.Analytics
 import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
@@ -194,7 +195,7 @@ class FlatDetailContainer(
             commercialUiInfo = if (appFlat.commercialInfo?.propertyType != null) {
                 CommercialUiInfo(
                     isCommercialAd = true,
-                    numberOfRooms = appFlat.commercialInfo?.numberOfRooms.toString(),
+                    numberOfRooms = appFlat.commercialInfo?.numberOfRooms?.toString(),
                     propertyType = PropertyTypeUi(
                         commercialPropertyType = appFlat.commercialInfo?.propertyType,
                         commercialPropertyTypeName = CommercialPropertyTypeInfo.commercialPropertyTypeName(
@@ -221,6 +222,7 @@ class FlatDetailContainer(
                     "$n"
                 }
                 appFlat.commercialInfo?.numberOfRooms != null -> "${appFlat.commercialInfo?.numberOfRooms}"
+                appFlat.adType?.isCommercial == true || appFlat.commercialInfo != null -> ""
                 else -> "Не указано"
             },
             totalArea = appFlat.totalArea?.let { formatArea(it) },

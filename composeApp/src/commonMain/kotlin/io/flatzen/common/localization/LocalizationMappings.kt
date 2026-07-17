@@ -11,10 +11,12 @@ import flatzen.composeapp.generated.resources.chip_with_photo
 import flatzen.composeapp.generated.resources.close
 import flatzen.composeapp.generated.resources.commercial_property_all
 import flatzen.composeapp.generated.resources.commercial_property_industrial
+import flatzen.composeapp.generated.resources.commercial_property_land
 import flatzen.composeapp.generated.resources.commercial_property_office
 import flatzen.composeapp.generated.resources.commercial_property_other
 import flatzen.composeapp.generated.resources.commercial_property_retail
 import flatzen.composeapp.generated.resources.commercial_property_services
+import flatzen.composeapp.generated.resources.commercial_property_showroom
 import flatzen.composeapp.generated.resources.commercial_property_warehouses
 import flatzen.composeapp.generated.resources.copy_success
 import flatzen.composeapp.generated.resources.delete
@@ -374,6 +376,8 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES -> Res.string.commercial_property_services
         LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES -> Res.string.commercial_property_warehouses
         LocalizationKeys.COMMERCIAL_PROPERTY_OTHER -> Res.string.commercial_property_other
+        LocalizationKeys.COMMERCIAL_PROPERTY_LAND -> Res.string.commercial_property_land
+        LocalizationKeys.COMMERCIAL_PROPERTY_SHOWROOM -> Res.string.commercial_property_showroom
         LocalizationKeys.SORT_NEWEST -> Res.string.sort_newest
         LocalizationKeys.SORT_CHEAPEST -> Res.string.sort_cheapest
         LocalizationKeys.SORT_EXPENSIVE -> Res.string.sort_expensive

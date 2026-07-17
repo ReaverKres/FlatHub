@@ -16,11 +16,25 @@ class PropertyFinderApiClient(
     suspend fun fetchSearchHtml(
         locationId: Int,
         isSale: Boolean,
+        isCommercial: Boolean,
+        commercialTypeId: Int? = null,
         page: Int,
     ): String {
-        val c = if (isSale) 1 else 2
+        // Residential: c=1 sale / c=2 rent (+ t=1 apartment).
+        // Commercial: c=3 buy / c=4 rent; optional t= subtype.
+        val c = when {
+            isCommercial && isSale -> 3
+            isCommercial -> 4
+            isSale -> 1
+            else -> 2
+        }
+        val typeQs = when {
+            isCommercial && commercialTypeId != null -> "&t=$commercialTypeId"
+            isCommercial -> ""
+            else -> "&t=1"
+        }
         val url =
-            "https://www.propertyfinder.ae/en/search?c=$c&t=1&l=$locationId&ob=nd&page=$page"
+            "https://www.propertyfinder.ae/en/search?c=$c$typeQs&l=$locationId&ob=nd&page=$page"
         val text = httpClient.get(url) {
             header(HttpHeaders.UserAgent, USER_AGENT)
             header(HttpHeaders.Accept, "text/html,application/xhtml+xml")

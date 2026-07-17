@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Hizmet</string>
     <string name="commercial_property_warehouses">Depo</string>
     <string name="commercial_property_other">Diğer ticari</string>
+    <string name="commercial_property_land">Arsa</string>
+    <string name="commercial_property_showroom">Showroom</string>
 
     <string name="sort_newest">En yeni</string>
     <string name="sort_cheapest">En ucuz</string>

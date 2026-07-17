@@ -88,6 +88,8 @@
     <string name="commercial_property_services">მომსახურების სფერო</string>
     <string name="commercial_property_warehouses">საწყობები</string>
     <string name="commercial_property_other">სხვა კომერციული</string>
+    <string name="commercial_property_land">მიწა</string>
+    <string name="commercial_property_showroom">შოურუმი</string>
     <string name="sort_newest">სიახლის მიხედვით</string>
     <string name="sort_cheapest">ჯერ უფრო იაფი</string>
     <string name="sort_expensive">ჯერ უფრო ძვირი</string>

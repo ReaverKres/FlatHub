@@ -1,14 +1,17 @@
 package listing.ae.dubizzle
 
 import entities.AppFlat
+import entities.CommercialInfo
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.JsonObject
+import listing.ae.AeCommercialTypes
 import listing.core.asArrayOrNull
 import listing.core.asObjectOrNull
 import listing.core.contentOrNull
@@ -85,6 +88,20 @@ object DubizzleMapper {
         val amenities = hit["amenities_v2"].asArrayOrNull()?.mapNotNull { a ->
             a.asObjectOrNull()?.get("en").contentOrNull()
         }?.ifEmpty { null }
+        val leafSlug = hit["categories_v2"].asObjectOrNull()
+            ?.get("slug").asArrayOrNull()
+            ?.firstOrNull()
+            ?.contentOrNull()
+        val commercialInfo = if (adType.isCommercial) {
+            CommercialInfo(
+                numberOfRooms = null,
+                propertyType = AeCommercialTypes.fromDubizzleSlug(leafSlug),
+            )
+        } else {
+            null
+        }
+        val effectiveRooms = if (adType.isCommercial) null else rooms
+        val effectiveStudio = if (adType.isCommercial) null else isStudio
 
         return AppFlat(
             adId = id,
@@ -96,7 +113,7 @@ object DubizzleMapper {
             ),
             contactInformation = ContactInformation(phones = null, ownerName = agent),
             coordinates = coords,
-            commercialInfo = null,
+            commercialInfo = commercialInfo,
             flatPlatform = FlatPlatform.DUBIZZLE,
             flatDetailUrl = url,
             publishedAt = publishedAt,
@@ -105,7 +122,7 @@ object DubizzleMapper {
             imageUrls = images,
             priceUsd = null,
             priceByn = price,
-            rooms = rooms,
+            rooms = effectiveRooms,
             district = district,
             address = address,
             metroStation = null,
@@ -117,7 +134,7 @@ object DubizzleMapper {
             floor = null,
             totalFloors = null,
             sleepingPlaces = null,
-            isStudio = isStudio,
+            isStudio = effectiveStudio,
             bathroomType = null,
             balcony = null,
             repairType = null,

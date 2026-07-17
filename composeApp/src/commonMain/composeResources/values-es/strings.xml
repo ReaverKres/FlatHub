@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Servicios</string>
     <string name="commercial_property_warehouses">Almacenes</string>
     <string name="commercial_property_other">Otro comercial</string>
+    <string name="commercial_property_land">Terreno</string>
+    <string name="commercial_property_showroom">Showroom</string>
 
     <string name="sort_newest">Más recientes primero</string>
     <string name="sort_cheapest">Más baratos primero</string>

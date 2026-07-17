@@ -23,15 +23,31 @@ class DubizzleApiClient(
     suspend fun search(
         cityId: Int,
         isSale: Boolean,
+        isCommercial: Boolean,
+        commercialCategoryId: Int? = null,
         page: Int,
         hitsPerPage: Int,
     ): JsonObject {
-        val index = if (isSale) INDEX_SALE else INDEX_RENT
-        val categoryId = if (isSale) CATEGORY_SALE_APARTMENT else CATEGORY_RENT_APARTMENT
+        val index = when {
+            isCommercial && isSale -> INDEX_COMMERCIAL_SALE
+            isCommercial -> INDEX_COMMERCIAL_RENT
+            isSale -> INDEX_SALE
+            else -> INDEX_RENT
+        }
+        val filters = when {
+            isCommercial && commercialCategoryId != null ->
+                "(city.id=$cityId) AND (categories.ids=$commercialCategoryId)"
+
+            isCommercial -> "(city.id=$cityId)"
+            else -> {
+                val categoryId = if (isSale) CATEGORY_SALE_APARTMENT else CATEGORY_RENT_APARTMENT
+                "(city.id=$cityId) AND (categories.ids=$categoryId)"
+            }
+        }
         // Algolia pages are 0-based.
         val algoliaPage = (page - 1).coerceAtLeast(0)
         val body =
-            """{"query":"","hitsPerPage":$hitsPerPage,"page":$algoliaPage,"filters":"(city.id=$cityId) AND (categories.ids=$categoryId)"}"""
+            """{"query":"","hitsPerPage":$hitsPerPage,"page":$algoliaPage,"filters":"$filters"}"""
         val text = httpClient.post("$ALGOLIA_HOST/1/indexes/$index/query") {
             header(HttpHeaders.UserAgent, USER_AGENT)
             header(HttpHeaders.Accept, "application/json")
@@ -67,6 +83,8 @@ class DubizzleApiClient(
         private const val API_KEY = "cef139620248f1bc328a00fddc7107a6"
         private const val INDEX_RENT = "property-for-rent-residential.com"
         private const val INDEX_SALE = "property-for-sale-residential.com"
+        private const val INDEX_COMMERCIAL_RENT = "property-for-rent-commercial.com"
+        private const val INDEX_COMMERCIAL_SALE = "property-for-sale-commercial.com"
 
         /** Rent apartmentflat */
         private const val CATEGORY_RENT_APARTMENT = 24

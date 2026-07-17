@@ -5,11 +5,12 @@ import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import listing.ae.AeCommercialTypes
+import listing.ae.isAeSaleDeal
 import listing.core.FeedDelayListBoost
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
@@ -31,7 +32,7 @@ class PropertyFinderListingSource(
         supportsSale = true,
         supportsDaily = false,
         supportsRoom = false,
-        supportsCommercial = false,
+        supportsCommercial = true,
     )
     override val needsBackgroundCoordEnrich: Boolean = false
 
@@ -42,7 +43,12 @@ class PropertyFinderListingSource(
         val result = try {
             val page = (currentPage ?: 1).coerceAtLeast(1)
             val locationId = PropertyFinderCities.locationId(filter.location?.city)
-            val isSale = filter.adType is AdType.SALE
+            val isSale = filter.adType.isAeSaleDeal()
+            val commercialTypeId = if (filter.isCommercial) {
+                AeCommercialTypes.propertyFinderTypeId(filter.commercial?.commercialPropertyType)
+            } else {
+                null
+            }
             val flats = FeedDelayListBoost.fetchPages(
                 startPage = page,
                 platform = platform,
@@ -51,6 +57,8 @@ class PropertyFinderListingSource(
                 val html = api.fetchSearchHtml(
                     locationId = locationId,
                     isSale = isSale,
+                    isCommercial = filter.isCommercial,
+                    commercialTypeId = commercialTypeId,
                     page = p,
                 )
                 PropertyFinderMapper.parseSearch(html, filter.adType)

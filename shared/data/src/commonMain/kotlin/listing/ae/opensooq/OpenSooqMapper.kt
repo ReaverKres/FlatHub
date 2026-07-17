@@ -1,25 +1,23 @@
 package listing.ae.opensooq
 
 import entities.AppFlat
+import entities.CommercialInfo
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.toInstant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import listing.ae.AeCommercialTypes
 import listing.core.asArrayOrNull
 import listing.core.asObjectOrNull
 import listing.core.contentOrNull
 import listing.core.longOrNull
 import utils.stripHtmlToPlainText
-import kotlin.time.Instant
 
 /**
  * Maps OpenSooq `__NEXT_DATA__` SERP items + detail JSON-LD → [AppFlat].
@@ -153,14 +151,30 @@ object OpenSooqMapper {
             ?.takeIf { it.isNotBlank() && !it.contains("XX", ignoreCase = true) }
         val ownerName = item["member_display_name"].contentOrNull()
             ?: item["shop_name"].contentOrNull()
-        val inserted = item["inserted_date"].contentOrNull()
-        val publishedAt = parseInsertedDate(inserted)
+        // Prefer posted_at: often "4 hours ago" / "16 minutes ago" (has clock time).
+        // inserted_date / absolute posted_at are date-only (DD-MM-YYYY).
+        val postedAtRaw = item["posted_at"].contentOrNull()
+        val insertedRaw = item["inserted_date"].contentOrNull()
+        val publishedAt = OpenSooqPostedAt.parse(postedAtRaw)
+            ?: OpenSooqPostedAt.parse(insertedRaw)
+        val publishedAtServer = postedAtRaw ?: insertedRaw
         val publishedAtUi = publishedAt?.let {
             DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
-        } ?: inserted ?: item["posted_at"].contentOrNull()
+        } ?: publishedAtServer
         val title = item["title"].contentOrNull()?.stripHtmlToPlainText()
         val description = item["masked_description"].contentOrNull()?.stripHtmlToPlainText()
             ?: title
+        val cat2 = item["cat2_uri"].contentOrNull() ?: item["cat2_label"].contentOrNull()
+        val commercialInfo = if (adType.isCommercial) {
+            CommercialInfo(
+                numberOfRooms = null,
+                propertyType = AeCommercialTypes.fromOpenSooqCat2(cat2),
+            )
+        } else {
+            null
+        }
+        val effectiveRooms = if (adType.isCommercial) null else rooms
+        val effectiveStudio = if (adType.isCommercial) null else isStudio
 
         return AppFlat(
             adId = id,
@@ -171,16 +185,16 @@ object OpenSooqMapper {
                 ownerName = ownerName,
             ),
             coordinates = null,
-            commercialInfo = null,
+            commercialInfo = commercialInfo,
             flatPlatform = FlatPlatform.OPENSOOQ,
             flatDetailUrl = url,
             publishedAt = publishedAt,
-            publishedAtServer = inserted,
+            publishedAtServer = publishedAtServer,
             publishedAtUi = publishedAtUi,
             imageUrls = images,
             priceUsd = null,
             priceByn = price,
-            rooms = rooms,
+            rooms = effectiveRooms,
             district = district,
             address = address,
             metroStation = null,
@@ -192,7 +206,7 @@ object OpenSooqMapper {
             floor = floor,
             totalFloors = null,
             sleepingPlaces = null,
-            isStudio = isStudio,
+            isStudio = effectiveStudio,
             bathroomType = null,
             balcony = null,
             repairType = null,
@@ -226,21 +240,6 @@ object OpenSooqMapper {
             "tenth" -> 10
             else -> null
         }
-    }
-
-    private fun parseInsertedDate(raw: String?): Instant? {
-        if (raw.isNullOrBlank()) return null
-        // YYYY-MM-DD or DD-MM-YYYY
-        return runCatching {
-            val parts = raw.split('-', '/', '.')
-            if (parts.size != 3) return null
-            val (y, m, d) = if (parts[0].length == 4) {
-                Triple(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
-            } else {
-                Triple(parts[2].toInt(), parts[1].toInt(), parts[0].toInt())
-            }
-            LocalDate(y, m, d).atTime(LocalTime(0, 0)).toInstant(TimeZone.UTC)
-        }.getOrNull()
     }
 
     private fun extractNextData(html: String): JsonObject? {

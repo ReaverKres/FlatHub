@@ -107,7 +107,8 @@ private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): Li
     val country = model.location?.country ?: CountryCode.fromNetworkIso(networkCountryIso())
     if (!country.supportsCommercialPropertyTypeFilter()) return null
 
-    var list = CommercialPropertyType.allInstances.map {
+    val defaultType = CommercialPropertyType.defaultFor(country)
+    var list = CommercialPropertyType.instancesFor(country).map {
         val selected = model.commercial?.commercialPropertyType == it
         CommercialPropertyTypeInfo(
             selected = selected,
@@ -119,7 +120,7 @@ private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): Li
     }
     if (list.find { it.selected } == null) {
         list = list.map {
-            if (it.commercialPropertyType == CommercialPropertyType.Office) {
+            if (it.commercialPropertyType == defaultType) {
                 it.copy(selected = true)
             } else {
                 it

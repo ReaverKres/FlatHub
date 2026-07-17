@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Сфера услуг</string>
     <string name="commercial_property_warehouses">Склады</string>
     <string name="commercial_property_other">Прочая коммерческая</string>
+    <string name="commercial_property_land">Участок / земля</string>
+    <string name="commercial_property_showroom">Шоурум</string>
 
     <string name="sort_newest">По новизне</string>
     <string name="sort_cheapest">Сначала дешевле</string>

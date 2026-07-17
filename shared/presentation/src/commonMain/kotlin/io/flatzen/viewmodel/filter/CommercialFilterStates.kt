@@ -41,6 +41,8 @@ data class CommercialPropertyTypeInfo(
                 CommercialPropertyType.Services -> LocalizationKeys.COMMERCIAL_PROPERTY_SERVICES
                 CommercialPropertyType.Warehouses -> LocalizationKeys.COMMERCIAL_PROPERTY_WAREHOUSES
                 CommercialPropertyType.Other -> LocalizationKeys.COMMERCIAL_PROPERTY_OTHER
+                CommercialPropertyType.Land -> LocalizationKeys.COMMERCIAL_PROPERTY_LAND
+                CommercialPropertyType.Showroom -> LocalizationKeys.COMMERCIAL_PROPERTY_SHOWROOM
                 null -> null
             }
         }

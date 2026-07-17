@@ -7,11 +7,14 @@
 ## Done recently
 
 - AE: Property Finder + Dubizzle + OpenSooq (Bayut BLOCKED — captcha)
+- AE commercial rent/sale + subtypes (Office/Retail/Warehouses/Showroom/Land/…)
+- Commercial without rooms: hide field (no «Не указано»)
 - AR UI language (العربية) + AED currency
 - TR: Emlakjet only; DE polish earlier
 
 ## Verify on device
 
 - [ ] AE Dubai rent/sale; prices in AED
+- [ ] AE commercial subtypes + no rooms placeholder
 - [ ] Language → العربية
 - [ ] TR İstanbul / DE Berlin still OK

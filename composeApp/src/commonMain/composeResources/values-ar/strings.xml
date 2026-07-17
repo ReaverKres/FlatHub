@@ -92,6 +92,8 @@
     <string name="commercial_property_services">خدمات</string>
     <string name="commercial_property_warehouses">مستودعات</string>
     <string name="commercial_property_other">تجاري أخرى</string>
+    <string name="commercial_property_land">أرض</string>
+    <string name="commercial_property_showroom">صالة عرض</string>
 
     <string name="sort_newest">الأحدث أولاً</string>
     <string name="sort_cheapest">الأرخص أولاً</string>

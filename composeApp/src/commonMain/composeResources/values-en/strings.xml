@@ -92,6 +92,8 @@
     <string name="commercial_property_services">Services</string>
     <string name="commercial_property_warehouses">Warehouses</string>
     <string name="commercial_property_other">Other commercial</string>
+    <string name="commercial_property_land">Land</string>
+    <string name="commercial_property_showroom">Showroom</string>
 
     <string name="sort_newest">Newest first</string>
     <string name="sort_cheapest">Cheapest first</string>

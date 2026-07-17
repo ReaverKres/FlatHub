@@ -82,6 +82,8 @@ class RealtRepositoryImpl(
                             CommercialAdType.RENT)) 25 else 31
                     CommercialPropertyType.Warehouses -> if (filter.adType == AdType.COMMERCIAL(
                             CommercialAdType.RENT)) 22 else 28
+                    CommercialPropertyType.Land,
+                    CommercialPropertyType.Showroom,
                     null -> {
                         emit(networkEmptyList)
                         return@flow

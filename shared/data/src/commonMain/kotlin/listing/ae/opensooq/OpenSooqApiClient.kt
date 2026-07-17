@@ -16,9 +16,16 @@ class OpenSooqApiClient(
     suspend fun fetchSearchHtml(
         citySlug: String,
         isSale: Boolean,
+        isCommercial: Boolean,
+        commercialKind: String? = null,
         page: Int,
     ): String {
-        val kind = if (isSale) "apartments-for-sale" else "apartments-for-rent"
+        val kind = commercialKind ?: when {
+            isCommercial && isSale -> "commercial-for-sale"
+            isCommercial -> "commercial-for-rent"
+            isSale -> "apartments-for-sale"
+            else -> "apartments-for-rent"
+        }
         val pageQs = if (page > 1) "?page=$page" else ""
         val url = "https://ae.opensooq.com/en/$citySlug/property/$kind$pageQs"
         val text = httpClient.get(url) {

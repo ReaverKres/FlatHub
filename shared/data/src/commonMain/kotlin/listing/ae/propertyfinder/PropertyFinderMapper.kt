@@ -1,15 +1,18 @@
 package listing.ae.propertyfinder
 
 import entities.AppFlat
+import entities.CommercialInfo
 import entities.ContactInformation
 import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.date.DateConverter
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import listing.ae.AeCommercialTypes
 import listing.core.asArrayOrNull
 import listing.core.asObjectOrNull
 import listing.core.contentOrNull
@@ -175,6 +178,18 @@ object PropertyFinderMapper {
             ?: "https://www.propertyfinder.ae/en/plp/$id.html"
         val title = property["title"].contentOrNull()?.stripHtmlToPlainText()
         val hasCoordsOrPhone = coordinates != null || !phones.isNullOrEmpty()
+        val propertyTypeLabel = property["property_type"].contentOrNull()
+        val commercialInfo = if (adType.isCommercial) {
+            CommercialInfo(
+                numberOfRooms = null,
+                propertyType = AeCommercialTypes.fromPropertyFinderLabel(propertyTypeLabel),
+            )
+        } else {
+            null
+        }
+        // Commercial SERP often has no bedrooms — leave rooms null (UI hides the field).
+        val effectiveRooms = if (adType.isCommercial) null else rooms
+        val effectiveStudio = if (adType.isCommercial) null else isStudio
 
         return AppFlat(
             adId = id,
@@ -185,7 +200,7 @@ object PropertyFinderMapper {
             ),
             contactInformation = ContactInformation(phones = phones, ownerName = agentName),
             coordinates = coordinates,
-            commercialInfo = null,
+            commercialInfo = commercialInfo,
             flatPlatform = FlatPlatform.PROPERTY_FINDER,
             flatDetailUrl = url,
             publishedAt = publishedAt,
@@ -194,7 +209,7 @@ object PropertyFinderMapper {
             imageUrls = images,
             priceUsd = null,
             priceByn = price,
-            rooms = rooms,
+            rooms = effectiveRooms,
             district = district,
             address = fullName ?: pathName,
             metroStation = null,
@@ -206,7 +221,7 @@ object PropertyFinderMapper {
             floor = null,
             totalFloors = null,
             sleepingPlaces = null,
-            isStudio = isStudio,
+            isStudio = effectiveStudio,
             bathroomType = null,
             balcony = null,
             repairType = null,

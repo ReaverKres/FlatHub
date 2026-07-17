@@ -54,8 +54,9 @@ enum class CityCode {
     DUBAI, ABU_DHABI, SHARJAH, AJMAN, AL_AIN, RAS_AL_KHAIMAH, FUJAIRAH, UMM_AL_QUWAIN,
 }
 
-/** Only BY sources currently map commercial property subtypes. */
-fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean = this == CountryCode.BY
+/** BY and AE map commercial property subtypes in filter + ListingSources. */
+fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean =
+    this == CountryCode.BY || this == CountryCode.AE
 
 fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.BY -> CityCode.MINSK
