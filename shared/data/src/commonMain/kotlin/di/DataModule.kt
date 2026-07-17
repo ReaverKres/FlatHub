@@ -24,6 +24,11 @@ import listing.core.CoordEnrichState
 import listing.core.CoordEnricher
 import listing.core.ListingSourceRegistry
 import listing.core.RemoteListingPlatformConfig
+import listing.es.fotocasa.FotocasaApiClient
+import listing.es.fotocasa.FotocasaListingSource
+import listing.es.idealista.IdealistaListingSource
+import listing.es.pisos.PisosApiClient
+import listing.es.pisos.PisosListingSource
 import listing.ge.binebi.BinebiApiClient
 import listing.ge.binebi.BinebiListingSource
 import listing.ge.livo.LivoApiClient
@@ -189,6 +194,17 @@ val dataModule = module {
     }
     single { KnListingSource(api = get(), flatsDao = get()) }
 
+    single { PisosApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { PisosListingSource(api = get(), flatsDao = get()) }
+    single { IdealistaListingSource(flatsDao = get()) }
+    single {
+        FotocasaApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { FotocasaListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -207,6 +223,9 @@ val dataModule = module {
                 get<KrishaListingSource>(),
                 get<OlxKzListingSource>(),
                 get<KnListingSource>(),
+                get<PisosListingSource>(),
+                get<IdealistaListingSource>(),
+                get<FotocasaListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

@@ -1,0 +1,1451 @@
+[
+  {
+    "name": "Abrantes",
+    "coordinates": [
+      40.380998,
+      -3.727985
+    ]
+  },
+  {
+    "name": "Acacias",
+    "coordinates": [
+      40.404075,
+      -3.705957
+    ]
+  },
+  {
+    "name": "Aeropuerto T1-T2-T3",
+    "coordinates": [
+      40.467914,
+      -3.571759
+    ]
+  },
+  {
+    "name": "Aeropuerto T4",
+    "coordinates": [
+      40.492435,
+      -3.592839
+    ]
+  },
+  {
+    "name": "Alameda de Osuna",
+    "coordinates": [
+      40.457581,
+      -3.587975
+    ]
+  },
+  {
+    "name": "Alcorcón Central",
+    "coordinates": [
+      40.349938,
+      -3.831987
+    ]
+  },
+  {
+    "name": "Alfonso XIII",
+    "coordinates": [
+      40.448222,
+      -3.667892
+    ]
+  },
+  {
+    "name": "Almendrales",
+    "coordinates": [
+      40.38395,
+      -3.698011
+    ]
+  },
+  {
+    "name": "Alonso Cano",
+    "coordinates": [
+      40.438446,
+      -3.699258
+    ]
+  },
+  {
+    "name": "Alonso Martínez",
+    "coordinates": [
+      40.427406,
+      -3.695983
+    ]
+  },
+  {
+    "name": "Alsacia",
+    "coordinates": [
+      40.418241,
+      -3.62379
+    ]
+  },
+  {
+    "name": "Alto de Extremadura",
+    "coordinates": [
+      40.409995,
+      -3.738407
+    ]
+  },
+  {
+    "name": "Alto del Arenal",
+    "coordinates": [
+      40.39005,
+      -3.645813
+    ]
+  },
+  {
+    "name": "Aluche",
+    "coordinates": [
+      40.385667,
+      -3.760763
+    ]
+  },
+  {
+    "name": "Alvarado",
+    "coordinates": [
+      40.450087,
+      -3.70351
+    ]
+  },
+  {
+    "name": "Antón Martín",
+    "coordinates": [
+      40.412291,
+      -3.699089
+    ]
+  },
+  {
+    "name": "Antonio Machado",
+    "coordinates": [
+      40.470189,
+      -3.717881
+    ]
+  },
+  {
+    "name": "Arganzuela-Planetario",
+    "coordinates": [
+      40.393232,
+      -3.688413
+    ]
+  },
+  {
+    "name": "Argüelles",
+    "coordinates": [
+      40.430727,
+      -3.716172
+    ]
+  },
+  {
+    "name": "Arroyofresno",
+    "coordinates": [
+      40.490681,
+      -3.725999
+    ]
+  },
+  {
+    "name": "Artilleros",
+    "coordinates": [
+      40.405263,
+      -3.641852
+    ]
+  },
+  {
+    "name": "Arturo Soria",
+    "coordinates": [
+      40.455936,
+      -3.656177
+    ]
+  },
+  {
+    "name": "Ascao",
+    "coordinates": [
+      40.430312,
+      -3.640449
+    ]
+  },
+  {
+    "name": "Atocha",
+    "coordinates": [
+      40.406975,
+      -3.688601
+    ]
+  },
+  {
+    "name": "Avenida de América",
+    "coordinates": [
+      40.437648,
+      -3.677296
+    ]
+  },
+  {
+    "name": "Avenida de Guadalajara",
+    "coordinates": [
+      40.422449,
+      -3.612224
+    ]
+  },
+  {
+    "name": "Avenida de la Ilustración",
+    "coordinates": [
+      40.480045,
+      -3.718306
+    ]
+  },
+  {
+    "name": "Avenida de la Paz",
+    "coordinates": [
+      40.453217,
+      -3.662188
+    ]
+  },
+  {
+    "name": "Aviación Española",
+    "coordinates": [
+      40.383714,
+      -3.784024
+    ]
+  },
+  {
+    "name": "Bambú",
+    "coordinates": [
+      40.476981,
+      -3.676614
+    ]
+  },
+  {
+    "name": "Banco de España",
+    "coordinates": [
+      40.419055,
+      -3.694926
+    ]
+  },
+  {
+    "name": "Barajas",
+    "coordinates": [
+      40.475812,
+      -3.582621
+    ]
+  },
+  {
+    "name": "Barrio de la Concepción",
+    "coordinates": [
+      40.439366,
+      -3.652098
+    ]
+  },
+  {
+    "name": "Barrio del Pilar",
+    "coordinates": [
+      40.477047,
+      -3.703539
+    ]
+  },
+  {
+    "name": "Batán",
+    "coordinates": [
+      40.407835,
+      -3.753117
+    ]
+  },
+  {
+    "name": "Baunatal",
+    "coordinates": [
+      40.554384,
+      -3.635041
+    ]
+  },
+  {
+    "name": "Begoña",
+    "coordinates": [
+      40.483453,
+      -3.686904
+    ]
+  },
+  {
+    "name": "Bilbao",
+    "coordinates": [
+      40.429271,
+      -3.701929
+    ]
+  },
+  {
+    "name": "Buenos Aires",
+    "coordinates": [
+      40.391624,
+      -3.653876
+    ]
+  },
+  {
+    "name": "Callao",
+    "coordinates": [
+      40.420294,
+      -3.705912
+    ]
+  },
+  {
+    "name": "Campamento",
+    "coordinates": [
+      40.394683,
+      -3.768279
+    ]
+  },
+  {
+    "name": "Canal",
+    "coordinates": [
+      40.438635,
+      -3.704264
+    ]
+  },
+  {
+    "name": "Canillas",
+    "coordinates": [
+      40.463772,
+      -3.635443
+    ]
+  },
+  {
+    "name": "Canillejas",
+    "coordinates": [
+      40.449113,
+      -3.608586
+    ]
+  },
+  {
+    "name": "Carabanchel",
+    "coordinates": [
+      40.387817,
+      -3.744984
+    ]
+  },
+  {
+    "name": "Carabanchel Alto",
+    "coordinates": [
+      40.371883,
+      -3.751753
+    ]
+  },
+  {
+    "name": "Carpetana",
+    "coordinates": [
+      40.392917,
+      -3.740982
+    ]
+  },
+  {
+    "name": "Cartagena",
+    "coordinates": [
+      40.439394,
+      -3.671796
+    ]
+  },
+  {
+    "name": "Casa de Campo",
+    "coordinates": [
+      40.403486,
+      -3.760931
+    ]
+  },
+  {
+    "name": "Chamartín",
+    "coordinates": [
+      40.473954,
+      -3.682709
+    ]
+  },
+  {
+    "name": "Chueca",
+    "coordinates": [
+      40.42267,
+      -3.697674
+    ]
+  },
+  {
+    "name": "Ciudad de los Ángeles",
+    "coordinates": [
+      40.360174,
+      -3.69343
+    ]
+  },
+  {
+    "name": "Ciudad Lineal",
+    "coordinates": [
+      40.437931,
+      -3.63774
+    ]
+  },
+  {
+    "name": "Ciudad Universitaria",
+    "coordinates": [
+      40.443801,
+      -3.726421
+    ]
+  },
+  {
+    "name": "Colombia",
+    "coordinates": [
+      40.457116,
+      -3.676961
+    ]
+  },
+  {
+    "name": "Colón",
+    "coordinates": [
+      40.425801,
+      -3.692041
+    ]
+  },
+  {
+    "name": "Colonia Jardín",
+    "coordinates": [
+      40.396863,
+      -3.774798
+    ]
+  },
+  {
+    "name": "Concha Espina",
+    "coordinates": [
+      40.451329,
+      -3.677608
+    ]
+  },
+  {
+    "name": "Conde de Casal",
+    "coordinates": [
+      40.407812,
+      -3.670119
+    ]
+  },
+  {
+    "name": "Congosto",
+    "coordinates": [
+      40.372198,
+      -3.618727
+    ]
+  },
+  {
+    "name": "Cruz del Rayo",
+    "coordinates": [
+      40.444483,
+      -3.678463
+    ]
+  },
+  {
+    "name": "Cuatro Caminos",
+    "coordinates": [
+      40.446781,
+      -3.703964
+    ]
+  },
+  {
+    "name": "Cuatro Vientos",
+    "coordinates": [
+      40.377895,
+      -3.791972
+    ]
+  },
+  {
+    "name": "Cuzco",
+    "coordinates": [
+      40.459484,
+      -3.690017
+    ]
+  },
+  {
+    "name": "Delicias",
+    "coordinates": [
+      40.399331,
+      -3.694123
+    ]
+  },
+  {
+    "name": "Diego de León",
+    "coordinates": [
+      40.434474,
+      -3.67472
+    ]
+  },
+  {
+    "name": "Duque de Pastrana",
+    "coordinates": [
+      40.467476,
+      -3.680585
+    ]
+  },
+  {
+    "name": "El Capricho",
+    "coordinates": [
+      40.45338,
+      -3.594198
+    ]
+  },
+  {
+    "name": "El Carmen",
+    "coordinates": [
+      40.43197,
+      -3.656191
+    ]
+  },
+  {
+    "name": "Embajadores",
+    "coordinates": [
+      40.404812,
+      -3.702273
+    ]
+  },
+  {
+    "name": "Empalme",
+    "coordinates": [
+      40.390726,
+      -3.765486
+    ]
+  },
+  {
+    "name": "Esperanza",
+    "coordinates": [
+      40.459244,
+      -3.645564
+    ]
+  },
+  {
+    "name": "Estación del Arte",
+    "coordinates": [
+      40.408839,
+      -3.691475
+    ]
+  },
+  {
+    "name": "Estadio Metropolitano",
+    "coordinates": [
+      40.4338,
+      -3.600962
+    ]
+  },
+  {
+    "name": "Estrecho",
+    "coordinates": [
+      40.454514,
+      -3.702757
+    ]
+  },
+  {
+    "name": "Estrella",
+    "coordinates": [
+      40.411285,
+      -3.661347
+    ]
+  },
+  {
+    "name": "Eugenia de Montijo",
+    "coordinates": [
+      40.384416,
+      -3.751063
+    ]
+  },
+  {
+    "name": "Feria de Madrid",
+    "coordinates": [
+      40.464,
+      -3.616309
+    ]
+  },
+  {
+    "name": "Francos Rodríguez",
+    "coordinates": [
+      40.456612,
+      -3.712111
+    ]
+  },
+  {
+    "name": "Fuencarral",
+    "coordinates": [
+      40.494735,
+      -3.693069
+    ]
+  },
+  {
+    "name": "García Noblejas",
+    "coordinates": [
+      40.428648,
+      -3.632863
+    ]
+  },
+  {
+    "name": "Getafe Central",
+    "coordinates": [
+      40.309998,
+      -3.734031
+    ]
+  },
+  {
+    "name": "Goya",
+    "coordinates": [
+      40.424699,
+      -3.6762
+    ]
+  },
+  {
+    "name": "Gran Vía",
+    "coordinates": [
+      40.419912,
+      -3.701619
+    ]
+  },
+  {
+    "name": "Gregorio Marañón",
+    "coordinates": [
+      40.437994,
+      -3.691213
+    ]
+  },
+  {
+    "name": "Guzmán el Bueno",
+    "coordinates": [
+      40.446274,
+      -3.713169
+    ]
+  },
+  {
+    "name": "Herrera Oria",
+    "coordinates": [
+      40.484603,
+      -3.70801
+    ]
+  },
+  {
+    "name": "Hortaleza",
+    "coordinates": [
+      40.474728,
+      -3.652125
+    ]
+  },
+  {
+    "name": "Hospital 12 de Octubre",
+    "coordinates": [
+      40.37546,
+      -3.695906
+    ]
+  },
+  {
+    "name": "Hospital Infanta Sofía",
+    "coordinates": [
+      40.559845,
+      -3.611549
+    ]
+  },
+  {
+    "name": "Ibiza",
+    "coordinates": [
+      40.418366,
+      -3.678137
+    ]
+  },
+  {
+    "name": "Iglesia",
+    "coordinates": [
+      40.435263,
+      -3.699013
+    ]
+  },
+  {
+    "name": "Islas Filipinas",
+    "coordinates": [
+      40.439043,
+      -3.713978
+    ]
+  },
+  {
+    "name": "Joaquín Vilumbrales",
+    "coordinates": [
+      40.349765,
+      -3.807319
+    ]
+  },
+  {
+    "name": "La Almudena",
+    "coordinates": [
+      40.423172,
+      -3.638255
+    ]
+  },
+  {
+    "name": "La Elipa",
+    "coordinates": [
+      40.426999,
+      -3.649465
+    ]
+  },
+  {
+    "name": "La Fortuna",
+    "coordinates": [
+      40.358196,
+      -3.777656
+    ]
+  },
+  {
+    "name": "La Granja",
+    "coordinates": [
+      40.527434,
+      -3.658524
+    ]
+  },
+  {
+    "name": "La Latina",
+    "coordinates": [
+      40.411291,
+      -3.708309
+    ]
+  },
+  {
+    "name": "La Moraleja",
+    "coordinates": [
+      40.532033,
+      -3.635494
+    ]
+  },
+  {
+    "name": "La Peseta",
+    "coordinates": [
+      40.363025,
+      -3.757408
+    ]
+  },
+  {
+    "name": "La Poveda",
+    "coordinates": [
+      40.319033,
+      -3.477789
+    ]
+  },
+  {
+    "name": "Lacoma",
+    "coordinates": [
+      40.485111,
+      -3.723102
+    ]
+  },
+  {
+    "name": "Lago",
+    "coordinates": [
+      40.416508,
+      -3.734881
+    ]
+  },
+  {
+    "name": "Laguna",
+    "coordinates": [
+      40.399305,
+      -3.744637
+    ]
+  },
+  {
+    "name": "Las Musas",
+    "coordinates": [
+      40.432572,
+      -3.60785
+    ]
+  },
+  {
+    "name": "Las Rosas",
+    "coordinates": [
+      40.423557,
+      -3.602844
+    ]
+  },
+  {
+    "name": "Las Suertes",
+    "coordinates": [
+      40.363504,
+      -3.599163
+    ]
+  },
+  {
+    "name": "Las Tablas",
+    "coordinates": [
+      40.508343,
+      -3.669435
+    ]
+  },
+  {
+    "name": "Lavapiés",
+    "coordinates": [
+      40.408454,
+      -3.700661
+    ]
+  },
+  {
+    "name": "Leganés Central",
+    "coordinates": [
+      40.328092,
+      -3.772356
+    ]
+  },
+  {
+    "name": "Legazpi",
+    "coordinates": [
+      40.391443,
+      -3.694956
+    ]
+  },
+  {
+    "name": "Lista",
+    "coordinates": [
+      40.429397,
+      -3.675399
+    ]
+  },
+  {
+    "name": "Lucero",
+    "coordinates": [
+      40.404801,
+      -3.745269
+    ]
+  },
+  {
+    "name": "Manoteras",
+    "coordinates": [
+      40.476699,
+      -3.662679
+    ]
+  },
+  {
+    "name": "Manuel Becerra",
+    "coordinates": [
+      40.428143,
+      -3.668711
+    ]
+  },
+  {
+    "name": "Manuel de Falla",
+    "coordinates": [
+      40.550222,
+      -3.646967
+    ]
+  },
+  {
+    "name": "Mar de Cristal",
+    "coordinates": [
+      40.46982,
+      -3.638581
+    ]
+  },
+  {
+    "name": "Marqués de la Valdavia",
+    "coordinates": [
+      40.540456,
+      -3.638051
+    ]
+  },
+  {
+    "name": "Marqués de Vadillo",
+    "coordinates": [
+      40.397446,
+      -3.716404
+    ]
+  },
+  {
+    "name": "Méndez Álvaro",
+    "coordinates": [
+      40.395717,
+      -3.680109
+    ]
+  },
+  {
+    "name": "Menéndez Pelayo",
+    "coordinates": [
+      40.404297,
+      -3.681101
+    ]
+  },
+  {
+    "name": "Miguel Hernández",
+    "coordinates": [
+      40.387548,
+      -3.640007
+    ]
+  },
+  {
+    "name": "Mirasierra",
+    "coordinates": [
+      40.491043,
+      -3.71654
+    ]
+  },
+  {
+    "name": "Moncloa",
+    "coordinates": [
+      40.43502,
+      -3.719236
+    ]
+  },
+  {
+    "name": "Montecarmelo",
+    "coordinates": [
+      40.505336,
+      -3.695992
+    ]
+  },
+  {
+    "name": "Noviciado",
+    "coordinates": [
+      40.424773,
+      -3.707385
+    ]
+  },
+  {
+    "name": "Nueva Numancia",
+    "coordinates": [
+      40.395963,
+      -3.664762
+    ]
+  },
+  {
+    "name": "Nuevos Ministerios",
+    "coordinates": [
+      40.445842,
+      -3.691699
+    ]
+  },
+  {
+    "name": "Núñez de Balboa",
+    "coordinates": [
+      40.432642,
+      -3.679555
+    ]
+  },
+  {
+    "name": "O'Donnell",
+    "coordinates": [
+      40.422202,
+      -3.669063
+    ]
+  },
+  {
+    "name": "Opañel",
+    "coordinates": [
+      40.386929,
+      -3.723178
+    ]
+  },
+  {
+    "name": "Ópera",
+    "coordinates": [
+      40.417983,
+      -3.709415
+    ]
+  },
+  {
+    "name": "Oporto",
+    "coordinates": [
+      40.38864,
+      -3.731724
+    ]
+  },
+  {
+    "name": "Pacífico",
+    "coordinates": [
+      40.401396,
+      -3.674883
+    ]
+  },
+  {
+    "name": "Palos de la Frontera",
+    "coordinates": [
+      40.403085,
+      -3.694784
+    ]
+  },
+  {
+    "name": "Pan Bendito",
+    "coordinates": [
+      40.376182,
+      -3.734193
+    ]
+  },
+  {
+    "name": "Parque de las Avenidas",
+    "coordinates": [
+      40.439306,
+      -3.662901
+    ]
+  },
+  {
+    "name": "Parque de Santa María",
+    "coordinates": [
+      40.477126,
+      -3.645699
+    ]
+  },
+  {
+    "name": "Parque Oeste",
+    "coordinates": [
+      40.345816,
+      -3.849049
+    ]
+  },
+  {
+    "name": "Pavones",
+    "coordinates": [
+      40.400543,
+      -3.635211
+    ]
+  },
+  {
+    "name": "Peñagrande",
+    "coordinates": [
+      40.475952,
+      -3.716052
+    ]
+  },
+  {
+    "name": "Pinar de Chamartín",
+    "coordinates": [
+      40.48005,
+      -3.667052
+    ]
+  },
+  {
+    "name": "Pinar del Rey",
+    "coordinates": [
+      40.467828,
+      -3.648678
+    ]
+  },
+  {
+    "name": "Pío XII",
+    "coordinates": [
+      40.461802,
+      -3.676531
+    ]
+  },
+  {
+    "name": "Pirámides",
+    "coordinates": [
+      40.402043,
+      -3.711941
+    ]
+  },
+  {
+    "name": "Pitis",
+    "coordinates": [
+      40.495302,
+      -3.725588
+    ]
+  },
+  {
+    "name": "Plaza de Castilla",
+    "coordinates": [
+      40.466282,
+      -3.689664
+    ]
+  },
+  {
+    "name": "Plaza de España",
+    "coordinates": [
+      40.423449,
+      -3.710881
+    ]
+  },
+  {
+    "name": "Plaza Elíptica",
+    "coordinates": [
+      40.385356,
+      -3.717875
+    ]
+  },
+  {
+    "name": "Portazgo",
+    "coordinates": [
+      40.393013,
+      -3.659194
+    ]
+  },
+  {
+    "name": "Príncipe de Vergara",
+    "coordinates": [
+      40.422649,
+      -3.680369
+    ]
+  },
+  {
+    "name": "Príncipe Pío",
+    "coordinates": [
+      40.420962,
+      -3.719333
+    ]
+  },
+  {
+    "name": "Prosperidad",
+    "coordinates": [
+      40.444209,
+      -3.674851
+    ]
+  },
+  {
+    "name": "Pueblo Nuevo",
+    "coordinates": [
+      40.435033,
+      -3.644171
+    ]
+  },
+  {
+    "name": "Puente de Vallecas",
+    "coordinates": [
+      40.398093,
+      -3.668966
+    ]
+  },
+  {
+    "name": "Puerta de Arganda",
+    "coordinates": [
+      40.401242,
+      -3.595729
+    ]
+  },
+  {
+    "name": "Puerta de Toledo",
+    "coordinates": [
+      40.407051,
+      -3.711066
+    ]
+  },
+  {
+    "name": "Puerta del Ángel",
+    "coordinates": [
+      40.413828,
+      -3.727131
+    ]
+  },
+  {
+    "name": "Puerta del Sur",
+    "coordinates": [
+      40.345207,
+      -3.812021
+    ]
+  },
+  {
+    "name": "Quevedo",
+    "coordinates": [
+      40.433181,
+      -3.704493
+    ]
+  },
+  {
+    "name": "Quintana",
+    "coordinates": [
+      40.433114,
+      -3.648146
+    ]
+  },
+  {
+    "name": "República Argentina",
+    "coordinates": [
+      40.444318,
+      -3.684639
+    ]
+  },
+  {
+    "name": "Retiro",
+    "coordinates": [
+      40.420463,
+      -3.686427
+    ]
+  },
+  {
+    "name": "Reyes Católicos",
+    "coordinates": [
+      40.550908,
+      -3.624055
+    ]
+  },
+  {
+    "name": "Ríos Rosas",
+    "coordinates": [
+      40.441594,
+      -3.701592
+    ]
+  },
+  {
+    "name": "Rivas Urbanizaciones",
+    "coordinates": [
+      40.367148,
+      -3.547697
+    ]
+  },
+  {
+    "name": "Ronda de la Comunicación",
+    "coordinates": [
+      40.515157,
+      -3.662317
+    ]
+  },
+  {
+    "name": "Rubén Darío",
+    "coordinates": [
+      40.433042,
+      -3.68969
+    ]
+  },
+  {
+    "name": "Sainz de Baranda",
+    "coordinates": [
+      40.414396,
+      -3.669673
+    ]
+  },
+  {
+    "name": "San Bernardo",
+    "coordinates": [
+      40.429772,
+      -3.705761
+    ]
+  },
+  {
+    "name": "San Blas",
+    "coordinates": [
+      40.4275,
+      -3.615954
+    ]
+  },
+  {
+    "name": "San Cipriano",
+    "coordinates": [
+      40.403985,
+      -3.603549
+    ]
+  },
+  {
+    "name": "San Cristóbal",
+    "coordinates": [
+      40.341612,
+      -3.693414
+    ]
+  },
+  {
+    "name": "San Fermín-Orcasur",
+    "coordinates": [
+      40.369987,
+      -3.694386
+    ]
+  },
+  {
+    "name": "San Francisco",
+    "coordinates": [
+      40.373659,
+      -3.739792
+    ]
+  },
+  {
+    "name": "San Lorenzo",
+    "coordinates": [
+      40.474562,
+      -3.639611
+    ]
+  },
+  {
+    "name": "Santiago Bernabéu",
+    "coordinates": [
+      40.452367,
+      -3.690725
+    ]
+  },
+  {
+    "name": "Santo Domingo",
+    "coordinates": [
+      40.420426,
+      -3.708572
+    ]
+  },
+  {
+    "name": "Serrano",
+    "coordinates": [
+      40.425387,
+      -3.686901
+    ]
+  },
+  {
+    "name": "Sevilla",
+    "coordinates": [
+      40.417766,
+      -3.699945
+    ]
+  },
+  {
+    "name": "Sierra de Guadalupe",
+    "coordinates": [
+      40.382582,
+      -3.624921
+    ]
+  },
+  {
+    "name": "Simancas",
+    "coordinates": [
+      40.427555,
+      -3.622991
+    ]
+  },
+  {
+    "name": "Sol",
+    "coordinates": [
+      40.416938,
+      -3.70339
+    ]
+  },
+  {
+    "name": "Suanzes",
+    "coordinates": [
+      40.440879,
+      -3.627016
+    ]
+  },
+  {
+    "name": "Tetuán",
+    "coordinates": [
+      40.460855,
+      -3.698226
+    ]
+  },
+  {
+    "name": "Tirso de Molina",
+    "coordinates": [
+      40.412361,
+      -3.704585
+    ]
+  },
+  {
+    "name": "Torre Arias",
+    "coordinates": [
+      40.443618,
+      -3.617122
+    ]
+  },
+  {
+    "name": "Tres Olivos",
+    "coordinates": [
+      40.500966,
+      -3.694689
+    ]
+  },
+  {
+    "name": "Tribunal",
+    "coordinates": [
+      40.426242,
+      -3.701094
+    ]
+  },
+  {
+    "name": "Urgel",
+    "coordinates": [
+      40.392534,
+      -3.725361
+    ]
+  },
+  {
+    "name": "Usera",
+    "coordinates": [
+      40.388034,
+      -3.705604
+    ]
+  },
+  {
+    "name": "Valdeacederas",
+    "coordinates": [
+      40.464526,
+      -3.694999
+    ]
+  },
+  {
+    "name": "Valdebernardo",
+    "coordinates": [
+      40.399912,
+      -3.621522
+    ]
+  },
+  {
+    "name": "Valdecarros",
+    "coordinates": [
+      40.35999,
+      -3.592117
+    ]
+  },
+  {
+    "name": "Valdezarza",
+    "coordinates": [
+      40.464919,
+      -3.716519
+    ]
+  },
+  {
+    "name": "Velázquez",
+    "coordinates": [
+      40.425177,
+      -3.682539
+    ]
+  },
+  {
+    "name": "Ventas",
+    "coordinates": [
+      40.431064,
+      -3.663542
+    ]
+  },
+  {
+    "name": "Ventilla",
+    "coordinates": [
+      40.469821,
+      -3.696293
+    ]
+  },
+  {
+    "name": "Ventura Rodríguez",
+    "coordinates": [
+      40.426761,
+      -3.713295
+    ]
+  },
+  {
+    "name": "Vicálvaro",
+    "coordinates": [
+      40.404203,
+      -3.608894
+    ]
+  },
+  {
+    "name": "Vicente Aleixandre",
+    "coordinates": [
+      40.446506,
+      -3.719044
+    ]
+  },
+  {
+    "name": "Villa de Vallecas",
+    "coordinates": [
+      40.37943,
+      -3.621325
+    ]
+  },
+  {
+    "name": "Villaverde Alto",
+    "coordinates": [
+      40.341032,
+      -3.711769
+    ]
+  },
+  {
+    "name": "Villaverde Bajo - Cruce",
+    "coordinates": [
+      40.351034,
+      -3.692626
+    ]
+  },
+  {
+    "name": "Vinateros",
+    "coordinates": [
+      40.410331,
+      -3.652529
+    ]
+  },
+  {
+    "name": "Vista Alegre",
+    "coordinates": [
+      40.388788,
+      -3.740044
+    ]
+  }
+]

@@ -50,7 +50,9 @@ import flatzen.composeapp.generated.resources.binebi32
 import flatzen.composeapp.generated.resources.domovita32
 import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
+import flatzen.composeapp.generated.resources.fotocasa32
 import flatzen.composeapp.generated.resources.gratka32
+import flatzen.composeapp.generated.resources.idealista32
 import flatzen.composeapp.generated.resources.kn32
 import flatzen.composeapp.generated.resources.krisha32
 import flatzen.composeapp.generated.resources.kufar32
@@ -60,6 +62,7 @@ import flatzen.composeapp.generated.resources.olxkz32
 import flatzen.composeapp.generated.resources.olxpl32
 import flatzen.composeapp.generated.resources.onliner32
 import flatzen.composeapp.generated.resources.otodom32
+import flatzen.composeapp.generated.resources.pisos32
 import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.ssge32
 import flatzen.composeapp.generated.resources.tab_favorites
@@ -341,6 +344,9 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.KRISHA -> painterResource(Res.drawable.krisha32)
         FlatPlatform.OLX_KZ -> painterResource(Res.drawable.olxkz32)
         FlatPlatform.KN -> painterResource(Res.drawable.kn32)
+        FlatPlatform.IDEALISTA -> painterResource(Res.drawable.idealista32)
+        FlatPlatform.FOTOCASA -> painterResource(Res.drawable.fotocasa32)
+        FlatPlatform.PISOS -> painterResource(Res.drawable.pisos32)
     }
 }
 

@@ -32,10 +32,11 @@ enum class Currency {
     /**
      * Markets that store listing prices in [entities.AppFlat.priceByn]
      * (local currency until price model rename).
+     * EUR included so Spain (and any EUR market) shows € as main via localIsMain.
      */
     fun usesLocalPriceField(): Boolean = when (this) {
-        PLN, GEL, KZT, BYR -> true
-        USD, EUR -> false
+        PLN, GEL, KZT, BYR, EUR -> true
+        USD -> false
     }
 }
 
@@ -45,4 +46,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.PL -> Currency.PLN
     CountryCode.GE -> Currency.GEL
     CountryCode.KZ -> Currency.KZT
+    CountryCode.ES -> Currency.EUR
 }

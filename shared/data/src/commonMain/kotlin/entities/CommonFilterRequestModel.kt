@@ -339,6 +339,7 @@ object MetroStations {
             CityCode.WARSZAWA -> WarsawMetroStations.allStationsRequest()
             CityCode.TBILISI -> TbilisiMetroStations.allStationsRequest()
             CityCode.ALMATY -> AlmatyMetroStations.allStationsRequest()
+            CityCode.MADRID -> MadridMetroStations.allStationsRequest()
             CityCode.MINSK, null -> allStationsRequest()
             else -> emptyList()
         }

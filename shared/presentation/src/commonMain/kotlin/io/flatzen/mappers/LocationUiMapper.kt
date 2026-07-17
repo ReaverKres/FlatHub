@@ -12,18 +12,21 @@ object LocationUiMapper {
     val warszawaUiItem = UiCityItem(CityCode.WARSZAWA, "Warszawa", Coordinates(52.2297, 21.0122))
     val tbilisiUiItem = UiCityItem(CityCode.TBILISI, "Tbilisi", Coordinates(41.7151, 44.8271))
     val almatyUiItem = UiCityItem(CityCode.ALMATY, "Алматы", Coordinates(43.2389, 76.9455))
+    val madridUiItem = UiCityItem(CityCode.MADRID, "Madrid", Coordinates(40.4168, -3.7038))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Беларусь"),
         UiCountryItem(CountryCode.PL, "Polska"),
         UiCountryItem(CountryCode.GE, "Georgia"),
         UiCountryItem(CountryCode.KZ, "Қазақстан"),
+        UiCountryItem(CountryCode.ES, "España"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
         CountryCode.PL -> warszawaUiItem
         CountryCode.GE -> tbilisiUiItem
         CountryCode.KZ -> almatyUiItem
+        CountryCode.ES -> madridUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -63,6 +66,15 @@ object LocationUiMapper {
             UiCityItem(CityCode.SHYMKENT, "Шымкент", Coordinates(42.3417, 69.5901)),
             UiCityItem(CityCode.KARAGANDA, "Қарағанды", Coordinates(49.8047, 73.1094)),
         )
+
+        CountryCode.ES -> listOf(
+            madridUiItem,
+            UiCityItem(CityCode.BARCELONA, "Barcelona", Coordinates(41.3874, 2.1686)),
+            UiCityItem(CityCode.VALENCIA, "Valencia", Coordinates(39.4699, -0.3763)),
+            UiCityItem(CityCode.SEVILLA, "Sevilla", Coordinates(37.3891, -5.9845)),
+            UiCityItem(CityCode.MALAGA, "Málaga", Coordinates(36.7213, -4.4214)),
+            UiCityItem(CityCode.ZARAGOZA, "Zaragoza", Coordinates(41.6488, -0.8891)),
+        )
     }
 
     /** Backward-compatible default (BY). */
@@ -73,7 +85,8 @@ object LocationUiMapper {
                 cities(CountryCode.BY) +
                         cities(CountryCode.PL) +
                         cities(CountryCode.GE) +
-                        cities(CountryCode.KZ)
+                        cities(CountryCode.KZ) +
+                        cities(CountryCode.ES)
                 ).find { it.code == cityCode }
             ?: minskUiItem
 
@@ -82,6 +95,7 @@ object LocationUiMapper {
             in cities(CountryCode.PL).map { it.code } -> CountryCode.PL
             in cities(CountryCode.GE).map { it.code } -> CountryCode.GE
             in cities(CountryCode.KZ).map { it.code } -> CountryCode.KZ
+            in cities(CountryCode.ES).map { it.code } -> CountryCode.ES
             else -> CountryCode.BY
         }
 

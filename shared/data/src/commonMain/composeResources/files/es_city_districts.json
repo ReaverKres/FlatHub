@@ -1,0 +1,592 @@
+{
+  "Madrid": [
+    {
+      "id": 1,
+      "nameEn": "Centro",
+      "nameLocal": "Centro",
+      "coordinates": [
+        {
+          "latitude": 40.405063,
+          "longitude": -3.722954
+        },
+        {
+          "latitude": 40.405063,
+          "longitude": -3.690455
+        },
+        {
+          "latitude": 40.430648,
+          "longitude": -3.690455
+        },
+        {
+          "latitude": 40.430648,
+          "longitude": -3.722954
+        },
+        {
+          "latitude": 40.405063,
+          "longitude": -3.722954
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 2,
+      "nameEn": "Arganzuela",
+      "nameLocal": "Arganzuela",
+      "coordinates": [
+        {
+          "latitude": 40.382331,
+          "longitude": -3.722954
+        },
+        {
+          "latitude": 40.382331,
+          "longitude": -3.67352
+        },
+        {
+          "latitude": 40.413989,
+          "longitude": -3.67352
+        },
+        {
+          "latitude": 40.413989,
+          "longitude": -3.722954
+        },
+        {
+          "latitude": 40.382331,
+          "longitude": -3.722954
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 3,
+      "nameEn": "Retiro",
+      "nameLocal": "Retiro",
+      "coordinates": [
+        {
+          "latitude": 40.394314,
+          "longitude": -3.693639
+        },
+        {
+          "latitude": 40.394314,
+          "longitude": -3.658695
+        },
+        {
+          "latitude": 40.421682,
+          "longitude": -3.658695
+        },
+        {
+          "latitude": 40.421682,
+          "longitude": -3.693639
+        },
+        {
+          "latitude": 40.394314,
+          "longitude": -3.693639
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 4,
+      "nameEn": "Salamanca",
+      "nameLocal": "Salamanca",
+      "coordinates": [
+        {
+          "latitude": 40.418674,
+          "longitude": -3.693089
+        },
+        {
+          "latitude": 40.418674,
+          "longitude": -3.658695
+        },
+        {
+          "latitude": 40.444606,
+          "longitude": -3.658695
+        },
+        {
+          "latitude": 40.444606,
+          "longitude": -3.693089
+        },
+        {
+          "latitude": 40.418674,
+          "longitude": -3.693089
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 5,
+      "nameEn": "Chamartín",
+      "nameLocal": "Chamartín",
+      "coordinates": [
+        {
+          "latitude": 40.437394,
+          "longitude": -3.691786
+        },
+        {
+          "latitude": 40.437394,
+          "longitude": -3.660602
+        },
+        {
+          "latitude": 40.484056,
+          "longitude": -3.660602
+        },
+        {
+          "latitude": 40.484056,
+          "longitude": -3.691786
+        },
+        {
+          "latitude": 40.437394,
+          "longitude": -3.691786
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 6,
+      "nameEn": "Tetuán",
+      "nameLocal": "Tetuán",
+      "coordinates": [
+        {
+          "latitude": 40.446215,
+          "longitude": -3.713278
+        },
+        {
+          "latitude": 40.446215,
+          "longitude": -3.687122
+        },
+        {
+          "latitude": 40.474977,
+          "longitude": -3.687122
+        },
+        {
+          "latitude": 40.474977,
+          "longitude": -3.713278
+        },
+        {
+          "latitude": 40.446215,
+          "longitude": -3.713278
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 7,
+      "nameEn": "Chamberí",
+      "nameLocal": "Chamberí",
+      "coordinates": [
+        {
+          "latitude": 40.425262,
+          "longitude": -3.719926
+        },
+        {
+          "latitude": 40.425262,
+          "longitude": -3.688413
+        },
+        {
+          "latitude": 40.447134,
+          "longitude": -3.688413
+        },
+        {
+          "latitude": 40.447134,
+          "longitude": -3.719926
+        },
+        {
+          "latitude": 40.425262,
+          "longitude": -3.719926
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 8,
+      "nameEn": "Fuencarral - El Pardo",
+      "nameLocal": "Fuencarral - El Pardo",
+      "coordinates": [
+        {
+          "latitude": 40.468514,
+          "longitude": -3.888963
+        },
+        {
+          "latitude": 40.468514,
+          "longitude": -3.601781
+        },
+        {
+          "latitude": 40.64328,
+          "longitude": -3.601781
+        },
+        {
+          "latitude": 40.64328,
+          "longitude": -3.888963
+        },
+        {
+          "latitude": 40.468514,
+          "longitude": -3.888963
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 9,
+      "nameEn": "Moncloa - Aravaca",
+      "nameLocal": "Moncloa - Aravaca",
+      "coordinates": [
+        {
+          "latitude": 40.399103,
+          "longitude": -3.838257
+        },
+        {
+          "latitude": 40.399103,
+          "longitude": -3.708307
+        },
+        {
+          "latitude": 40.479781,
+          "longitude": -3.708307
+        },
+        {
+          "latitude": 40.479781,
+          "longitude": -3.838257
+        },
+        {
+          "latitude": 40.399103,
+          "longitude": -3.838257
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 10,
+      "nameEn": "Latina",
+      "nameLocal": "Latina",
+      "coordinates": [
+        {
+          "latitude": 40.358696,
+          "longitude": -3.834162
+        },
+        {
+          "latitude": 40.358696,
+          "longitude": -3.721823
+        },
+        {
+          "latitude": 40.417175,
+          "longitude": -3.721823
+        },
+        {
+          "latitude": 40.417175,
+          "longitude": -3.834162
+        },
+        {
+          "latitude": 40.358696,
+          "longitude": -3.834162
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 11,
+      "nameEn": "Carabanchel",
+      "nameLocal": "Carabanchel",
+      "coordinates": [
+        {
+          "latitude": 40.357261,
+          "longitude": -3.771624
+        },
+        {
+          "latitude": 40.357261,
+          "longitude": -3.704641
+        },
+        {
+          "latitude": 40.405524,
+          "longitude": -3.704641
+        },
+        {
+          "latitude": 40.405524,
+          "longitude": -3.771624
+        },
+        {
+          "latitude": 40.357261,
+          "longitude": -3.771624
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 12,
+      "nameEn": "Usera",
+      "nameLocal": "Usera",
+      "coordinates": [
+        {
+          "latitude": 40.361296,
+          "longitude": -3.720985
+        },
+        {
+          "latitude": 40.361296,
+          "longitude": -3.681736
+        },
+        {
+          "latitude": 40.395234,
+          "longitude": -3.681736
+        },
+        {
+          "latitude": 40.395234,
+          "longitude": -3.720985
+        },
+        {
+          "latitude": 40.361296,
+          "longitude": -3.720985
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 13,
+      "nameEn": "Puente de Vallecas",
+      "nameLocal": "Puente de Vallecas",
+      "coordinates": [
+        {
+          "latitude": 40.360678,
+          "longitude": -3.689746
+        },
+        {
+          "latitude": 40.360678,
+          "longitude": -3.621889
+        },
+        {
+          "latitude": 40.40634,
+          "longitude": -3.621889
+        },
+        {
+          "latitude": 40.40634,
+          "longitude": -3.689746
+        },
+        {
+          "latitude": 40.360678,
+          "longitude": -3.689746
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 14,
+      "nameEn": "Moratalaz",
+      "nameLocal": "Moratalaz",
+      "coordinates": [
+        {
+          "latitude": 40.392562,
+          "longitude": -3.665211
+        },
+        {
+          "latitude": 40.392562,
+          "longitude": -3.620362
+        },
+        {
+          "latitude": 40.418674,
+          "longitude": -3.620362
+        },
+        {
+          "latitude": 40.418674,
+          "longitude": -3.665211
+        },
+        {
+          "latitude": 40.392562,
+          "longitude": -3.665211
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 15,
+      "nameEn": "Ciudad Lineal",
+      "nameLocal": "Ciudad Lineal",
+      "coordinates": [
+        {
+          "latitude": 40.41306,
+          "longitude": -3.674438
+        },
+        {
+          "latitude": 40.41306,
+          "longitude": -3.620362
+        },
+        {
+          "latitude": 40.484183,
+          "longitude": -3.620362
+        },
+        {
+          "latitude": 40.484183,
+          "longitude": -3.674438
+        },
+        {
+          "latitude": 40.41306,
+          "longitude": -3.674438
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 16,
+      "nameEn": "Hortaleza",
+      "nameLocal": "Hortaleza",
+      "coordinates": [
+        {
+          "latitude": 40.448576,
+          "longitude": -3.673461
+        },
+        {
+          "latitude": 40.448576,
+          "longitude": -3.601712
+        },
+        {
+          "latitude": 40.513097,
+          "longitude": -3.601712
+        },
+        {
+          "latitude": 40.513097,
+          "longitude": -3.673461
+        },
+        {
+          "latitude": 40.448576,
+          "longitude": -3.673461
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 17,
+      "nameEn": "Villaverde",
+      "nameLocal": "Villaverde",
+      "coordinates": [
+        {
+          "latitude": 40.320053,
+          "longitude": -3.724926
+        },
+        {
+          "latitude": 40.320053,
+          "longitude": -3.657514
+        },
+        {
+          "latitude": 40.364785,
+          "longitude": -3.657514
+        },
+        {
+          "latitude": 40.364785,
+          "longitude": -3.724926
+        },
+        {
+          "latitude": 40.320053,
+          "longitude": -3.724926
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 18,
+      "nameEn": "Villa de Vallecas",
+      "nameLocal": "Villa de Vallecas",
+      "coordinates": [
+        {
+          "latitude": 40.312065,
+          "longitude": -3.681925
+        },
+        {
+          "latitude": 40.312065,
+          "longitude": -3.554251
+        },
+        {
+          "latitude": 40.390839,
+          "longitude": -3.554251
+        },
+        {
+          "latitude": 40.390839,
+          "longitude": -3.681925
+        },
+        {
+          "latitude": 40.312065,
+          "longitude": -3.681925
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 19,
+      "nameEn": "Vicálvaro",
+      "nameLocal": "Vicálvaro",
+      "coordinates": [
+        {
+          "latitude": 40.360076,
+          "longitude": -3.629792
+        },
+        {
+          "latitude": 40.360076,
+          "longitude": -3.518126
+        },
+        {
+          "latitude": 40.426042,
+          "longitude": -3.518126
+        },
+        {
+          "latitude": 40.426042,
+          "longitude": -3.629792
+        },
+        {
+          "latitude": 40.360076,
+          "longitude": -3.629792
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 20,
+      "nameEn": "San Blas - Canillejas",
+      "nameLocal": "San Blas - Canillejas",
+      "coordinates": [
+        {
+          "latitude": 40.408432,
+          "longitude": -3.648116
+        },
+        {
+          "latitude": 40.408432,
+          "longitude": -3.531148
+        },
+        {
+          "latitude": 40.450168,
+          "longitude": -3.531148
+        },
+        {
+          "latitude": 40.450168,
+          "longitude": -3.648116
+        },
+        {
+          "latitude": 40.408432,
+          "longitude": -3.648116
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 21,
+      "nameEn": "Barajas",
+      "nameLocal": "Barajas",
+      "coordinates": [
+        {
+          "latitude": 40.446558,
+          "longitude": -3.627971
+        },
+        {
+          "latitude": 40.446558,
+          "longitude": -3.524912
+        },
+        {
+          "latitude": 40.512405,
+          "longitude": -3.524912
+        },
+        {
+          "latitude": 40.512405,
+          "longitude": -3.627971
+        },
+        {
+          "latitude": 40.446558,
+          "longitude": -3.627971
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

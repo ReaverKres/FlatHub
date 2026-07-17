@@ -33,6 +33,9 @@ object FeedDelayListBoost {
         FlatPlatform.KRISHA to 3.0,
         FlatPlatform.OLX_KZ to 2.0,
         FlatPlatform.KN to 1.5,
+        FlatPlatform.IDEALISTA to 3.0,
+        FlatPlatform.FOTOCASA to 2.5,
+        FlatPlatform.PISOS to 2.0,
     )
 
     /** API list: inflate page size ≈ 2 × base × popularity. */
