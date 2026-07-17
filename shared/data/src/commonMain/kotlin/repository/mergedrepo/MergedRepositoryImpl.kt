@@ -218,17 +218,19 @@ class MergedRepositoryImpl(
     ): List<AppFlat> {
         var resultList = flats
 
-        val priceIsAdInUsd = currentFilter.adType != AdType.DAILY
+        val useLocalPrice = currentFilter.currency.usesLocalPriceField()
         resultList = filterByPrice(
             priceInFilter = currentFilter.priceFull,
-            priceInAd = { if (priceIsAdInUsd) it.priceUsd else it.priceByn },
+            priceInAd = { if (useLocalPrice) it.priceByn else it.priceUsd },
             resultList = resultList,
         )
 
         if (currentFilter.adType != AdType.DAILY) {
             resultList = filterByPrice(
                 priceInFilter = currentFilter.pricePerSquare,
-                priceInAd = { it.priceUsdSquare },
+                priceInAd = {
+                    if (useLocalPrice) it.priceBynSquare else it.priceUsdSquare
+                },
                 resultList = resultList,
             )
         }
@@ -276,11 +278,17 @@ class MergedRepositoryImpl(
         resultList = when (currentFilter.sortOption) {
             FlatSort.NEWEST_FIRST -> resultList.sortedByDescending { it.publishedAt }
             FlatSort.CHEAPEST_FIRST -> {
-                resultList.sortedBy { it.priceUsd ?: Double.MAX_VALUE }
+                resultList.sortedBy {
+                    val price = if (useLocalPrice) it.priceByn else it.priceUsd
+                    price ?: Double.MAX_VALUE
+                }
             }
 
             FlatSort.MOST_EXPENSIVE_FIRST -> {
-                resultList.sortedBy { it.priceUsd ?: Double.MIN_VALUE }.reversed()
+                resultList.sortedByDescending {
+                    val price = if (useLocalPrice) it.priceByn else it.priceUsd
+                    price ?: Double.MIN_VALUE
+                }
             }
         }
 

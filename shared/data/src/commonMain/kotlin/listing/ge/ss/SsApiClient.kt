@@ -48,6 +48,8 @@ class SsApiClient(
         pageSize: Int = 40,
         priceFrom: Int? = null,
         priceTo: Int? = null,
+        /** 1 = GEL, 2 = USD (observed on home.ss.ge). */
+        currencyType: Int = CURRENCY_GEL,
     ): JsonObject {
         ensureAuth()
         val body = buildJsonObject {
@@ -58,7 +60,7 @@ class SsApiClient(
             put("realEstateType", realEstateType)
             if (priceFrom != null) put("priceFrom", priceFrom)
             if (priceTo != null) put("priceTo", priceTo)
-            if (priceFrom != null || priceTo != null) put("currencyType", CURRENCY_USD)
+            if (priceFrom != null || priceTo != null) put("currencyType", currencyType)
         }
         return try {
             postLegend(body)
@@ -147,6 +149,7 @@ class SsApiClient(
         const val DEAL_LEASE = 2
         const val DEAL_DAILY = 3
         const val DEAL_SALE = 4
+        const val CURRENCY_GEL = 1
         const val CURRENCY_USD = 2
 
         fun extractCredentialsToken(html: String): String? {

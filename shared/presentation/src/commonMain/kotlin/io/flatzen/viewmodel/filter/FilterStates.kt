@@ -23,6 +23,7 @@ import io.flatzen.mappers.LocationUiMapper.UiCityItem
 import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.viewmodel.UiDistrict
 import server_request.Currency
+import server_request.filterCurrency
 
 enum class MetroLineState() {
     GREEN, BLUE, RED,
@@ -122,7 +123,11 @@ data class FilterState(
     val priceFull: Price? = null,
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
-    val currency: Currency = Currency.USD,
+    val currency: Currency = run {
+        val country = LocationUiFilter.networkDefault().selectedCountry?.code
+            ?: CountryCode.BY
+        country.filterCurrency(RENT)
+    },
     val rooms: Set<Int> = emptySet(),
     val metroStationsState: List<UiMetroStation> = MetroStationsMapper.allStationsOrderedForUi(),
     val withAnyMetro: Boolean = false,
@@ -202,22 +207,14 @@ data class FilterState(
         // Полная цена
         priceFull?.let { price ->
             activeFilters.add("${resolve(LocalizationKeys.FILTER_PRICE_LABEL)}: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
-                when (currency) {
-                    Currency.USD -> "$"
-                    Currency.EUR -> "€"
-                    else -> currency.toString()
-                }
+                currency.filterLabel()
             }".trim())
         }
 
         // Цена за м²
         pricePerSquare?.let { price ->
             activeFilters.add("${resolve(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL)}: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
-                when (currency) {
-                    Currency.USD -> "$"
-                    Currency.EUR -> "€"
-                    else -> currency.toString()
-                }
+                currency.filterLabel()
             }".trim())
         }
 

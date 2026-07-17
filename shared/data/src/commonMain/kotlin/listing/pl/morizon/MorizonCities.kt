@@ -27,6 +27,8 @@ object MorizonCities {
         adType: AdType,
         isCommercial: Boolean,
         page: Int,
+        priceFrom: Int? = null,
+        priceTo: Int? = null,
     ): String {
         val estate = if (isCommercial) "lokale-uzytkowe" else "mieszkania"
         // Rent: /do-wynajecia/mieszkania/warszawa/
@@ -36,6 +38,11 @@ object MorizonCities {
             else -> "do-wynajecia"
         }
         val base = "/$transaction/$estate/${citySlug(city)}/"
-        return if (page > 1) "$base?page=$page" else base
+        val query = buildList {
+            if (page > 1) add("page=$page")
+            if (priceFrom != null) add("ps[price_from]=$priceFrom")
+            if (priceTo != null) add("ps[price_to]=$priceTo")
+        }
+        return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
     }
 }

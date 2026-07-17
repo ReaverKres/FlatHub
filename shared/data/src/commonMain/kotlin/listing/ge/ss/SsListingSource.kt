@@ -50,6 +50,7 @@ class SsListingSource(
                 pageSize = listing.core.FeedDelayListBoost.apiPageSize(platform, base = 40),
                 priceFrom = filter.priceFull?.priceFrom?.toInt(),
                 priceTo = filter.priceFull?.priceTo?.toInt(),
+                currencyType = SsApiClient.CURRENCY_GEL,
             )
             NetworkResponseWrapper.success(SsFlatMapper.mapSearch(json, filter.adType))
         } catch (e: CancellationException) {

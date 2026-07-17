@@ -23,6 +23,8 @@ class OlxKzApiClient(
         cityId: Int,
         offset: Int,
         limit: Int = 40,
+        priceFrom: Int? = null,
+        priceTo: Int? = null,
     ): JsonObject {
         val text = httpClient.get("https://www.olx.kz/api/v1/offers/") {
             header(HttpHeaders.Accept, "application/json")
@@ -33,6 +35,8 @@ class OlxKzApiClient(
             parameter("category_id", categoryId)
             parameter("region_id", regionId)
             parameter("city_id", cityId)
+            if (priceFrom != null) parameter("filter_float_price:from", priceFrom)
+            if (priceTo != null) parameter("filter_float_price:to", priceTo)
         }.bodyAsText()
         return json.parseToJsonElement(text).jsonObject
     }

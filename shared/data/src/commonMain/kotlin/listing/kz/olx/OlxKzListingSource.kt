@@ -48,6 +48,8 @@ class OlxKzListingSource(
                 cityId = ids.cityId,
                 offset = offset,
                 limit = limit,
+                priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                priceTo = filter.priceFull?.priceTo?.toInt(),
             )
             NetworkResponseWrapper.success(OlxKzFlatMapper.mapOffers(json, filter.adType))
         } catch (e: CancellationException) {

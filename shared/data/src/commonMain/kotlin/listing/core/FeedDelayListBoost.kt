@@ -39,7 +39,12 @@ object FeedDelayListBoost {
     fun apiPageSize(platform: FlatPlatform, base: Int): Int {
         if (!active) return base
         val pop = popularity[platform] ?: 1.5
-        return (base * 2.0 * pop).toInt().coerceIn(base, 120)
+        val boosted = (base * 2.0 * pop).toInt().coerceIn(base, 120)
+        // OLX rejects oversized limits (400 with limit=120).
+        return when (platform) {
+            FlatPlatform.OLX_PL, FlatPlatform.OLX_KZ -> boosted.coerceAtMost(40)
+            else -> boosted
+        }
     }
 
     /**

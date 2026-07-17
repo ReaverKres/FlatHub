@@ -28,6 +28,8 @@ object GratkaCities {
         isRoom: Boolean,
         isCommercial: Boolean,
         page: Int,
+        priceFrom: Int? = null,
+        priceTo: Int? = null,
     ): String {
         val estate = when {
             isCommercial -> "lokale-uzytkowe"
@@ -39,6 +41,11 @@ object GratkaCities {
             else -> "wynajem"
         }
         val base = "/nieruchomosci/$estate/${citySlug(city)}/$transaction"
-        return if (page > 1) "$base?page=$page" else base
+        val query = buildList {
+            if (page > 1) add("page=$page")
+            if (priceFrom != null) add("cena-calkowita:min=$priceFrom")
+            if (priceTo != null) add("cena-calkowita:max=$priceTo")
+        }
+        return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
     }
 }

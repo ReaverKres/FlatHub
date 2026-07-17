@@ -45,6 +45,8 @@ class MorizonListingSource(
                     adType = filter.adType,
                     isCommercial = filter.isCommercial,
                     page = p,
+                    priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                    priceTo = filter.priceFull?.priceTo?.toInt(),
                 )
                 val json = api.searchProperties(url)
                 MorizonFlatMapper.mapSearch(json, filter.adType)

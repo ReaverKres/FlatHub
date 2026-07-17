@@ -49,6 +49,7 @@ import io.flatzen.commoncomponents.location.networkCountryIso
 import kotlinx.serialization.Serializable
 import repository.osm.OsmDistricts
 import server_request.Currency
+import server_request.filterCurrency
 
 @Serializable
 data class CommonFilterRequestModel(
@@ -59,7 +60,7 @@ data class CommonFilterRequestModel(
     val pricePerSquare: Price? = null,
     val totalArea: FromToRange? = null,
     val priceType: PriceType = PriceType.FULL,
-    val currency: Currency = Currency.USD,
+    val currency: Currency = LocationFilter.networkDefault().country.filterCurrency(AdType.RENT),
     val addressRequestModel: Set<AddressRequestModel> = emptySet(),
     val numberOfRooms: Set<Int>? = emptySet(),
     val metroStations: List<MetroStation> = emptyList(),

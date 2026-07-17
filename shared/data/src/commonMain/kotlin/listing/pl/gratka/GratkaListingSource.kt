@@ -46,6 +46,8 @@ class GratkaListingSource(
                     isRoom = filter.isRoomForRent || filter.roomOnly,
                     isCommercial = filter.isCommercial,
                     page = p,
+                    priceFrom = filter.priceFull?.priceFrom?.toInt(),
+                    priceTo = filter.priceFull?.priceTo?.toInt(),
                 )
                 val json = api.searchProperties(url)
                 GratkaFlatMapper.mapSearch(json, filter.adType)

@@ -525,7 +525,7 @@ fun FilterScreen() {
                 Spacer(Modifier.height(12.dp))
             }
 
-            val currencyText = if (filters.adType == AdType.DAILY) "(BYN)" else "($)"
+            val currencyText = "(${filters.currency.filterLabel()})"
             val priceTitle = if (filters.adType == AdType.DAILY) {
                 stringResource(Res.string.filter_price_daily, currencyText)
             } else {

@@ -20,7 +20,8 @@ class OlxPlApiClient(
         cityId: Int,
         offset: Int,
         limit: Int = 40,
-        filterRefiners: String? = null,
+        priceFrom: Int? = null,
+        priceTo: Int? = null,
     ): JsonObject {
         val text = httpClient.get("https://www.olx.pl/api/v1/offers/") {
             header(HttpHeaders.Accept, "application/json")
@@ -34,9 +35,8 @@ class OlxPlApiClient(
             parameter("category_id", categoryId)
             parameter("region_id", regionId)
             parameter("city_id", cityId)
-            if (filterRefiners != null) {
-                parameter("filter_refiners", filterRefiners)
-            }
+            if (priceFrom != null) parameter("filter_float_price:from", priceFrom)
+            if (priceTo != null) parameter("filter_float_price:to", priceTo)
         }.bodyAsText()
         return json.parseToJsonElement(text).jsonObject
     }

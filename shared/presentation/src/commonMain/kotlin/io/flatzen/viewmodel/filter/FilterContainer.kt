@@ -6,7 +6,6 @@ import entities.SavedFilter
 import io.flatzen.analytics.Analytics
 import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
@@ -37,7 +36,7 @@ import repository.fillter.UserMapAreaRepository
 import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
 import repository.userpreferences.UserPreferencesRepository
-import server_request.Currency
+import server_request.filterCurrency
 import kotlin.time.Clock
 
 private typealias PipeCtx = PipelineContext<FilterScreenState, FilterScreenAction, FilterEffect>
@@ -545,6 +544,9 @@ class FilterContainer(
                             metroStationsState = MetroStationsMapper.stationsForCity(defaultCity.code),
                             withAnyMetro = false,
                             commercial = commercial,
+                            // Price units change with country — clear stale ranges.
+                            priceFull = null,
+                            pricePerSquare = null,
                         ),
                         doNetworkCall = false,
                     )
@@ -604,8 +606,10 @@ class FilterContainer(
         var currentState = FilterScreenState.Initial
         withState { currentState = this }
 
-        val currency =
-            if (currentState.filters.adType == AdType.DAILY) Currency.BYR else Currency.USD
+        val country = newFilterState.location?.selectedCountry?.code
+            ?: currentState.filters.location?.selectedCountry?.code
+            ?: CountryCode.BY
+        val currency = country.filterCurrency(newFilterState.adType)
         val updatedFilter = newFilterState.copy(currency = currency)
 
         var shouldDeselectSaved = false
