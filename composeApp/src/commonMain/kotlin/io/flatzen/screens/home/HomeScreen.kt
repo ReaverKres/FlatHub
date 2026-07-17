@@ -1212,21 +1212,32 @@ private fun GridFlatCard(
                 stringResource(Res.string.list_rooms_suffix)
             }
 
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = "${flat.numberOfRooms} $roomSuffix,",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                if (flat.totalArea.isNullOrEmpty().not()) {
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        text = localizedArea(flat.totalArea!!),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+            val hasRooms = !flat.numberOfRooms.isNullOrBlank()
+            val hasArea = !flat.totalArea.isNullOrEmpty()
+            if (hasRooms || hasArea) {
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    if (hasRooms) {
+                        Text(
+                            text = buildString {
+                                append(flat.numberOfRooms)
+                                append(' ')
+                                append(roomSuffix)
+                                if (hasArea) append(',')
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                    if (hasArea) {
+                        if (hasRooms) Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = localizedArea(flat.totalArea!!),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             }
             Text(

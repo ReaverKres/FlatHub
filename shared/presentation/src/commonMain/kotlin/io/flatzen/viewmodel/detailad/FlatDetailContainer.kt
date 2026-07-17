@@ -128,7 +128,7 @@ class FlatDetailContainer(
                                 error = lce.message
                                     ?: lce.throwable.message
                                     ?: lce.throwable.toString(),
-                                flat = null
+                                // Keep list/base payload on screen; error is shown inline.
                             )
                         }
 

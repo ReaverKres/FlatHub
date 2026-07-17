@@ -7,6 +7,7 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.commonentities.listExpectsRoomsField
 import io.flatzen.commoncomponents.extensions.toNullableString
 import io.flatzen.mvi.MviState
 import io.flatzen.viewmodel.detailad.CommercialUiInfo
@@ -99,12 +100,18 @@ data class UiFlat(
                     localPrice = it.priceByn,
                     mainPrice = it.priceUsd,
                     priceText = it.getPricesText(),
-                    numberOfRooms = if (it.rooms != null) {
-                        if (it.isStudio == true) "Студия" else "${it.rooms}"
-                    } else if (it.commercialInfo?.numberOfRooms != null) {
-                        "${it.commercialInfo?.numberOfRooms}"
-                    } else {
-                        "Не указано"
+                    numberOfRooms = when {
+                        it.rooms != null -> {
+                            if (it.isStudio == true) "Студия" else "${it.rooms}"
+                        }
+
+                        it.commercialInfo?.numberOfRooms != null -> {
+                            "${it.commercialInfo?.numberOfRooms}"
+                        }
+                        // Structured APIs can omit rooms for one ad → show placeholder.
+                        // Scrapers that rarely have rooms on list → hide the field.
+                        it.flatPlatform.listExpectsRoomsField() -> "Не указано"
+                        else -> null
                     },
                     totalArea = it.totalArea?.toInt().toNullableString(),
                     publishedAt = it.publishedAtUi,

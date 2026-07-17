@@ -193,6 +193,49 @@ object KrishaHtmlParser {
         )
     }
 
+    /** Room miss fallback so detail HTML can still be fetched/merged. */
+    fun listStub(adId: Long, adType: AdType = AdType.RENT): AppFlat = AppFlat(
+        adId = adId,
+        adType = adType,
+        flatDevInfo = FlatDevInfo(isDetailData = false, isDetailLoaded = false),
+        contactInformation = ContactInformation(phones = null, ownerName = null),
+        coordinates = null,
+        commercialInfo = null,
+        flatPlatform = FlatPlatform.KRISHA,
+        flatDetailUrl = "https://krisha.kz/a/show/$adId",
+        publishedAt = null,
+        publishedAtServer = null,
+        publishedAtUi = null,
+        imageUrls = null,
+        priceUsd = null,
+        priceByn = null,
+        rooms = null,
+        district = null,
+        address = null,
+        metroStation = null,
+        description = null,
+        yearBuilt = null,
+        totalArea = null,
+        livingArea = null,
+        kitchenArea = null,
+        floor = null,
+        totalFloors = null,
+        sleepingPlaces = null,
+        isStudio = null,
+        bathroomType = null,
+        balcony = null,
+        repairType = null,
+        condition = null,
+        windowDirections = null,
+        buildingImprovements = null,
+        prepaymentType = null,
+        amenities = null,
+        kitchenEquipment = null,
+        forWhom = null,
+        parkingInfo = null,
+        owner = null,
+    )
+
     private fun extractWindowData(html: String): JsonObject? {
         val marker = "window.data = "
         val start = html.indexOf(marker)

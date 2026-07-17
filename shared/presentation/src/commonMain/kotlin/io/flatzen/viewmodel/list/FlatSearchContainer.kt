@@ -5,6 +5,8 @@ import entities.CommonFilterRequestModel
 import io.flatzen.analytics.Analytics
 import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
+import io.flatzen.commoncomponents.commonentities.CountryCode
+import io.flatzen.commoncomponents.commonentities.marketCountry
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.network.ConnectionMonitor
 import io.flatzen.error_handling.LCE
@@ -194,7 +196,8 @@ class FlatSearchContainer(
                         )
                     }
                 } else {
-                    applyFlatsLoaded(dbFlats, false, false)
+                    // Offline: Room still holds previous countries' ads — keep current market only.
+                    applyFlatsLoaded(dbFlats.filterForCurrentMarket(), false, false)
                 }
             }
         }
@@ -410,7 +413,11 @@ class FlatSearchContainer(
                     }
 
                     is LCE.Error -> updateState { copy(isRefreshing = false) }
-                    is LCE.Content -> applyFlatsLoaded(lce.value, isLoadMore, isRefreshing)
+                    is LCE.Content -> applyFlatsLoaded(
+                        lce.value.filterForCurrentMarket(),
+                        isLoadMore,
+                        isRefreshing,
+                    )
                 }
             }
         } else {
@@ -454,6 +461,11 @@ class FlatSearchContainer(
                 }
             }
         }
+    }
+
+    private fun List<AppFlat>.filterForCurrentMarket(): List<AppFlat> {
+        val country = filterRepository.lastFilter().location?.country ?: CountryCode.BY
+        return filter { it.flatPlatform.marketCountry() == country }
     }
 
     private suspend fun PipeCtx.applyFlatsLoaded(

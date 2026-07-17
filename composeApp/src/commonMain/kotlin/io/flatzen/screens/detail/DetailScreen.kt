@@ -167,6 +167,8 @@ fun DetailScreen(
                     flat = flat,
                     mapState = container.mapState,
                     modifier = Modifier.fillMaxSize(),
+                    detailError = state.error,
+                    isLoadingMore = state.isLoading,
                     clickOnFavorite = {
                         container.store.intent(
                             FlatDetailIntent.ClickOnFavorite(
@@ -193,21 +195,6 @@ fun DetailScreen(
                 }
             }
 
-            state.error != null -> {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = state.error.orEmpty(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-
             else -> {
                 EmptyScreenContent(modifier = Modifier.fillMaxSize())
             }
@@ -220,6 +207,8 @@ private fun FlatDetailContent(
     flat: UiDetailFlat,
     mapState: MapState,
     modifier: Modifier = Modifier,
+    detailError: String? = null,
+    isLoadingMore: Boolean = false,
     clickOnFavorite: () -> Unit,
     navigateToMap: () -> Unit
 ) {
@@ -243,6 +232,25 @@ private fun FlatDetailContent(
             onPageChange = { photoPageIndex = it },
             onCenterTap = { index -> fullscreenPhotoIndex = index },
         )
+
+        if (isLoadingMore) {
+            LinearProgressIndicator(
+                Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+            )
+        }
+
+        if (!detailError.isNullOrBlank()) {
+            Text(
+                text = detailError,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = FlatHubTheme.dimens.screenHorizontal, vertical = 8.dp),
+            )
+        }
 
         fullscreenPhotoIndex?.let { index ->
             FullscreenPhotoViewer(

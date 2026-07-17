@@ -23,3 +23,36 @@ enum class FlatPlatform(val value: String) {
     OLX_KZ("olx_kz"),
     KN("kn"),
 }
+
+fun FlatPlatform.marketCountry(): CountryCode = when (this) {
+    FlatPlatform.ONLINER,
+    FlatPlatform.KUFAR,
+    FlatPlatform.REALT,
+    FlatPlatform.DOMOVITA,
+        -> CountryCode.BY
+
+    FlatPlatform.OTODOM,
+    FlatPlatform.OLX_PL,
+    FlatPlatform.GRATKA,
+    FlatPlatform.MORIZON,
+        -> CountryCode.PL
+
+    FlatPlatform.SS_GE,
+    FlatPlatform.LIVO,
+    FlatPlatform.BINEBI,
+        -> CountryCode.GE
+
+    FlatPlatform.KRISHA,
+    FlatPlatform.OLX_KZ,
+    FlatPlatform.KN,
+        -> CountryCode.KZ
+}
+
+/**
+ * Structured list APIs expose a rooms field — missing value → show "Не указано".
+ * Free-text list scrapers (Krisha/kn) often omit rooms → hide the field on the list.
+ */
+fun FlatPlatform.listExpectsRoomsField(): Boolean = when (this) {
+    FlatPlatform.KRISHA, FlatPlatform.KN -> false
+    else -> true
+}

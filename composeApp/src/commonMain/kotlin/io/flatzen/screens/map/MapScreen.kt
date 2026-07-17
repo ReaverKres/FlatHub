@@ -943,20 +943,30 @@ fun FlatItemContent(
         } else {
             stringResource(Res.string.list_rooms_suffix)
         }
-        // Комнаты
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = "${flat.numberOfRooms} $roomSuffix,",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-            if (flat.totalArea.isNullOrEmpty().not()) {
-                Text(
-                    text = localizedArea(flat.totalArea!!),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        val hasRooms = !flat.numberOfRooms.isNullOrBlank()
+        val hasArea = !flat.totalArea.isNullOrEmpty()
+        if (hasRooms || hasArea) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                if (hasRooms) {
+                    Text(
+                        text = buildString {
+                            append(flat.numberOfRooms)
+                            append(' ')
+                            append(roomSuffix)
+                            if (hasArea) append(',')
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                }
+                if (hasArea) {
+                    Text(
+                        text = localizedArea(flat.totalArea!!),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
 

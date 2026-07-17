@@ -74,11 +74,7 @@ class KrishaListingSource(
     override fun getById(adId: Long): Flow<AppFlat?> = flatsDao.flowById(platform, adId)
 
     override fun detail(adId: Long): Flow<AppFlat?> = flow {
-        val base = flatsDao.getById(platform, adId)
-        if (base == null) {
-            emit(null)
-            return@flow
-        }
+        val base = flatsDao.getById(platform, adId) ?: KrishaHtmlParser.listStub(adId)
         emit(base)
         if (base.flatDevInfo.isDetailLoaded) return@flow
         try {
@@ -88,8 +84,10 @@ class KrishaListingSource(
             emit(merged)
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            // Soft-fail detail.
+        } catch (e: Exception) {
+            // Base already emitted — rethrow so DetailScreen can show inline error under photos.
+            println("KrishaListingSource.detail soft-fail $adId: ${e.message}")
+            throw e
         }
     }
 }

@@ -183,6 +183,10 @@ class MergedRepositoryImpl(
     ): Flow<AppFlat> {
         MetroStationsGeoCatalog.loadIfNeeded()
         return flow {
+            // List may still show the ad while Room lookup fails (race / cleanup).
+            // Prefer restoring from last search emit so detail never starts empty.
+            ensureFlatBaseInDb(flatPlatform, flatId)
+
             var emitted = false
             sourceFor(flatPlatform).detail(flatId).collect { flat ->
                 if (flat == null) return@collect
@@ -193,7 +197,16 @@ class MergedRepositoryImpl(
                 emit(enriched)
             }
             if (!emitted) {
-                error("Flat not found: $flatPlatform/$flatId")
+                val fallback = flatsDao.getById(flatPlatform, flatId)
+                    ?: cachedFlatFromLastSearch(flatPlatform, flatId)
+                if (fallback != null) {
+                    val viewed = if (markAsViewed) fallback.copy(isViewed = true) else fallback
+                    val enriched = MetroProximityEnricher.enrich(viewed)
+                    flatsDao.upsert(enriched)
+                    emit(enriched)
+                } else {
+                    error("Flat not found: $flatPlatform/$flatId")
+                }
             }
         }.flowOn(Dispatchers.IO).catch { cause ->
             if (cause is CancellationException) throw cause
@@ -201,6 +214,15 @@ class MergedRepositoryImpl(
             throw cause
         }
     }
+
+    private suspend fun ensureFlatBaseInDb(platform: FlatPlatform, adId: Long) {
+        if (flatsDao.getById(platform, adId) != null) return
+        cachedFlatFromLastSearch(platform, adId)?.let { flatsDao.upsert(it) }
+    }
+
+    private fun cachedFlatFromLastSearch(platform: FlatPlatform, adId: Long): AppFlat? =
+        lastEmittedFlats.replayCache.firstOrNull()
+            ?.firstOrNull { it.flatPlatform == platform && it.adId == adId }
 
     override fun clearCashedFlats() {
         listingSourceRegistry.all().forEach { it.clearCache() }

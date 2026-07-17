@@ -103,8 +103,10 @@ class KnListingSource(
             emit(merged)
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            // Soft-fail detail — list payload already emitted.
+        } catch (e: Exception) {
+            // Base already on screen — inline error under photos.
+            println("KnListingSource.detail soft-fail $adId: ${e.message}")
+            throw e
         }
     }
 }
