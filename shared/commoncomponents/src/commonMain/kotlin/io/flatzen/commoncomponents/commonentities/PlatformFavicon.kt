@@ -30,4 +30,5 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.IS24 -> "https://www.immobilienscout24.de/favicon.ico"
     FlatPlatform.IMMOWELT -> "https://www.immowelt.de/favicon.ico"
     FlatPlatform.KLEINANZEIGEN -> "https://www.kleinanzeigen.de/favicon.ico"
+    FlatPlatform.EMLAKJET -> "https://www.emlakjet.com/favicon.ico"
 }

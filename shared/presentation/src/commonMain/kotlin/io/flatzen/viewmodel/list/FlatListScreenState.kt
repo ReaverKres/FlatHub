@@ -102,7 +102,9 @@ data class UiFlat(
                     priceText = it.getPricesText(),
                     numberOfRooms = when {
                         it.rooms != null -> {
-                            if (it.isStudio == true) "Студия" else "${it.rooms}"
+                            // Studio → show as 1 room (label "Студия" removed — only confused UX)
+                            val n = if (it.isStudio == true || it.rooms == 0) 1 else it.rooms
+                            "$n"
                         }
 
                         it.commercialInfo?.numberOfRooms != null -> {

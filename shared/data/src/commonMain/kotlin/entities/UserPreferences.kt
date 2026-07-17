@@ -13,6 +13,6 @@ data class UserPreferences(
     val isListView: Boolean = false, // false = grid, true = list
     val deviceDocumentResponse: DeviceDocumentResponse? = null,
     val themeMode: String? = null, // ThemeMode.name: SYSTEM | LIGHT | DARK
-    val appLanguage: String? = null, // AppLanguage.name: SYSTEM | EN | DE | ES | RU | PL | KK | KA
+    val appLanguage: String? = null, // AppLanguage.name: SYSTEM | EN | DE | ES | TR | RU | PL | KK | KA
     val swipeOnboardingCompleted: Boolean = false,
 )

@@ -227,7 +227,7 @@ data class FilterState(
         if (rooms.isNotEmpty()) {
             val roomsText = rooms.sorted().joinToString(", ") {
                 when (it) {
-                    0 -> "студия"
+                    0 -> "1 ${getRoomWord(1)}"
                     5 -> "5+ комнат"
                     else -> "$it ${getRoomWord(it)}"
                 }

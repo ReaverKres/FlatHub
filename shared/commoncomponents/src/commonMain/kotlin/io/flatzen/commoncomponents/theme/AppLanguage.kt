@@ -5,6 +5,7 @@ enum class AppLanguage(val tag: String?) {
     EN("en"),
     DE("de"),
     ES("es"),
+    TR("tr"),
     RU("ru"),
     PL("pl"),
     KK("kk"),

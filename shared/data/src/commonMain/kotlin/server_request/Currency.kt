@@ -17,6 +17,9 @@ enum class Currency {
     GEL,
     @SerialName("KZT")
     KZT,
+
+    @SerialName("TRY")
+    TRY,
     ;
 
     /** Short label for filter UI / chips. */
@@ -27,6 +30,7 @@ enum class Currency {
         PLN -> "PLN"
         GEL -> "GEL"
         KZT -> "KZT"
+        TRY -> "₺"
     }
 
     /**
@@ -35,7 +39,7 @@ enum class Currency {
      * EUR included so Spain (and any EUR market) shows € as main via localIsMain.
      */
     fun usesLocalPriceField(): Boolean = when (this) {
-        PLN, GEL, KZT, BYR, EUR -> true
+        PLN, GEL, KZT, BYR, EUR, TRY -> true
         USD -> false
     }
 }
@@ -48,4 +52,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.KZ -> Currency.KZT
     CountryCode.ES -> Currency.EUR
     CountryCode.DE -> Currency.EUR
+    CountryCode.TR -> Currency.TRY
 }

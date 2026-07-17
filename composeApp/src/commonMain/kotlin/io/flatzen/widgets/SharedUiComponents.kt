@@ -48,6 +48,7 @@ import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.binebi32
 import flatzen.composeapp.generated.resources.domovita32
+import flatzen.composeapp.generated.resources.emlakjet32
 import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
 import flatzen.composeapp.generated.resources.fotocasa32
@@ -351,6 +352,7 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.IS24 -> painterResource(Res.drawable.is2432)
         FlatPlatform.IMMOWELT -> painterResource(Res.drawable.immowelt32)
         FlatPlatform.KLEINANZEIGEN -> painterResource(Res.drawable.kleinanzeigen32)
+        FlatPlatform.EMLAKJET -> painterResource(Res.drawable.emlakjet32)
     }
 }
 

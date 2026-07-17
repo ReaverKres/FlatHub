@@ -810,7 +810,7 @@ private fun QuickInfoSection(
     val info = buildString {
         if (rooms.isNotBlank()) {
             append(rooms)
-            if (rooms != "Студия") append(" $roomsSuffix")
+            append(" $roomsSuffix")
         }
         year?.takeIf { it.isNotBlank() }?.let {
             if (isNotEmpty()) append(" • ")

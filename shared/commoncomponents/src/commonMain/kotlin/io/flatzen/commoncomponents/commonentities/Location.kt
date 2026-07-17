@@ -10,7 +10,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 data class Country(val country: CountryCode, val allCities: List<City>)
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE;
+    BY, PL, GE, KZ, ES, DE, TR;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -20,6 +20,7 @@ enum class CountryCode {
             "KZ" -> KZ
             "ES" -> ES
             "DE" -> DE
+            "TR" -> TR
             else -> BY
         }
     }
@@ -44,6 +45,9 @@ enum class CityCode {
 
     // Germany (MVP)
     BERLIN, MUENCHEN, HAMBURG, KOELN, FRANKFURT, STUTTGART, DUESSELDORF, LEIPZIG,
+
+    // Turkey (MVP)
+    ISTANBUL, ANKARA, IZMIR, ANTALYA, BURSA, ADANA, GAZIANTEP, KONYA,
 }
 
 /** Only BY sources currently map commercial property subtypes. */
@@ -56,6 +60,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.KZ -> CityCode.ALMATY
     CountryCode.ES -> CityCode.MADRID
     CountryCode.DE -> CityCode.BERLIN
+    CountryCode.TR -> CityCode.ISTANBUL
 }
 
 object Location {
@@ -98,5 +103,13 @@ object Location {
         CityCode.STUTTGART -> "stuttgart"
         CityCode.DUESSELDORF -> "duesseldorf"
         CityCode.LEIPZIG -> "leipzig"
+        CityCode.ISTANBUL -> "istanbul"
+        CityCode.ANKARA -> "ankara"
+        CityCode.IZMIR -> "izmir"
+        CityCode.ANTALYA -> "antalya"
+        CityCode.BURSA -> "bursa"
+        CityCode.ADANA -> "adana"
+        CityCode.GAZIANTEP -> "gaziantep"
+        CityCode.KONYA -> "konya"
     }
 }

@@ -216,7 +216,10 @@ class FlatDetailContainer(
             district = appFlat.district,
             metroStation = if (appFlat.metroStation.isNullOrBlank()) null else "🚇 ${appFlat.metroStation}",
             numberOfRooms = when {
-                appFlat.rooms != null -> if (appFlat.isStudio == true) "Студия" else "${appFlat.rooms}"
+                appFlat.rooms != null -> {
+                    val n = if (appFlat.isStudio == true || appFlat.rooms == 0) 1 else appFlat.rooms
+                    "$n"
+                }
                 appFlat.commercialInfo?.numberOfRooms != null -> "${appFlat.commercialInfo?.numberOfRooms}"
                 else -> "Не указано"
             },

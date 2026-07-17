@@ -54,6 +54,8 @@ import listing.pl.olx.OlxPlApiClient
 import listing.pl.olx.OlxPlListingSource
 import listing.pl.otodom.OtodomApiClient
 import listing.pl.otodom.OtodomListingSource
+import listing.tr.emlakjet.EmlakjetApiClient
+import listing.tr.emlakjet.EmlakjetListingSource
 import mappers.DomovitaFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
@@ -221,6 +223,9 @@ val dataModule = module {
     single { KleinanzeigenApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { KleinanzeigenListingSource(api = get(), flatsDao = get()) }
 
+    single { EmlakjetApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { EmlakjetListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -244,6 +249,7 @@ val dataModule = module {
                 get<Is24ListingSource>(),
                 get<ImmoweltListingSource>(),
                 get<KleinanzeigenListingSource>(),
+                get<EmlakjetListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

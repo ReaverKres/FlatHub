@@ -39,6 +39,7 @@ import flatzen.composeapp.generated.resources.language_russian
 import flatzen.composeapp.generated.resources.language_spanish
 import flatzen.composeapp.generated.resources.language_system
 import flatzen.composeapp.generated.resources.language_title
+import flatzen.composeapp.generated.resources.language_turkish
 import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.di.container
 import io.flatzen.localization.LocalAppLanguage
@@ -132,6 +133,7 @@ internal fun AppLanguage.labelRes(): StringResource = when (this) {
     AppLanguage.EN -> Res.string.language_english
     AppLanguage.DE -> Res.string.language_german
     AppLanguage.ES -> Res.string.language_spanish
+    AppLanguage.TR -> Res.string.language_turkish
     AppLanguage.RU -> Res.string.language_russian
     AppLanguage.PL -> Res.string.language_polish
     AppLanguage.KK -> Res.string.language_kazakh

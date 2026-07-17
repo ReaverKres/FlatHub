@@ -31,6 +31,9 @@ enum class FlatPlatform(val value: String) {
     IS24("is24"),
     IMMOWELT("immowelt"),
     KLEINANZEIGEN("kleinanzeigen"),
+
+    // Turkey (MVP)
+    EMLAKJET("emlakjet"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -64,6 +67,9 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.IMMOWELT,
     FlatPlatform.KLEINANZEIGEN,
         -> CountryCode.DE
+
+    FlatPlatform.EMLAKJET,
+        -> CountryCode.TR
 }
 
 fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
