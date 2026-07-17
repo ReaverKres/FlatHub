@@ -27,18 +27,9 @@ PODS:
   - AppLovinMediationChartboostAdapter (9.10.1.0):
     - AppLovinSDK (>= 13.0.0)
     - ChartboostSDK (= 9.10.1)
-  - AppLovinMediationFacebookAdapter (6.20.1.0):
-    - AppLovinSDK (>= 13.0.0)
-    - FBAudienceNetwork (= 6.20.1)
   - AppLovinMediationFyberAdapter (8.4.1.0):
     - AppLovinSDK (>= 13.0.0)
     - Fyber_Marketplace_SDK (= 8.4.1)
-  - AppLovinMediationGoogleAdapter (12.13.0.0):
-    - AppLovinSDK (>= 13.0.0)
-    - Google-Mobile-Ads-SDK (= 12.13.0)
-  - AppLovinMediationGoogleAdManagerAdapter (12.13.0.0):
-    - AppLovinSDK (>= 13.0.0)
-    - Google-Mobile-Ads-SDK (= 12.13.0)
   - AppLovinMediationInMobiAdapter (11.1.0.0):
     - AppLovinSDK (>= 13.0.0)
     - InMobiSDK (= 11.1.0)
@@ -174,13 +165,6 @@ PODS:
   - AppodealDTExchangeAdapter (8.4.1.0):
     - Appodeal (< 5.0.0, >= 4.0.0)
     - Fyber_Marketplace_SDK (= 8.4.1)
-  - AppodealFacebookAdapter (18.0.1.0):
-    - Appodeal (< 5.0.0, >= 4.0.0)
-    - FBSDKCoreKit (= 18.0.1)
-  - AppodealGoogleAdMobAdapter (12.13.0.0):
-    - Appodeal (< 5.0.0, >= 4.0.0)
-    - Bidon (= 0.15.0)
-    - Google-Mobile-Ads-SDK (= 12.13.0)
   - AppodealIABAdapter (3.5.0.0):
     - Appodeal (< 5.0.0, >= 4.0.0)
     - StackModules (= 3.5.0)
@@ -193,9 +177,6 @@ PODS:
   - AppodealLevelPlayAdapter (9.1.0.0.0):
     - Appodeal (< 5.0.0, >= 4.0.0)
     - IronSourceSDK (= 9.1.0.0)
-  - AppodealMetaAudienceNetworkAdapter (6.20.1.0):
-    - Appodeal (< 5.0.0, >= 4.0.0)
-    - FBAudienceNetwork (= 6.20.1)
   - AppodealMintegralAdapter (7.7.9.0):
     - Appodeal (< 5.0.0, >= 4.0.0)
     - MintegralAdSDK (= 7.7.9)
@@ -248,9 +229,6 @@ PODS:
   - BidonAdapterIronSource (9.1.0.0.0):
     - Bidon (>= 0.12.0)
     - IronSourceSDK/Ads (= 9.1.0.0)
-  - BidonAdapterMetaAudienceNetwork (6.20.1.0):
-    - Bidon (< 1.0.0, >= 0.12.0)
-    - FBAudienceNetwork (= 6.20.1)
   - BidonAdapterMintegral (7.7.9.0):
     - Bidon (>= 0.12.0)
     - MintegralAdSDK (= 7.7.9)
@@ -296,16 +274,7 @@ PODS:
     - VGSL (~> 7.12)
   - DivKitBinaryCompatibilityFacade (5.2.2):
     - DivKit (~> 32.14)
-  - FBAEMKit (18.0.1):
-    - FBSDKCoreKit_Basics (= 18.0.1)
-  - FBAudienceNetwork (6.20.1)
-  - FBSDKCoreKit (18.0.1):
-    - FBAEMKit (= 18.0.1)
-    - FBSDKCoreKit_Basics (= 18.0.1)
-  - FBSDKCoreKit_Basics (18.0.1)
   - Fyber_Marketplace_SDK (8.4.1)
-  - Google-Mobile-Ads-SDK (12.13.0):
-    - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleUserMessagingPlatform (3.1.0)
   - HyBid (3.8.1):
     - HyBid/ATOM (= 3.8.1)
@@ -327,9 +296,6 @@ PODS:
   - HyBid/RewardedVideo (3.8.1):
     - HyBid/Core
   - InMobiSDK (11.1.0)
-  - IronSourceAdMobAdapter (5.3.0.0):
-    - Google-Mobile-Ads-SDK (= 12.13.0)
-    - IronSourceSDK/Ads (~> 9.0)
   - IronSourceAdQualitySDK (9.1.1)
   - IronSourceAppLovinAdapter (5.3.0.0):
     - AppLovinSDK (= 13.5.1)
@@ -339,9 +305,6 @@ PODS:
     - IronSourceSDK/Ads (~> 9.0)
   - IronSourceBigoAdapter (5.1.0.0):
     - BigoADS (= 5.0.0)
-    - IronSourceSDK/Ads (~> 9.0)
-  - IronSourceFacebookAdapter (5.0.0.0):
-    - FBAudienceNetwork (= 6.20.1)
     - IronSourceSDK/Ads (~> 9.0)
   - IronSourceFyberAdapter (5.2.0.0):
     - Fyber_Marketplace_SDK (= 8.4.1)
@@ -526,10 +489,7 @@ DEPENDENCIES:
   - AppLovinMediationBigoAdsAdapter (= 5.0.0.0)
   - AppLovinMediationByteDanceAdapter (= 7.7.0.7.0)
   - AppLovinMediationChartboostAdapter (= 9.10.1.0)
-  - AppLovinMediationFacebookAdapter (= 6.20.1.0)
   - AppLovinMediationFyberAdapter (= 8.4.1.0)
-  - AppLovinMediationGoogleAdapter (= 12.13.0.0)
-  - AppLovinMediationGoogleAdManagerAdapter (= 12.13.0.0)
   - AppLovinMediationInMobiAdapter (= 11.1.0.0)
   - AppLovinMediationIronSourceAdapter (= 9.1.0.0.0)
   - AppLovinMediationMintegralAdapter (= 7.7.9.0.0)
@@ -553,13 +513,10 @@ DEPENDENCIES:
   - AppodealBidonAdapter (= 0.15.0.0)
   - AppodealBigoAdsAdapter (= 5.0.0.0)
   - AppodealDTExchangeAdapter (= 8.4.1.0)
-  - AppodealFacebookAdapter (= 18.0.1.0)
-  - AppodealGoogleAdMobAdapter (= 12.13.0.0)
   - AppodealIABAdapter (= 3.5.0.0)
   - AppodealInMobiAdapter (= 11.1.0.0)
   - AppodealIronSourceAdapter (= 9.1.0.0.0)
   - AppodealLevelPlayAdapter (= 9.1.0.0.0)
-  - AppodealMetaAudienceNetworkAdapter (= 6.20.1.0)
   - AppodealMintegralAdapter (= 7.7.9.0)
   - AppodealMyTargetAdapter (= 5.36.2.0)
   - AppodealSentryAdapter (= 8.57.2.1)
@@ -574,7 +531,6 @@ DEPENDENCIES:
   - BidonAdapterDTExchange (= 8.4.1.0)
   - BidonAdapterInMobi (= 11.1.0.0)
   - BidonAdapterIronSource (= 9.1.0.0.0)
-  - BidonAdapterMetaAudienceNetwork (= 6.20.1.0)
   - BidonAdapterMintegral (= 7.7.9.0)
   - BidonAdapterMobileFuse (= 1.9.3.0)
   - BidonAdapterMoloco (= 4.1.0.0)
@@ -585,11 +541,9 @@ DEPENDENCIES:
   - BidonAdapterVungle (= 7.6.2.0)
   - BidonAdapterYandex (= 7.17.0.0)
   - BidonAdapterZmaticoo (= 2.2.0.0)
-  - IronSourceAdMobAdapter (= 5.3.0.0)
   - IronSourceAppLovinAdapter (= 5.3.0.0)
   - IronSourceBidMachineAdapter (= 5.7.0.0)
   - IronSourceBigoAdapter (= 5.1.0.0)
-  - IronSourceFacebookAdapter (= 5.0.0.0)
   - IronSourceFyberAdapter (= 5.2.0.0)
   - IronSourceInMobiAdapter (= 5.3.0.0)
   - IronSourceMintegralAdapter (= 5.1.0.0)
@@ -615,13 +569,10 @@ SPEC REPOS:
     - AppodealBidonAdapter
     - AppodealBigoAdsAdapter
     - AppodealDTExchangeAdapter
-    - AppodealFacebookAdapter
-    - AppodealGoogleAdMobAdapter
     - AppodealIABAdapter
     - AppodealInMobiAdapter
     - AppodealIronSourceAdapter
     - AppodealLevelPlayAdapter
-    - AppodealMetaAudienceNetworkAdapter
     - AppodealMintegralAdapter
     - AppodealMyTargetAdapter
     - AppodealSentryAdapter
@@ -638,7 +589,6 @@ SPEC REPOS:
     - BidonAdapterDTExchange
     - BidonAdapterInMobi
     - BidonAdapterIronSource
-    - BidonAdapterMetaAudienceNetwork
     - BidonAdapterMintegral
     - BidonAdapterMobileFuse
     - BidonAdapterMoloco
@@ -659,10 +609,7 @@ SPEC REPOS:
     - AppLovinMediationBigoAdsAdapter
     - AppLovinMediationByteDanceAdapter
     - AppLovinMediationChartboostAdapter
-    - AppLovinMediationFacebookAdapter
     - AppLovinMediationFyberAdapter
-    - AppLovinMediationGoogleAdapter
-    - AppLovinMediationGoogleAdManagerAdapter
     - AppLovinMediationInMobiAdapter
     - AppLovinMediationIronSourceAdapter
     - AppLovinMediationMintegralAdapter
@@ -707,21 +654,14 @@ SPEC REPOS:
     - DivKit_LayoutKitInterface
     - DivKit_Serialization
     - DivKitBinaryCompatibilityFacade
-    - FBAEMKit
-    - FBAudienceNetwork
-    - FBSDKCoreKit
-    - FBSDKCoreKit_Basics
     - Fyber_Marketplace_SDK
-    - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
     - HyBid
     - InMobiSDK
-    - IronSourceAdMobAdapter
     - IronSourceAdQualitySDK
     - IronSourceAppLovinAdapter
     - IronSourceBidMachineAdapter
     - IronSourceBigoAdapter
-    - IronSourceFacebookAdapter
     - IronSourceFyberAdapter
     - IronSourceInMobiAdapter
     - IronSourceMintegralAdapter
@@ -772,10 +712,7 @@ SPEC CHECKSUMS:
   AppLovinMediationBigoAdsAdapter: ccfc2387d774c9e10aa784a21cbb5f940a6bf1a6
   AppLovinMediationByteDanceAdapter: a85379cd234796d5fba58a196045ec8d61c8579c
   AppLovinMediationChartboostAdapter: 0fee21ec66fba513640d9e2f7af94e5daf58506f
-  AppLovinMediationFacebookAdapter: 7c9837eb64a43823812dc23609eac01973ff8b74
   AppLovinMediationFyberAdapter: 1c35089d48d1c5e35652d45411f65ff992c49417
-  AppLovinMediationGoogleAdapter: 0919dadef0ce70daa86e7d62483ef55d478b6ebd
-  AppLovinMediationGoogleAdManagerAdapter: bca75bfa5bfe204769127fa2bcfd1fa86828a8f5
   AppLovinMediationInMobiAdapter: 08523b56427250dae5e79408134461504ec50fe0
   AppLovinMediationIronSourceAdapter: c04044432bc726d9917ce1c0badd40a349bfb3b4
   AppLovinMediationMintegralAdapter: c73b2cbce91600868c49c08adae5cc2664bc330c
@@ -818,13 +755,10 @@ SPEC CHECKSUMS:
   AppodealBidonAdapter: b4b91d50676f68269814a35900ebafdfe249a71c
   AppodealBigoAdsAdapter: a760d091f94365f46d71833804a7410e5ce3831c
   AppodealDTExchangeAdapter: 23386851b63504cb6e207d9a0139269b8fd312e7
-  AppodealFacebookAdapter: c25717821d0005f6caf2d9db1d3f71df7d96f057
-  AppodealGoogleAdMobAdapter: f9a178c9aeaa15ff8e551776cfd68636c4b6d284
   AppodealIABAdapter: f8687ae81fc3a165cdfeb81daf43f4256230d106
   AppodealInMobiAdapter: f80961e0895c458e853f7469af124d27100d0640
   AppodealIronSourceAdapter: d3927e54a5bfcc2596420efcc973220c4e1985cf
   AppodealLevelPlayAdapter: e332fcfbe541ed1b74f3d5d4788eb19acdd8d727
-  AppodealMetaAudienceNetworkAdapter: bc38f388b43a89477dbee0fe4280630d69582f4d
   AppodealMintegralAdapter: 5253fbb5ab677aa0ebb18db12b28d8af937f2162
   AppodealMyTargetAdapter: 98d86e103d576dcf0f898422c1067ab9c622c1b1
   AppodealSentryAdapter: e7f2b391739f1fb52a1e2704cc94a6127ad7a7a0
@@ -843,7 +777,6 @@ SPEC CHECKSUMS:
   BidonAdapterDTExchange: a9ebe0d351724c871c5bff47a1604157d51eccec
   BidonAdapterInMobi: f0606c10e15f79887e1bdcaef660230811f75c25
   BidonAdapterIronSource: df15fa43ad0b4c40523d3c07a3d51d6bfa8f9aa0
-  BidonAdapterMetaAudienceNetwork: f2fef75ced6a9d4d00127a342bb5c0ae09d082fa
   BidonAdapterMintegral: b8aeedb9610726eb589e1c62f6a58b5483109e41
   BidonAdapterMobileFuse: 1c05c84b23a70ea5f3ef0b6eb26e17157f8ae912
   BidonAdapterMoloco: bc3f0136b4af945818580ac9d6b0724aec3fb3e8
@@ -861,21 +794,14 @@ SPEC CHECKSUMS:
   DivKit_LayoutKitInterface: f140ae99c10394d8461e3c5ef88eeeb2250058ae
   DivKit_Serialization: b563f088eca30d9cb4909969287df679e55a9a13
   DivKitBinaryCompatibilityFacade: 77c240b799c62d65c826aeb9c8f0081e1ffe7b56
-  FBAEMKit: b2ed182002dbcb65d5a60059c9693d322186cd00
-  FBAudienceNetwork: 08e86d63a05b3a5a59414af12e4af8d756943c80
-  FBSDKCoreKit: 7f96852f2539bdb88ba8d47e5ab4ae70a6f8d691
-  FBSDKCoreKit_Basics: 22d4c1a509ded4e45116f3bb167a14907550f62e
   Fyber_Marketplace_SDK: c908580dc3d65e67f2862df137f8ae7dad6e3321
-  Google-Mobile-Ads-SDK: fa5e7457f7dcd55a1958c29e71cc67cd4f3f2de3
   GoogleUserMessagingPlatform: befe603da6501006420c206222acd449bba45a9c
   HyBid: 7aa21ea81b74c7580e4193cd73350ebacee18ddd
   InMobiSDK: 43b1d6560bd75c8c382bb54fa8e248f5ed979860
-  IronSourceAdMobAdapter: b072db6c91672c87d9c69c7e67c39f98cd28c274
   IronSourceAdQualitySDK: 56314ade811a5226f76dfd377bc09aca0d6610c0
   IronSourceAppLovinAdapter: 8579fa0f4a3aeb3ba061708381b3a4edc058a396
   IronSourceBidMachineAdapter: 6bda2e49428eebf97e26577c13a3af4345b8217c
   IronSourceBigoAdapter: c6ef50e6fab98deee95cde4e44af017c20334e1b
-  IronSourceFacebookAdapter: 66c698ad05818bc03f080f7f1ce0a26850b26092
   IronSourceFyberAdapter: 1e67e645227aa47895d3b7118754904681c9f70e
   IronSourceInMobiAdapter: 55e5a9514ca081c56cc87567a548ce6d043e39bb
   IronSourceMintegralAdapter: 26986b8fd57efe60af185e13cf90c9be00cb57a6
@@ -916,6 +842,6 @@ SPEC CHECKSUMS:
   YandexMobileAds: 9f5355c2faffc575004ca2b267625a323686a368
   zMaticoo: 6cac7aa686c926c8e0bc3af331c1d9586fec5461
 
-PODFILE CHECKSUM: e18cc2d697c304a12ef7b2a29ae0acd869ef7a67
+PODFILE CHECKSUM: 8bf5c1afc81ccafbf10396d009b0e1a105da9cc5
 
 COCOAPODS: 1.17.0

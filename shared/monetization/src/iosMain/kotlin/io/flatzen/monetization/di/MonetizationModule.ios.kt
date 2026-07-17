@@ -2,6 +2,7 @@ package io.flatzen.monetization.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import io.flatzen.monetization.MonetizationDefaults
 import io.flatzen.monetization.ads.AdService
 import io.flatzen.monetization.ads.IosAppodealAdService
 import io.flatzen.monetization.ads.NoOpAdService
@@ -23,11 +24,14 @@ actual fun platformMonetizationModule(): Module = module {
 
     single<AdService> {
         val config = get<MonetizationRemoteConfig>()
-        if (config.appodealIosAppKey.isBlank() || config.premiumFallbackEnabled) {
+        if (MonetizationDefaults.APPODEAL_IOS_APP_KEY.isBlank() || config.premiumFallbackEnabled) {
             NoOpAdService()
         } else {
             IosAppodealAdService().also {
-                it.initialize(config.appodealAndroidAppKey, config.appodealIosAppKey)
+                it.initialize(
+                    MonetizationDefaults.APPODEAL_ANDROID_APP_KEY,
+                    MonetizationDefaults.APPODEAL_IOS_APP_KEY,
+                )
             }
         }
     }
