@@ -77,7 +77,11 @@ fun RentSaleButtons(
     selectedAdType: AdType,
     lastCommercialAdType: AdType,
     onClick: (AdType) -> Unit,
-    fewTypeInOneClick: (AdType) -> Unit
+    fewTypeInOneClick: (AdType) -> Unit,
+    showRent: Boolean = true,
+    showSale: Boolean = true,
+    showDaily: Boolean = true,
+    showCommercial: Boolean = true,
 ) {
 
     val commercialAdTypeBtnText = when (lastCommercialAdType) {
@@ -94,70 +98,77 @@ fun RentSaleButtons(
             horizontalArrangement = Arrangement.Start,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row {
-                AdTypeButton(
-                    modifier = Modifier
-                        .height(44.dp)
-                        .weight(1f, fill = false),
-                    adType = AdType.RENT,
-                    adTypeBtnText = stringResource(Res.string.filter_rent),
-                    onClick = onClick,
-                    selectedAdType = selectedAdType
-                )
-
-                Spacer(Modifier.width(16.dp))
-            }
-
-            Row {
-                AdTypeButton(
-                    modifier = Modifier
-                        .height(44.dp)
-                        .weight(1f, fill = false),
-                    adType = AdType.SALE,
-                    adTypeBtnText = stringResource(Res.string.filter_sale),
-                    onClick = onClick,
-                    selectedAdType = selectedAdType
-                )
-                Spacer(Modifier.width(16.dp))
-            }
-
-            Row {
-                AdTypeButton(
-                    modifier = Modifier
-                        .height(44.dp)
-                        .weight(1f, fill = false),
-                    adType = AdType.DAILY,
-                    adTypeBtnText = stringResource(Res.string.filter_daily),
-                    onClick = onClick,
-                    selectedAdType = selectedAdType
-                )
-                Spacer(Modifier.width(16.dp))
-            }
-            // Обертка для группировки кнопки и карточки
-            Row(
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                AdTypeButton(
-                    modifier = Modifier
-                        .height(44.dp)
-                        .wrapContentWidth(),
-                    adType = lastCommercialAdType,
-                    adTypeBtnText = commercialAdTypeBtnText,
-                    onClick = onClick,
-                    selectedAdType = selectedAdType
-                )
-                Spacer(Modifier.width(8.dp))
-                Card(
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.wrapContentWidth().height(44.dp),
-                    onClick = { fewTypeInOneClick(AdType.COMMERCIAL()) },
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(12.dp),
-                        imageVector = Icons.Default.Create,
-                        contentDescription = null,
+            if (showRent) {
+                Row {
+                    AdTypeButton(
+                        modifier = Modifier
+                            .height(44.dp)
+                            .weight(1f, fill = false),
+                        adType = AdType.RENT,
+                        adTypeBtnText = stringResource(Res.string.filter_rent),
+                        onClick = onClick,
+                        selectedAdType = selectedAdType
                     )
+
+                    Spacer(Modifier.width(16.dp))
+                }
+            }
+
+            if (showSale) {
+                Row {
+                    AdTypeButton(
+                        modifier = Modifier
+                            .height(44.dp)
+                            .weight(1f, fill = false),
+                        adType = AdType.SALE,
+                        adTypeBtnText = stringResource(Res.string.filter_sale),
+                        onClick = onClick,
+                        selectedAdType = selectedAdType
+                    )
+                    Spacer(Modifier.width(16.dp))
+                }
+            }
+
+            if (showDaily) {
+                Row {
+                    AdTypeButton(
+                        modifier = Modifier
+                            .height(44.dp)
+                            .weight(1f, fill = false),
+                        adType = AdType.DAILY,
+                        adTypeBtnText = stringResource(Res.string.filter_daily),
+                        onClick = onClick,
+                        selectedAdType = selectedAdType
+                    )
+                    Spacer(Modifier.width(16.dp))
+                }
+            }
+            if (showCommercial) {
+                Row(
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    AdTypeButton(
+                        modifier = Modifier
+                            .height(44.dp)
+                            .wrapContentWidth(),
+                        adType = lastCommercialAdType,
+                        adTypeBtnText = commercialAdTypeBtnText,
+                        onClick = onClick,
+                        selectedAdType = selectedAdType
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Card(
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.wrapContentWidth().height(44.dp),
+                        onClick = { fewTypeInOneClick(AdType.COMMERCIAL()) },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(12.dp),
+                            imageVector = Icons.Default.Create,
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
         }

@@ -36,11 +36,13 @@ class FavoritesContainer(
         reduce { intent ->
             when (intent) {
                 is FavoritesIntent.ClickOnFavorite -> handleClickOnFavorite(intent)
-                is FavoritesIntent.OpenDetail -> navigator.navigate(
-                    FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId)
-                )
+                is FavoritesIntent.OpenDetail -> onOpenDetail(intent)
             }
         }
+    }
+
+    private fun onOpenDetail(intent: FavoritesIntent.OpenDetail) {
+        navigator.navigate(FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId))
     }
 
     private suspend fun FavoritesCtx.handleClickOnFavorite(intent: FavoritesIntent.ClickOnFavorite) {

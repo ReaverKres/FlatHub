@@ -42,23 +42,27 @@ class ReferralContainer(
         }
         reduce { intent ->
             when (intent) {
-                is ReferralIntent.NotificationAvailable -> { /* no state change */
-                }
-
+                is ReferralIntent.NotificationAvailable -> Unit
                 is ReferralIntent.Load -> handleLoad()
-                is ReferralIntent.UpdateInput -> updateState {
-                    copy(inputCode = intent.code, submitErrorMessage = null)
-                }
-
+                is ReferralIntent.UpdateInput -> onUpdateInput(intent)
                 is ReferralIntent.SubmitCode -> handleSubmitCode()
-                is ReferralIntent.CopyMyCode -> withState {
-                    action(ReferralAction.Copy(myCode))
-                }
-
-                is ReferralIntent.HideStatsErrorDialog -> updateState { copy(statsErrorMessage = null) }
+                is ReferralIntent.CopyMyCode -> onCopyMyCode()
+                is ReferralIntent.HideStatsErrorDialog -> onHideStatsErrorDialog()
                 ReferralIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
             }
         }
+    }
+
+    private suspend fun ReferralCtx.onUpdateInput(intent: ReferralIntent.UpdateInput) {
+        updateState { copy(inputCode = intent.code, submitErrorMessage = null) }
+    }
+
+    private suspend fun ReferralCtx.onCopyMyCode() {
+        withState { action(ReferralAction.Copy(myCode)) }
+    }
+
+    private suspend fun ReferralCtx.onHideStatsErrorDialog() {
+        updateState { copy(statsErrorMessage = null) }
     }
 
     private suspend fun ReferralCtx.handleLoad() {

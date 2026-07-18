@@ -107,19 +107,24 @@ class PremiumContainer(
         reduce { intent ->
             when (intent) {
                 PremiumIntent.Load -> handleLoad()
-                is PremiumIntent.SelectProduct -> updateState {
-                    copy(selectedProductId = intent.productId, message = null)
-                }
-
+                is PremiumIntent.SelectProduct -> onSelectProduct(intent)
                 PremiumIntent.Purchase -> handlePurchase()
                 PremiumIntent.Restore -> handleRestore()
                 PremiumIntent.WatchRewardedAd -> handleWatchRewardedAd()
-                is PremiumIntent.SetDebugForceActive -> updateState {
-                    copy(debugForceActive = intent.forceActive)
-                }
+                is PremiumIntent.SetDebugForceActive -> onSetDebugForceActive(intent)
                 PremiumIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
             }
         }
+    }
+
+    private suspend fun PremiumCtx.onSelectProduct(intent: PremiumIntent.SelectProduct) {
+        updateState { copy(selectedProductId = intent.productId, message = null) }
+    }
+
+    private suspend fun PremiumCtx.onSetDebugForceActive(
+        intent: PremiumIntent.SetDebugForceActive,
+    ) {
+        updateState { copy(debugForceActive = intent.forceActive) }
     }
 
     private suspend fun PremiumCtx.handleLoad() {

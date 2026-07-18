@@ -71,93 +71,99 @@ class NotificationListContainer(
 
             reduce { intent ->
                 when (intent) {
-                    NotificationListIntent.IsNotificationPermissionGranted -> {
-                        if (!NotifPermissionMessageVisibility.isShown) {
-                            val isGranted =
-                                permissionsController.isPermissionGranted(Permission.REMOTE_NOTIFICATION)
-                            action(NotificationListAction.NotifPermGrantedEffect(isGranted))
-                        }
-                    }
+                    NotificationListIntent.IsNotificationPermissionGranted ->
+                        onIsNotificationPermissionGranted()
 
-                    NotificationListIntent.ProvideNotifPermission -> {
-                        try {
-                            permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
-                        } catch (_: DeniedAlwaysException) {
-                            action(NotificationListAction.ShowSettingsEffect)
-                        } catch (_: DeniedException) {
-                        }
-                    }
-
-                    NotificationListIntent.CloseNotifPermMessage -> {
-                        NotifPermissionMessageVisibility.isShown = true
-                    }
-
-                    NotificationListIntent.ListViewCheck -> {
-                        userPreferencesRepository.getUserPreferences().firstOrNull()
-                            ?.let { preferences ->
-                                updateState { copy(isListView = preferences.isListView) }
-                            }
-                    }
-
+                    NotificationListIntent.ProvideNotifPermission -> onProvideNotifPermission()
+                    NotificationListIntent.CloseNotifPermMessage -> onCloseNotifPermMessage()
+                    NotificationListIntent.ListViewCheck -> onListViewCheck()
                     is NotificationListIntent.ClickOnFavorite -> handleClickOnFavorite(intent)
-
                     is NotificationListIntent.DeleteSubscription -> handleDeleteSubscription(intent)
+                    is NotificationListIntent.DeleteSubscriptionFailed ->
+                        handleDeleteSubscriptionFailed(intent)
 
-                    is NotificationListIntent.DeleteSubscriptionFailed -> handleDeleteSubscriptionFailed(
-                        intent
-                    )
-
-                    NotificationListIntent.HideNetworkErrorDialog -> {
-                        updateState { copy(errorText = null) }
-                    }
-
-                    NotificationListIntent.HideParams -> {
-                        updateState { copy(paramsDialogText = null) }
-                    }
-
+                    NotificationListIntent.HideNetworkErrorDialog -> onHideNetworkErrorDialog()
+                    NotificationListIntent.HideParams -> onHideParams()
                     is NotificationListIntent.LoadDbFlats -> handleLoadDbFlats(intent)
-
                     NotificationListIntent.LoadSubscriptions -> loadSubscriptions()
-
-                    NotificationListIntent.ScrollToTop -> action(NotificationListAction.ScrollToTopEffect)
+                    NotificationListIntent.ScrollToTop ->
+                        action(NotificationListAction.ScrollToTopEffect)
 
                     is NotificationListIntent.SearchFlats -> handleSearchFlats(intent)
+                    is NotificationListIntent.SelectSubscription ->
+                        handleSelectSubscription(intent)
 
-                    is NotificationListIntent.SelectSubscription -> handleSelectSubscription(intent)
-
-                    is NotificationListIntent.SetListView -> {
-                        launch(Dispatchers.IO) {
-                            userPreferencesRepository.saveListViewPreferences(intent.isListView)
-                        }
-                        updateState { copy(isListView = intent.isListView) }
-                    }
-
-                    is NotificationListIntent.ShowParams -> {
-                        withState {
-                            val sub = subscriptions.find { it.id == intent.id }
-                            val text = sub?.let { getActiveFiltersText(it.filter) }
-                            updateState { copy(paramsDialogText = text) }
-                        }
-                    }
-
-                    NotificationListIntent.ToggleView -> {
-                        withState {
-                            val newIsListView = !isListView
-                            launch(Dispatchers.IO) {
-                                userPreferencesRepository.saveListViewPreferences(newIsListView)
-                            }
-                            updateState { copy(isListView = newIsListView) }
-                        }
-                    }
-
+                    is NotificationListIntent.SetListView -> onSetListView(intent)
+                    is NotificationListIntent.ShowParams -> onShowParams(intent)
+                    NotificationListIntent.ToggleView -> onToggleView()
                     is NotificationListIntent.OpenDetail -> navigator.navigate(
-                        FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId)
+                        FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId),
                     )
 
-                    NotificationListIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
+                    NotificationListIntent.NavigateBack ->
+                        navigator.navigate(FlatHubCommand.NavigateBack)
                 }
             }
         }
+
+    private suspend fun PipeCtx.onIsNotificationPermissionGranted() {
+        if (NotifPermissionMessageVisibility.isShown) return
+        val isGranted =
+            permissionsController.isPermissionGranted(Permission.REMOTE_NOTIFICATION)
+        action(NotificationListAction.NotifPermGrantedEffect(isGranted))
+    }
+
+    private suspend fun PipeCtx.onProvideNotifPermission() {
+        try {
+            permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
+        } catch (_: DeniedAlwaysException) {
+            action(NotificationListAction.ShowSettingsEffect)
+        } catch (_: DeniedException) {
+        }
+    }
+
+    private fun onCloseNotifPermMessage() {
+        NotifPermissionMessageVisibility.isShown = true
+    }
+
+    private suspend fun PipeCtx.onListViewCheck() {
+        userPreferencesRepository.getUserPreferences().firstOrNull()?.let { preferences ->
+            updateState { copy(isListView = preferences.isListView) }
+        }
+    }
+
+    private suspend fun PipeCtx.onHideNetworkErrorDialog() {
+        updateState { copy(errorText = null) }
+    }
+
+    private suspend fun PipeCtx.onHideParams() {
+        updateState { copy(paramsDialogText = null) }
+    }
+
+    private suspend fun PipeCtx.onSetListView(intent: NotificationListIntent.SetListView) {
+        launch(Dispatchers.IO) {
+            userPreferencesRepository.saveListViewPreferences(intent.isListView)
+        }
+        updateState { copy(isListView = intent.isListView) }
+    }
+
+    private suspend fun PipeCtx.onShowParams(intent: NotificationListIntent.ShowParams) {
+        withState {
+            val sub = subscriptions.find { it.id == intent.id }
+            val text = sub?.let { getActiveFiltersText(it.filter) }
+            updateState { copy(paramsDialogText = text) }
+        }
+    }
+
+    private suspend fun PipeCtx.onToggleView() {
+        withState {
+            val newIsListView = !isListView
+            launch(Dispatchers.IO) {
+                userPreferencesRepository.saveListViewPreferences(newIsListView)
+            }
+            updateState { copy(isListView = newIsListView) }
+        }
+    }
 
     private suspend fun PipeCtx.handleClickOnFavorite(intent: NotificationListIntent.ClickOnFavorite) {
         mergedRepository.saveFlatToFavorite(intent.flatPlatform, intent.adId).asLCE()

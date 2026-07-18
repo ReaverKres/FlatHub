@@ -75,40 +75,46 @@ class FlatDetailContainer(
                 is FlatDetailIntent.LoadFlatDetails -> handleLoadFlatDetails(intent)
                 is FlatDetailIntent.ClickOnFavorite -> handleClickOnFavorite(intent)
                 is FlatDetailIntent.ClearDislike -> handleClearDislike(intent)
-                is FlatDetailIntent.TrackScreenView -> {
-                    launch {
-                        analytics.track(
-                            AnalyticsEvent(
-                                eventName = AppMetrcica.Events.SCREEN_VIEW,
-                                parameters = mapOf(
-                                    AppMetrcica.Parameters.SCREEN_NAME to intent.screenName,
-                                    AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
-                                ) + intent.parameters
-                            )
-                        )
-                    }
-                }
-
+                is FlatDetailIntent.TrackScreenView -> onTrackScreenView(intent)
                 FlatDetailIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
-                is FlatDetailIntent.OpenOnMap -> withState {
-                    val flat = flat
-                    navigator.navigate(
-                        FlatHubCommand.OpenMap(
-                            selectedMarker = intent.flatId,
-                            latitude = flat?.coordinates?.latitude,
-                            longitude = flat?.coordinates?.longitude,
-                            rooms = flat?.numberOfRooms?.toIntOrNull(),
-                        )
-                    )
-                }
-
+                is FlatDetailIntent.OpenOnMap -> onOpenOnMap(intent)
                 is FlatDetailIntent.TranslateListing -> handleTranslate(intent.targetLangTag)
                 FlatDetailIntent.ShowOriginalListing -> handleShowOriginal()
-                FlatDetailIntent.DismissTranslationQuotaMessage -> updateState {
-                    copy(translationQuotaExhausted = false)
-                }
+                FlatDetailIntent.DismissTranslationQuotaMessage -> onDismissTranslationQuotaMessage()
             }
         }
+    }
+
+    private fun FlatDetailCtx.onTrackScreenView(intent: FlatDetailIntent.TrackScreenView) {
+        launch {
+            analytics.track(
+                AnalyticsEvent(
+                    eventName = AppMetrcica.Events.SCREEN_VIEW,
+                    parameters = mapOf(
+                        AppMetrcica.Parameters.SCREEN_NAME to intent.screenName,
+                        AppMetrcica.Parameters.TIMESTAMP to Clock.System.now(),
+                    ) + intent.parameters,
+                ),
+            )
+        }
+    }
+
+    private suspend fun FlatDetailCtx.onOpenOnMap(intent: FlatDetailIntent.OpenOnMap) {
+        withState {
+            val flat = flat
+            navigator.navigate(
+                FlatHubCommand.OpenMap(
+                    selectedMarker = intent.flatId,
+                    latitude = flat?.coordinates?.latitude,
+                    longitude = flat?.coordinates?.longitude,
+                    rooms = flat?.numberOfRooms?.toIntOrNull(),
+                ),
+            )
+        }
+    }
+
+    private suspend fun FlatDetailCtx.onDismissTranslationQuotaMessage() {
+        updateState { copy(translationQuotaExhausted = false) }
     }
 
     private fun FlatDetailCtx.handleLoadFlatDetails(intent: FlatDetailIntent.LoadFlatDetails) {

@@ -80,66 +80,75 @@ class MapContainer(
         reduce { intent ->
             when (intent) {
                 MapIntent.Initialize -> loadMetroStations()
-
-                MapIntent.CenterOnWorld -> {
-                    mapState.scrollTo(0.5, 0.5, destScale = 1.0)
-                }
-
+                MapIntent.CenterOnWorld -> onCenterOnWorld()
                 MapIntent.ClickOnMapArea -> handleClickOnMapArea()
                 is MapIntent.AddPointToPath -> handleAddPointToPath(intent)
                 MapIntent.UndoLastPoint -> handleUndoLastPoint()
-                MapIntent.HideSaveAreaDialog -> updateState {
-                    copy(
-                        saveAreaDialogState = saveAreaDialogState.copy(
-                            isVisible = false,
-                            filterName = "",
-                            isNameValid = true,
-                            errorMessage = null
-                        )
-                    )
-                }
-
-                is MapIntent.UpdateAreaName -> updateState {
-                    val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
-                    val errorMessage = when {
-                        intent.name.isBlank() -> LocalizationKeys.MAP_AREA_NAME_EMPTY_ERROR
-                        intent.name.length > 25 -> LocalizationKeys.MAP_AREA_NAME_LENGTH_ERROR
-                        else -> null
-                    }
-                    copy(
-                        saveAreaDialogState = saveAreaDialogState.copy(
-                            filterName = intent.name,
-                            isNameValid = isNameValid,
-                            errorMessage = errorMessage
-                        )
-                    )
-                }
-
+                MapIntent.HideSaveAreaDialog -> onHideSaveAreaDialog()
+                is MapIntent.UpdateAreaName -> onUpdateAreaName(intent)
                 is MapIntent.OpenDetail -> navigator.navigate(
-                    FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId)
+                    FlatHubCommand.OpenDetail(intent.flatPlatform, intent.adId),
                 )
 
                 MapIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
                 MapIntent.NavigateBack -> navigator.navigate(FlatHubCommand.NavigateBack)
                 MapIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
-                MapIntent.ShowSaveAreaDialog -> {
-                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-                        updateState {
-                            copy(saveAreaDialogState = saveAreaDialogState.copy(isVisible = true))
-                        }
-                    } else {
-                        navigator.navigate(FlatHubCommand.OpenPremium)
-                    }
-                }
-
-                MapIntent.SaveArea -> {
-                    if (userTierProvider.currentTier() == UserTier.PREMIUM) {
-                        handleSaveArea()
-                    } else {
-                        navigator.navigate(FlatHubCommand.OpenPremium)
-                    }
-                }
+                MapIntent.ShowSaveAreaDialog -> onShowSaveAreaDialog()
+                MapIntent.SaveArea -> onSaveArea()
             }
+        }
+    }
+
+    private suspend fun MapCtx.onCenterOnWorld() {
+        mapState.scrollTo(0.5, 0.5, destScale = 1.0)
+    }
+
+    private suspend fun MapCtx.onHideSaveAreaDialog() {
+        updateState {
+            copy(
+                saveAreaDialogState = saveAreaDialogState.copy(
+                    isVisible = false,
+                    filterName = "",
+                    isNameValid = true,
+                    errorMessage = null,
+                ),
+            )
+        }
+    }
+
+    private suspend fun MapCtx.onUpdateAreaName(intent: MapIntent.UpdateAreaName) {
+        val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
+        val errorMessage = when {
+            intent.name.isBlank() -> LocalizationKeys.MAP_AREA_NAME_EMPTY_ERROR
+            intent.name.length > 25 -> LocalizationKeys.MAP_AREA_NAME_LENGTH_ERROR
+            else -> null
+        }
+        updateState {
+            copy(
+                saveAreaDialogState = saveAreaDialogState.copy(
+                    filterName = intent.name,
+                    isNameValid = isNameValid,
+                    errorMessage = errorMessage,
+                ),
+            )
+        }
+    }
+
+    private suspend fun MapCtx.onShowSaveAreaDialog() {
+        if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+            updateState {
+                copy(saveAreaDialogState = saveAreaDialogState.copy(isVisible = true))
+            }
+        } else {
+            navigator.navigate(FlatHubCommand.OpenPremium)
+        }
+    }
+
+    private suspend fun MapCtx.onSaveArea() {
+        if (userTierProvider.currentTier() == UserTier.PREMIUM) {
+            handleSaveArea()
+        } else {
+            navigator.navigate(FlatHubCommand.OpenPremium)
         }
     }
 

@@ -284,6 +284,7 @@ fun FilterScreen() {
             }
 
             // Продажа или Аренда
+            val caps = state.sourceCapabilities
             RentSaleButtons(
                 selectedAdType = filters.adType,
                 lastCommercialAdType = filters.lastCommercialAdType,
@@ -295,6 +296,10 @@ fun FilterScreen() {
                         showCommercialAdTypeDialog = true
                     }
                 },
+                showRent = caps.supportsRent,
+                showSale = caps.supportsSale,
+                showDaily = caps.supportsDaily,
+                showCommercial = caps.supportsCommercial,
             )
 
             Spacer(Modifier.height(8.dp))
@@ -346,7 +351,7 @@ fun FilterScreen() {
             ) {
                 updateFilter(filters.copy(withPhotoOnly = it))
             }
-            if (filters.adType == AdType.RENT) {
+            if (filters.adType == AdType.RENT && state.sourceCapabilities.supportsRoom) {
                 AppSwitch(
                     label = stringResource(Res.string.filter_room_only),
                     state = filters.roomOnly

@@ -133,6 +133,7 @@ import io.flatzen.widgets.dialogs.SingleChoiceDialog
 import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import listing.core.SourceCapabilities
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
@@ -309,7 +310,8 @@ fun HomeScreen(
                             updateFilters = updateFilters,
                             onToggleView = {
                                 flatSearchContainer.store.intent(FlatListIntent.ToggleView)
-                            }
+                            },
+                            sourceCapabilities = filterScreenState.sourceCapabilities,
                         )
                         item {
                             Spacer(Modifier.height(32.dp))
@@ -376,7 +378,8 @@ fun HomeScreen(
                                 },
                                 showCommercialDialog = {
                                     showCommercialDialog = true
-                                }
+                                },
+                                sourceCapabilities = filterScreenState.sourceCapabilities,
                             )
                         },
                         bottomContent = {
@@ -698,7 +701,14 @@ private fun LazyListScope.topContentHeader(
     updateFilters: (FilterState) -> Unit,
     onToggleView: () -> Unit,
     showSortSheet: () -> Unit = {},
-    showCommercialDialog: () -> Unit = {}
+    showCommercialDialog: () -> Unit = {},
+    sourceCapabilities: SourceCapabilities = SourceCapabilities(
+        supportsRent = true,
+        supportsSale = true,
+        supportsDaily = false,
+        supportsRoom = false,
+        supportsCommercial = false,
+    ),
 ) {
 
     filterState?.let {
@@ -713,7 +723,11 @@ private fun LazyListScope.topContentHeader(
                     if (adType.isCommercial) {
                         showCommercialDialog()
                     }
-                }
+                },
+                showRent = sourceCapabilities.supportsRent,
+                showSale = sourceCapabilities.supportsSale,
+                showDaily = sourceCapabilities.supportsDaily,
+                showCommercial = sourceCapabilities.supportsCommercial,
             )
         }
     }

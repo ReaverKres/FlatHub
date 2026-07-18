@@ -33,6 +33,31 @@ class ListingSourceRegistry(
         }
     }
 
+    /**
+     * OR of [SourceCapabilities] across enabled platforms for [country].
+     * Drives which filter chips/switches the UI should expose.
+     */
+    fun capabilitiesFor(country: CountryCode): SourceCapabilities {
+        val enabled = enabledPlatforms(country)
+        val countrySources = sources.filter { it.country == country && it.platform in enabled }
+        if (countrySources.isEmpty()) {
+            return SourceCapabilities(
+                supportsRent = true,
+                supportsSale = true,
+                supportsDaily = false,
+                supportsRoom = false,
+                supportsCommercial = false,
+            )
+        }
+        return SourceCapabilities(
+            supportsRent = countrySources.any { it.capabilities.supportsRent },
+            supportsSale = countrySources.any { it.capabilities.supportsSale },
+            supportsDaily = countrySources.any { it.capabilities.supportsDaily },
+            supportsRoom = countrySources.any { it.capabilities.supportsRoom },
+            supportsCommercial = countrySources.any { it.capabilities.supportsCommercial },
+        )
+    }
+
     fun byPlatform(platform: FlatPlatform): ListingSource? =
         sources.firstOrNull { it.platform == platform }
 

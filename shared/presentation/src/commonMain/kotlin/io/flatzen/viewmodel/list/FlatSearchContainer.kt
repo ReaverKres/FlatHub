@@ -104,9 +104,7 @@ class FlatSearchContainer(
 
                 FlatListIntent.ScreenVisible -> handleScreenVisible()
 
-                is FlatListIntent.IsAnyFilterAppliedCheck -> {
-                    updateState { copy(isAnyFilterApplied = intent.applied) }
-                }
+                is FlatListIntent.IsAnyFilterAppliedCheck -> onIsAnyFilterAppliedCheck(intent)
 
                 is FlatListIntent.SearchFlats -> handleSearchFlats(intent)
 
@@ -117,39 +115,53 @@ class FlatSearchContainer(
 
                 is FlatListIntent.LoadDbFlats -> handleLoadDbFlats(intent)
 
-                is FlatListIntent.TrackScreenView -> {
-                    launch(Dispatchers.IO) {
-                        analytics.track(
-                            AnalyticsEvent(
-                                eventName = AppMetrcica.Events.SCREEN_VIEW,
-                                parameters = mapOf(
-                                    AppMetrcica.Parameters.SCREEN_NAME to intent.screenName,
-                                    AppMetrcica.Parameters.TIMESTAMP to Clock.System.now()
-                                ) + intent.parameters
-                            )
-                        )
-                    }
-                }
+                is FlatListIntent.TrackScreenView -> onTrackScreenView(intent)
 
                 FlatListIntent.ToggleView -> handleToggleView()
                 is FlatListIntent.SetListView -> handleSetListView(intent)
-                FlatListIntent.HideNetworkErrorDialog -> {
-                    updateState { copy(errorDialogState = null) }
-                }
+                FlatListIntent.HideNetworkErrorDialog -> onHideNetworkErrorDialog()
 
-                is FlatListIntent.OpenDetail -> navigator.navigate(
-                    FlatHubCommand.OpenDetail(
-                        platform = intent.flatPlatform,
-                        objectId = intent.adId,
-                        markAsViewedOnOpen = intent.markAsViewedOnOpen,
-                    )
-                )
+                is FlatListIntent.OpenDetail -> onOpenDetail(intent)
 
                 FlatListIntent.OpenFilter -> navigator.navigate(FlatHubCommand.OpenFilter)
                 FlatListIntent.OpenNotifications -> navigator.navigate(FlatHubCommand.OpenNotifications())
                 FlatListIntent.OpenPremium -> navigator.navigate(FlatHubCommand.OpenPremium)
             }
         }
+    }
+
+    private suspend fun PipeCtx.onIsAnyFilterAppliedCheck(
+        intent: FlatListIntent.IsAnyFilterAppliedCheck,
+    ) {
+        updateState { copy(isAnyFilterApplied = intent.applied) }
+    }
+
+    private fun PipeCtx.onOpenDetail(intent: FlatListIntent.OpenDetail) {
+        navigator.navigate(
+            FlatHubCommand.OpenDetail(
+                platform = intent.flatPlatform,
+                objectId = intent.adId,
+                markAsViewedOnOpen = intent.markAsViewedOnOpen,
+            ),
+        )
+    }
+
+    private fun PipeCtx.onTrackScreenView(intent: FlatListIntent.TrackScreenView) {
+        launch(Dispatchers.IO) {
+            analytics.track(
+                AnalyticsEvent(
+                    eventName = AppMetrcica.Events.SCREEN_VIEW,
+                    parameters = mapOf(
+                        AppMetrcica.Parameters.SCREEN_NAME to intent.screenName,
+                        AppMetrcica.Parameters.TIMESTAMP to Clock.System.now(),
+                    ) + intent.parameters,
+                ),
+            )
+        }
+    }
+
+    private suspend fun PipeCtx.onHideNetworkErrorDialog() {
+        updateState { copy(errorDialogState = null) }
     }
 
     /**
