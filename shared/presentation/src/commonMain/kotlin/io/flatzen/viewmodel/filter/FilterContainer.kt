@@ -65,7 +65,7 @@ sealed interface FilterScreenAction : MVIIntent {
     data class UpdateSortOption(val sortOption: FlatSort) :
         FilterScreenAction // Added sort option action
 
-    data object ClearAllFilters : FilterScreenAction
+    data class ClearAllFilters(val doNetworkCall: Boolean = false) : FilterScreenAction
     data object ClearLocationFilters : FilterScreenAction
     data object ClearMetroFilters : FilterScreenAction
 
@@ -123,6 +123,7 @@ data class FilterScreenState(
         supportsRoom = false,
         supportsCommercial = false,
         supportsCommercialPropertyTypes = false,
+        supportsFromOwnerOnly = false,
     ),
     /** Geo catalog: city has metro stations (not SourceCapabilities). */
     val hasMetroFilter: Boolean = false,
@@ -192,7 +193,7 @@ class FilterContainer(
                 is FilterScreenAction.UpdateWithAnyMetro -> onUpdateWithAnyMetro(intent)
                 is FilterScreenAction.UpdateDistrictFilter -> onUpdateDistrictFilter(intent)
                 is FilterScreenAction.UpdateSortOption -> onUpdateSortOption(intent)
-                FilterScreenAction.ClearAllFilters -> onClearAllFilters()
+                is FilterScreenAction.ClearAllFilters -> onClearAllFilters(intent)
                 FilterScreenAction.ClearMetroFilters -> onClearMetroFilters()
                 FilterScreenAction.ClearLocationFilters -> onClearLocationFilters()
                 FilterScreenAction.ShowSaveFilterDialog -> onShowSaveFilterDialog()
@@ -336,7 +337,7 @@ class FilterContainer(
         )
     }
 
-    private suspend fun PipeCtx.onClearAllFilters() {
+    private suspend fun PipeCtx.onClearAllFilters(intent: FilterScreenAction.ClearAllFilters) {
         val location = screenState().filters.location ?: LocationUiFilter.networkDefault()
         applyFiltersUpdate(
             FilterState(
@@ -345,7 +346,7 @@ class FilterContainer(
                     location.selectedCity.code,
                 ),
             ),
-            doNetworkCall = false,
+            doNetworkCall = intent.doNetworkCall,
         )
     }
 

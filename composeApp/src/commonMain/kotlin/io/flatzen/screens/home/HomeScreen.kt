@@ -281,7 +281,7 @@ fun HomeScreen(
 
                 TextButton(
                     onClick = {
-                        updateFilters(FilterState())
+                        filterContainer.intent(FilterScreenAction.ClearAllFilters(doNetworkCall = true))
                     }
                 ) {
                     Text(stringResource(Res.string.reset))
@@ -709,6 +709,7 @@ private fun LazyListScope.topContentHeader(
         supportsRoom = false,
         supportsCommercial = false,
         supportsCommercialPropertyTypes = false,
+        supportsFromOwnerOnly = false,
     ),
 ) {
 

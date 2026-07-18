@@ -203,7 +203,7 @@ fun FilterScreen() {
                 },
                 actions = {
                     TextButton(onClick = {
-                        filterContainer.intent(FilterScreenAction.ClearAllFilters)
+                        filterContainer.intent(FilterScreenAction.ClearAllFilters(false))
                     }) {
                         Text(stringResource(Res.string.reset))
                     }
@@ -342,7 +342,9 @@ fun FilterScreen() {
                 )
             }
 
-            if (filters.adType != AdType.DAILY) {
+            if (filters.adType != AdType.DAILY &&
+                state.sourceCapabilities.supportsFromOwnerOnly
+            ) {
                 AppSwitch(
                     label = stringResource(Res.string.filter_owner_only),
                     state = filters.fromOwnerOnly

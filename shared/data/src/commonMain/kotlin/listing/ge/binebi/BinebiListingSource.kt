@@ -30,6 +30,7 @@ class BinebiListingSource(
         supportsDaily = true,
         supportsRoom = false,
         supportsCommercial = false,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(

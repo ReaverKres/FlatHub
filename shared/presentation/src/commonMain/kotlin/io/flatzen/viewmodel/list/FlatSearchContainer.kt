@@ -207,7 +207,10 @@ class FlatSearchContainer(
         if (noFlatsToLoadMore) return
         filterRepository.currentHomePage = 1
         mergedRepository.clearCashedFlats()
+        action(FlatListAction.ScrollToTopEffect)
         loadAllFlats(false, false)
+        // After list replace LazyList can restore the old index — scroll again.
+        action(FlatListAction.ScrollToTopEffect)
     }
 
     private suspend fun PipeCtx.handleLoadDbFlatsFromFlow(lce: LCE<List<AppFlat>>) {
@@ -335,7 +338,12 @@ class FlatSearchContainer(
             action(FlatListAction.ScrollToTopEffect)
         }
 
-        launchSearch { loadAllFlats(intent.isLoadMore, intent.isRefreshing) }
+        launchSearch {
+            loadAllFlats(intent.isLoadMore, intent.isRefreshing)
+            if (intent.isLoadMore.not()) {
+                action(FlatListAction.ScrollToTopEffect)
+            }
+        }
     }
 
     private suspend fun PipeCtx.handleClickOnFavorite(intent: FlatListIntent.ClickOnFavorite) {

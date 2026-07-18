@@ -27,6 +27,7 @@ class OtodomListingSource(
         supportsDaily = false,
         supportsRoom = true,
         supportsCommercial = true,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(

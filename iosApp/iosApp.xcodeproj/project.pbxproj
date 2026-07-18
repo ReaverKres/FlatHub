@@ -15,6 +15,7 @@
 		78CB81F02ECA06E100B846BE /* locus_logo_2-removebg-preview.png in Resources */ = {isa = PBXBuildFile; fileRef = 78CB81EF2ECA06E100B846BE /* locus_logo_2-removebg-preview.png */; };
 		7D290B7C9389934D1E76DB2C /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2164A00FC1F945415E0E3833 /* Pods_iosApp.framework */; };
 		A1B2C3D52ECF000100B846BE /* FlatZenStoreKit2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */; };
+		B7E0DC20300B7D53003D0D6F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7E0DC1F300B7D53003D0D6F /* StoreKit.framework */; };
 		C3A1E0022F90000100000002 /* AppMetricaCore in Frameworks */ = {isa = PBXBuildFile; productRef = C3A1E0012F90000100000001 /* AppMetricaCore */; };
 		C3A1E0042F90000100000004 /* AppMetricaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1E0032F90000100000003 /* AppMetricaBridge.swift */; };
 		C3A1E0062F90000100000006 /* AppMetricaSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1E0052F90000100000005 /* AppMetricaSetup.swift */; };
@@ -38,6 +39,7 @@
 		78CB81F12ECA084600B846BE /* FlatHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlatHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlatZenStoreKit2.swift; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		B7E0DC1F300B7D53003D0D6F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BA9BA352F58A8AA6ACA7F99E /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
 		C3A1E0032F90000100000003 /* AppMetricaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetricaBridge.swift; sourceTree = "<group>"; };
 		C3A1E0052F90000100000005 /* AppMetricaSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMetricaSetup.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 				D4E5F6A72ECF000100B846BE /* FirebaseCore in Frameworks */,
 				D4E5F6AA2ECF000100B846BE /* FirebaseRemoteConfig in Frameworks */,
 				C3A1E0022F90000100000002 /* AppMetricaCore in Frameworks */,
+				B7E0DC20300B7D53003D0D6F /* StoreKit.framework in Frameworks */,
 				D4E5F6A82ECF000100B846BE /* FirebaseMessaging in Frameworks */,
 				7D290B7C9389934D1E76DB2C /* Pods_iosApp.framework in Frameworks */,
 			);
@@ -74,6 +77,7 @@
 		42799AB246E5F90AF97AA0EF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B7E0DC1F300B7D53003D0D6F /* StoreKit.framework */,
 				2164A00FC1F945415E0E3833 /* Pods_iosApp.framework */,
 			);
 			name = Frameworks;
@@ -452,7 +456,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = GUPBZ2462Q;
+				DEVELOPMENT_TEAM = DPGLZB4Y9K;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -487,7 +491,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = GUPBZ2462Q;
+				DEVELOPMENT_TEAM = DPGLZB4Y9K;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

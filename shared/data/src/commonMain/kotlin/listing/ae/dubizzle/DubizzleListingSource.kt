@@ -34,6 +34,7 @@ class DubizzleListingSource(
         supportsRoom = false,
         supportsCommercial = true,
         supportsCommercialPropertyTypes = true,
+        supportsFromOwnerOnly = true,
     )
     override val needsBackgroundCoordEnrich: Boolean = false
 

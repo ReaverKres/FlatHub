@@ -30,6 +30,7 @@ class OlxKzListingSource(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = false,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(

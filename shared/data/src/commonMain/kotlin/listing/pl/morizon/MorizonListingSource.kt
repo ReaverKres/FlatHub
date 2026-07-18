@@ -27,6 +27,7 @@ class MorizonListingSource(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = true,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(

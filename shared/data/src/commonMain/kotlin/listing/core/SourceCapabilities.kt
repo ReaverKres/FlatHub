@@ -11,6 +11,8 @@ data class SourceCapabilities(
     val supportsCommercial: Boolean = false,
     /** BY/AE commercial subtype picker (office/retail/…). PL commercial has no mapped subtypes. */
     val supportsCommercialPropertyTypes: Boolean = false,
+    /** Platforms that map [AppFlat.owner] so client-side fromOwnerOnly filter works. */
+    val supportsFromOwnerOnly: Boolean = false,
 ) {
     fun matches(filter: CommonFilterRequestModel): Boolean {
         if (filter.isRoomForRent) return supportsRoom

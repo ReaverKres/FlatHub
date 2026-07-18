@@ -24,6 +24,9 @@ internal fun FilterState.sanitizeForCountryCapabilities(
 
     val nextRoomOnly = roomOnly && caps.supportsRoom && nextAdType is AdType.RENT
 
+    val nextFromOwnerOnly =
+        fromOwnerOnly && caps.supportsFromOwnerOnly && nextAdType !is AdType.DAILY
+
     val nextCommercial = when {
         !caps.supportsCommercial || !caps.supportsCommercialPropertyTypes ->
             commercial.copy(commercialPropertyType = null)
@@ -39,6 +42,7 @@ internal fun FilterState.sanitizeForCountryCapabilities(
     return copy(
         adType = nextAdType,
         roomOnly = nextRoomOnly,
+        fromOwnerOnly = nextFromOwnerOnly,
         commercial = nextCommercial,
         bookingDatesFilter = nextBooking,
     )

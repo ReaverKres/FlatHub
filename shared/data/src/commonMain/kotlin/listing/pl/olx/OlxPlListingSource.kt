@@ -30,6 +30,7 @@ class OlxPlListingSource(
         supportsDaily = true,
         supportsRoom = true,
         supportsCommercial = true,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(

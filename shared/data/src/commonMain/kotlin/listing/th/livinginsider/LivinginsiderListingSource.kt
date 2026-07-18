@@ -32,6 +32,7 @@ class LivinginsiderListingSource(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = false,
+        supportsFromOwnerOnly = true,
     )
     override val needsBackgroundCoordEnrich: Boolean = false
 

@@ -27,6 +27,7 @@ class GratkaListingSource(
         supportsDaily = true,
         supportsRoom = true,
         supportsCommercial = true,
+        supportsFromOwnerOnly = true,
     )
 
     override fun search(
