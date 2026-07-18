@@ -4,7 +4,6 @@ import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.isCommercial
-import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import listing.core.SourceCapabilities
 
 /**
@@ -26,7 +25,7 @@ internal fun FilterState.sanitizeForCountryCapabilities(
     val nextRoomOnly = roomOnly && caps.supportsRoom && nextAdType is AdType.RENT
 
     val nextCommercial = when {
-        !caps.supportsCommercial || !country.supportsCommercialPropertyTypeFilter() ->
+        !caps.supportsCommercial || !caps.supportsCommercialPropertyTypes ->
             commercial.copy(commercialPropertyType = null)
 
         commercial.commercialPropertyType.isNullOrEmpty() ->

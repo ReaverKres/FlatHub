@@ -15,7 +15,6 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
-import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.location.networkCountryIso
 import io.flatzen.mappers.LocationUiMapper
@@ -188,18 +187,15 @@ data class FilterState(
         }}")
 
         if (adType.isCommercial) {
-            val country = location?.selectedCountry?.code
-            if (country == null || country.supportsCommercialPropertyTypeFilter()) {
-                commercial.commercialPropertyType?.find { it.selected }?.let { type ->
-                    type.commercialPropertyTypeName?.let { key ->
-                        activeFilters.add(
-                            "${resolve(LocalizationKeys.FILTER_PROPERTY_TYPE)}: ${
-                                resolve(
-                                    key
-                                )
-                            }"
-                        )
-                    }
+            commercial.commercialPropertyType?.find { it.selected }?.let { type ->
+                type.commercialPropertyTypeName?.let { key ->
+                    activeFilters.add(
+                        "${resolve(LocalizationKeys.FILTER_PROPERTY_TYPE)}: ${
+                            resolve(
+                                key
+                            )
+                        }"
+                    )
                 }
             }
         }

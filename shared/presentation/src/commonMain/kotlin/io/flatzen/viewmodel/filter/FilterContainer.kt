@@ -36,6 +36,7 @@ import repository.fillter.FilterRepository
 import repository.fillter.UserMapAreaRepository
 import repository.fillter.areasInFilter
 import repository.fillter.lastFilter
+import repository.osm.CityDistrictsCatalog
 import repository.userpreferences.UserPreferencesRepository
 import server_request.filterCurrency
 import kotlin.time.Clock
@@ -117,7 +118,12 @@ data class FilterScreenState(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = false,
+        supportsCommercialPropertyTypes = false,
     ),
+    /** Geo catalog: city has metro stations (not SourceCapabilities). */
+    val hasMetroFilter: Boolean = false,
+    /** Geo catalog: city has districts (after CityDistrictsCatalog.loadIfNeeded). */
+    val hasDistrictsFilter: Boolean = false,
 ) : MVIState {
     companion object {
         val Initial = FilterScreenState(filters = FilterState())
@@ -141,6 +147,17 @@ class FilterContainer(
     override val store = store<FilterScreenState, FilterScreenAction, FilterEffect>(
         initial = FilterScreenState.Initial
     ) {
+        whileSubscribed {
+            CityDistrictsCatalog.loadIfNeeded()
+            updateState {
+                val city = filters.location?.selectedCity
+                copy(
+                    hasMetroFilter = MetroStationsMapper.hasStations(city?.code),
+                    hasDistrictsFilter = city?.displayName
+                        ?.let { CityDistrictsCatalog.hasDistrictsForCity(it) } == true,
+                )
+            }
+        }
         whileSubscribed {
             filterRepository.cashedFilterFlow.collect { newFilters ->
                 val filterState = mapFilterModelToFilterState(newFilters.commonFilterRequestModel)
@@ -634,6 +651,7 @@ class FilterContainer(
         newFilterState: FilterState,
         doNetworkCall: Boolean,
     ) {
+        CityDistrictsCatalog.loadIfNeeded()
         val currentState = screenState()
         val country = newFilterState.location?.selectedCountry?.code
             ?: currentState.filters.location?.selectedCountry?.code
@@ -657,6 +675,11 @@ class FilterContainer(
             copy(
                 filters = updatedFilter,
                 sourceCapabilities = caps,
+                hasMetroFilter = MetroStationsMapper.hasStations(
+                    updatedFilter.location?.selectedCity?.code,
+                ),
+                hasDistrictsFilter = updatedFilter.location?.selectedCity?.displayName
+                    ?.let { CityDistrictsCatalog.hasDistrictsForCity(it) } == true,
                 savedFilters = if (shouldDeselectSaved) {
                     savedFilters.map { it.copy(selected = false) }
                 } else {

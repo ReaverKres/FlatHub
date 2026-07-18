@@ -708,6 +708,7 @@ private fun LazyListScope.topContentHeader(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = false,
+        supportsCommercialPropertyTypes = false,
     ),
 ) {
 

@@ -7,7 +7,7 @@ import entities.LocationFilter
 import entities.MetroStations
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.CountryCode
-import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
+import io.flatzen.commoncomponents.commonentities.hasCommercialPropertyTypeCatalog
 import io.flatzen.commoncomponents.location.networkCountryIso
 import io.flatzen.mappers.LocationUiMapper
 import io.flatzen.mappers.MetroStationsMapper
@@ -48,12 +48,9 @@ fun mapFilterStateToFilterModel(filters: FilterState): CommonFilterRequestModel 
         sortOption = filters.sortOption,
         commercial = CommercialRequestModel(
             roomRange = filters.commercial.roomRange,
-            commercialPropertyType = filters.location?.selectedCountry?.code
-                ?.takeIf { it.supportsCommercialPropertyTypeFilter() }
-                ?.let {
-                    filters.commercial.commercialPropertyType?.find { it.selected }
-                        ?.commercialPropertyType
-                }
+            commercialPropertyType = filters.commercial.commercialPropertyType
+                ?.find { it.selected }
+                ?.commercialPropertyType
         ),
         bookingDatesFilter = filters.bookingDatesFilter
     )
@@ -105,7 +102,7 @@ fun mapFilterModelToFilterState(model: CommonFilterRequestModel): FilterState {
 
 private fun getCommercialPropertiesTypeInfo(model: CommonFilterRequestModel): List<CommercialPropertyTypeInfo>? {
     val country = model.location?.country ?: CountryCode.fromNetworkIso(networkCountryIso())
-    if (!country.supportsCommercialPropertyTypeFilter()) return null
+    if (!country.hasCommercialPropertyTypeCatalog()) return null
 
     val defaultType = CommercialPropertyType.defaultFor(country)
     var list = CommercialPropertyType.instancesFor(country).map {

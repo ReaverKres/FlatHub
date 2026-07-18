@@ -58,9 +58,12 @@ enum class CityCode {
     BANGKOK, PHUKET, CHIANG_MAI, PATTAYA, HUA_HIN, KOH_SAMUI,
 }
 
-/** BY and AE map commercial property subtypes in filter + ListingSources. */
-fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean =
+/** Countries with a commercial subtype taxonomy (office/retail/…). */
+fun CountryCode.hasCommercialPropertyTypeCatalog(): Boolean =
     this == CountryCode.BY || this == CountryCode.AE
+
+/** Prefer SourceCapabilities.supportsCommercialPropertyTypes for UI gating. */
+fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean = hasCommercialPropertyTypeCatalog()
 
 fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.BY -> CityCode.MINSK

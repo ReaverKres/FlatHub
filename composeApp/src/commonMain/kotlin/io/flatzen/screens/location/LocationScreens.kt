@@ -249,17 +249,7 @@ fun LocationScreen() {
                 }
             }
 
-            val selectedCityCode = state.filters.location?.selectedCity?.code
-            if (
-                selectedCityCode == CityCode.MINSK ||
-                selectedCityCode == CityCode.WARSZAWA ||
-                selectedCityCode == CityCode.TBILISI ||
-                selectedCityCode == CityCode.ALMATY ||
-                selectedCityCode == CityCode.MADRID ||
-                selectedCityCode == CityCode.BARCELONA ||
-                selectedCityCode == CityCode.BERLIN ||
-                selectedCityCode == CityCode.BANGKOK
-            ) {
+            if (state.hasMetroFilter) {
                 Card(modifier = Modifier.fillMaxWidth().clickable {
                     filterContainer.intent(FilterScreenAction.OpenMetro)
                 }) {
@@ -277,15 +267,17 @@ fun LocationScreen() {
                 }
             }
 
-            Card(modifier = Modifier.fillMaxWidth().clickable {
-                filterContainer.intent(FilterScreenAction.OpenDistricts)
-            }) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    BadgedBox(badge = {
-                        val count = 0
-                        if (count > 0) Badge { Text(count.toString()) }
-                    }) {
-                        Text(stringResource(Res.string.location_districts))
+            if (state.hasDistrictsFilter) {
+                Card(modifier = Modifier.fillMaxWidth().clickable {
+                    filterContainer.intent(FilterScreenAction.OpenDistricts)
+                }) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        BadgedBox(badge = {
+                            val count = state.filters.districtsArea?.count { it.isChecked } ?: 0
+                            if (count > 0) Badge { Text(count.toString()) }
+                        }) {
+                            Text(stringResource(Res.string.location_districts))
+                        }
                     }
                 }
             }

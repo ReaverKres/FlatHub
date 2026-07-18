@@ -23,6 +23,9 @@ object MetroStationsMapper {
             )
         }
     }
+
+    fun hasStations(city: CityCode?): Boolean =
+        MetroStations.stationsForCity(city).isNotEmpty()
 }
 
 

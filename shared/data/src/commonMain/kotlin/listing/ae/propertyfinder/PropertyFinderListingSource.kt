@@ -33,6 +33,7 @@ class PropertyFinderListingSource(
         supportsDaily = false,
         supportsRoom = false,
         supportsCommercial = true,
+        supportsCommercialPropertyTypes = true,
     )
     override val needsBackgroundCoordEnrich: Boolean = false
 

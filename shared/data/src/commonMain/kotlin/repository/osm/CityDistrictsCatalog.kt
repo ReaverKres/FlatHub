@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import repository.osm.CityDistrictsCatalog.loadIfNeeded
 import kotlin.concurrent.Volatile
 
 private val DISTRICTS_RESOURCES = listOf(
@@ -51,6 +52,10 @@ object CityDistrictsCatalog {
             ?.value
             .orEmpty()
     }
+
+    /** True when the geo catalog has at least one district for [cityName] (after [loadIfNeeded]). */
+    fun hasDistrictsForCity(cityName: String): Boolean =
+        districtsForCity(cityName).isNotEmpty()
 
     @OptIn(ExperimentalResourceApi::class)
     private suspend fun loadCatalog(): Map<String, List<OsmDistricts>> {

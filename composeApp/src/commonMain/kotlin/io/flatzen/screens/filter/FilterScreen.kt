@@ -85,7 +85,6 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
-import io.flatzen.commoncomponents.commonentities.supportsCommercialPropertyTypeFilter
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.utils.asIntPrice
@@ -327,10 +326,13 @@ fun FilterScreen() {
                     selectedCity = listOfNotNull(countryLabel, cityLabel)
                         .joinToString(" · ")
                         .ifBlank { cityLabel },
-                    selectedMetro = selectedMetro,
+                    selectedMetro = selectedMetro.takeIf { state.hasMetroFilter }.orEmpty(),
+                    showMetro = state.hasMetroFilter,
                     selectedAddress = filters.getSelectedAddress(),
                     selectedUserAreas = filters.userMapAreas?.filter { it.isActive },
-                    selectedDistricts = filters.districtsArea?.filter { it.isChecked },
+                    selectedDistricts = filters.districtsArea?.filter { it.isChecked }
+                        ?.takeIf { state.hasDistrictsFilter },
+                    showDistricts = state.hasDistrictsFilter,
                     onOpenLocation = {
                         filterContainer.intent(FilterScreenAction.OpenLocation)
                     }
@@ -435,7 +437,7 @@ fun FilterScreen() {
             Spacer(Modifier.height(10.dp))
 
             if (filters.adType.isCommercial &&
-                filters.location?.selectedCountry?.code?.supportsCommercialPropertyTypeFilter() == true
+                state.sourceCapabilities.supportsCommercialPropertyTypes
             ) {
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -741,8 +743,10 @@ private fun LocationItem(
     modifier: Modifier,
     selectedCity: String?,
     selectedMetro: String,
+    showMetro: Boolean,
     selectedAddress: String?,
     selectedDistricts: List<UiDistrict>?,
+    showDistricts: Boolean,
     selectedUserAreas: List<MapAreasUi>?,
     onOpenLocation: () -> Unit,
 ) {
@@ -765,20 +769,24 @@ private fun LocationItem(
                 overflow = TextOverflow.Ellipsis
             )
 
-            LocationFilterHintRow(
-                label = stringResource(Res.string.filter_metro_prefix),
-                value = selectedMetro.takeIf { it.isNotEmpty() },
-            )
+            if (showMetro) {
+                LocationFilterHintRow(
+                    label = stringResource(Res.string.filter_metro_prefix),
+                    value = selectedMetro.takeIf { it.isNotEmpty() },
+                )
+            }
             LocationFilterHintRow(
                 label = stringResource(Res.string.filter_address_prefix),
                 value = selectedAddress?.takeIf { it.isNotEmpty() },
             )
-            LocationFilterHintRow(
-                label = stringResource(Res.string.filter_districts_prefix),
-                value = selectedDistricts
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.joinToString(separator = ", ") { it.nameLocal },
-            )
+            if (showDistricts) {
+                LocationFilterHintRow(
+                    label = stringResource(Res.string.filter_districts_prefix),
+                    value = selectedDistricts
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.joinToString(separator = ", ") { it.nameLocal },
+                )
+            }
             LocationFilterHintRow(
                 label = stringResource(Res.string.filter_active_areas_prefix),
                 value = selectedUserAreas

@@ -47,6 +47,7 @@ class ListingSourceRegistry(
                 supportsDaily = false,
                 supportsRoom = false,
                 supportsCommercial = false,
+                supportsCommercialPropertyTypes = false,
             )
         }
         return SourceCapabilities(
@@ -55,6 +56,7 @@ class ListingSourceRegistry(
             supportsDaily = countrySources.any { it.capabilities.supportsDaily },
             supportsRoom = countrySources.any { it.capabilities.supportsRoom },
             supportsCommercial = countrySources.any { it.capabilities.supportsCommercial },
+            supportsCommercialPropertyTypes = countrySources.any { it.capabilities.supportsCommercialPropertyTypes },
         )
     }
 

@@ -9,6 +9,8 @@ data class SourceCapabilities(
     val supportsDaily: Boolean = false,
     val supportsRoom: Boolean = false,
     val supportsCommercial: Boolean = false,
+    /** BY/AE commercial subtype picker (office/retail/…). PL commercial has no mapped subtypes. */
+    val supportsCommercialPropertyTypes: Boolean = false,
 ) {
     fun matches(filter: CommonFilterRequestModel): Boolean {
         if (filter.isRoomForRent) return supportsRoom
