@@ -146,6 +146,9 @@ fun FilterScreen() {
     val updateFilter: (FilterState) -> Unit = { newFilters ->
         filterContainer.intent(FilterScreenAction.UpdateFilter(newFilters, doNetworkCall = false))
     }
+    val updateFilterTyping: (FilterState) -> Unit = { newFilters ->
+        filterContainer.intent(FilterScreenAction.UpdateFilterTyping(newFilters))
+    }
 
     val factory = rememberPermissionsControllerFactory()
     val permissionsController: PermissionsController = remember(factory) { factory.createPermissionsController() }
@@ -408,7 +411,7 @@ fun FilterScreen() {
                     rangeFrom = filters.commercial.roomRange?.fromRange?.toInt()?.toString()
                         .orEmpty(),
                     fromOnChange = {
-                        updateFilter(
+                        updateFilterTyping(
                             filters.copy(
                                 commercial = filters.commercial.copy(
                                     roomRange = filters.commercial.roomRange?.copy(
@@ -421,7 +424,7 @@ fun FilterScreen() {
                     rangeTo = filters.commercial.roomRange?.toRange?.toInt()?.toString()
                         .orEmpty(),
                     toOnChange = {
-                        updateFilter(
+                        updateFilterTyping(
                             filters.copy(
                                 commercial = filters.commercial.copy(
                                     roomRange = filters.commercial.roomRange?.copy(
@@ -542,7 +545,7 @@ fun FilterScreen() {
                 title = priceTitle,
                 rangeFrom = filters.priceFull?.priceFrom?.asIntPrice().orEmpty(),
                 fromOnChange = {
-                    updateFilter(
+                    updateFilterTyping(
                         filters.copy(
                             priceFull = filters.priceFull?.copy(
                                 priceFrom = it.toDoubleOrNull()
@@ -554,7 +557,7 @@ fun FilterScreen() {
                 },
                 rangeTo = filters.priceFull?.priceTo?.asIntPrice().orEmpty(),
                 toOnChange = {
-                    updateFilter(
+                    updateFilterTyping(
                         filters.copy(
                             priceFull = filters.priceFull?.copy(
                                 priceTo = it.toDoubleOrNull()
@@ -571,7 +574,7 @@ fun FilterScreen() {
                     title = stringResource(Res.string.filter_price_per_square, currencyText),
                     rangeFrom = filters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
                     fromOnChange = {
-                        updateFilter(
+                        updateFilterTyping(
                             filters.copy(
                                 pricePerSquare = filters.pricePerSquare?.copy(
                                     priceFrom = it.toDoubleOrNull()
@@ -583,7 +586,7 @@ fun FilterScreen() {
                     },
                     rangeTo = filters.pricePerSquare?.priceTo?.asIntPrice().orEmpty(),
                     toOnChange = {
-                        updateFilter(
+                        updateFilterTyping(
                             filters.copy(
                                 pricePerSquare = filters.pricePerSquare?.copy(
                                     priceTo = it.toDoubleOrNull()
@@ -601,7 +604,7 @@ fun FilterScreen() {
                 title = stringResource(Res.string.filter_area),
                 rangeFrom = filters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
-                    updateFilter(
+                    updateFilterTyping(
                         filters.copy(
                             totalArea = filters.totalArea?.copy(
                                 fromRange = it.toDoubleOrNull()
@@ -613,7 +616,7 @@ fun FilterScreen() {
                 },
                 rangeTo = filters.totalArea?.toRange?.toInt()?.toString().orEmpty(),
                 toOnChange = {
-                    updateFilter(
+                    updateFilterTyping(
                         filters.copy(
                             totalArea = filters.totalArea?.copy(
                                 toRange = it.toDoubleOrNull()

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.init
 import pro.respawn.flowmvi.plugins.reduce
 import repository.referrals.ReferralError
@@ -53,8 +54,8 @@ class ReferralContainer(
         }
     }
 
-    private suspend fun ReferralCtx.onUpdateInput(intent: ReferralIntent.UpdateInput) {
-        updateState { copy(inputCode = intent.code, submitErrorMessage = null) }
+    private fun ReferralCtx.onUpdateInput(intent: ReferralIntent.UpdateInput) {
+        updateStateImmediate { copy(inputCode = intent.code, submitErrorMessage = null) }
     }
 
     private suspend fun ReferralCtx.onCopyMyCode() {

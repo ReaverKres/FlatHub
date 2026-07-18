@@ -30,6 +30,7 @@ import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.reduce
 import pro.respawn.flowmvi.plugins.whileSubscribed
 import repository.fillter.FilterRepository
@@ -46,6 +47,9 @@ private typealias PipeCtx = PipelineContext<FilterScreenState, FilterScreenActio
 sealed interface FilterScreenAction : MVIIntent {
     data class UpdateFilter(val newFilterState: FilterState, val doNetworkCall: Boolean = false) :
         FilterScreenAction
+
+    /** Text-field typing (price/area/rooms): UI state via [updateStateImmediate]. */
+    data class UpdateFilterTyping(val newFilterState: FilterState) : FilterScreenAction
 
     data class UpdateSelectedCommercialPropertyType(
         val commercialPropertyType: CommercialPropertyType
@@ -175,6 +179,9 @@ class FilterContainer(
             when (intent) {
                 is FilterScreenAction.UpdateFilter ->
                     applyFiltersUpdate(intent.newFilterState, intent.doNetworkCall)
+
+                is FilterScreenAction.UpdateFilterTyping ->
+                    applyFiltersTypingUpdate(intent.newFilterState)
 
                 is FilterScreenAction.UpdateSelectedCommercialPropertyType ->
                     onUpdateSelectedCommercialPropertyType(intent)
@@ -387,14 +394,14 @@ class FilterContainer(
         }
     }
 
-    private suspend fun PipeCtx.onUpdateFilterName(intent: FilterScreenAction.UpdateFilterName) {
+    private fun PipeCtx.onUpdateFilterName(intent: FilterScreenAction.UpdateFilterName) {
         val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
         val errorMessage = when {
             intent.name.isBlank() -> LocalizationKeys.FILTER_NAME_EMPTY_ERROR
             intent.name.length > 25 -> LocalizationKeys.FILTER_NAME_LENGTH_ERROR
             else -> null
         }
-        updateState {
+        updateStateImmediate {
             copy(
                 saveDialogState = saveDialogState.copy(
                     filterName = intent.name,
@@ -691,6 +698,45 @@ class FilterContainer(
         val filterModel: CommonFilterRequestModel = mapFilterStateToFilterModel(updatedFilter)
         if (filterModel != filterRepository.lastFilter()) {
             filterRepository.updateFilter(filterModel, doNetworkCall)
+        }
+    }
+
+    /**
+     * Price/area/rooms TextField typing — same persistence as [applyFiltersUpdate],
+     * but UI state via [updateStateImmediate] to avoid Compose TextField jank.
+     */
+    private suspend fun PipeCtx.applyFiltersTypingUpdate(newFilterState: FilterState) {
+        val currentState = screenState()
+        val country = newFilterState.location?.selectedCountry?.code
+            ?: currentState.filters.location?.selectedCountry?.code
+            ?: CountryCode.BY
+        val currency = country.filterCurrency(newFilterState.adType)
+        val updatedFilter = newFilterState.copy(currency = currency)
+
+        var shouldDeselectSaved = false
+        currentState.savedFilters.find { it.selected }?.let { selected ->
+            val selectedFilterData = filterRepository.getSavedFilterById(selected.id)?.filterData
+            val currentFilterData = mapFilterStateToFilterModel(updatedFilter)
+            if (selectedFilterData != currentFilterData) {
+                filterRepository.clearAllSavedFilterSelections()
+                shouldDeselectSaved = true
+            }
+        }
+
+        updateStateImmediate {
+            copy(
+                filters = updatedFilter,
+                savedFilters = if (shouldDeselectSaved) {
+                    savedFilters.map { it.copy(selected = false) }
+                } else {
+                    savedFilters
+                },
+            )
+        }
+
+        val filterModel = mapFilterStateToFilterModel(updatedFilter)
+        if (filterModel != filterRepository.lastFilter()) {
+            filterRepository.updateFilter(filterModel, doNetworkCall = false)
         }
     }
 

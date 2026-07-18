@@ -24,6 +24,7 @@ import ovh.plrapps.mapcompose.ui.layout.Forced
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.reduce
 import pro.respawn.flowmvi.plugins.whileSubscribed
 import repository.fillter.FilterRepository
@@ -116,14 +117,14 @@ class MapContainer(
         }
     }
 
-    private suspend fun MapCtx.onUpdateAreaName(intent: MapIntent.UpdateAreaName) {
+    private fun MapCtx.onUpdateAreaName(intent: MapIntent.UpdateAreaName) {
         val isNameValid = intent.name.length <= 25 && intent.name.isNotBlank()
         val errorMessage = when {
             intent.name.isBlank() -> LocalizationKeys.MAP_AREA_NAME_EMPTY_ERROR
             intent.name.length > 25 -> LocalizationKeys.MAP_AREA_NAME_LENGTH_ERROR
             else -> null
         }
-        updateState {
+        updateStateImmediate {
             copy(
                 saveAreaDialogState = saveAreaDialogState.copy(
                     filterName = intent.name,
