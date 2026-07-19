@@ -5,6 +5,7 @@ import com.appodeal.ads.Appodeal
 import com.appodeal.consent.ConsentInfoUpdateCallback
 import com.appodeal.consent.ConsentManager
 import com.appodeal.consent.ConsentManagerError
+import com.appodeal.consent.ConsentStatus
 import com.appodeal.consent.ConsentUpdateRequestParameters
 import com.appodeal.consent.OnConsentFormDismissedListener
 
@@ -13,6 +14,9 @@ import com.appodeal.consent.OnConsentFormDismissedListener
  * When [consentManagerEnabled] is false, skips the form and initializes Appodeal directly
  * (kill-switch via Remote Config `consentManagerEnabled`).
  * Prefer calling after Remote Config first fetch (e.g. when splash finishes).
+ *
+ * Skips [ConsentManager.loadAndShowConsentFormIfRequired] (and its WebView) when status is not
+ * [ConsentStatus.Required], so cold start outside regulated regions does not load Chromium.
  */
 object AppodealConsentStartup {
 
@@ -47,13 +51,19 @@ object AppodealConsentStartup {
                 }
 
                 override fun onFailed(error: ConsentManagerError) {
-                    showConsentFormIfRequired(activity, appodealService)
+                    // Docs: initialize with defaults when consent update fails.
+                    appodealService.initializeWithActivity(activity)
                 }
             },
         )
     }
 
     private fun showConsentFormIfRequired(activity: Activity, adService: AppodealAdService) {
+        if (ConsentManager.status != ConsentStatus.Required) {
+            adService.initializeWithActivity(activity)
+            return
+        }
+
         ConsentManager.loadAndShowConsentFormIfRequired(
             activity = activity,
             dismissedListener = object : OnConsentFormDismissedListener {

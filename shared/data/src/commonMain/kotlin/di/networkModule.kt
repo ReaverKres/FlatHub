@@ -1,6 +1,7 @@
 package di
 
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.flatzen.BuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -34,7 +35,7 @@ val networkModule = module {
             explicitNulls = false
             ignoreUnknownKeys = true
             isLenient = true
-            prettyPrint = true
+            prettyPrint = BuildKonfig.DEBUG
         }
     }
 
@@ -55,7 +56,7 @@ val networkModule = module {
                         println("HTTP Client: ${sanitizeHttpLog(message)}")
                     }
                 }
-                level = LogLevel.ALL
+                level = if (BuildKonfig.DEBUG) LogLevel.ALL else LogLevel.NONE
             }
 
             install(DefaultRequest) {
@@ -74,7 +75,7 @@ val networkModule = module {
                         println("HTML Client: $message")
                     }
                 }
-                level = LogLevel.HEADERS
+                level = if (BuildKonfig.DEBUG) LogLevel.HEADERS else LogLevel.NONE
             }
         }
     }

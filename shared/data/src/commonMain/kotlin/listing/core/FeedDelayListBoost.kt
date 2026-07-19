@@ -47,10 +47,14 @@ object FeedDelayListBoost {
         FlatPlatform.RENTHUB to 2.0,
     )
 
+    /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */
+    private fun cappedPopularity(platform: FlatPlatform): Double =
+        (popularity[platform] ?: 1.5).coerceAtMost(2.0)
+
     /** API list: inflate page size ≈ 2 × base × popularity. */
     fun apiPageSize(platform: FlatPlatform, base: Int): Int {
         if (!active) return base
-        val pop = popularity[platform] ?: 1.5
+        val pop = cappedPopularity(platform)
         val boosted = (base * 2.0 * pop).toInt().coerceIn(base, 120)
         // OLX rejects oversized limits (400 with limit=120).
         return when (platform) {
@@ -67,7 +71,7 @@ object FeedDelayListBoost {
         if (!active) return 0
         // Immowelt pagination is DataDome-broken / ignored — first page only.
         if (platform == FlatPlatform.IMMOWELT) return 0
-        val pop = popularity[platform] ?: 1.5
+        val pop = cappedPopularity(platform)
         return if (pop >= 1.5) 1 else 0
     }
 

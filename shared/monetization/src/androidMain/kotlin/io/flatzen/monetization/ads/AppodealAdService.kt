@@ -12,16 +12,22 @@ import kotlin.coroutines.resume
 /**
  * Appodeal — Android. SDK starts from [AppodealConsentStartup] with a visible [Activity] for CMP.
  * Safe when app key empty: methods return [AdLoadResult.Disabled].
+ *
+ * Cold start initializes NATIVE|MREC only; REWARDED_VIDEO is added on first [showRewarded].
  */
 class AppodealAdService(
-    context: Context,
+    @Suppress("UNUSED_PARAMETER") context: Context,
     val androidAppKey: String,
 ) : AdService {
 
-    private val appContext = context.applicationContext
-
     @Volatile
     private var initialized = false
+
+    @Volatile
+    private var rewardedReady = false
+
+    private val coldStartAdTypes = Appodeal.NATIVE or Appodeal.MREC
+    private val rewardedAdTypes = coldStartAdTypes or Appodeal.REWARDED_VIDEO
 
     override fun initialize(androidAppKey: String, iosAppKey: String) {
         val activity = CurrentActivityHolder.activity
@@ -32,20 +38,28 @@ class AppodealAdService(
 
     fun initializeWithActivity(activity: Activity) {
         if (androidAppKey.isBlank() || initialized) return
-        val adTypes = Appodeal.NATIVE or Appodeal.MREC or Appodeal.REWARDED_VIDEO
-        Appodeal.setAutoCache(Appodeal.NATIVE, true)
-        Appodeal.setAutoCache(Appodeal.MREC, true)
-        // Rewarded creatives are large video files under files/; cache only on demand in showRewarded.
+        Appodeal.setAutoCache(Appodeal.NATIVE, false)
+        Appodeal.setAutoCache(Appodeal.MREC, false)
         Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false)
         Appodeal.setTesting(false)
         Appodeal.setLogLevel(Log.LogLevel.none)
-        Appodeal.initialize(activity, androidAppKey, adTypes) { _ ->
+        Appodeal.initialize(activity, androidAppKey, coldStartAdTypes) { _ ->
             initialized = true
         }
     }
 
+    /** Extends SDK init with rewarded when the user first opens a rewarded placement. */
+    fun ensureRewardedInitialized(activity: Activity) {
+        if (androidAppKey.isBlank() || rewardedReady) return
+        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false)
+        Appodeal.initialize(activity, androidAppKey, rewardedAdTypes) { _ ->
+            initialized = true
+            rewardedReady = true
+        }
+    }
+
     override fun isInitialized(): Boolean =
-        initialized || Appodeal.isInitialized(Appodeal.NATIVE or Appodeal.MREC or Appodeal.REWARDED_VIDEO)
+        initialized || Appodeal.isInitialized(Appodeal.NATIVE or Appodeal.MREC)
 
     override suspend fun prefetchNative(placement: String, count: Int): AdLoadResult {
         if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
@@ -71,8 +85,10 @@ class AppodealAdService(
     }
 
     override suspend fun showRewarded(placement: String): AdLoadResult {
-        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
+        if (placement.isBlank()) return AdLoadResult.Disabled
         val activity = CurrentActivityHolder.activity ?: return AdLoadResult.Error("No activity")
+        ensureRewardedInitialized(activity)
+        if (!isInitialized()) return AdLoadResult.Disabled
         if (!Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement)) {
             Appodeal.cache(activity, Appodeal.REWARDED_VIDEO)
             if (!Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement)) {

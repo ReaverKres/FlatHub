@@ -25,7 +25,7 @@ class FlatZenApp : Application(), KoinComponent {
 
         AnalyticsConfig.configure(
             apiKey = "ff1c4b73-6829-46f8-82ff-6d3d94ad1774",
-            logsEnabled = true,
+            logsEnabled = BuildKonfig.DEBUG,
         )
 
         CommonApplication.initialize {

@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.jetbrainsKotlinJvm) apply false
     alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.buildkonfig) apply false
 }
