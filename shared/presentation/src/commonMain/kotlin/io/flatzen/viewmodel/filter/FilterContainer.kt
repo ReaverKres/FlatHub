@@ -576,7 +576,7 @@ class FilterContainer(
     }
 
     private suspend fun PipeCtx.onNavigateBack() {
-        forceFilterNetworkReload()
+        filterReloadIfNeeded()
         navigator.navigate(FlatHubCommand.NavigateBack)
     }
 
@@ -654,8 +654,9 @@ class FilterContainer(
         return true
     }
 
-    private suspend fun PipeCtx.forceFilterNetworkReload() {
+    private suspend fun PipeCtx.filterReloadIfNeeded() {
         val filterModel = mapFilterStateToFilterModel(screenState().filters)
+        if (filterModel == filterRepository.lastNetworkFilter) return
         filterRepository.updateFilter(filterModel, doNetworkCall = true)
     }
 
