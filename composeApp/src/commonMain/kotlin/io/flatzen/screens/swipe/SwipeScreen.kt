@@ -95,7 +95,7 @@ import kotlin.math.abs
 private const val STACK_SCALE_STEP = 0.04f
 private const val STACK_Y_STEP = 10f
 private const val STACK_ALPHA_STEP = 0.08f
-private val SwipeNativeAdHeightEstimate = 100.dp
+private val SwipeNativeAdHeightEstimate = NativeAdMinHeight
 
 private fun stackCardTransform(depth: Int, promoteProgress: Float): StackCardTransform {
     val effectiveDepth = (depth - promoteProgress).coerceAtLeast(0f)
@@ -466,7 +466,7 @@ private fun SwipeAdCardFace(
                             placement = placement,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(NativeAdMinHeight)
+                                .wrapContentHeight()
                                 .onSizeChanged { size ->
                                     if (index < measuredHeightsPx.size) {
                                         measuredHeightsPx = measuredHeightsPx.copyOf().also {

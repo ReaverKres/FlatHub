@@ -89,7 +89,6 @@ import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
 import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
-import io.flatzen.ads.NativeAdMinHeight
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.ads.clearNativeAdReuseCache
@@ -949,7 +948,8 @@ fun FlatList(
                             style = NativeAdSlotStyle.AppWall,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(NativeAdMinHeight),
+                                .wrapContentHeight()
+                                .heightIn(max = GridFlatItemSpec.skeletonHeight),
                         )
                     }
                 }
@@ -1002,7 +1002,8 @@ fun FlatList(
                         style = NativeAdSlotStyle.AppWall,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(NativeAdMinHeight),
+                            .wrapContentHeight()
+                            .heightIn(max = GridFlatItemSpec.skeletonHeight),
                     )
                 }
             }
@@ -1048,7 +1049,7 @@ private fun HomeFeedAdBlock(
             style = style,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(NativeAdMinHeight),
+                .wrapContentHeight(),
         )
         Text(
             text = stringResource(Res.string.home_ad_label),

@@ -24,6 +24,9 @@ import platform.UIKit.UIView
 private const val NATIVE_LOAD_POLL_MS = 200L
 private const val NATIVE_LOAD_MAX_ATTEMPTS = 40
 
+/** ~30s — covers delayed Appodeal bridge/SDK init. */
+private const val SDK_INIT_MAX_ATTEMPTS = 150
+
 private val AdUIKitProperties = UIKitInteropProperties(
     isInteractive = true,
     isNativeAccessibilityEnabled = true,
@@ -35,6 +38,30 @@ actual fun clearNativeAdReuseCache() {
     AppodealNative.api?.clearNativeAdReuseCache()
 }
 
+@Composable
+private fun rememberSdkReady(
+    adService: AdService,
+    apiAvailable: Boolean,
+    onInitTimeout: (() -> Unit)? = null,
+): Boolean {
+    var sdkReady by remember {
+        mutableStateOf(adService.isInitialized() && apiAvailable)
+    }
+    LaunchedEffect(adService, apiAvailable) {
+        if (sdkReady) return@LaunchedEffect
+        repeat(SDK_INIT_MAX_ATTEMPTS) {
+            val api = AppodealNative.api
+            if (adService.isInitialized() && api != null) {
+                sdkReady = true
+                return@LaunchedEffect
+            }
+            delay(NATIVE_LOAD_POLL_MS)
+        }
+        onInitTimeout?.invoke()
+    }
+    return sdkReady
+}
+
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun MrecAdSlot(
@@ -42,8 +69,21 @@ actual fun MrecAdSlot(
     modifier: Modifier,
 ) {
     val adService = koinInject<AdService>()
+    val sdkReady = rememberSdkReady(
+        adService,
+        apiAvailable = AppodealNative.api != null,
+    )
+
+    if (placement.isBlank()) {
+        AdSlotPlaceholder(modifier = modifier)
+        return
+    }
+    if (!sdkReady) {
+        AdSlotPlaceholder(modifier = modifier)
+        return
+    }
     val api = AppodealNative.api
-    if (!adService.isInitialized() || api == null || placement.isBlank()) {
+    if (api == null) {
         AdSlotPlaceholder(modifier = modifier)
         return
     }
@@ -82,9 +122,42 @@ actual fun NativeAdSlot(
 ) {
     val hideUntilLoaded = onAdLoadResult != null
     val adService = koinInject<AdService>()
-    val api = AppodealNative.api
 
-    if (!adService.isInitialized() || api == null || placement.isBlank()) {
+    var initTimedOut by remember { mutableStateOf(false) }
+    val sdkReady = rememberSdkReady(
+        adService,
+        apiAvailable = AppodealNative.api != null,
+    ) {
+        initTimedOut = true
+        if (hideUntilLoaded) {
+            onAdLoadResult(false)
+        }
+    }
+
+    if (placement.isBlank()) {
+        if (hideUntilLoaded) {
+            LaunchedEffect(Unit) { onAdLoadResult(false) }
+        } else {
+            AdSlotPlaceholder(modifier = modifier)
+        }
+        return
+    }
+
+    if (!sdkReady) {
+        if (initTimedOut) {
+            if (!hideUntilLoaded) {
+                AdSlotPlaceholder(modifier = modifier)
+            }
+            return
+        }
+        // Wait for bridge/SDK init — do not report failure yet.
+        if (!hideUntilLoaded) {
+            AdSlotPlaceholder(modifier = modifier)
+        }
+        return
+    }
+    val api = AppodealNative.api
+    if (api == null) {
         if (hideUntilLoaded) {
             LaunchedEffect(Unit) { onAdLoadResult(false) }
         } else {

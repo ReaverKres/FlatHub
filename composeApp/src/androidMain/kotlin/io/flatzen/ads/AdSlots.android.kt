@@ -31,6 +31,9 @@ import org.koin.compose.koinInject
 private const val NATIVE_LOAD_POLL_MS = 200L
 private const val NATIVE_LOAD_MAX_ATTEMPTS = 40
 
+/** ~30s — covers splash + consent form before Appodeal init on Android. */
+private const val SDK_INIT_MAX_ATTEMPTS = 150
+
 private enum class NativeAdSlotState {
     Loading,
     Loaded,
@@ -56,6 +59,26 @@ actual fun clearNativeAdReuseCache() {
 }
 
 @Composable
+private fun rememberSdkReady(
+    adService: AdService,
+    onInitTimeout: (() -> Unit)? = null,
+): Boolean {
+    var sdkReady by remember { mutableStateOf(adService.isInitialized()) }
+    LaunchedEffect(adService) {
+        if (sdkReady) return@LaunchedEffect
+        repeat(SDK_INIT_MAX_ATTEMPTS) {
+            if (adService.isInitialized()) {
+                sdkReady = true
+                return@LaunchedEffect
+            }
+            delay(NATIVE_LOAD_POLL_MS)
+        }
+        onInitTimeout?.invoke()
+    }
+    return sdkReady
+}
+
+@Composable
 actual fun MrecAdSlot(
     placement: String,
     modifier: Modifier,
@@ -63,7 +86,13 @@ actual fun MrecAdSlot(
     val activity = LocalActivity.current
     val adService = koinInject<AdService>()
     val backgroundColor = MaterialTheme.colorScheme.surface.toArgb()
-    if (activity == null || !adService.isInitialized() || placement.isBlank()) {
+    val sdkReady = rememberSdkReady(adService)
+
+    if (activity == null || placement.isBlank()) {
+        AdSlotPlaceholder(modifier = modifier.fillMaxWidth().height(250.dp))
+        return
+    }
+    if (!sdkReady) {
         AdSlotPlaceholder(modifier = modifier.fillMaxWidth().height(250.dp))
         return
     }
@@ -115,10 +144,32 @@ actual fun NativeAdSlot(
     val titleTextColor = colorScheme.onSurface.toArgb()
     val bodyTextColor = colorScheme.onSurfaceVariant.toArgb()
 
-    if (activity == null || !adService.isInitialized() || placement.isBlank()) {
+    var initTimedOut by remember { mutableStateOf(false) }
+    val sdkReady = rememberSdkReady(adService) {
+        initTimedOut = true
+        if (hideUntilLoaded) {
+            onAdLoadResult(false)
+        }
+    }
+
+    if (activity == null || placement.isBlank()) {
         if (hideUntilLoaded) {
             LaunchedEffect(Unit) { onAdLoadResult(false) }
         } else {
+            AdSlotPlaceholder(modifier = modifier)
+        }
+        return
+    }
+
+    if (!sdkReady) {
+        if (initTimedOut) {
+            if (!hideUntilLoaded) {
+                AdSlotPlaceholder(modifier = modifier)
+            }
+            return
+        }
+        // Wait for splash/consent init — do not report failure yet.
+        if (!hideUntilLoaded) {
             AdSlotPlaceholder(modifier = modifier)
         }
         return
@@ -146,6 +197,15 @@ actual fun NativeAdSlot(
             },
         )
     }
+    var registerSuccess by remember(placement, style, reuseKey, batchId, slotIndex) {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(registerSuccess, hideUntilLoaded) {
+        if (!registerSuccess || loadState == NativeAdSlotState.Loaded) return@LaunchedEffect
+        loadState = NativeAdSlotState.Loaded
+        onAdLoadResult?.invoke(true)
+    }
 
     LaunchedEffect(placement, style, reuseKey, batchId, slotIndex, effectiveBatchSize) {
         if (reuseKey != null && hasUsableReuseAd(activity, reuseKey, placement)) {
@@ -164,6 +224,10 @@ actual fun NativeAdSlot(
                 }
                 Appodeal.cache(activity, Appodeal.NATIVE)
                 delay(NATIVE_LOAD_POLL_MS)
+            }
+            if (hideUntilLoaded && loadState != NativeAdSlotState.Loaded) {
+                loadState = NativeAdSlotState.Failed
+                onAdLoadResult(false)
             }
             return@LaunchedEffect
         }
@@ -186,9 +250,9 @@ actual fun NativeAdSlot(
             val batchReady = synchronized(batchLock) {
                 (nativeAdBatches[batchId]?.size ?: 0) > slotIndex
             }
-            val sdkReady = Appodeal.getAvailableNativeAdsCount() > 0 &&
+            val sdkReadyNative = Appodeal.getAvailableNativeAdsCount() > 0 &&
                     Appodeal.canShow(Appodeal.NATIVE, placement)
-            if (batchReady || sdkReady) {
+            if (batchReady || sdkReadyNative) {
                 nativeLoadTick++
                 return@LaunchedEffect
             }
@@ -264,10 +328,7 @@ actual fun NativeAdSlot(
                 bodyTextColor = bodyTextColor,
             )
             if (registered) {
-                if (loadState != NativeAdSlotState.Loaded) {
-                    loadState = NativeAdSlotState.Loaded
-                    onAdLoadResult?.invoke(true)
-                }
+                registerSuccess = true
                 nativeView.requestLayout()
                 container.requestLayout()
             }
