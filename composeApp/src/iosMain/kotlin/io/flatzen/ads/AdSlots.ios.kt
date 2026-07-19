@@ -1,5 +1,7 @@
 package io.flatzen.ads
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import io.flatzen.monetization.ads.AdService
@@ -16,6 +19,7 @@ import io.flatzen.monetization.ads.AppodealNative
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
+import platform.UIKit.UIView
 
 private const val NATIVE_LOAD_POLL_MS = 200L
 private const val NATIVE_LOAD_MAX_ATTEMPTS = 40
@@ -51,7 +55,8 @@ actual fun MrecAdSlot(
     key(placement) {
         UIKitView(
             factory = { api.createMrecView(placement) },
-            modifier = modifier,
+            // Fixed size: wrapContent UIKit hosts often measure as 0×0 on iOS.
+            modifier = modifier.fillMaxWidth().height(250.dp),
             update = {
                 api.showMrec(placement)
             },
@@ -104,30 +109,33 @@ actual fun NativeAdSlot(
         mutableIntStateOf(0)
     }
     var isLoaded by remember(placement, styleName, reuseKey, batchId, slotIndex) {
-        mutableStateOf(
-            false
-        )
+        mutableStateOf(false)
     }
     var loadFailed by remember(placement, styleName, reuseKey, batchId, slotIndex) {
-        mutableStateOf(
-            false
-        )
+        mutableStateOf(false)
+    }
+    var hostView by remember(placement, styleName, reuseKey, batchId, slotIndex) {
+        mutableStateOf<UIView?>(null)
     }
 
     LaunchedEffect(placement, styleName, reuseKey, batchId, slotIndex, effectiveBatchSize) {
-        if (batchId != null && slotIndex != 0) return@LaunchedEffect
-        val prefetchCount = if (batchId != null) effectiveBatchSize else 1
-        adService.prefetchNative(placement, prefetchCount)
-        if (hideUntilLoaded) {
-            nativeLoadTick++
+        if (batchId == null || slotIndex == 0) {
+            val prefetchCount = if (batchId != null) effectiveBatchSize else 1
+            adService.prefetchNative(placement, prefetchCount)
         }
+        nativeLoadTick++
     }
 
-    LaunchedEffect(nativeLoadTick, hideUntilLoaded, isLoaded, loadFailed) {
-        if (!hideUntilLoaded || nativeLoadTick == 0 || isLoaded || loadFailed) return@LaunchedEffect
+    LaunchedEffect(nativeLoadTick, hostView, isLoaded, loadFailed) {
+        if (nativeLoadTick == 0 || isLoaded || loadFailed) return@LaunchedEffect
+        val view = hostView ?: return@LaunchedEffect
         repeat(NATIVE_LOAD_MAX_ATTEMPTS) {
+            if (api.showNative(view, placement)) {
+                isLoaded = true
+                onAdLoadResult?.invoke(true)
+                return@LaunchedEffect
+            }
             delay(NATIVE_LOAD_POLL_MS)
-            if (isLoaded) return@LaunchedEffect
         }
         if (!isLoaded) {
             loadFailed = true
@@ -142,20 +150,30 @@ actual fun NativeAdSlot(
         return
     }
 
+    // Fixed height is required on iOS: wrapContent / heightIn still let UIKitView hosts
+    // measure as 0×0, which breaks Appodeal native template constraints.
+    val slotModifier = modifier
+        .fillMaxWidth()
+        .height(NativeAdMinHeight)
+
     key(placement, styleName, reuseKey, batchId, slotIndex) {
         UIKitView(
-            factory = { api.createNativeView(placement, styleName, reuseKey) },
-            modifier = modifier,
+            factory = {
+                api.createNativeView(placement, styleName, reuseKey).also { hostView = it }
+            },
+            modifier = slotModifier,
             update = { view ->
-                api.showNative(view, placement)
-                if (hideUntilLoaded && !isLoaded) {
+                hostView = view
+                if (!isLoaded && api.showNative(view, placement)) {
                     isLoaded = true
-                    nativeLoadTick++
-                    onAdLoadResult(true)
+                    onAdLoadResult?.invoke(true)
                 }
             },
             onRelease = {
                 // Keep reusedNativeAds; only detach the view (Appodeal list guidance).
+                if (hostView === it) {
+                    hostView = null
+                }
                 api.releaseView(it)
             },
             properties = AdUIKitProperties,

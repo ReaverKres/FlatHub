@@ -27,14 +27,14 @@ enum AppodealSetup {
                 AppodealBridge.shared.createNativeView(
                     placement: placement,
                     style: style,
-                    reuseKey: reuseKey as String?
+                    reuseKey: reuseKey
                 )
             },
             showMrec: { placement in
                 AppodealBridge.shared.showMrec(placement: placement)
             },
             showNative: { view, placement in
-                AppodealBridge.shared.showNative(view: view, placement: placement)
+                KotlinBoolean(bool: AppodealBridge.shared.showNative(view: view, placement: placement))
             },
             releaseView: { view in
                 AppodealBridge.shared.releaseView(view)

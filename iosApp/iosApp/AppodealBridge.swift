@@ -34,7 +34,9 @@ class FlatHubNativeAdView: UIView, APDNativeAdView {
 
     func setRating(_ rating: NSNumber) {}
 
-    class func nib() -> UINib { UINib() }
+    class func nib() -> UINib {
+        UINib(nibName: String(describing: FlatHubNativeAdView.self), bundle: Bundle(for: FlatHubNativeAdView.self))
+    }
 
     private func setupLayout() {
         backgroundColor = UIColor.secondarySystemBackground
@@ -87,21 +89,46 @@ class FlatHubNativeAdView: UIView, APDNativeAdView {
 }
 
 final class NativeAdContainerView: UIView {
+    /// Matches FlatHubNativeAdView media row (~120) + padding.
+    static let fallbackIntrinsicHeight: CGFloat = 160
+
     let style: String
     let reuseKey: String?
-    var loadedAdView: UIView?
+    var loadedAdView: UIView? {
+        didSet { invalidateIntrinsicContentSize() }
+    }
 
     init(style: String, reuseKey: String?) {
         self.style = style
         self.reuseKey = reuseKey
-        super.init(frame: .zero)
-        translatesAutoresizingMaskIntoConstraints = false
+        // Non-zero initial frame: Compose UIKitView hosts are frame-based; starting at .zero
+        // makes the interop container report 0×0 and breaks Auto Layout inside the ad template.
+        super.init(
+            frame: CGRect(
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width,
+                height: Self.fallbackIntrinsicHeight
+            )
+        )
+        // Must stay true — Compose drives size via frame / autoresizing mask.
+        translatesAutoresizingMaskIntoConstraints = true
         backgroundColor = .clear
+        clipsToBounds = true
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: Self.fallbackIntrinsicHeight)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        loadedAdView?.frame = bounds
     }
 }
 
@@ -151,14 +178,17 @@ final class NativeAdContainerView: UIView {
     }
 
     /// Warm native creatives into the Appodeal / APDNativeAdQueue cache without showing UI.
+    /// Both style queues are warmed: Home uses `app_wall`, Swipe uses `content_stream`.
     @objc public func prefetchNative(placement: String, count: Int) {
         DispatchQueue.main.async {
             Appodeal.cacheAd(.nativeAd)
-            let queue = self.nativeQueue(for: "content_stream", placement: placement)
-            queue.placement = placement
             // loadAd fills the autocache; count is a soft hint — queue pulls as SDK allows.
             _ = count
-            queue.loadAd()
+            for style in ["content_stream", "app_wall"] {
+                let queue = self.nativeQueue(for: style, placement: placement)
+                queue.placement = placement
+                queue.loadAd()
+            }
         }
     }
 
@@ -198,13 +228,39 @@ final class NativeAdContainerView: UIView {
         }
     }
 
-    @objc public func showNative(view: UIView, placement: String) {
-        DispatchQueue.main.async {
-            guard let container = view as? NativeAdContainerView else { return }
-            guard let rootVC = Self.topViewController() else { return }
+    @objc public func showNative(view: UIView, placement: String) -> Bool {
+        let attach: () -> Bool = {
+            guard let container = view as? NativeAdContainerView else { return false }
 
             let queue = self.nativeQueue(for: container.style, placement: placement)
             queue.placement = placement
+
+            // Off-screen probe (no superview): reserve only when reuseKey can hold the creative.
+            if container.superview == nil {
+                if let key = container.reuseKey, self.reusedNativeAds[key] != nil {
+                    return true
+                }
+                if let key = container.reuseKey, self.reusedNativeAds[key] == nil {
+                    let ads = queue.getNativeAds(ofCount: 1)
+                    if let fetched = ads.first {
+                        self.reusedNativeAds[key] = fetched
+                        queue.loadAd()
+                        return true
+                    }
+                    queue.loadAd()
+                }
+                return false
+            }
+
+            // Compose UIKit interop is frame-based. Attaching into a 0×0 host permanently
+            // breaks FlatHubNativeAdView constraints (NSAutoresizingMask height/width == 0).
+            let hostSize = container.bounds.size
+            let parentSize = container.superview?.bounds.size ?? .zero
+            guard max(hostSize.width, parentSize.width) > 1,
+                  max(hostSize.height, parentSize.height) > 1
+            else {
+                return false
+            }
 
             let nativeAd: APDNativeAd
             if let key = container.reuseKey, let existing = self.reusedNativeAds[key] {
@@ -213,7 +269,7 @@ final class NativeAdContainerView: UIView {
                 let ads = queue.getNativeAds(ofCount: 1)
                 guard let fetched = ads.first else {
                     queue.loadAd()
-                    return
+                    return false
                 }
                 if let key = container.reuseKey {
                     self.reusedNativeAds[key] = fetched
@@ -221,6 +277,8 @@ final class NativeAdContainerView: UIView {
                 nativeAd = fetched
                 queue.loadAd()
             }
+
+            guard let rootVC = Self.topViewController() else { return false }
 
             guard let adView = try? nativeAd.getViewForPlacement(
                 placement,
@@ -230,20 +288,40 @@ final class NativeAdContainerView: UIView {
                     self.reusedNativeAds.removeValue(forKey: key)
                 }
                 queue.loadAd()
-                return
+                return false
+            }
+
+            if container.loadedAdView === adView, adView.superview === container {
+                adView.frame = container.bounds
+                return true
             }
 
             container.loadedAdView?.removeFromSuperview()
-            adView.translatesAutoresizingMaskIntoConstraints = false
+            // Frame + autoresizing — do not pin with Auto Layout against Compose's mask constraints.
+            adView.translatesAutoresizingMaskIntoConstraints = true
+            adView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            let width = max(hostSize.width, parentSize.width, UIScreen.main.bounds.width)
+            let height = max(
+                hostSize.height,
+                parentSize.height,
+                NativeAdContainerView.fallbackIntrinsicHeight
+            )
+            adView.frame = container.bounds.width > 1 && container.bounds.height > 1
+                ? container.bounds
+                : CGRect(origin: .zero, size: CGSize(width: width, height: height))
             container.addSubview(adView)
-            NSLayoutConstraint.activate([
-                adView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-                adView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-                adView.topAnchor.constraint(equalTo: container.topAnchor),
-                adView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            ])
             container.loadedAdView = adView
+            adView.isOpaque = false
+            adView.backgroundColor = .clear
+            container.setNeedsLayout()
+            container.layoutIfNeeded()
+            return true
         }
+
+        if Thread.isMainThread {
+            return attach()
+        }
+        return DispatchQueue.main.sync(execute: attach)
     }
 
     @objc public func releaseView(_ view: UIView) {

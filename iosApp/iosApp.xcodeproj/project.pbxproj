@@ -25,6 +25,7 @@
 		D4E5F6AA2ECF000100B846BE /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = C3D4E5F92ECF000100B846BE /* FirebaseRemoteConfig */; };
 		F6A7B8C12ECF000100B846C1 /* AppodealBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8BF2ECF000100B846BF /* AppodealBridge.swift */; };
 		F6A7B8C22ECF000100B846C2 /* AppodealSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C02ECF000100B846C0 /* AppodealSetup.swift */; };
+		F6A7B8C32ECF000100B846C3 /* FlatHubNativeAdView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F6A7B8C42ECF000100B846C4 /* FlatHubNativeAdView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		D4E5F6A62ECF000100B846BE /* FirebaseRemoteConfigBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseRemoteConfigBridge.swift; sourceTree = "<group>"; };
 		F6A7B8BF2ECF000100B846BF /* AppodealBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppodealBridge.swift; sourceTree = "<group>"; };
 		F6A7B8C02ECF000100B846C0 /* AppodealSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppodealSetup.swift; sourceTree = "<group>"; };
+		F6A7B8C42ECF000100B846C4 /* FlatHubNativeAdView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FlatHubNativeAdView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				D4E5F6A62ECF000100B846BE /* FirebaseRemoteConfigBridge.swift */,
 				F6A7B8BF2ECF000100B846BF /* AppodealBridge.swift */,
 				F6A7B8C02ECF000100B846C0 /* AppodealSetup.swift */,
+				F6A7B8C42ECF000100B846C4 /* FlatHubNativeAdView.xib */,
 				A1B2C3D42ECF000100B846BE /* FlatZenStoreKit2.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
@@ -216,6 +219,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				78CB81F02ECA06E100B846BE /* locus_logo_2-removebg-preview.png in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				F6A7B8C32ECF000100B846C3 /* FlatHubNativeAdView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

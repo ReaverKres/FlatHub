@@ -59,6 +59,7 @@ import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.no_data_available
 import flatzen.composeapp.generated.resources.swipe_ad_label
 import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
+import io.flatzen.ads.NativeAdMinHeight
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.ads.clearNativeAdBatch
@@ -465,7 +466,7 @@ private fun SwipeAdCardFace(
                             placement = placement,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .wrapContentHeight()
+                                .height(NativeAdMinHeight)
                                 .onSizeChanged { size ->
                                     if (index < measuredHeightsPx.size) {
                                         measuredHeightsPx = measuredHeightsPx.copyOf().also {

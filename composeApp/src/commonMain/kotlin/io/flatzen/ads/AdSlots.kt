@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 enum class NativeAdSlotStyle {
     ContentStream,
@@ -13,6 +14,9 @@ enum class NativeAdSlotStyle {
 }
 
 const val MAX_NATIVE_ADS_PER_BATCH = 5
+
+/** Reserved native-ad slot height so wrapContent hosts do not collapse to 0 before fill. */
+val NativeAdMinHeight = 160.dp
 
 @Composable
 expect fun MrecAdSlot(

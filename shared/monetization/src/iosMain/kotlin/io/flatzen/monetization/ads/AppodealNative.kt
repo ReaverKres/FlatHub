@@ -17,7 +17,9 @@ interface AppodealNativeApi {
     fun createMrecView(placement: String): UIView
     fun createNativeView(placement: String, style: String, reuseKey: String?): UIView
     fun showMrec(placement: String)
-    fun showNative(view: UIView, placement: String)
+
+    /** @return true when a native creative was attached to [view]. */
+    fun showNative(view: UIView, placement: String): Boolean
     fun releaseView(view: UIView)
     fun clearNativeAdReuseCache()
 }
@@ -42,7 +44,7 @@ fun installAppodeal(
     createMrecView: (placement: String) -> UIView,
     createNativeView: (placement: String, style: String, reuseKey: String?) -> UIView,
     showMrec: (placement: String) -> Unit,
-    showNative: (view: UIView, placement: String) -> Unit,
+    showNative: (view: UIView, placement: String) -> Boolean,
     releaseView: (view: UIView) -> Unit,
     clearNativeAdReuseCache: () -> Unit,
 ) {
@@ -69,7 +71,8 @@ fun installAppodeal(
 
             override fun showMrec(placement: String) = showMrec(placement)
 
-            override fun showNative(view: UIView, placement: String) = showNative(view, placement)
+            override fun showNative(view: UIView, placement: String): Boolean =
+                showNative(view, placement)
 
             override fun releaseView(view: UIView) = releaseView(view)
 

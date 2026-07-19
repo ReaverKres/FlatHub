@@ -15,7 +15,7 @@ fun installAppodeal(
     createMrecView: (placement: String) -> UIView,
     createNativeView: (placement: String, style: String, reuseKey: String?) -> UIView,
     showMrec: (placement: String) -> Unit,
-    showNative: (view: UIView, placement: String) -> Unit,
+    showNative: (view: UIView, placement: String) -> Boolean,
     releaseView: (view: UIView) -> Unit,
     clearNativeAdReuseCache: () -> Unit,
 ) {
