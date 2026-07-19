@@ -63,6 +63,8 @@ import flatzen.composeapp.generated.resources.theme_title
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
 import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.commoncomponents.theme.ThemeMode
+import io.flatzen.commoncomponents.utils.DevicePlatform
+import io.flatzen.commoncomponents.utils.PlatformType
 import io.flatzen.di.container
 import io.flatzen.localization.LocalAppLanguage
 import io.flatzen.themes.LocalThemeRevealController
@@ -95,6 +97,7 @@ fun MoreScreen(
     val faqState by faqContainer.store.subscribe { }
 
     val userPreferences: UserPreferencesRepository = koinInject()
+    val devicePlatform: DevicePlatform = koinInject()
     val themeMode by userPreferences.observeThemeMode()
         .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
     val alwaysTranslate by userPreferences.observeAlwaysTranslate()
@@ -155,13 +158,15 @@ fun MoreScreen(
                     onClick = { moreContainer.store.intent(MoreIntent.OpenLanguage) },
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-                AlwaysTranslateRow(
-                    enabled = alwaysTranslate,
-                    onEnabledChange = { enabled ->
-                        scope.launch { userPreferences.setAlwaysTranslate(enabled) }
-                    },
-                )
+                if (devicePlatform.platformType == PlatformType.ANDROID) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    AlwaysTranslateRow(
+                        enabled = alwaysTranslate,
+                        onEnabledChange = { enabled ->
+                            scope.launch { userPreferences.setAlwaysTranslate(enabled) }
+                        },
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 16.dp)) {

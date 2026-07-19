@@ -9,6 +9,8 @@ import io.flatzen.commoncomponents.commonentities.isCommercial
 import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
+import io.flatzen.commoncomponents.utils.DevicePlatform
+import io.flatzen.commoncomponents.utils.PlatformType
 import io.flatzen.navigation.FlatHubCommand
 import io.flatzen.navigation.FlatHubNavigator
 import io.flatzen.translation.QuotaExceededException
@@ -44,6 +46,7 @@ class FlatDetailContainer(
     private val analytics: Analytics,
     private val navigator: FlatHubNavigator,
     private val translationService: TranslationService,
+    private val devicePlatform: DevicePlatform,
 ) : Container<FlatDetailState, FlatDetailIntent, FlatDetailAction> {
 
     private val maxLevel = 18
@@ -178,6 +181,7 @@ class FlatDetailContainer(
     }
 
     private fun FlatDetailCtx.handleTranslate(targetLangTag: String) {
+        if (devicePlatform.platformType != PlatformType.ANDROID) return
         translateJob?.cancel()
         translateJob = launch {
             try {

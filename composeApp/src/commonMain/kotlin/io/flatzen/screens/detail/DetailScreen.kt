@@ -105,6 +105,8 @@ import io.flatzen.commoncomponents.commonentities.PriceText
 import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.commoncomponents.theme.resolveTranslationTargetTag
 import io.flatzen.commoncomponents.theme.shouldAutoTranslateListing
+import io.flatzen.commoncomponents.utils.DevicePlatform
+import io.flatzen.commoncomponents.utils.PlatformType
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.localization.LocalAppLanguage
@@ -167,6 +169,8 @@ fun DetailScreen(
     }
 
     val userPreferences: UserPreferencesRepository = koinInject()
+    val devicePlatform: DevicePlatform = koinInject()
+    val listingTranslationEnabled = devicePlatform.platformType == PlatformType.ANDROID
     val alwaysTranslate by userPreferences.observeAlwaysTranslate()
         .collectAsStateWithLifecycle(initialValue = false)
     val preferredTarget by userPreferences.observeTranslateTargetLang()
@@ -210,6 +214,7 @@ fun DetailScreen(
         targetLangTag,
         flat?.platform
     ) {
+        if (!listingTranslationEnabled) return@LaunchedEffect
         val current = flat ?: return@LaunchedEffect
         if (!alwaysTranslate) return@LaunchedEffect
         if (state.isShowingTranslation || state.isTranslating || state.translationQuotaExhausted) return@LaunchedEffect
@@ -220,7 +225,7 @@ fun DetailScreen(
         container.store.intent(FlatDetailIntent.TranslateListing(targetLangTag))
     }
 
-    if (showTranslateDialog) {
+    if (listingTranslationEnabled && showTranslateDialog) {
         TranslateLanguageDialog(
             onDismiss = { showTranslateDialog = false },
             onLanguageSelected = { language ->
@@ -248,7 +253,7 @@ fun DetailScreen(
                 }
             },
             actions = {
-                if (flat != null) {
+                if (listingTranslationEnabled && flat != null) {
                     when {
                         state.isTranslating -> {
                             CircularProgressIndicator(
@@ -294,6 +299,7 @@ fun DetailScreen(
                     isShowingTranslation = state.isShowingTranslation,
                     isTranslating = state.isTranslating,
                     translationActionsEnabled = !state.translationQuotaExhausted,
+                    showTranslationActions = listingTranslationEnabled,
                     onTranslateClick = { showTranslateDialog = true },
                     onShowOriginalClick = {
                         container.store.intent(FlatDetailIntent.ShowOriginalListing)
@@ -373,6 +379,7 @@ private fun FlatDetailContent(
     isShowingTranslation: Boolean = false,
     isTranslating: Boolean = false,
     translationActionsEnabled: Boolean = true,
+    showTranslationActions: Boolean = true,
     onTranslateClick: () -> Unit = {},
     onShowOriginalClick: () -> Unit = {},
     clickOnFavorite: () -> Unit,
@@ -441,13 +448,15 @@ private fun FlatDetailContent(
 
             SourceLinkSection(flat.platform, flat.flatUrl)
 
-            ListingTranslationButton(
-                isShowingTranslation = isShowingTranslation,
-                isTranslating = isTranslating,
-                enabled = translationActionsEnabled,
-                onTranslateClick = onTranslateClick,
-                onShowOriginalClick = onShowOriginalClick,
-            )
+            if (showTranslationActions) {
+                ListingTranslationButton(
+                    isShowingTranslation = isShowingTranslation,
+                    isTranslating = isTranslating,
+                    enabled = translationActionsEnabled,
+                    onTranslateClick = onTranslateClick,
+                    onShowOriginalClick = onShowOriginalClick,
+                )
+            }
 
             if (flat.isDetailDataLoaded == true) {
                 if (hasContactData(flat.contactInformation) || flat.isOwner != null) {
