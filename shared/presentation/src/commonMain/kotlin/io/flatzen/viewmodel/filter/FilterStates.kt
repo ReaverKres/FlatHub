@@ -15,6 +15,7 @@ import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.location.networkCountryIso
 import io.flatzen.mappers.LocationUiMapper
@@ -207,16 +208,24 @@ data class FilterState(
             }".trim())
         }
 
-        // Цена за м²
+        // Цена за м² / sqft
         pricePerSquare?.let { price ->
-            activeFilters.add("${resolve(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL)}: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
+            val pricePerSquareLabel =
+                if (location?.selectedCountry?.code?.usesSquareFeet() == true) {
+                    resolve(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL_SQFT)
+                } else {
+                    resolve(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL)
+                }
+            activeFilters.add("$pricePerSquareLabel: ${price.priceFrom?.let { "$fromText $it" } ?: ""} ${price.priceTo?.let { "$toText $it" } ?: ""} ${
                 currency.filterLabel()
             }".trim())
         }
 
         // Общая площадь
         totalArea?.let { area ->
-            activeFilters.add("${resolve(LocalizationKeys.DETAIL_TOTAL_AREA)}: ${area.fromRange?.let { "$fromText $it" } ?: ""} ${area.toRange?.let { "$toText $it" } ?: ""} м²".trim())
+            val areaUnit =
+                if (location?.selectedCountry?.code?.usesSquareFeet() == true) "sqft" else "м²"
+            activeFilters.add("${resolve(LocalizationKeys.DETAIL_TOTAL_AREA)}: ${area.fromRange?.let { "$fromText $it" } ?: ""} ${area.toRange?.let { "$toText $it" } ?: ""} $areaUnit".trim())
         }
 
         // Комнаты
@@ -300,6 +309,7 @@ private fun defaultRussianString(key: LocalizationKeys): String {
         LocalizationKeys.FILTER_PROPERTY_TYPE -> "Тип помещения"
         LocalizationKeys.FILTER_PRICE_LABEL -> "Цена"
         LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL -> "Цена за м²"
+        LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL_SQFT -> "Цена за sqft"
         LocalizationKeys.DETAIL_TOTAL_AREA -> "Общая площадь"
         LocalizationKeys.DETAIL_ROOMS_COUNT -> "Количество комнат"
         LocalizationKeys.FILTER_METRO_PREFIX -> "Метро"

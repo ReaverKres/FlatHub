@@ -61,10 +61,10 @@ class KufarDailyFlatMapper :
                     }
                 }
             },
-            priceUsd = null, // Kufar Daily предоставляет только цену в BYN
-            priceByn = rentalObject.price?.toDouble()?.div(100),
-            priceUsdSquare = null,
-            priceBynSquare = null,
+            mainPrice = rentalObject.price?.toDouble()?.div(100), // Kufar Daily — только BYN
+            secondPrice = null,
+            mainPriceSquare = null,
+            secondPriceSquare = null,
             rooms = rentalObject.rooms,
             district = null, //area?,
             address = rentalObject.address,

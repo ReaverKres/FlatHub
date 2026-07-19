@@ -81,9 +81,8 @@ object OlxPlFlatMapper {
                 DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
             },
             imageUrls = photos,
-            priceUsd = null,
-            // PL: local currency stored in priceByn until price model rename
-            priceByn = pricePln,
+            secondPrice = null,
+            mainPrice = pricePln,
             rooms = rooms,
             district = district,
             address = address,

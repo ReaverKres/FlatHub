@@ -18,7 +18,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Immowelt.de — SSR HTML list; detail may soft-fail on DataDome.
- * EUR → [AppFlat.priceByn], priceUsd = null.
+ * EUR → [AppFlat.mainPrice], secondPrice = null.
  */
 class ImmoweltListingSource(
     private val api: ImmoweltApiClient,

@@ -17,6 +17,7 @@ import io.flatzen.viewmodel.detailad.FlatDetailContainer
 import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.list.FlatSearchContainer
 import io.flatzen.viewmodel.list.PremiumFeedReloadTrigger
+import io.flatzen.viewmodel.location.CitySelectContainer
 import io.flatzen.viewmodel.more.FaqContainer
 import io.flatzen.viewmodel.more.MoreContainer
 import io.flatzen.viewmodel.more.ReferralContainer
@@ -72,6 +73,8 @@ val flatSearchPresentationModule = module {
     }
 
     container { new(::FilterContainer) }
+
+    container { new(::CitySelectContainer) }
 
     container { new(::DistrictsContainer) }
 

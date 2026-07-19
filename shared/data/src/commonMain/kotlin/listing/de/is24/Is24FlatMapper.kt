@@ -17,7 +17,7 @@ import listing.de.DeRelativeTime
 import utils.stripHtmlToPlainText
 
 /**
- * Maps IS24 mobile JSON → [AppFlat]. EUR → [AppFlat.priceByn], priceUsd = null.
+ * Maps IS24 mobile JSON → [AppFlat]. EUR → [AppFlat.mainPrice], secondPrice = null.
  * See tmp/de/api/is24/NOTES.md.
  */
 object Is24FlatMapper {
@@ -77,8 +77,8 @@ object Is24FlatMapper {
             publishedAtServer = publishedRaw,
             publishedAtUi = publishedAtUi,
             imageUrls = images,
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = line,
@@ -112,7 +112,7 @@ object Is24FlatMapper {
         val price = targeting?.get("obj_baseRent").contentOrNull()?.toDoubleOrNull()
             ?: targeting?.get("obj_totalRent").contentOrNull()?.toDoubleOrNull()
             ?: targeting?.get("obj_purchasePrice").contentOrNull()?.toDoubleOrNull()
-            ?: base.priceByn
+            ?: base.mainPrice
         val rooms = targeting?.get("obj_noRooms").contentOrNull()?.toDoubleOrNull()?.toInt()
             ?: base.rooms
         val area = targeting?.get("obj_livingSpace").contentOrNull()?.toDoubleOrNull()
@@ -151,7 +151,7 @@ object Is24FlatMapper {
 
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             totalArea = area,
             floor = floor,
@@ -176,8 +176,8 @@ object Is24FlatMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,

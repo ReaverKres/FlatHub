@@ -79,7 +79,7 @@ object KnHtmlParser {
         val price = priceRe.find(detailHtml)?.groupValues?.get(1)
             ?.replace(Regex("""[^\d]"""), "")
             ?.toDoubleOrNull()
-            ?: base.priceByn
+            ?: base.mainPrice
         val rooms = params["Количество комнат"]?.toIntOrNull() ?: base.rooms
         val floor = params["Этаж"]?.toIntOrNull() ?: base.floor
         val totalFloors = params["Этажность"]?.toIntOrNull() ?: base.totalFloors
@@ -105,7 +105,7 @@ object KnHtmlParser {
 
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             floor = floor,
             totalFloors = totalFloors,
@@ -152,8 +152,8 @@ object KnHtmlParser {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = image?.let { listOf(it) },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = null,
             address = address,

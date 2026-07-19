@@ -70,6 +70,7 @@ import flatzen.composeapp.generated.resources.filter_active_title
 import flatzen.composeapp.generated.resources.filter_add_to_my_filters
 import flatzen.composeapp.generated.resources.filter_address_prefix
 import flatzen.composeapp.generated.resources.filter_area
+import flatzen.composeapp.generated.resources.filter_area_sqft
 import flatzen.composeapp.generated.resources.filter_booking_date
 import flatzen.composeapp.generated.resources.filter_city_prefix
 import flatzen.composeapp.generated.resources.filter_commercial
@@ -91,6 +92,8 @@ import flatzen.composeapp.generated.resources.filter_price_daily
 import flatzen.composeapp.generated.resources.filter_price_label
 import flatzen.composeapp.generated.resources.filter_price_per_square
 import flatzen.composeapp.generated.resources.filter_price_per_square_label
+import flatzen.composeapp.generated.resources.filter_price_per_square_label_sqft
+import flatzen.composeapp.generated.resources.filter_price_per_square_sqft
 import flatzen.composeapp.generated.resources.filter_property_type
 import flatzen.composeapp.generated.resources.filter_push_notifications
 import flatzen.composeapp.generated.resources.filter_rent
@@ -120,6 +123,7 @@ import flatzen.composeapp.generated.resources.language_system
 import flatzen.composeapp.generated.resources.language_title
 import flatzen.composeapp.generated.resources.language_turkish
 import flatzen.composeapp.generated.resources.list_area_format
+import flatzen.composeapp.generated.resources.list_area_format_sqft
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
@@ -248,10 +252,12 @@ private val formattedLocalizationKeys = setOf(
     LocalizationKeys.FILTER_PRICE,
     LocalizationKeys.FILTER_PRICE_DAILY,
     LocalizationKeys.FILTER_PRICE_PER_SQUARE,
+    LocalizationKeys.FILTER_PRICE_PER_SQUARE_SQFT,
     LocalizationKeys.REFERRAL_MY_CODE,
     LocalizationKeys.REFERRAL_REMAINING_INVITES,
     LocalizationKeys.LIST_PAGE,
     LocalizationKeys.LIST_AREA_FORMAT,
+    LocalizationKeys.LIST_AREA_FORMAT_SQFT,
     LocalizationKeys.LIST_ROOMS_ONE,
     LocalizationKeys.LIST_ROOMS_FEW,
     LocalizationKeys.LIST_ROOMS_MANY,
@@ -352,7 +358,10 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.FILTER_PRICE_DAILY -> Res.string.filter_price_daily
         LocalizationKeys.FILTER_PRICE_PER_SQUARE -> Res.string.filter_price_per_square
         LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL -> Res.string.filter_price_per_square_label
+        LocalizationKeys.FILTER_PRICE_PER_SQUARE_SQFT -> Res.string.filter_price_per_square_sqft
+        LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL_SQFT -> Res.string.filter_price_per_square_label_sqft
         LocalizationKeys.FILTER_AREA -> Res.string.filter_area
+        LocalizationKeys.FILTER_AREA_SQFT -> Res.string.filter_area_sqft
         LocalizationKeys.FILTER_ADD_TO_MY_FILTERS -> Res.string.filter_add_to_my_filters
         LocalizationKeys.FILTER_SAVE_TITLE -> Res.string.filter_save_title
         LocalizationKeys.FILTER_SAVE_HINT -> Res.string.filter_save_hint
@@ -421,6 +430,7 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.LIST_ROOMS_SUFFIX -> Res.string.list_rooms_suffix
         LocalizationKeys.LIST_COMMERCIAL_ROOMS_SUFFIX -> Res.string.list_commercial_rooms_suffix
         LocalizationKeys.LIST_AREA_FORMAT -> Res.string.list_area_format
+        LocalizationKeys.LIST_AREA_FORMAT_SQFT -> Res.string.list_area_format_sqft
         LocalizationKeys.LIST_ROOMS_ONE -> Res.string.list_rooms_one
         LocalizationKeys.LIST_ROOMS_FEW -> Res.string.list_rooms_few
         LocalizationKeys.LIST_ROOMS_MANY -> Res.string.list_rooms_many

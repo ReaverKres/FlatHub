@@ -68,6 +68,8 @@ import listing.th.renthub.RentHubApiClient
 import listing.th.renthub.RentHubListingSource
 import listing.tr.emlakjet.EmlakjetApiClient
 import listing.tr.emlakjet.EmlakjetListingSource
+import listing.us.zumper.ZumperApiClient
+import listing.us.zumper.ZumperListingSource
 import mappers.DomovitaFlatMapper
 import mappers.RealtFlatMapper
 import mappers.base.AdditionalParamMapper
@@ -257,6 +259,9 @@ val dataModule = module {
     single { RentHubApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { RentHubListingSource(api = get(), flatsDao = get()) }
 
+    single { ZumperApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { ZumperListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -287,6 +292,7 @@ val dataModule = module {
                 get<PropertyHubListingSource>(),
                 get<LivinginsiderListingSource>(),
                 get<RentHubListingSource>(),
+                get<ZumperListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

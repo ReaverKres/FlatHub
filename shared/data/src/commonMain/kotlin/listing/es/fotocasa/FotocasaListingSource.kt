@@ -18,7 +18,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Fotocasa.es — gateway REST JSON. See tmp/es/api/fotocasa/NOTES.md.
- * EUR → [AppFlat.priceByn], priceUsd = null.
+ * EUR → [AppFlat.mainPrice], secondPrice = null.
  */
 class FotocasaListingSource(
     private val api: FotocasaApiClient,

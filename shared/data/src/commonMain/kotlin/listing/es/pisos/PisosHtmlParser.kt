@@ -81,7 +81,7 @@ object PisosHtmlParser {
         val phones = phoneRe.findAll(html).map { it.groupValues[1] }.distinct().toList()
             .ifEmpty { base.contactInformation?.phones.orEmpty() }
         val price = priceDataRe.find(html)?.groupValues?.get(1)?.toDoubleOrNull()
-            ?: base.priceByn
+            ?: base.mainPrice
         val rooms = roomsRe.find(html)?.groupValues?.get(1)?.toIntOrNull() ?: base.rooms
         val area = areaRe.find(html)?.groupValues?.get(1)
             ?.replace(',', '.')
@@ -101,7 +101,7 @@ object PisosHtmlParser {
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
             description = description,
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             totalArea = area,
             coordinates = coords,
@@ -165,8 +165,8 @@ object PisosHtmlParser {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = image?.let { listOf(it) },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = subtitle ?: title,
@@ -209,8 +209,8 @@ object PisosHtmlParser {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = null,
-            priceUsd = null,
-            priceByn = null,
+            secondPrice = null,
+            mainPrice = null,
             rooms = null,
             district = null,
             address = null,

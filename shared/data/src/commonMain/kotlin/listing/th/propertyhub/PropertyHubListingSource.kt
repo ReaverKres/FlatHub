@@ -19,7 +19,7 @@ import listing.th.isThSaleDeal
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * PropertyHub Thailand — `_next/data` condo rent/sale. THB → [AppFlat.priceByn].
+ * PropertyHub Thailand — `_next/data` condo rent/sale. THB → [AppFlat.mainPrice].
  * See tmp/th/api/propertyhub/NOTES.md.
  */
 class PropertyHubListingSource(

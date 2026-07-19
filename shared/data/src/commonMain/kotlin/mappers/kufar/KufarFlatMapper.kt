@@ -75,8 +75,8 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
     )
 
     override fun map(data: KufarListResponse.Ad): AppFlat {
-        val priceUsd = data.priceUsd?.let { convertKufarPriceToDouble(it) }
-        val priceByn = data.priceByn?.let { convertKufarPriceToDouble(it) }
+        val mainPrice = data.priceUsd?.let { convertKufarPriceToDouble(it) }
+        val secondPrice = data.priceByn?.let { convertKufarPriceToDouble(it) }
 
         val adParams = data.adParameters?.filterNotNull() ?: emptyList()
 
@@ -179,8 +179,8 @@ class KufarFlatMapper : ResponseToEntitiesFlatMapper<KufarListResponse.Ad, AppFl
             publishedAt = flatDateInstant,
             publishedAtServer = data.listTime,
             publishedAtUi = publishedAtUi,
-            priceUsd = priceUsd,
-            priceByn = priceByn,
+            mainPrice = mainPrice,
+            secondPrice = secondPrice,
             imageUrls = images,
             rooms = rooms,
             district = district,

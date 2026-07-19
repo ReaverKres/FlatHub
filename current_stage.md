@@ -1,17 +1,24 @@
 # Current stage — multi-country parsing
 
-**Updated:** 2026-07-17  
-**Active market:** Thailand (TH) MVP  
-**Canonical:** [docs/current_stage.md](./docs/current_stage.md)
+**Updated:** 2026-07-19  
+**Active market:** United States (US) MVP  
+**Canonical lessons:** [docs/LESSONS_MULTI_COUNTRY.md](./docs/LESSONS_MULTI_COUNTRY.md)
 
 ## Done recently
 
-- TH: PropertyHub + Livinginsider + RentHub (DDproperty/FazWaz BLOCKED — CF)
-- THB currency; Bangkok / Phuket / Chiang Mai / Pattaya / Hua Hin / Koh Samui
-- AE commercial subtypes earlier
+### US market
+
+- **Registered:** Zumper rent only (`listing/us/zumper/`)
+- **Sale:** disabled — `houses-for-sale/{slug}` 301→sitemap; `supportsSale=false`
+- **Removed from app UI/enum:** Zillow + Apartments.com (PerimeterX / Akamai; GraphQL+list POST also
+  403/404 anonymously)
+- Restore notes: `tmp/us/api/*/NOTES.md`, `tmp/us/api/SUMMARY.md`
+- Currency USD → `mainPrice`; CitySelect localization; ListingInsights UI
 
 ## Verify on device
 
-- [ ] TH Bangkok rent/sale; prices in ฿
-- [ ] Soft-fail when PropertyHub rate-limits
-- [ ] AE Dubai / TR İstanbul still OK
+- [x] US rent on Zumper (NYC smoke OK earlier)
+- [ ] US sale → empty / no crash (capability off)
+- [ ] Location card for US shows **only Zumper** icon
+- [ ] CitySelect search latin + localized
+- [ ] TH / AE / TR still OK after price rename

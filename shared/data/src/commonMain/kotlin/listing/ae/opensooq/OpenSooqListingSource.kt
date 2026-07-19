@@ -18,7 +18,7 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * OpenSooq UAE — SSR `__NEXT_DATA__`. AED → [AppFlat.priceByn].
+ * OpenSooq UAE — SSR `__NEXT_DATA__`. AED → [AppFlat.mainPrice].
  * Residential apartments + commercial SERP. See tmp/ae/api/opensooq/NOTES.md.
  */
 class OpenSooqListingSource(

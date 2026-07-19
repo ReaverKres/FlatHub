@@ -22,7 +22,7 @@ import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 /**
- * Maps Dubizzle Algolia hits → [AppFlat]. AED → [AppFlat.priceByn].
+ * Maps Dubizzle Algolia hits → [AppFlat]. AED → [AppFlat.mainPrice].
  * `_geoloc` axes are often lng/lat-swapped for UAE — normalized here.
  * See tmp/ae/api/dubizzle/NOTES.md.
  */
@@ -120,8 +120,8 @@ object DubizzleMapper {
             publishedAtServer = addedSec?.toString(),
             publishedAtUi = publishedAtUi,
             imageUrls = images,
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = effectiveRooms,
             district = district,
             address = address,
@@ -163,8 +163,8 @@ object DubizzleMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,

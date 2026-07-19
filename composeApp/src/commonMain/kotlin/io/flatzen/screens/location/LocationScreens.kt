@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -96,6 +97,7 @@ import flatzen.composeapp.generated.resources.location_metro_line_m1
 import flatzen.composeapp.generated.resources.location_metro_line_m2
 import flatzen.composeapp.generated.resources.location_metro_line_red
 import flatzen.composeapp.generated.resources.location_saved_areas
+import flatzen.composeapp.generated.resources.location_search_country_city
 import flatzen.composeapp.generated.resources.location_search_district
 import flatzen.composeapp.generated.resources.location_search_station
 import flatzen.composeapp.generated.resources.location_select_city_hint
@@ -116,6 +118,9 @@ import io.flatzen.viewmodel.filter.FilterContainer
 import io.flatzen.viewmodel.filter.FilterScreenAction
 import io.flatzen.viewmodel.filter.MetroLineState
 import io.flatzen.viewmodel.filter.UiMetroStation
+import io.flatzen.viewmodel.location.CitySelectContainer
+import io.flatzen.viewmodel.location.CitySelectIntent
+import io.flatzen.viewmodel.location.buildCitySelectSections
 import io.flatzen.widgets.AppSwitch
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.platformImage
@@ -182,9 +187,10 @@ fun LocationScreen() {
                     },
             ) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    val country = state.filters.location?.selectedCountry?.name
-                        ?: state.filters.location?.selectedCountry?.code?.name.orEmpty()
-                    val city = state.filters.location?.selectedCity?.displayName.orEmpty()
+                    val countryCode = state.filters.location?.selectedCountry?.code
+                    val cityCode = state.filters.location?.selectedCity?.code
+                    val country = countryCode?.localizedName().orEmpty()
+                    val city = cityCode?.localizedName().orEmpty()
                     Text(
                         text = listOf(country, city).filter { it.isNotBlank() }.joinToString(" · "),
                     )
@@ -302,21 +308,73 @@ fun LocationScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitySelectScreen(
-    filterContainer: FilterContainer = container()
+    filterContainer: FilterContainer = container(),
+    citySelectContainer: CitySelectContainer = container(),
 ) {
-    val state by filterContainer.store.subscribe { }
-    val countries = remember { LocationUiMapper.countries() }
-    val selectedCountry = state.filters.location?.selectedCountry?.code
-    val cities = state.filters.location?.availableCities.orEmpty()
-    val selectedCityCode = state.filters.location?.selectedCity?.code
-    // Lag content behind selection so the list never paints a new market while still visible.
-    var displayCountry by remember { mutableStateOf(selectedCountry) }
-    var displayCities by remember { mutableStateOf(cities) }
+    val filterState by filterContainer.store.subscribe { }
+    val citySelectState by citySelectContainer.store.subscribe { }
+    val selectedCountry = filterState.filters.location?.selectedCountry?.code
+    val selectedCityCode = filterState.filters.location?.selectedCity?.code
+    val query = citySelectState.query
+    val searching = query.isNotBlank()
+
+    val countryLatin = remember {
+        LocationUiMapper.countries().associate { it.code to it.latinName }
+    }
+    val cityLatin = remember {
+        LocationUiMapper.allCities().associate { it.code to it.latinName }
+    }
+    val countryLocalized = CountryCode.entries.associateWith { it.localizedName() }
+    val cityLocalized = CityCode.entries.associateWith { it.localizedName() }
+
+    val visibleCountries =
+        remember(query, countryLatin, countryLocalized, cityLatin, cityLocalized) {
+            if (!searching) {
+                LocationUiMapper.countries().map { it.code }
+            } else {
+                buildCitySelectSections(
+                    query = query,
+                    selectedCountry = selectedCountry,
+                    countryLatin = countryLatin,
+                    countryLocalized = countryLocalized,
+                    cityLatin = cityLatin,
+                    cityLocalized = cityLocalized,
+                ).map { it.first }
+            }
+        }
+
+    val citySections = remember(
+        query,
+        selectedCountry,
+        countryLatin,
+        countryLocalized,
+        cityLatin,
+        cityLocalized,
+    ) {
+        buildCitySelectSections(
+            query = query,
+            selectedCountry = selectedCountry,
+            countryLatin = countryLatin,
+            countryLocalized = countryLocalized,
+            cityLatin = cityLatin,
+            cityLocalized = cityLocalized,
+        )
+    }
+
+    // Lag city list behind selection so the list never paints a new market while still visible.
+    var displaySections by remember { mutableStateOf(citySections) }
     var citiesVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(selectedCountry, cities) {
-        if (selectedCountry == displayCountry) {
-            displayCities = cities
+    LaunchedEffect(selectedCountry, citySections, searching) {
+        if (searching) {
+            displaySections = citySections
+            citiesVisible = citySections.isNotEmpty()
+            return@LaunchedEffect
+        }
+        if (selectedCountry == displaySections.firstOrNull()?.first &&
+            displaySections.map { it.second } == citySections.map { it.second }
+        ) {
+            displaySections = citySections
             if (selectedCountry != null && !citiesVisible) {
                 citiesVisible = true
             }
@@ -324,8 +382,7 @@ fun CitySelectScreen(
         }
         citiesVisible = false
         delay(210)
-        displayCountry = selectedCountry
-        displayCities = cities
+        displaySections = citySections
         if (selectedCountry != null) {
             delay(16)
             citiesVisible = true
@@ -343,12 +400,16 @@ fun CitySelectScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { filterContainer.intent(FilterScreenAction.NavigateBack) }) {
+                    IconButton(
+                        onClick = {
+                            citySelectContainer.intent(CitySelectIntent.NavigateBack)
+                        },
+                    ) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -356,6 +417,23 @@ fun CitySelectScreen(
                 .fillMaxSize(),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
+            item {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = {
+                        citySelectContainer.intent(CitySelectIntent.UpdateQuery(it))
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 4.dp),
+                    placeholder = {
+                        Text(stringResource(Res.string.location_search_country_city))
+                    },
+                    singleLine = true,
+                )
+            }
+
             item {
                 Column(
                     modifier = Modifier
@@ -367,11 +445,13 @@ fun CitySelectScreen(
                         text = stringResource(Res.string.location_country),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                     )
-                    Text(
-                        text = stringResource(Res.string.location_select_country_hint),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    if (!searching) {
+                        Text(
+                            text = stringResource(Res.string.location_select_country_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         val gap = 10.dp
                         val maxPerRow = 3
@@ -382,19 +462,20 @@ fun CitySelectScreen(
                             verticalArrangement = Arrangement.spacedBy(gap),
                             maxItemsInEachRow = maxPerRow,
                         ) {
-                            countries.forEach { country ->
-                                val selected = selectedCountry == country.code
+                            visibleCountries.forEach { countryCode ->
+                                val selected = selectedCountry == countryCode
                                 CountryMarketCard(
-                                    name = country.displayName,
-                                    countryCode = country.code,
+                                    name = countryCode.localizedName(),
+                                    countryCode = countryCode,
                                     selected = selected,
                                     modifier = Modifier.width(itemWidth),
                                     onClick = {
-                                        if (selectedCountry != country.code) {
+                                        if (!searching && selectedCountry != countryCode) {
                                             citiesVisible = false
                                         }
+                                        citySelectContainer.intent(CitySelectIntent.ClearQuery)
                                         filterContainer.intent(
-                                            FilterScreenAction.SelectCountry(country.code)
+                                            FilterScreenAction.SelectCountry(countryCode),
                                         )
                                     },
                                 )
@@ -405,7 +486,7 @@ fun CitySelectScreen(
                     val showBetaNotice = selectedCountry != null &&
                             selectedCountry != CountryCode.BY
                     AnimatedVisibility(
-                        visible = showBetaNotice,
+                        visible = showBetaNotice && !searching,
                         enter = fadeIn(tween(280)) + expandVertically(tween(320)),
                         exit = fadeOut(tween(160)) + shrinkVertically(tween(180)),
                     ) {
@@ -425,7 +506,7 @@ fun CitySelectScreen(
 
             item(key = "cities_block") {
                 AnimatedVisibility(
-                    visible = citiesVisible && displayCountry != null,
+                    visible = citiesVisible && displaySections.isNotEmpty(),
                     enter = fadeIn(
                         animationSpec = tween(360, easing = FastOutSlowInEasing),
                     ) + expandVertically(
@@ -446,38 +527,53 @@ fun CitySelectScreen(
                     ),
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 4.dp, bottom = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ) {
-                            Text(
-                                text = stringResource(Res.string.location_city),
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                ),
-                            )
-                            Text(
-                                text = stringResource(Res.string.location_select_city_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-
-                        displayCities.forEachIndexed { index, city ->
-                            val checked = selectedCityCode == city.code
-                            CitySelectRow(
-                                name = city.displayName,
-                                checked = checked,
-                                index = index,
-                                onClick = {
-                                    filterContainer.intent(
-                                        FilterScreenAction.SelectCity(city.code)
+                        var rowIndex = 0
+                        displaySections.forEach { (countryCode, cityCodes) ->
+                            if (searching || displaySections.size > 1) {
+                                Text(
+                                    text = countryCode.localizedName(),
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                    ),
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp)
+                                        .padding(top = 8.dp, bottom = 4.dp),
+                                )
+                            } else {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                        .padding(top = 4.dp, bottom = 10.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    Text(
+                                        text = stringResource(Res.string.location_city),
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.SemiBold,
+                                        ),
                                     )
-                                },
-                            )
+                                    Text(
+                                        text = stringResource(Res.string.location_select_city_hint),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                            cityCodes.forEach { cityCode ->
+                                val checked = selectedCityCode == cityCode
+                                val index = rowIndex++
+                                CitySelectRow(
+                                    name = cityCode.localizedName(),
+                                    checked = checked,
+                                    index = index,
+                                    onClick = {
+                                        filterContainer.intent(
+                                            FilterScreenAction.SelectCity(cityCode),
+                                        )
+                                    },
+                                )
+                            }
                         }
                     }
                 }
@@ -585,7 +681,7 @@ private fun CountryMarketCard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(88.dp)
+                .wrapContentHeight()
                 .clickable(onClick = onClick),
             shape = RoundedCornerShape(14.dp),
             colors = cardColors,
@@ -606,7 +702,7 @@ private fun CountryMarketCard(
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {

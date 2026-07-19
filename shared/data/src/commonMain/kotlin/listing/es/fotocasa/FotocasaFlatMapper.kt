@@ -19,7 +19,7 @@ import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 /**
- * Maps Fotocasa gateway JSON → [AppFlat]. EUR → [AppFlat.priceByn], priceUsd = null.
+ * Maps Fotocasa gateway JSON → [AppFlat]. EUR → [AppFlat.mainPrice], secondPrice = null.
  * See tmp/es/api/fotocasa/NOTES.md.
  */
 object FotocasaFlatMapper {
@@ -91,8 +91,8 @@ object FotocasaFlatMapper {
             publishedAtServer = created,
             publishedAtUi = publishedAtUi,
             imageUrls = images?.ifEmpty { null },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = ubication,
@@ -127,7 +127,7 @@ object FotocasaFlatMapper {
             ?.asObjectOrNull()
             ?.get("amount")
             .doubleOrNull()
-            ?: base.priceByn
+            ?: base.mainPrice
         val rooms = detail["rooms"].intOrNull() ?: base.rooms
         val area = detail["surface"].doubleOrNull() ?: base.totalArea
         val floor = detail["floor"].contentOrNull()?.toIntOrNull()
@@ -164,7 +164,7 @@ object FotocasaFlatMapper {
 
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             totalArea = area,
             floor = floor,
@@ -193,8 +193,8 @@ object FotocasaFlatMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,

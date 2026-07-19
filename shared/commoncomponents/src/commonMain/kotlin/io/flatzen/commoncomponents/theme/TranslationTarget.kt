@@ -36,6 +36,7 @@ fun CountryCode.marketContentLanguageTag(): String = when (this) {
     CountryCode.TR -> "tr"
     CountryCode.AE -> "en"
     CountryCode.TH -> "th"
+    CountryCode.US -> "en"
 }
 
 fun FlatPlatform.marketContentLanguageTag(): String =

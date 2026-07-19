@@ -17,13 +17,10 @@ enum class Currency {
     GEL,
     @SerialName("KZT")
     KZT,
-
     @SerialName("TRY")
     TRY,
-
     @SerialName("AED")
     AED,
-
     @SerialName("THB")
     THB,
     ;
@@ -42,9 +39,10 @@ enum class Currency {
     }
 
     /**
-     * Markets that store listing prices in [entities.AppFlat.priceByn]
-     * (local currency until price model rename).
-     * EUR included so Spain (and any EUR market) shows € as main via localIsMain.
+     * Whether filter/sort amounts for this currency are stored in [entities.AppFlat.mainPrice].
+     * All markets use [entities.AppFlat.mainPrice] for filter and sort; this remains for
+     * callers that branch on currency kind (e.g. filter UI labels).
+     * USD markets (BY rent, US) store amounts in mainPrice; usesLocalPriceField is false for USD.
      */
     fun usesLocalPriceField(): Boolean = when (this) {
         PLN, GEL, KZT, BYR, EUR, TRY, AED, THB -> true
@@ -63,4 +61,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.TR -> Currency.TRY
     CountryCode.AE -> Currency.AED
     CountryCode.TH -> Currency.THB
+    CountryCode.US -> Currency.USD
 }

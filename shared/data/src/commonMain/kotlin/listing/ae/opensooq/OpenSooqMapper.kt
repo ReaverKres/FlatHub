@@ -21,7 +21,7 @@ import utils.stripHtmlToPlainText
 
 /**
  * Maps OpenSooq `__NEXT_DATA__` SERP items + detail JSON-LD → [AppFlat].
- * AED → [AppFlat.priceByn]. See tmp/ae/api/opensooq/NOTES.md.
+ * AED → [AppFlat.mainPrice]. See tmp/ae/api/opensooq/NOTES.md.
  */
 object OpenSooqMapper {
     private val json = Json { ignoreUnknownKeys = true }
@@ -57,7 +57,7 @@ object OpenSooqMapper {
         val coords =
             if (lat != null && lng != null) Coordinates(lat, lng) else base.coordinates
         val rooms = ldRoomsRe.find(html)?.groupValues?.get(1)?.toIntOrNull() ?: base.rooms
-        val price = ldPriceRe.find(html)?.groupValues?.get(1)?.toDoubleOrNull() ?: base.priceByn
+        val price = ldPriceRe.find(html)?.groupValues?.get(1)?.toDoubleOrNull() ?: base.mainPrice
         val description = ldDescRe.find(html)?.groupValues?.get(1)
             ?.replace("\\n", "\n")
             ?.replace("\\\"", "\"")
@@ -68,7 +68,7 @@ object OpenSooqMapper {
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
             coordinates = coords,
             rooms = rooms,
-            priceByn = price,
+            mainPrice = price,
             description = description,
         )
     }
@@ -86,8 +86,8 @@ object OpenSooqMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -192,8 +192,8 @@ object OpenSooqMapper {
             publishedAtServer = publishedAtServer,
             publishedAtUi = publishedAtUi,
             imageUrls = images,
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = effectiveRooms,
             district = district,
             address = address,

@@ -79,6 +79,7 @@ import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.commonentities.Coordinates
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.di.container
 import io.flatzen.themes.FlatHubTheme
 import io.flatzen.themes.FlatHubTheme.dimens
@@ -99,6 +100,7 @@ import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.MapScreenWithFlatModalSheet
 import io.flatzen.widgets.MessageSnackbar
 import io.flatzen.widgets.PremiumUpsellInlineText
+import io.flatzen.widgets.PriceInsightLabel
 import io.flatzen.widgets.dialogs.SaveDialog
 import io.flatzen.widgets.dialogs.SavedAreasDialog
 import io.flatzen.widgets.dialogs.SearchErrorDialog
@@ -901,6 +903,11 @@ fun FlatItemContent(
             Spacer(Modifier.weight(1f))
         }
 
+        PriceInsightLabel(
+            priceVsAreaAvgPercent = flat.priceVsAreaAvgPercent,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+        )
+
         // Дата публикации, если есть
         flat.publishedAt?.let { date ->
             Spacer(Modifier.height(2.dp))
@@ -963,7 +970,10 @@ fun FlatItemContent(
                 }
                 if (hasArea) {
                     Text(
-                        text = localizedArea(flat.totalArea!!),
+                        text = localizedArea(
+                            flat.totalArea!!,
+                            usesSquareFeet = flat.flatPlatform.usesSquareFeet(),
+                        ),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

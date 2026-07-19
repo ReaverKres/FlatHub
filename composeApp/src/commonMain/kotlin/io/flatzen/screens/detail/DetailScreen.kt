@@ -125,6 +125,7 @@ import io.flatzen.viewmodel.detailad.UiDetailFlat
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.FullscreenPhotoViewer
 import io.flatzen.widgets.OpenInMapButton
+import io.flatzen.widgets.PriceInsightLabel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -465,7 +466,10 @@ private fun FlatDetailContent(
             }
 
             // Цены
-            PriceSection(priceText = flat.priceText)
+            PriceSection(
+                priceText = flat.priceText,
+                priceVsAreaAvgPercent = flat.priceVsAreaAvgPercent,
+            )
 
             val propertyName = flat.commercialUiInfo?.propertyType?.commercialPropertyTypeName
             propertyName?.let { name ->
@@ -706,7 +710,10 @@ private fun SourceLinkSection(
 }
 
 @Composable
-private fun PriceSection(priceText: PriceText) {
+private fun PriceSection(
+    priceText: PriceText,
+    priceVsAreaAvgPercent: Double? = null,
+) {
     Column {
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             priceText.mainPrice?.let { main ->
@@ -745,6 +752,10 @@ private fun PriceSection(priceText: PriceText) {
                 }
             }
         }
+        PriceInsightLabel(
+            priceVsAreaAvgPercent = priceVsAreaAvgPercent,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 

@@ -5,29 +5,56 @@ import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.CountryCode
 
 object LocationUiMapper {
-    data class UiCityItem(val code: CityCode, val displayName: String, val coordinates: Coordinates)
-    data class UiCountryItem(val code: CountryCode, val displayName: String)
+    /**
+     * @param latinName English/Latin name used for search (always searchable).
+     * @param districtsCatalogKey Key in `*_city_districts.json` — do not localize.
+     */
+    data class UiCityItem(
+        val code: CityCode,
+        val latinName: String,
+        val districtsCatalogKey: String,
+        val coordinates: Coordinates,
+    ) {
+        /** Legacy alias for districts / filter chips until UI resolves localized labels. */
+        val displayName: String get() = districtsCatalogKey
+    }
 
-    val minskUiItem = UiCityItem(CityCode.MINSK, "Минск", Coordinates(53.902147, 27.561388))
-    val warszawaUiItem = UiCityItem(CityCode.WARSZAWA, "Warszawa", Coordinates(52.2297, 21.0122))
-    val tbilisiUiItem = UiCityItem(CityCode.TBILISI, "Tbilisi", Coordinates(41.7151, 44.8271))
-    val almatyUiItem = UiCityItem(CityCode.ALMATY, "Алматы", Coordinates(43.2389, 76.9455))
-    val madridUiItem = UiCityItem(CityCode.MADRID, "Madrid", Coordinates(40.4168, -3.7038))
-    val berlinUiItem = UiCityItem(CityCode.BERLIN, "Berlin", Coordinates(52.5200, 13.4050))
-    val istanbulUiItem = UiCityItem(CityCode.ISTANBUL, "İstanbul", Coordinates(41.0082, 28.9784))
-    val dubaiUiItem = UiCityItem(CityCode.DUBAI, "Dubai", Coordinates(25.2048, 55.2708))
-    val bangkokUiItem = UiCityItem(CityCode.BANGKOK, "Bangkok", Coordinates(13.7563, 100.5018))
+    data class UiCountryItem(
+        val code: CountryCode,
+        val latinName: String,
+    )
+
+    val minskUiItem =
+        UiCityItem(CityCode.MINSK, "Minsk", "Минск", Coordinates(53.902147, 27.561388))
+    val warszawaUiItem =
+        UiCityItem(CityCode.WARSZAWA, "Warsaw", "Warszawa", Coordinates(52.2297, 21.0122))
+    val tbilisiUiItem =
+        UiCityItem(CityCode.TBILISI, "Tbilisi", "Tbilisi", Coordinates(41.7151, 44.8271))
+    val almatyUiItem =
+        UiCityItem(CityCode.ALMATY, "Almaty", "Алматы", Coordinates(43.2389, 76.9455))
+    val madridUiItem =
+        UiCityItem(CityCode.MADRID, "Madrid", "Madrid", Coordinates(40.4168, -3.7038))
+    val berlinUiItem =
+        UiCityItem(CityCode.BERLIN, "Berlin", "Berlin", Coordinates(52.5200, 13.4050))
+    val istanbulUiItem =
+        UiCityItem(CityCode.ISTANBUL, "Istanbul", "İstanbul", Coordinates(41.0082, 28.9784))
+    val dubaiUiItem = UiCityItem(CityCode.DUBAI, "Dubai", "Dubai", Coordinates(25.2048, 55.2708))
+    val bangkokUiItem =
+        UiCityItem(CityCode.BANGKOK, "Bangkok", "Bangkok", Coordinates(13.7563, 100.5018))
+    val newYorkUiItem =
+        UiCityItem(CityCode.NEW_YORK, "New York", "New York", Coordinates(40.7128, -74.0060))
 
     fun countries(): List<UiCountryItem> = listOf(
-        UiCountryItem(CountryCode.BY, "Беларусь"),
-        UiCountryItem(CountryCode.PL, "Polska"),
+        UiCountryItem(CountryCode.BY, "Belarus"),
+        UiCountryItem(CountryCode.PL, "Poland"),
         UiCountryItem(CountryCode.GE, "Georgia"),
-        UiCountryItem(CountryCode.KZ, "Қазақстан"),
-        UiCountryItem(CountryCode.ES, "España"),
-        UiCountryItem(CountryCode.DE, "Deutschland"),
-        UiCountryItem(CountryCode.TR, "Türkiye"),
+        UiCountryItem(CountryCode.KZ, "Kazakhstan"),
+        UiCountryItem(CountryCode.ES, "Spain"),
+        UiCountryItem(CountryCode.DE, "Germany"),
+        UiCountryItem(CountryCode.TR, "Turkey"),
         UiCountryItem(CountryCode.AE, "UAE"),
         UiCountryItem(CountryCode.TH, "Thailand"),
+        UiCountryItem(CountryCode.US, "United States"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -39,114 +66,154 @@ object LocationUiMapper {
         CountryCode.TR -> istanbulUiItem
         CountryCode.AE -> dubaiUiItem
         CountryCode.TH -> bangkokUiItem
+        CountryCode.US -> newYorkUiItem
         CountryCode.BY -> minskUiItem
     }
 
     fun cities(country: CountryCode = CountryCode.BY): List<UiCityItem> = when (country) {
         CountryCode.BY -> listOf(
             minskUiItem,
-            UiCityItem(CityCode.BREST, "Брест", Coordinates(52.093825, 23.684889)),
-            UiCityItem(CityCode.VITEBSK, "Витебск", Coordinates(55.184217, 30.202878)),
-            UiCityItem(CityCode.GOMEL, "Гомель", Coordinates(52.424160, 31.014281)),
-            UiCityItem(CityCode.GRODNO, "Гродно", Coordinates(53.677839, 23.829529)),
-            UiCityItem(CityCode.MOGILEV, "Могилёв", Coordinates(53.894548, 30.330654)),
+            UiCityItem(CityCode.BREST, "Brest", "Брест", Coordinates(52.093825, 23.684889)),
+            UiCityItem(CityCode.VITEBSK, "Vitebsk", "Витебск", Coordinates(55.184217, 30.202878)),
+            UiCityItem(CityCode.GOMEL, "Gomel", "Гомель", Coordinates(52.424160, 31.014281)),
+            UiCityItem(CityCode.GRODNO, "Grodno", "Гродно", Coordinates(53.677839, 23.829529)),
+            UiCityItem(CityCode.MOGILEV, "Mogilev", "Могилёв", Coordinates(53.894548, 30.330654)),
         )
 
         CountryCode.PL -> listOf(
             warszawaUiItem,
-            UiCityItem(CityCode.KRAKOW, "Kraków", Coordinates(50.0647, 19.9450)),
-            UiCityItem(CityCode.WROCLAW, "Wrocław", Coordinates(51.1079, 17.0385)),
-            UiCityItem(CityCode.POZNAN, "Poznań", Coordinates(52.4064, 16.9252)),
-            UiCityItem(CityCode.GDANSK, "Gdańsk", Coordinates(54.3520, 18.6466)),
-            UiCityItem(CityCode.LODZ, "Łódź", Coordinates(51.7592, 19.4560)),
-            UiCityItem(CityCode.SZCZECIN, "Szczecin", Coordinates(53.4285, 14.5528)),
-            UiCityItem(CityCode.LUBLIN, "Lublin", Coordinates(51.2465, 22.5684)),
-            UiCityItem(CityCode.BYDGOSZCZ, "Bydgoszcz", Coordinates(53.1235, 18.0084)),
-            UiCityItem(CityCode.KATOWICE, "Katowice", Coordinates(50.2649, 19.0238)),
+            UiCityItem(CityCode.KRAKOW, "Krakow", "Kraków", Coordinates(50.0647, 19.9450)),
+            UiCityItem(CityCode.WROCLAW, "Wroclaw", "Wrocław", Coordinates(51.1079, 17.0385)),
+            UiCityItem(CityCode.POZNAN, "Poznan", "Poznań", Coordinates(52.4064, 16.9252)),
+            UiCityItem(CityCode.GDANSK, "Gdansk", "Gdańsk", Coordinates(54.3520, 18.6466)),
+            UiCityItem(CityCode.LODZ, "Lodz", "Łódź", Coordinates(51.7592, 19.4560)),
+            UiCityItem(CityCode.SZCZECIN, "Szczecin", "Szczecin", Coordinates(53.4285, 14.5528)),
+            UiCityItem(CityCode.LUBLIN, "Lublin", "Lublin", Coordinates(51.2465, 22.5684)),
+            UiCityItem(CityCode.BYDGOSZCZ, "Bydgoszcz", "Bydgoszcz", Coordinates(53.1235, 18.0084)),
+            UiCityItem(CityCode.KATOWICE, "Katowice", "Katowice", Coordinates(50.2649, 19.0238)),
         )
 
         CountryCode.GE -> listOf(
             tbilisiUiItem,
-            UiCityItem(CityCode.BATUMI, "Batumi", Coordinates(41.6168, 41.6367)),
-            UiCityItem(CityCode.KUTAISI, "Kutaisi", Coordinates(42.2679, 42.6946)),
-            UiCityItem(CityCode.RUSTAVI, "Rustavi", Coordinates(41.5495, 44.9932)),
+            UiCityItem(CityCode.BATUMI, "Batumi", "Batumi", Coordinates(41.6168, 41.6367)),
+            UiCityItem(CityCode.KUTAISI, "Kutaisi", "Kutaisi", Coordinates(42.2679, 42.6946)),
+            UiCityItem(CityCode.RUSTAVI, "Rustavi", "Rustavi", Coordinates(41.5495, 44.9932)),
         )
 
         CountryCode.KZ -> listOf(
             almatyUiItem,
-            UiCityItem(CityCode.ASTANA, "Астана", Coordinates(51.1694, 71.4491)),
-            UiCityItem(CityCode.SHYMKENT, "Шымкент", Coordinates(42.3417, 69.5901)),
-            UiCityItem(CityCode.KARAGANDA, "Қарағанды", Coordinates(49.8047, 73.1094)),
+            UiCityItem(CityCode.ASTANA, "Astana", "Астана", Coordinates(51.1694, 71.4491)),
+            UiCityItem(CityCode.SHYMKENT, "Shymkent", "Шымкент", Coordinates(42.3417, 69.5901)),
+            UiCityItem(CityCode.KARAGANDA, "Karaganda", "Қарағанды", Coordinates(49.8047, 73.1094)),
         )
 
         CountryCode.ES -> listOf(
             madridUiItem,
-            UiCityItem(CityCode.BARCELONA, "Barcelona", Coordinates(41.3874, 2.1686)),
-            UiCityItem(CityCode.VALENCIA, "Valencia", Coordinates(39.4699, -0.3763)),
-            UiCityItem(CityCode.SEVILLA, "Sevilla", Coordinates(37.3891, -5.9845)),
-            UiCityItem(CityCode.MALAGA, "Málaga", Coordinates(36.7213, -4.4214)),
-            UiCityItem(CityCode.ZARAGOZA, "Zaragoza", Coordinates(41.6488, -0.8891)),
+            UiCityItem(CityCode.BARCELONA, "Barcelona", "Barcelona", Coordinates(41.3874, 2.1686)),
+            UiCityItem(CityCode.VALENCIA, "Valencia", "Valencia", Coordinates(39.4699, -0.3763)),
+            UiCityItem(CityCode.SEVILLA, "Sevilla", "Sevilla", Coordinates(37.3891, -5.9845)),
+            UiCityItem(CityCode.MALAGA, "Malaga", "Málaga", Coordinates(36.7213, -4.4214)),
+            UiCityItem(CityCode.ZARAGOZA, "Zaragoza", "Zaragoza", Coordinates(41.6488, -0.8891)),
         )
 
         CountryCode.DE -> listOf(
             berlinUiItem,
-            UiCityItem(CityCode.MUENCHEN, "München", Coordinates(48.1351, 11.5820)),
-            UiCityItem(CityCode.HAMBURG, "Hamburg", Coordinates(53.5511, 9.9937)),
-            UiCityItem(CityCode.KOELN, "Köln", Coordinates(50.9375, 6.9603)),
-            UiCityItem(CityCode.FRANKFURT, "Frankfurt am Main", Coordinates(50.1109, 8.6821)),
-            UiCityItem(CityCode.STUTTGART, "Stuttgart", Coordinates(48.7758, 9.1829)),
-            UiCityItem(CityCode.DUESSELDORF, "Düsseldorf", Coordinates(51.2277, 6.7735)),
-            UiCityItem(CityCode.LEIPZIG, "Leipzig", Coordinates(51.3397, 12.3731)),
+            UiCityItem(CityCode.MUENCHEN, "Munich", "München", Coordinates(48.1351, 11.5820)),
+            UiCityItem(CityCode.HAMBURG, "Hamburg", "Hamburg", Coordinates(53.5511, 9.9937)),
+            UiCityItem(CityCode.KOELN, "Cologne", "Köln", Coordinates(50.9375, 6.9603)),
+            UiCityItem(
+                CityCode.FRANKFURT,
+                "Frankfurt",
+                "Frankfurt am Main",
+                Coordinates(50.1109, 8.6821)
+            ),
+            UiCityItem(CityCode.STUTTGART, "Stuttgart", "Stuttgart", Coordinates(48.7758, 9.1829)),
+            UiCityItem(
+                CityCode.DUESSELDORF,
+                "Dusseldorf",
+                "Düsseldorf",
+                Coordinates(51.2277, 6.7735)
+            ),
+            UiCityItem(CityCode.LEIPZIG, "Leipzig", "Leipzig", Coordinates(51.3397, 12.3731)),
         )
 
         CountryCode.TR -> listOf(
             istanbulUiItem,
-            UiCityItem(CityCode.ANKARA, "Ankara", Coordinates(39.9334, 32.8597)),
-            UiCityItem(CityCode.IZMIR, "İzmir", Coordinates(38.4237, 27.1428)),
-            UiCityItem(CityCode.ANTALYA, "Antalya", Coordinates(36.8969, 30.7133)),
-            UiCityItem(CityCode.BURSA, "Bursa", Coordinates(40.1885, 29.0610)),
-            UiCityItem(CityCode.ADANA, "Adana", Coordinates(37.0000, 35.3213)),
-            UiCityItem(CityCode.GAZIANTEP, "Gaziantep", Coordinates(37.0662, 37.3833)),
-            UiCityItem(CityCode.KONYA, "Konya", Coordinates(37.8746, 32.4932)),
+            UiCityItem(CityCode.ANKARA, "Ankara", "Ankara", Coordinates(39.9334, 32.8597)),
+            UiCityItem(CityCode.IZMIR, "Izmir", "İzmir", Coordinates(38.4237, 27.1428)),
+            UiCityItem(CityCode.ANTALYA, "Antalya", "Antalya", Coordinates(36.8969, 30.7133)),
+            UiCityItem(CityCode.BURSA, "Bursa", "Bursa", Coordinates(40.1885, 29.0610)),
+            UiCityItem(CityCode.ADANA, "Adana", "Adana", Coordinates(37.0000, 35.3213)),
+            UiCityItem(CityCode.GAZIANTEP, "Gaziantep", "Gaziantep", Coordinates(37.0662, 37.3833)),
+            UiCityItem(CityCode.KONYA, "Konya", "Konya", Coordinates(37.8746, 32.4932)),
         )
 
         CountryCode.AE -> listOf(
             dubaiUiItem,
-            UiCityItem(CityCode.ABU_DHABI, "Abu Dhabi", Coordinates(24.4539, 54.3773)),
-            UiCityItem(CityCode.SHARJAH, "Sharjah", Coordinates(25.3463, 55.4209)),
-            UiCityItem(CityCode.AJMAN, "Ajman", Coordinates(25.4052, 55.5136)),
-            UiCityItem(CityCode.AL_AIN, "Al Ain", Coordinates(24.2075, 55.7447)),
-            UiCityItem(CityCode.RAS_AL_KHAIMAH, "Ras Al Khaimah", Coordinates(25.7895, 55.9432)),
-            UiCityItem(CityCode.FUJAIRAH, "Fujairah", Coordinates(25.1288, 56.3265)),
-            UiCityItem(CityCode.UMM_AL_QUWAIN, "Umm Al Quwain", Coordinates(25.5647, 55.5552)),
+            UiCityItem(CityCode.ABU_DHABI, "Abu Dhabi", "Abu Dhabi", Coordinates(24.4539, 54.3773)),
+            UiCityItem(CityCode.SHARJAH, "Sharjah", "Sharjah", Coordinates(25.3463, 55.4209)),
+            UiCityItem(CityCode.AJMAN, "Ajman", "Ajman", Coordinates(25.4052, 55.5136)),
+            UiCityItem(CityCode.AL_AIN, "Al Ain", "Al Ain", Coordinates(24.2075, 55.7447)),
+            UiCityItem(
+                CityCode.RAS_AL_KHAIMAH,
+                "Ras Al Khaimah",
+                "Ras Al Khaimah",
+                Coordinates(25.7895, 55.9432)
+            ),
+            UiCityItem(CityCode.FUJAIRAH, "Fujairah", "Fujairah", Coordinates(25.1288, 56.3265)),
+            UiCityItem(
+                CityCode.UMM_AL_QUWAIN,
+                "Umm Al Quwain",
+                "Umm Al Quwain",
+                Coordinates(25.5647, 55.5552)
+            ),
         )
 
         CountryCode.TH -> listOf(
             bangkokUiItem,
-            UiCityItem(CityCode.PHUKET, "Phuket", Coordinates(7.8804, 98.3923)),
-            UiCityItem(CityCode.CHIANG_MAI, "Chiang Mai", Coordinates(18.7883, 98.9853)),
-            UiCityItem(CityCode.PATTAYA, "Pattaya", Coordinates(12.9236, 100.8825)),
-            UiCityItem(CityCode.HUA_HIN, "Hua Hin", Coordinates(12.5684, 99.9577)),
-            UiCityItem(CityCode.KOH_SAMUI, "Koh Samui", Coordinates(9.5120, 100.0136)),
+            UiCityItem(CityCode.PHUKET, "Phuket", "Phuket", Coordinates(7.8804, 98.3923)),
+            UiCityItem(
+                CityCode.CHIANG_MAI,
+                "Chiang Mai",
+                "Chiang Mai",
+                Coordinates(18.7883, 98.9853)
+            ),
+            UiCityItem(CityCode.PATTAYA, "Pattaya", "Pattaya", Coordinates(12.9236, 100.8825)),
+            UiCityItem(CityCode.HUA_HIN, "Hua Hin", "Hua Hin", Coordinates(12.5684, 99.9577)),
+            UiCityItem(CityCode.KOH_SAMUI, "Koh Samui", "Koh Samui", Coordinates(9.5120, 100.0136)),
+        )
+
+        CountryCode.US -> listOf(
+            newYorkUiItem,
+            UiCityItem(
+                CityCode.LOS_ANGELES,
+                "Los Angeles",
+                "Los Angeles",
+                Coordinates(34.0522, -118.2437)
+            ),
+            UiCityItem(CityCode.CHICAGO, "Chicago", "Chicago", Coordinates(41.8781, -87.6298)),
+            UiCityItem(CityCode.HOUSTON, "Houston", "Houston", Coordinates(29.7604, -95.3698)),
+            UiCityItem(CityCode.MIAMI, "Miami", "Miami", Coordinates(25.7617, -80.1918)),
+            UiCityItem(CityCode.SEATTLE, "Seattle", "Seattle", Coordinates(47.6062, -122.3321)),
+            UiCityItem(
+                CityCode.SAN_FRANCISCO,
+                "San Francisco",
+                "San Francisco",
+                Coordinates(37.7749, -122.4194)
+            ),
+            UiCityItem(CityCode.AUSTIN, "Austin", "Austin", Coordinates(30.2672, -97.7431)),
+            UiCityItem(CityCode.BOSTON, "Boston", "Boston", Coordinates(42.3601, -71.0589)),
+            UiCityItem(CityCode.DENVER, "Denver", "Denver", Coordinates(39.7392, -104.9903)),
         )
     }
 
-    /** Backward-compatible default (BY). */
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
 
+    fun allCities(): List<UiCityItem> =
+        CountryCode.entries.flatMap { cities(it) }
+
     fun findSelectedCity(cityCode: CityCode): UiCityItem =
-        (
-                cities(CountryCode.BY) +
-                        cities(CountryCode.PL) +
-                        cities(CountryCode.GE) +
-                        cities(CountryCode.KZ) +
-                        cities(CountryCode.ES) +
-                        cities(CountryCode.DE) +
-                        cities(CountryCode.TR) +
-                        cities(CountryCode.AE) +
-                        cities(CountryCode.TH)
-                ).find { it.code == cityCode }
-            ?: minskUiItem
+        allCities().find { it.code == cityCode } ?: minskUiItem
 
     fun countryForCity(cityCode: CityCode): CountryCode =
         when (cityCode) {
@@ -158,9 +225,23 @@ object LocationUiMapper {
             in cities(CountryCode.TR).map { it.code } -> CountryCode.TR
             in cities(CountryCode.AE).map { it.code } -> CountryCode.AE
             in cities(CountryCode.TH).map { it.code } -> CountryCode.TH
+            in cities(CountryCode.US).map { it.code } -> CountryCode.US
             else -> CountryCode.BY
         }
 
-    fun countryDisplayName(code: CountryCode): String =
-        countries().find { it.code == code }?.displayName ?: code.name
+    /** Latin/English catalog name (not localized). Prefer UI string resources for display. */
+    fun countryLatinName(code: CountryCode): String =
+        countries().find { it.code == code }?.latinName ?: code.name
+
+    fun countryDisplayName(code: CountryCode): String = countryLatinName(code)
+
+    fun matchesQuery(
+        query: String,
+        latinName: String,
+        localizedName: String,
+    ): Boolean {
+        if (query.isBlank()) return true
+        val q = query.trim().lowercase()
+        return latinName.lowercase().contains(q) || localizedName.lowercase().contains(q)
+    }
 }

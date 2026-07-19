@@ -10,7 +10,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 data class Country(val country: CountryCode, val allCities: List<City>)
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, TR, AE, TH;
+    BY, PL, GE, KZ, ES, DE, TR, AE, TH, US;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -23,6 +23,7 @@ enum class CountryCode {
             "TR" -> TR
             "AE" -> AE
             "TH" -> TH
+            "US" -> US
             else -> BY
         }
     }
@@ -56,6 +57,9 @@ enum class CityCode {
 
     // Thailand (MVP)
     BANGKOK, PHUKET, CHIANG_MAI, PATTAYA, HUA_HIN, KOH_SAMUI,
+
+    // United States (MVP top rent markets)
+    NEW_YORK, LOS_ANGELES, CHICAGO, HOUSTON, MIAMI, SEATTLE, SAN_FRANCISCO, AUSTIN, BOSTON, DENVER,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
@@ -64,6 +68,9 @@ fun CountryCode.hasCommercialPropertyTypeCatalog(): Boolean =
 
 /** Prefer SourceCapabilities.supportsCommercialPropertyTypes for UI gating. */
 fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean = hasCommercialPropertyTypeCatalog()
+
+/** US listings store area in square feet; other markets use m² (AE converts on ingest). */
+fun CountryCode.usesSquareFeet(): Boolean = this == CountryCode.US
 
 fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.BY -> CityCode.MINSK
@@ -75,6 +82,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.TR -> CityCode.ISTANBUL
     CountryCode.AE -> CityCode.DUBAI
     CountryCode.TH -> CityCode.BANGKOK
+    CountryCode.US -> CityCode.NEW_YORK
 }
 
 object Location {
@@ -139,5 +147,15 @@ object Location {
         CityCode.PATTAYA -> "pattaya"
         CityCode.HUA_HIN -> "hua-hin"
         CityCode.KOH_SAMUI -> "koh-samui"
+        CityCode.NEW_YORK -> "new-york"
+        CityCode.LOS_ANGELES -> "los-angeles"
+        CityCode.CHICAGO -> "chicago"
+        CityCode.HOUSTON -> "houston"
+        CityCode.MIAMI -> "miami"
+        CityCode.SEATTLE -> "seattle"
+        CityCode.SAN_FRANCISCO -> "san-francisco"
+        CityCode.AUSTIN -> "austin"
+        CityCode.BOSTON -> "boston"
+        CityCode.DENVER -> "denver"
     }
 }

@@ -18,7 +18,7 @@ import listing.th.isThSaleDeal
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * RentHub Thailand — apartment buildings for rent only. THB → [AppFlat.priceByn].
+ * RentHub Thailand — apartment buildings for rent only. THB → [AppFlat.mainPrice].
  * See tmp/th/api/renthub/NOTES.md.
  */
 class RentHubListingSource(

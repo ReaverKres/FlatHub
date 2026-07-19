@@ -18,7 +18,7 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Dubizzle UAE — Algolia search (site HTML Incapsula-blocked). AED → [AppFlat.priceByn].
+ * Dubizzle UAE — Algolia search (site HTML Incapsula-blocked). AED → [AppFlat.mainPrice].
  * Residential + commercial indexes. See tmp/ae/api/dubizzle/NOTES.md.
  */
 class DubizzleListingSource(

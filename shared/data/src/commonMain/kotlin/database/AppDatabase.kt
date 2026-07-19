@@ -14,7 +14,7 @@ import kotlinx.coroutines.IO
 
 @Database(
     entities = [AppFlat::class, SavedFilter::class, UserMapArea::class, UserPreferences::class],
-    version = 12
+    version = 14
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

@@ -60,7 +60,7 @@ data class UiFlat(
     val disliked: Boolean,
     val imageUrls: ImmutableList<String>,
     val mainPrice: Double?,
-    val localPrice: Double?,
+    val secondPrice: Double?,
     val priceText: PriceText,
     val numberOfRooms: String?,
     val totalArea: String?,
@@ -70,6 +70,8 @@ data class UiFlat(
     val address: String,
     val description: String,
     val coordinates: Coordinates?,
+    /** Negative = below area average (e.g. -5.0). Null when unknown. */
+    val priceVsAreaAvgPercent: Double? = null,
 ) {
     companion object {
         fun appFlatListToUiFlatList(appFlatList: List<AppFlat>): ImmutableList<UiFlat> {
@@ -98,8 +100,8 @@ data class UiFlat(
                     saveInFavoriteInProgress = false,
                     isViewed = it.isViewed,
                     disliked = it.dislike,
-                    localPrice = it.priceByn,
-                    mainPrice = it.priceUsd,
+                    mainPrice = it.mainPrice,
+                    secondPrice = it.secondPrice,
                     priceText = it.getPricesText(),
                     numberOfRooms = when {
                         it.rooms != null -> {
@@ -128,7 +130,8 @@ data class UiFlat(
                     } else {
                         "🚇 ${it.metroStation}"
                     },
-                    coordinates = it.coordinates
+                    coordinates = it.coordinates,
+                    priceVsAreaAvgPercent = it.listingInsights?.priceVsAreaAvgPercent,
                 )
             }.toImmutableList()
         }

@@ -1,4 +1,5 @@
-package entities// entities.AppFlat.kt
+package entities
+
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.TypeConverters
@@ -8,6 +9,7 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.commonentities.PriceText
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.commoncomponents.utils.formatMainPrice
 import io.flatzen.commoncomponents.utils.formatPricePerSquare
 import io.flatzen.commoncomponents.utils.formatSecondPrice
@@ -22,6 +24,7 @@ data class AppFlat(
     @Embedded val contactInformation: ContactInformation?,
     @Embedded val coordinates: Coordinates?,
     @Embedded val commercialInfo: CommercialInfo?,
+    @Embedded val listingInsights: ListingInsights? = null,
     val savedInFavorites: Boolean = false,
     val isViewed: Boolean = false,
     val dislike: Boolean = false,
@@ -31,10 +34,10 @@ data class AppFlat(
     val publishedAtServer: String?,
     val publishedAtUi: String?,
     val imageUrls: List<String>?,
-    val priceUsd: Double?,
-    val priceByn: Double?,
-    val priceUsdSquare: Double? = null,
-    val priceBynSquare: Double? = null,
+    val mainPrice: Double?,
+    val secondPrice: Double?,
+    val mainPriceSquare: Double? = null,
+    val secondPriceSquare: Double? = null,
     val rooms: Int?,
     val district: String?,
     val address: String?,
@@ -82,29 +85,80 @@ data class AppFlat(
 
 fun AppFlat.getPricesText(): PriceText {
     val localCurrency = localCurrencyLabel(flatPlatform)
-    val localIsMain = this.priceUsd == null && this.priceByn != null
-    val mainPriceText = if (localIsMain) {
-        formatMainPrice(this.priceByn, localCurrency)
-    } else if (this.priceUsd != null) {
-        formatMainPrice(this.priceUsd)
+    val hasSecond = secondPrice != null
+
+    val mainCurrencyLabel = when {
+        mainPrice == null -> null
+        hasSecond && flatPlatform.isBelarusPlatform() -> "$"
+        hasSecond && flatPlatform.isGeorgiaPlatform() -> localCurrency
+        hasSecond -> localCurrency
+        adType == AdType.DAILY -> localCurrency
+        flatPlatform.isBelarusPlatform() -> "$"
+        else -> localCurrency
+    }
+
+    val mainPriceText = mainCurrencyLabel?.let { currency ->
+        formatMainPrice(mainPrice, currency)
+    }
+
+    val secondCurrencyLabel = when {
+        flatPlatform.isGeorgiaPlatform() -> "$"
+        else -> localCurrency
+    }
+    val localPriceText = if (adType != AdType.DAILY && hasSecond) {
+        formatSecondPrice(secondPrice, mainPriceText != null, secondCurrencyLabel)
     } else null
 
-    val localPriceText = if (this.adType != AdType.DAILY && !localIsMain) {
-        formatSecondPrice(this.priceByn, mainPriceText != null, localCurrency)
-    } else null
-    val priceLocalPerSquare = if (priceBynSquare != null) {
-        formatPricePerSquare(this.priceBynSquare, localCurrency)
-    } else null
+    val mainSquareCurrency = when {
+        mainPriceSquare == null -> null
+        hasSecond && flatPlatform.isBelarusPlatform() -> "$"
+        hasSecond && flatPlatform.isGeorgiaPlatform() -> localCurrency
+        adType == AdType.DAILY -> localCurrency
+        flatPlatform.isBelarusPlatform() -> "$"
+        else -> localCurrency
+    }
+    val priceMainPerSquare = mainPriceSquare?.let { price ->
+        mainSquareCurrency?.let { currency ->
+            formatPricePerSquare(price, currency, flatPlatform.usesSquareFeet())
+        }
+    }
 
-    val priceMainPerSquare = if (priceUsdSquare != null) {
-        formatPricePerSquare(this.priceUsdSquare, "$")
-    } else null
+    val secondSquareCurrency = when {
+        secondPriceSquare == null -> null
+        flatPlatform.isGeorgiaPlatform() -> "$"
+        else -> localCurrency
+    }
+    val priceLocalPerSquare = secondPriceSquare?.let { price ->
+        secondSquareCurrency?.let { currency ->
+            formatPricePerSquare(price, currency, flatPlatform.usesSquareFeet())
+        }
+    }
+
     return PriceText(
         mainPrice = mainPriceText,
         mainPerSquarePrice = priceMainPerSquare,
         localPrice = localPriceText,
         localPerSquarePrice = priceLocalPerSquare
     )
+}
+
+private fun FlatPlatform.isBelarusPlatform(): Boolean = when (this) {
+    FlatPlatform.KUFAR,
+    FlatPlatform.ONLINER,
+    FlatPlatform.DOMOVITA,
+    FlatPlatform.REALT,
+        -> true
+
+    else -> false
+}
+
+private fun FlatPlatform.isGeorgiaPlatform(): Boolean = when (this) {
+    FlatPlatform.SS_GE,
+    FlatPlatform.LIVO,
+    FlatPlatform.BINEBI,
+        -> true
+
+    else -> false
 }
 
 private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform) {
@@ -146,6 +200,9 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.RENTHUB,
         -> "฿"
 
+    FlatPlatform.ZUMPER,
+        -> "$"
+
     else -> "BYN"
 }
 
@@ -164,4 +221,13 @@ data class ContactInformation(
 data class CommercialInfo(
     val numberOfRooms: Int?,
     val propertyType: CommercialPropertyType?
+)
+
+data class ListingInsights(
+    /** Negative = below area average, e.g. -5.0 means 5% below. */
+    val priceVsAreaAvgPercent: Double? = null,
+    val daysOnMarket: Int? = null,
+    val hoaMonthly: Double? = null,
+    /** e.g. single_family, condo, townhouse, apartment */
+    val propertySubtype: String? = null,
 )

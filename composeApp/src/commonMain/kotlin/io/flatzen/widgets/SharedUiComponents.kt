@@ -75,6 +75,7 @@ import flatzen.composeapp.generated.resources.realt32
 import flatzen.composeapp.generated.resources.renthub32
 import flatzen.composeapp.generated.resources.ssge32
 import flatzen.composeapp.generated.resources.tab_favorites
+import flatzen.composeapp.generated.resources.zumper32
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.themes.FlatHubTheme
 import kotlinx.coroutines.launch
@@ -365,6 +366,7 @@ fun FlatPlatform.platformImage(): Painter {
         FlatPlatform.PROPERTYHUB -> painterResource(Res.drawable.propertyhub32)
         FlatPlatform.LIVINGINSIDER -> painterResource(Res.drawable.livinginsider32)
         FlatPlatform.RENTHUB -> painterResource(Res.drawable.renthub32)
+        FlatPlatform.ZUMPER -> painterResource(Res.drawable.zumper32)
     }
 }
 

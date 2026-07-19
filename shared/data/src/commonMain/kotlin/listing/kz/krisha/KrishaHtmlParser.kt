@@ -70,7 +70,7 @@ object KrishaHtmlParser {
         )
         val advert = data["advert"]?.jsonObject
         val advertUi = data["adverts"]?.jsonArray?.firstOrNull()?.jsonObject
-        val price = advert?.get("price")?.jsonPrimitive?.doubleOrNull ?: base.priceByn
+        val price = advert?.get("price")?.jsonPrimitive?.doubleOrNull ?: base.mainPrice
         val rooms = advert?.get("rooms")?.jsonPrimitive?.intOrNull ?: base.rooms
         val area = advert?.get("square")?.jsonPrimitive?.doubleOrNull ?: base.totalArea
         val title = advert?.get("title")?.jsonPrimitive?.contentOrNull
@@ -83,7 +83,7 @@ object KrishaHtmlParser {
             ?.stripHtmlToPlainText()
             ?: base.description
         val priceM2 = advertUi?.get("priceM2")?.jsonPrimitive?.doubleOrNull
-            ?: base.priceBynSquare
+            ?: base.secondPriceSquare
         val map = advert?.get("map")?.jsonObject
         val lat = map?.get("lat")?.jsonPrimitive?.doubleOrNull
         val lon = map?.get("lon")?.jsonPrimitive?.doubleOrNull
@@ -109,8 +109,8 @@ object KrishaHtmlParser {
 
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
-            priceByn = price,
-            priceBynSquare = priceM2,
+            mainPrice = price,
+            mainPriceSquare = priceM2,
             rooms = rooms,
             totalArea = area,
             floor = floor,
@@ -163,8 +163,8 @@ object KrishaHtmlParser {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = image?.let { listOf(it) },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = subtitle,
@@ -207,8 +207,8 @@ object KrishaHtmlParser {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,

@@ -17,7 +17,7 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Kleinanzeigen.de — SSR HTML. EUR → [AppFlat.priceByn], priceUsd = null.
+ * Kleinanzeigen.de — SSR HTML. EUR → [AppFlat.mainPrice], secondPrice = null.
  */
 class KleinanzeigenListingSource(
     private val api: KleinanzeigenApiClient,

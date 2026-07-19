@@ -18,7 +18,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * pisos.com — SSR HTML search + detail. See tmp/es/api/pisos/NOTES.md.
- * EUR → [AppFlat.priceByn], priceUsd = null (main local price).
+ * EUR → [AppFlat.mainPrice], secondPrice = null (main local price).
  */
 class PisosListingSource(
     private val api: PisosApiClient,

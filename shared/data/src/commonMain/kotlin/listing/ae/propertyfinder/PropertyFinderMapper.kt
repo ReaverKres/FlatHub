@@ -23,7 +23,7 @@ import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 /**
- * Maps Property Finder `__NEXT_DATA__` → [AppFlat]. AED → [AppFlat.priceByn].
+ * Maps Property Finder `__NEXT_DATA__` → [AppFlat]. AED → [AppFlat.mainPrice].
  * Area is sqft on the wire → m². See tmp/ae/api/propertyfinder/NOTES.md.
  */
 object PropertyFinderMapper {
@@ -90,8 +90,8 @@ object PropertyFinderMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -207,8 +207,8 @@ object PropertyFinderMapper {
             publishedAtServer = listedDate,
             publishedAtUi = publishedAtUi,
             imageUrls = images,
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = effectiveRooms,
             district = district,
             address = fullName ?: pathName,

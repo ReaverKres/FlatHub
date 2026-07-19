@@ -17,7 +17,7 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Emlakjet.com — SSR HTML. TRY → [AppFlat.priceByn].
+ * Emlakjet.com — SSR HTML. TRY → [AppFlat.mainPrice].
  * Hepsiemlak / Sahibinden blocked (Cloudflare) — not registered until GO.
  */
 class EmlakjetListingSource(

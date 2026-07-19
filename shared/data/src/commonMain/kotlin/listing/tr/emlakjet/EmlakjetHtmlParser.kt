@@ -14,7 +14,7 @@ import kotlin.time.Instant
 
 /**
  * Emlakjet SERP cards (`data-listing-id`) + detail JSON-LD / coords.
- * TRY → [AppFlat.priceByn]. Turkish `2+1` → rooms = 2+1 = 3 (matches site ld+json).
+ * TRY → [AppFlat.mainPrice]. Turkish `2+1` → rooms = 2+1 = 3 (matches site ld+json).
  * See tmp/tr/api/emlakjet/NOTES.md.
  */
 object EmlakjetHtmlParser {
@@ -74,7 +74,7 @@ object EmlakjetHtmlParser {
             .ifEmpty { base.contactInformation?.phones.orEmpty() }
         val price = ldPriceRe.find(html)?.groupValues?.get(1)?.toDoubleOrNull()
             ?: priceRe.find(html)?.groupValues?.get(1)?.let { parseTry(it) }
-            ?: base.priceByn
+            ?: base.mainPrice
         val rooms = ldRoomsRe.find(html)?.groupValues?.get(1)?.toIntOrNull() ?: base.rooms
         val area = areaRe.find(html)?.groupValues?.get(1)?.replace(',', '.')?.toDoubleOrNull()
             ?: base.totalArea
@@ -99,7 +99,7 @@ object EmlakjetHtmlParser {
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
             description = description,
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             totalArea = area,
             coordinates = coords,
@@ -127,8 +127,8 @@ object EmlakjetHtmlParser {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -195,8 +195,8 @@ object EmlakjetHtmlParser {
             publishedAtServer = dateRaw,
             publishedAtUi = publishedAtUi,
             imageUrls = images.ifEmpty { null },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = address,

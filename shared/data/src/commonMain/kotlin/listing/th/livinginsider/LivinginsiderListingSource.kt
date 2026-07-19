@@ -17,7 +17,7 @@ import listing.th.isThSaleDeal
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Livinginsider — SSR searchword Condo Rent/Buysell. THB → [AppFlat.priceByn].
+ * Livinginsider — SSR searchword Condo Rent/Buysell. THB → [AppFlat.mainPrice].
  * See tmp/th/api/livinginsider/NOTES.md.
  */
 class LivinginsiderListingSource(

@@ -18,7 +18,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * ImmobilienScout24 — mobile JSON API. See tmp/de/api/is24/NOTES.md.
- * EUR → [AppFlat.priceByn], priceUsd = null.
+ * EUR → [AppFlat.mainPrice], secondPrice = null.
  */
 class Is24ListingSource(
     private val api: Is24ApiClient,

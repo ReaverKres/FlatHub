@@ -6,10 +6,10 @@ import entities.FlatDevInfo
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.flatzen.commoncomponents.date.DateConverter
-import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import mappers.base.ResponseToEntitiesFlatMapper
 import server_response.DomovitaListResponse
+import kotlin.time.Clock
 
 class DomovitaFlatMapper :
     ResponseToEntitiesFlatMapper<DomovitaListResponse.DomovitaFlat, AppFlat> {
@@ -70,8 +70,8 @@ class DomovitaFlatMapper :
             publishedAt = dateRevisionInstant,
             publishedAtServer = data.dateRevision,
             publishedAtUi = publishedAtUi,
-            priceUsd = data.price?.uSD,
-            priceByn = data.price?.bYN,
+            mainPrice = data.price?.uSD,
+            secondPrice = data.price?.bYN,
             imageUrls = imageUrls.takeIf { it?.isNotEmpty() == true }?.filterNotNull(),
             rooms = data.rooms,
             district = district,

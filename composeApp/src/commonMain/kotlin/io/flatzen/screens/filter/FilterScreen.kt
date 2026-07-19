@@ -54,6 +54,7 @@ import flatzen.composeapp.generated.resources.filter_active_areas_prefix
 import flatzen.composeapp.generated.resources.filter_add_to_my_filters
 import flatzen.composeapp.generated.resources.filter_address_prefix
 import flatzen.composeapp.generated.resources.filter_area
+import flatzen.composeapp.generated.resources.filter_area_sqft
 import flatzen.composeapp.generated.resources.filter_booking_date
 import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_districts_prefix
@@ -65,6 +66,7 @@ import flatzen.composeapp.generated.resources.filter_photo_only
 import flatzen.composeapp.generated.resources.filter_price
 import flatzen.composeapp.generated.resources.filter_price_daily
 import flatzen.composeapp.generated.resources.filter_price_per_square
+import flatzen.composeapp.generated.resources.filter_price_per_square_sqft
 import flatzen.composeapp.generated.resources.filter_property_type
 import flatzen.composeapp.generated.resources.filter_rent
 import flatzen.composeapp.generated.resources.filter_room_only
@@ -85,12 +87,14 @@ import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
 import io.flatzen.commoncomponents.commonentities.FromToRange
 import io.flatzen.commoncomponents.commonentities.Price
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.commoncomponents.date.DateConverter
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.commoncomponents.utils.asIntPrice
 import io.flatzen.commoncomponents.utils.onlyIntPredicate
 import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
+import io.flatzen.screens.location.localizedName
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -321,9 +325,8 @@ fun FilterScreen() {
                 } else {
                     filters.getSelectedMetroStation()
                 }
-                val countryLabel = filters.location?.selectedCountry?.name
-                    ?: filters.location?.selectedCountry?.code?.name
-                val cityLabel = filters.location?.selectedCity?.displayName
+                val countryLabel = filters.location?.selectedCountry?.code?.localizedName()
+                val cityLabel = filters.location?.selectedCity?.code?.localizedName()
                 LocationItem(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                     selectedCity = listOfNotNull(countryLabel, cityLabel)
@@ -538,6 +541,7 @@ fun FilterScreen() {
             }
 
             val currencyText = "(${filters.currency.filterLabel()})"
+            val usesSqft = filters.location?.selectedCountry?.code?.usesSquareFeet() == true
             val priceTitle = if (filters.adType == AdType.DAILY) {
                 stringResource(Res.string.filter_price_daily, currencyText)
             } else {
@@ -573,7 +577,11 @@ fun FilterScreen() {
             if (filters.adType != AdType.DAILY) {
                 Spacer(Modifier.height(10.dp))
                 NumberRange(
-                    title = stringResource(Res.string.filter_price_per_square, currencyText),
+                    title = stringResource(
+                        if (usesSqft) Res.string.filter_price_per_square_sqft
+                        else Res.string.filter_price_per_square,
+                        currencyText,
+                    ),
                     rangeFrom = filters.pricePerSquare?.priceFrom?.asIntPrice().orEmpty(),
                     fromOnChange = {
                         updateFilterTyping(
@@ -603,7 +611,9 @@ fun FilterScreen() {
 
             Spacer(Modifier.height(10.dp))
             NumberRange(
-                title = stringResource(Res.string.filter_area),
+                title = stringResource(
+                    if (usesSqft) Res.string.filter_area_sqft else Res.string.filter_area,
+                ),
                 rangeFrom = filters.totalArea?.fromRange?.toInt()?.toString().orEmpty(),
                 fromOnChange = {
                     updateFilterTyping(

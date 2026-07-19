@@ -22,21 +22,21 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
 
     override fun map(response: RealtFlatResponse): AppFlat {
 
-        var priceUsd: Double? = null
-        var priceByn: Double? = null
+        var mainPrice: Double? = null
+        var secondPrice: Double? = null
         var priceUsdPerSquare: Double? = null
         var priceBynPerSquare: Double? = null
         val priceIsNotZero = response.price != 0.0
         val priceSquareIsNotZero = response.pricePerM2 != 0.0
         if(response.priceCurrency == 840 && priceIsNotZero) {
-            priceUsd = response.price
+            mainPrice = response.price
         }
         if(response.priceCurrency == 978 && priceIsNotZero) {
             //TODO получить текущий курс
-            priceUsd = response.price?.times(USD_TO_EUR_RATE)
+            mainPrice = response.price?.times(USD_TO_EUR_RATE)
         }
         if(response.priceCurrency == 933 && priceIsNotZero) {
-            priceByn = response.price
+            secondPrice = response.price
         }
 
         if(response.priceCurrency == 840 && priceSquareIsNotZero) {
@@ -95,10 +95,10 @@ class RealtFlatMapper : ResponseToEntitiesFlatMapper<RealtFlatResponse, AppFlat>
                 TimeZone.currentSystemDefault()
             ),
             imageUrls = response.images?.filterNotNull().orEmpty(),
-            priceUsd = priceUsd,
-            priceByn = priceByn,
-            priceBynSquare = priceBynPerSquare,
-            priceUsdSquare = priceUsdPerSquare,
+            mainPrice = mainPrice,
+            secondPrice = secondPrice,
+            secondPriceSquare = priceBynPerSquare,
+            mainPriceSquare = priceUsdPerSquare,
             rooms = response.rooms,
             district = response.stateDistrictName,
             address = "${response.streetName}, ${response.buildingNumber}",

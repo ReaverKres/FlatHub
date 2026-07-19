@@ -44,6 +44,9 @@ enum class FlatPlatform(val value: String) {
     PROPERTYHUB("propertyhub"),
     LIVINGINSIDER("livinginsider"),
     RENTHUB("renthub"),
+
+    // United States (MVP) — Zillow/Apartments.com blocked (PerimeterX/Akamai); restore via NOTES
+    ZUMPER("zumper"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -90,7 +93,12 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.LIVINGINSIDER,
     FlatPlatform.RENTHUB,
         -> CountryCode.TH
+
+    FlatPlatform.ZUMPER,
+        -> CountryCode.US
 }
+
+fun FlatPlatform.usesSquareFeet(): Boolean = marketCountry().usesSquareFeet()
 
 fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
     FlatPlatform.entries.filter { it.marketCountry() == country }

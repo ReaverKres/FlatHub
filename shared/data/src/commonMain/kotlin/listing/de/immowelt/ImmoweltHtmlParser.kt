@@ -69,7 +69,7 @@ object ImmoweltHtmlParser {
             .distinct()
             .toList()
             .ifEmpty { base.contactInformation?.phones.orEmpty() }
-        val price = euroRe.find(html)?.groupValues?.get(1)?.let { parseEuro(it) } ?: base.priceByn
+        val price = euroRe.find(html)?.groupValues?.get(1)?.let { parseEuro(it) } ?: base.mainPrice
         val rooms = roomsRe.find(html)?.groupValues?.get(1)?.toIntOrNull() ?: base.rooms
         val area = areaRe.find(html)?.groupValues?.get(1)?.replace(',', '.')?.toDoubleOrNull()
             ?: base.totalArea
@@ -85,7 +85,7 @@ object ImmoweltHtmlParser {
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
             description = description,
-            priceByn = price,
+            mainPrice = price,
             rooms = rooms,
             totalArea = area,
             imageUrls = images.ifEmpty { null },
@@ -109,8 +109,8 @@ object ImmoweltHtmlParser {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -192,8 +192,8 @@ object ImmoweltHtmlParser {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = images,
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = rooms,
             district = district,
             address = address,

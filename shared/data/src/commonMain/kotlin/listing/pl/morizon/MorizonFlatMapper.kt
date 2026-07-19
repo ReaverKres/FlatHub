@@ -94,8 +94,8 @@ object MorizonFlatMapper {
                 DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
             },
             imageUrls = photos,
-            priceUsd = null,
-            priceByn = pricePln,
+            secondPrice = null,
+            mainPrice = pricePln,
             rooms = rooms,
             district = district,
             address = address,

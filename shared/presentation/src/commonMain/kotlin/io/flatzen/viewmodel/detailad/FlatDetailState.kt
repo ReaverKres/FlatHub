@@ -43,11 +43,11 @@ data class UiDetailFlat(
     val flatUrl: String,
     val description: String,
     val imageUrls: ImmutableList<String>,
-    val priceUsd: Double?,
-    val priceByn: Double?,
+    val mainPrice: Double?,
+    val secondPrice: Double?,
     val priceText: PriceText,
-    val priceUsdSquare: String?,
-    val priceBynSquare: String?,
+    val mainPriceSquare: String?,
+    val secondPriceSquare: String?,
     val address: String,
     val district: String?,
     val metroStation: String?,
@@ -74,7 +74,9 @@ data class UiDetailFlat(
     val isOwner: Boolean?,
     val publishedAt: String?,
     val contactInformation: ContactInformationUi,
-    val coordinates: Coordinates?
+    val coordinates: Coordinates?,
+    /** Negative = below area average (e.g. -5.0). Null when unknown. */
+    val priceVsAreaAvgPercent: Double? = null,
 )
 
 @Immutable

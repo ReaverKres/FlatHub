@@ -36,30 +36,44 @@ class ListingSourceRegistry(
     /**
      * OR of [SourceCapabilities] across enabled platforms for [country].
      * Drives which filter chips/switches the UI should expose.
+     *
+     * US is rent-only for now (Zumper sale SERP dead; Zillow/Apartments blocked).
      */
     fun capabilitiesFor(country: CountryCode): SourceCapabilities {
         val enabled = enabledPlatforms(country)
         val countrySources = sources.filter { it.country == country && it.platform in enabled }
-        if (countrySources.isEmpty()) {
-            return SourceCapabilities(
+        val aggregated = if (countrySources.isEmpty()) {
+            SourceCapabilities(
                 supportsRent = true,
-                supportsSale = true,
+                supportsSale = false,
                 supportsDaily = false,
                 supportsRoom = false,
                 supportsCommercial = false,
                 supportsCommercialPropertyTypes = false,
                 supportsFromOwnerOnly = false,
             )
+        } else {
+            SourceCapabilities(
+                supportsRent = countrySources.any { it.capabilities.supportsRent },
+                supportsSale = countrySources.any { it.capabilities.supportsSale },
+                supportsDaily = countrySources.any { it.capabilities.supportsDaily },
+                supportsRoom = countrySources.any { it.capabilities.supportsRoom },
+                supportsCommercial = countrySources.any { it.capabilities.supportsCommercial },
+                supportsCommercialPropertyTypes =
+                    countrySources.any { it.capabilities.supportsCommercialPropertyTypes },
+                supportsFromOwnerOnly = countrySources.any { it.capabilities.supportsFromOwnerOnly },
+            )
         }
-        return SourceCapabilities(
-            supportsRent = countrySources.any { it.capabilities.supportsRent },
-            supportsSale = countrySources.any { it.capabilities.supportsSale },
-            supportsDaily = countrySources.any { it.capabilities.supportsDaily },
-            supportsRoom = countrySources.any { it.capabilities.supportsRoom },
-            supportsCommercial = countrySources.any { it.capabilities.supportsCommercial },
-            supportsCommercialPropertyTypes = countrySources.any { it.capabilities.supportsCommercialPropertyTypes },
-            supportsFromOwnerOnly = countrySources.any { it.capabilities.supportsFromOwnerOnly },
-        )
+        return when (country) {
+            CountryCode.US -> aggregated.copy(
+                supportsSale = false,
+                supportsDaily = false,
+                supportsCommercial = false,
+                supportsCommercialPropertyTypes = false,
+            )
+
+            else -> aggregated
+        }
     }
 
     fun byPlatform(platform: FlatPlatform): ListingSource? =

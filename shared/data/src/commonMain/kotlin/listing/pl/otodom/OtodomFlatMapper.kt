@@ -91,9 +91,9 @@ object OtodomFlatMapper {
                 DateConverter.formatInstant(it, TimeZone.currentSystemDefault())
             },
             imageUrls = images,
-            // PL: local currency stored in priceByn field until price model rename
-            priceUsd = null,
-            priceByn = pricePln,
+            // PL: local currency in mainPrice
+            secondPrice = null,
+            mainPrice = pricePln,
             rooms = rooms,
             district = district,
             address = address,

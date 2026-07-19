@@ -18,7 +18,7 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Property Finder UAE — SSR `__NEXT_DATA__`. AED → [AppFlat.priceByn].
+ * Property Finder UAE — SSR `__NEXT_DATA__`. AED → [AppFlat.mainPrice].
  * See tmp/ae/api/propertyfinder/NOTES.md.
  */
 class PropertyFinderListingSource(

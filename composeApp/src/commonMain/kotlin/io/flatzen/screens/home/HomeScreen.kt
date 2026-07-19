@@ -97,8 +97,10 @@ import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
+import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatSort
 import io.flatzen.commoncomponents.commonentities.isCommercial
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.di.container
 import io.flatzen.entities.SingleChoiceEntity
@@ -125,6 +127,7 @@ import io.flatzen.viewmodel.sharedstates.DialogType
 import io.flatzen.widgets.FilterActionButton
 import io.flatzen.widgets.FlatImagePager
 import io.flatzen.widgets.PremiumUpsellInlineText
+import io.flatzen.widgets.PriceInsightLabel
 import io.flatzen.widgets.RentSaleButtons
 import io.flatzen.widgets.SortBottomSheet
 import io.flatzen.widgets.dialogs.ForceUpdateDialog
@@ -293,6 +296,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(top = topAppBarHeight),
                     filterState = filters,
                     isListView = state.isListView,
+                    sourceCapabilities = filterScreenState.sourceCapabilities,
                     onToggleView = {
                         flatSearchContainer.store.intent(FlatListIntent.ToggleView)
                     }
@@ -341,6 +345,8 @@ fun HomeScreen(
                         isLoadingMore = state.isLoadingMore,
                         flats = state.flatList,
                         isListView = state.isListView,
+                        reservePriceInsightLines =
+                            if (filters.location?.selectedCountry?.code == CountryCode.US) 2 else 0,
                         onFlatClick = {
                             flatSearchContainer.store.intent(
                                 FlatListIntent.OpenDetail(it.flatPlatform, it.adId)
@@ -567,6 +573,7 @@ private fun LoadingContent(
     isListView: Boolean,
     filterState: FilterState,
     onToggleView: () -> Unit,
+    sourceCapabilities: SourceCapabilities,
     modifier: Modifier = Modifier
 ) {
 
@@ -579,7 +586,8 @@ private fun LoadingContent(
             isListView = isListView,
             filterState = filterState,
             updateFilters = {},
-            onToggleView = onToggleView
+            onToggleView = onToggleView,
+            sourceCapabilities = sourceCapabilities,
         )
         flatListSkeletons(isListView)
     }
@@ -847,6 +855,8 @@ fun FlatList(
     isLoadingMore: Boolean,
     flats: List<UiFlat>,
     isListView: Boolean? = null,
+    /** Fixed insight-label lines in grid (US) so paired cards share height. */
+    reservePriceInsightLines: Int = 0,
     onFlatClick: (UiFlat) -> Unit,
     clickOnFavorite: (UiFlat) -> Unit,
     clickOnClearDislike: (UiFlat) -> Unit = {},
@@ -982,6 +992,7 @@ fun FlatList(
                                 onClick = { onFlatClick(row.first) },
                                 clickOnFavorite = { clickOnFavorite(row.first) },
                                 clickOnClearDislike = { clickOnClearDislike(row.first) },
+                                reservePriceInsightLines = reservePriceInsightLines,
                                 modifier = Modifier.weight(1f)
                             )
                             row.second?.let { second ->
@@ -990,6 +1001,7 @@ fun FlatList(
                                     onClick = { onFlatClick(second) },
                                     clickOnFavorite = { clickOnFavorite(second) },
                                     clickOnClearDislike = { clickOnClearDislike(second) },
+                                    reservePriceInsightLines = reservePriceInsightLines,
                                     modifier = Modifier.weight(1f)
                                 )
                             } ?: Spacer(Modifier.weight(1f))
@@ -1124,6 +1136,7 @@ private fun GridFlatCard(
     onClick: () -> Unit,
     clickOnFavorite: () -> Unit,
     clickOnClearDislike: () -> Unit = {},
+    reservePriceInsightLines: Int = 0,
 ) {
     val dimens = FlatHubTheme.dimens
     Card(
@@ -1187,6 +1200,12 @@ private fun GridFlatCard(
                 }
             }
 
+            PriceInsightLabel(
+                priceVsAreaAvgPercent = flat.priceVsAreaAvgPercent,
+                modifier = Modifier.padding(top = 2.dp),
+                reserveMinLines = reservePriceInsightLines,
+            )
+
             flat.publishedAt?.let { date ->
                 Spacer(Modifier.height(4.dp))
 
@@ -1249,7 +1268,10 @@ private fun GridFlatCard(
                     if (hasArea) {
                         if (hasRooms) Spacer(Modifier.width(4.dp))
                         Text(
-                            text = localizedArea(flat.totalArea!!),
+                            text = localizedArea(
+                                flat.totalArea!!,
+                                usesSquareFeet = flat.flatPlatform.usesSquareFeet(),
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )

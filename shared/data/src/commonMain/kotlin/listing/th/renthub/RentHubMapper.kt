@@ -15,7 +15,7 @@ import listing.core.doubleOrNull
 import listing.core.longOrNull
 
 /**
- * RentHub apartment listings → [AppFlat]. THB → [AppFlat.priceByn].
+ * RentHub apartment listings → [AppFlat]. THB → [AppFlat.mainPrice].
  * Buildings with monthly min–max price. See tmp/th/api/renthub/NOTES.md.
  */
 object RentHubMapper {
@@ -53,7 +53,7 @@ object RentHubMapper {
             ),
             coordinates = mapped.coordinates ?: base.coordinates,
             imageUrls = mapped.imageUrls?.takeIf { it.isNotEmpty() } ?: base.imageUrls,
-            priceByn = mapped.priceByn ?: base.priceByn,
+            mainPrice = mapped.mainPrice ?: base.mainPrice,
         )
     }
 
@@ -70,8 +70,8 @@ object RentHubMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -154,8 +154,8 @@ object RentHubMapper {
             publishedAtServer = null,
             publishedAtUi = null,
             imageUrls = cover?.let { listOf(it) },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = null,
             district = district,
             address = address,

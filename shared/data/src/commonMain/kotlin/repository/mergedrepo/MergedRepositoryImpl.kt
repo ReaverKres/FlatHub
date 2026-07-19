@@ -119,15 +119,15 @@ class MergedRepositoryImpl(
                     nett.data.forEach { net ->
                         val fromDb = flatsDao.getById(net.flatPlatform, net.adId)
 
-                        val priceUsdSquare =
-                            if (net.priceUsd != null && net.totalArea != null && net.totalArea > 0) {
-                                net.priceUsd / net.totalArea
-                            } else net.priceUsdSquare
+                        val mainPriceSquare =
+                            if (net.mainPrice != null && net.totalArea != null && net.totalArea > 0) {
+                                net.mainPrice / net.totalArea
+                            } else net.mainPriceSquare
 
-                        val priceBynSquare =
-                            if (net.priceByn != null && net.totalArea != null && net.totalArea > 0) {
-                                net.priceByn / net.totalArea
-                            } else net.priceBynSquare
+                        val secondPriceSquare =
+                            if (net.secondPrice != null && net.totalArea != null && net.totalArea > 0) {
+                                net.secondPrice / net.totalArea
+                            } else net.secondPriceSquare
 
                         val coords = net.coordinates ?: fromDb?.coordinates
                         val updated = MetroProximityEnricher.enrich(
@@ -136,8 +136,8 @@ class MergedRepositoryImpl(
                                 savedInFavorites = fromDb?.savedInFavorites == true,
                                 isViewed = fromDb?.isViewed == true,
                                 dislike = fromDb?.dislike == true,
-                                priceUsdSquare = priceUsdSquare,
-                                priceBynSquare = priceBynSquare,
+                                mainPriceSquare = mainPriceSquare,
+                                secondPriceSquare = secondPriceSquare,
                                 coordinates = coords,
                                 flatDevInfo = net.flatDevInfo.copy(
                                     coordsEnriched = coords != null ||
@@ -240,19 +240,16 @@ class MergedRepositoryImpl(
     ): List<AppFlat> {
         var resultList = flats
 
-        val useLocalPrice = currentFilter.currency.usesLocalPriceField()
         resultList = filterByPrice(
             priceInFilter = currentFilter.priceFull,
-            priceInAd = { if (useLocalPrice) it.priceByn else it.priceUsd },
+            priceInAd = { it.mainPrice },
             resultList = resultList,
         )
 
         if (currentFilter.adType != AdType.DAILY) {
             resultList = filterByPrice(
                 priceInFilter = currentFilter.pricePerSquare,
-                priceInAd = {
-                    if (useLocalPrice) it.priceBynSquare else it.priceUsdSquare
-                },
+                priceInAd = { it.mainPriceSquare },
                 resultList = resultList,
             )
         }
@@ -308,15 +305,13 @@ class MergedRepositoryImpl(
             FlatSort.NEWEST_FIRST -> resultList.sortedByDescending { it.publishedAt }
             FlatSort.CHEAPEST_FIRST -> {
                 resultList.sortedBy {
-                    val price = if (useLocalPrice) it.priceByn else it.priceUsd
-                    price ?: Double.MAX_VALUE
+                    it.mainPrice ?: Double.MAX_VALUE
                 }
             }
 
             FlatSort.MOST_EXPENSIVE_FIRST -> {
                 resultList.sortedByDescending {
-                    val price = if (useLocalPrice) it.priceByn else it.priceUsd
-                    price ?: Double.MIN_VALUE
+                    it.mainPrice ?: Double.MIN_VALUE
                 }
             }
         }

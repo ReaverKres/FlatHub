@@ -65,6 +65,7 @@ import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.ads.clearNativeAdBatch
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.common.localization.localizedRoomsLabel
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.monetization.config.MonetizationRemoteConfig
@@ -648,7 +649,10 @@ private fun TwinbyCardFace(
                         }
                         flat.totalArea?.let {
                             FlatZenOverlayChip(
-                                text = localizedArea(it),
+                                text = localizedArea(
+                                    it,
+                                    usesSquareFeet = flat.flatPlatform.usesSquareFeet(),
+                                ),
                                 textStyle = primaryChipStyle,
                             )
                         }

@@ -11,7 +11,7 @@ import listing.th.ThThaiDate
 import utils.stripHtmlToPlainText
 
 /**
- * Livinginsider searchword HTML → [AppFlat]. THB → [AppFlat.priceByn].
+ * Livinginsider searchword HTML → [AppFlat]. THB → [AppFlat.mainPrice].
  * See tmp/th/api/livinginsider/NOTES.md.
  */
 object LivinginsiderMapper {
@@ -108,8 +108,8 @@ object LivinginsiderMapper {
                 publishedAtServer = dateRaw,
                 publishedAtUi = publishedAtUi,
                 imageUrls = img?.let { listOf(it) },
-                priceUsd = null,
-                priceByn = price,
+                secondPrice = null,
+                mainPrice = price,
                 rooms = beds,
                 district = null,
                 address = title,
@@ -174,7 +174,7 @@ object LivinginsiderMapper {
 
         return base.copy(
             flatDevInfo = FlatDevInfo(isDetailData = true, isDetailLoaded = true),
-            priceByn = price ?: base.priceByn,
+            mainPrice = price ?: base.mainPrice,
             totalArea = area ?: base.totalArea,
             rooms = beds ?: base.rooms,
             contactInformation = ContactInformation(
@@ -202,8 +202,8 @@ object LivinginsiderMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,

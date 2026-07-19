@@ -155,8 +155,12 @@ class FilterContainer(
         whileSubscribed {
             CityDistrictsCatalog.loadIfNeeded()
             updateState {
+                val country = filters.location?.selectedCountry?.code ?: CountryCode.BY
                 val city = filters.location?.selectedCity
+                val caps = listingSourceRegistry.capabilitiesFor(country)
                 copy(
+                    sourceCapabilities = caps,
+                    filters = filters.sanitizeForCountryCapabilities(country, caps),
                     hasMetroFilter = MetroStationsMapper.hasStations(city?.code),
                     hasDistrictsFilter = city?.displayName
                         ?.let { CityDistrictsCatalog.hasDistrictsForCity(it) } == true,
@@ -661,11 +665,22 @@ class FilterContainer(
     ) {
         CityDistrictsCatalog.loadIfNeeded()
         val currentState = screenState()
-        val country = newFilterState.location?.selectedCountry?.code
-            ?: currentState.filters.location?.selectedCountry?.code
+        val previousCountry = currentState.filters.location?.selectedCountry?.code
             ?: CountryCode.BY
-        val caps = listingSourceRegistry.capabilitiesFor(country)
-        val sanitized = newFilterState.sanitizeForCountryCapabilities(country, caps)
+        val country = newFilterState.location?.selectedCountry?.code
+            ?: previousCountry
+        val countryChanged = country != previousCountry
+        // Capabilities are country-scoped; recompute only on country change (not every search).
+        val caps = if (countryChanged) {
+            listingSourceRegistry.capabilitiesFor(country)
+        } else {
+            currentState.sourceCapabilities
+        }
+        val sanitized = if (countryChanged) {
+            newFilterState.sanitizeForCountryCapabilities(country, caps)
+        } else {
+            newFilterState
+        }
         val currency = country.filterCurrency(sanitized.adType)
         val updatedFilter = sanitized.copy(currency = currency)
 

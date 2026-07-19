@@ -22,7 +22,7 @@ import utils.stripHtmlToPlainText
 import kotlin.time.Instant
 
 /**
- * PropertyHub `_next/data` → [AppFlat]. THB → [AppFlat.priceByn].
+ * PropertyHub `_next/data` → [AppFlat]. THB → [AppFlat.mainPrice].
  * See tmp/th/api/propertyhub/NOTES.md.
  */
 object PropertyHubMapper {
@@ -53,8 +53,8 @@ object PropertyHubMapper {
         publishedAtServer = null,
         publishedAtUi = null,
         imageUrls = null,
-        priceUsd = null,
-        priceByn = null,
+        secondPrice = null,
+        mainPrice = null,
         rooms = null,
         district = null,
         address = null,
@@ -158,8 +158,8 @@ object PropertyHubMapper {
             publishedAtServer = created,
             publishedAtUi = publishedAtUi,
             imageUrls = cover?.let { listOf(it) },
-            priceUsd = null,
-            priceByn = price,
+            secondPrice = null,
+            mainPrice = price,
             rooms = beds,
             district = projectAddr,
             address = listOfNotNull(projectName, projectAddr, title).distinct().joinToString(" · ")

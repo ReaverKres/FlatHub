@@ -6,7 +6,7 @@ import io.flatzen.analytics.Analytics
 import io.flatzen.analytics.AnalyticsEvent
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.isCommercial
-import io.flatzen.commoncomponents.utils.formatPricePerSquare
+import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.navigation.FlatHubCommand
@@ -318,12 +318,11 @@ class FlatDetailContainer(
             flatUrl = appFlat.flatDetailUrl,
             description = appFlat.description.orEmpty(),
             imageUrls = appFlat.imageUrls.orEmpty().toImmutableList(),
-            priceUsd = appFlat.priceUsd,
-            priceByn = appFlat.priceByn,
+            mainPrice = appFlat.mainPrice,
+            secondPrice = appFlat.secondPrice,
             priceText = appFlat.getPricesText(),
-            priceUsdSquare = appFlat.priceUsdSquare?.let { formatPricePerSquare(it, "USD") },
-            priceBynSquare = appFlat.getPricesText().localPerSquarePrice
-                ?: appFlat.priceBynSquare?.let { formatPricePerSquare(it, "BYN") },
+            mainPriceSquare = appFlat.getPricesText().mainPerSquarePrice,
+            secondPriceSquare = appFlat.getPricesText().localPerSquarePrice,
             address = appFlat.address.orEmpty(),
             district = appFlat.district,
             metroStation = if (appFlat.metroStation.isNullOrBlank()) null else "🚇 ${appFlat.metroStation}",
@@ -336,9 +335,24 @@ class FlatDetailContainer(
                 appFlat.adType?.isCommercial == true || appFlat.commercialInfo != null -> ""
                 else -> "Не указано"
             },
-            totalArea = appFlat.totalArea?.let { formatArea(it) },
-            livingArea = appFlat.livingArea?.let { formatArea(it) },
-            kitchenArea = appFlat.kitchenArea?.let { formatArea(it) },
+            totalArea = appFlat.totalArea?.let {
+                formatArea(
+                    it,
+                    appFlat.flatPlatform.usesSquareFeet()
+                )
+            },
+            livingArea = appFlat.livingArea?.let {
+                formatArea(
+                    it,
+                    appFlat.flatPlatform.usesSquareFeet()
+                )
+            },
+            kitchenArea = appFlat.kitchenArea?.let {
+                formatArea(
+                    it,
+                    appFlat.flatPlatform.usesSquareFeet()
+                )
+            },
             floor = appFlat.floor?.toString(),
             totalFloors = appFlat.totalFloors?.toString(),
             sleepingPlaces = appFlat.sleepingPlaces?.toString(),
@@ -361,9 +375,13 @@ class FlatDetailContainer(
                 phones = appFlat.contactInformation?.phones?.toImmutableList(),
                 ownerName = appFlat.contactInformation?.ownerName
             ),
-            coordinates = appFlat.coordinates
+            coordinates = appFlat.coordinates,
+            priceVsAreaAvgPercent = appFlat.listingInsights?.priceVsAreaAvgPercent,
         )
     }
 
-    private fun formatArea(area: Double): String = "${area.roundToInt()} м²"
+    private fun formatArea(area: Double, usesSquareFeet: Boolean): String {
+        val unit = if (usesSquareFeet) "sqft" else "м²"
+        return "${area.roundToInt()} $unit"
+    }
 }

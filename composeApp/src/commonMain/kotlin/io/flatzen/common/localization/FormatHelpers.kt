@@ -4,8 +4,12 @@ import androidx.compose.runtime.Composable
 import io.flatzen.commoncomponents.localization.LocalizationKeys
 
 @Composable
-fun localizedArea(area: String): String =
-    stringResource(LocalizationKeys.LIST_AREA_FORMAT, area)
+fun localizedArea(area: String, usesSquareFeet: Boolean = false): String =
+    stringResource(
+        if (usesSquareFeet) LocalizationKeys.LIST_AREA_FORMAT_SQFT
+        else LocalizationKeys.LIST_AREA_FORMAT,
+        area,
+    )
 
 @Composable
 fun localizedRoomsLabel(rooms: String): String {
