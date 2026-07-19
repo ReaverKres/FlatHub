@@ -7,6 +7,7 @@ import android.os.Build
 import io.flatzen.analytics.AnalyticsConfig
 import io.flatzen.coil.configureSingletonImageLoader
 import io.flatzen.commoncomponents.utils.DevicePlatformImpl
+import io.flatzen.isDebugBuild
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 
@@ -25,7 +26,7 @@ class FlatZenApp : Application(), KoinComponent {
 
         AnalyticsConfig.configure(
             apiKey = "ff1c4b73-6829-46f8-82ff-6d3d94ad1774",
-            logsEnabled = BuildKonfig.DEBUG,
+            logsEnabled = isDebugBuild,
         )
 
         CommonApplication.initialize {
