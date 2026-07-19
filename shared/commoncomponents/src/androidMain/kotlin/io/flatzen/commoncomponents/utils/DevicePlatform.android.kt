@@ -1,11 +1,13 @@
 package io.flatzen.commoncomponents.utils
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
+import android.os.StatFs
 import android.provider.Settings
 
-class DevicePlatformImpl(context: Context): DevicePlatform {
+class DevicePlatformImpl(private val context: Context) : DevicePlatform {
 
     override val platformType: PlatformType = PlatformType.ANDROID
 
@@ -17,4 +19,14 @@ class DevicePlatformImpl(context: Context): DevicePlatform {
         context.contentResolver,
         Settings.Secure.ANDROID_ID
     )
+
+    override fun totalRamBytes(): Long {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val memoryInfo = ActivityManager.MemoryInfo()
+        activityManager.getMemoryInfo(memoryInfo)
+        return memoryInfo.totalMem
+    }
+
+    override fun freeDiskBytes(): Long =
+        StatFs(context.cacheDir.absolutePath).availableBytes
 }

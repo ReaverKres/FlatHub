@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import io.flatzen.analytics.AnalyticsConfig
 import io.flatzen.coil.configureSingletonImageLoader
+import io.flatzen.commoncomponents.utils.DevicePlatformImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 
@@ -19,7 +20,7 @@ class FlatZenApp : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        configureSingletonImageLoader()
+        configureSingletonImageLoader(DevicePlatformImpl(this))
         createDefaultNotificationChannel()
 
         AnalyticsConfig.configure(
