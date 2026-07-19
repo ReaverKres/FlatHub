@@ -381,6 +381,9 @@ private final class RewardedSession: NSObject, AppodealRewardedVideoDelegate {
     private let onResult: (String) -> Void
     private var rewardedGranted = false
     private var finished = false
+    private var presented = false
+    private var rootViewController: UIViewController?
+    private var loadTimeoutWork: DispatchWorkItem?
 
     init(placement: String, onResult: @escaping (String) -> Void) {
         self.placement = placement
@@ -393,37 +396,65 @@ private final class RewardedSession: NSObject, AppodealRewardedVideoDelegate {
             complete("error:No root view controller")
             return
         }
+        rootViewController = rootVC
         Appodeal.setRewardedVideoDelegate(self)
+
         if Appodeal.canShow(.rewardedVideo, forPlacement: placement) {
-            Appodeal.showAd(.rewardedVideo, forPlacement: placement, rootViewController: rootVC)
-        } else {
-            Appodeal.cacheAd(.rewardedVideo)
-            if Appodeal.canShow(.rewardedVideo, forPlacement: placement) {
-                Appodeal.showAd(.rewardedVideo, forPlacement: placement, rootViewController: rootVC)
-            } else {
-                complete("no_fill")
-            }
+            present(from: rootVC)
+            return
         }
+
+        // cacheAd is async — wait for load/fail callbacks (do not sync-check canShow).
+        let timeout = DispatchWorkItem { [weak self] in
+            self?.complete("no_fill")
+        }
+        loadTimeoutWork = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30, execute: timeout)
+        Appodeal.cacheAd(.rewardedVideo)
+    }
+
+    private func present(from rootVC: UIViewController) {
+        guard !presented else { return }
+        presented = true
+        loadTimeoutWork?.cancel()
+        loadTimeoutWork = nil
+        Appodeal.showAd(.rewardedVideo, forPlacement: placement, rootViewController: rootVC)
     }
 
     private func complete(_ result: String) {
         guard !finished else { return }
         finished = true
+        loadTimeoutWork?.cancel()
+        loadTimeoutWork = nil
         onResult(result)
         AppodealBridge.release(self)
     }
 
-    func rewardedVideoDidFinishPresenting(forPlacementName placementName: String, finished: Bool) {
-        if finished {
-            rewardedGranted = true
+    func rewardedVideoDidLoadAdIsPrecache(_ precache: Bool) {
+        guard !finished, let rootVC = rootViewController else { return }
+        if Appodeal.canShow(.rewardedVideo, forPlacement: placement) {
+            present(from: rootVC)
+        } else {
+            complete("no_fill")
         }
     }
 
-    func rewardedVideoDidDismiss(forPlacementName placementName: String, finished: Bool) {
+    func rewardedVideoDidFailToLoadAd() {
+        complete("no_fill")
+    }
+
+    func rewardedVideoDidFinish(_ rewardAmount: Float, name rewardName: String?) {
+        rewardedGranted = true
+    }
+
+    func rewardedVideoWillDismissAndWasFullyWatched(_ wasFullyWatched: Bool) {
+        if wasFullyWatched {
+            rewardedGranted = true
+        }
         complete(rewardedGranted ? "ready" : "no_fill")
     }
 
-    func rewardedVideoDidFailToPresent(forPlacementName placementName: String) {
-        complete("no_fill")
+    func rewardedVideoDidFailToPresentWithError(_ error: Error) {
+        complete("error:\(error.localizedDescription)")
     }
 }

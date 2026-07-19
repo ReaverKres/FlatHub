@@ -1,5 +1,6 @@
 package io.flatzen.monetization.ads
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.concurrent.Volatile
 import kotlin.coroutines.resume
@@ -25,19 +26,20 @@ class IosAppodealAdService : AdService {
         initialized && (AppodealNative.api?.isInitialized() == true)
 
     override suspend fun prefetchNative(placement: String, count: Int): AdLoadResult {
-        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
+        if (!awaitInitialized() || placement.isBlank()) return AdLoadResult.Disabled
         AppodealNative.api?.prefetchNative(placement, count.coerceIn(1, 5))
         return AdLoadResult.Ready
     }
 
     override suspend fun prefetchMrec(placement: String): AdLoadResult {
-        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
+        if (!awaitInitialized() || placement.isBlank()) return AdLoadResult.Disabled
         AppodealNative.api?.showMrec(placement)
         return AdLoadResult.Ready
     }
 
     override suspend fun showRewarded(placement: String): AdLoadResult {
-        if (!isInitialized() || placement.isBlank()) return AdLoadResult.Disabled
+        if (placement.isBlank()) return AdLoadResult.Disabled
+        if (!awaitInitialized()) return AdLoadResult.Disabled
         val api = AppodealNative.api ?: return AdLoadResult.Disabled
         return suspendCancellableCoroutine { cont ->
             api.showRewarded(placement) { result ->
@@ -48,5 +50,19 @@ class IosAppodealAdService : AdService {
 
     override fun destroy() {
         initialized = false
+    }
+
+    private suspend fun awaitInitialized(): Boolean {
+        if (isInitialized()) return true
+        repeat(SDK_INIT_MAX_ATTEMPTS) {
+            delay(SDK_INIT_POLL_MS)
+            if (isInitialized()) return true
+        }
+        return false
+    }
+
+    private companion object {
+        const val SDK_INIT_POLL_MS = 200L
+        const val SDK_INIT_MAX_ATTEMPTS = 50
     }
 }

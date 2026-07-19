@@ -6,7 +6,9 @@ import com.appodeal.ads.Appodeal
 import com.appodeal.ads.RewardedVideoCallbacks
 import com.appodeal.ads.utils.Log
 import io.flatzen.monetization.billing.CurrentActivityHolder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 
 /**
@@ -48,16 +50,6 @@ class AppodealAdService(
         }
     }
 
-    /** Extends SDK init with rewarded when the user first opens a rewarded placement. */
-    fun ensureRewardedInitialized(activity: Activity) {
-        if (androidAppKey.isBlank() || rewardedReady) return
-        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false)
-        Appodeal.initialize(activity, androidAppKey, rewardedAdTypes) { _ ->
-            initialized = true
-            rewardedReady = true
-        }
-    }
-
     override fun isInitialized(): Boolean =
         initialized || Appodeal.isInitialized(Appodeal.NATIVE or Appodeal.MREC)
 
@@ -85,16 +77,18 @@ class AppodealAdService(
     }
 
     override suspend fun showRewarded(placement: String): AdLoadResult {
-        if (placement.isBlank()) return AdLoadResult.Disabled
+        if (placement.isBlank() || androidAppKey.isBlank()) return AdLoadResult.Disabled
         val activity = CurrentActivityHolder.activity ?: return AdLoadResult.Error("No activity")
-        ensureRewardedInitialized(activity)
-        if (!isInitialized()) return AdLoadResult.Disabled
+
+        if (!awaitSdkInitialized()) return AdLoadResult.Disabled
+        awaitRewardedTypeInitialized(activity)
+
         if (!Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement)) {
-            Appodeal.cache(activity, Appodeal.REWARDED_VIDEO)
-            if (!Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement)) {
+            if (!awaitRewardedLoaded(activity, placement)) {
                 return AdLoadResult.NoFill
             }
         }
+
         return suspendCancellableCoroutine { cont ->
             var rewardedGranted = false
             Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
@@ -124,7 +118,9 @@ class AppodealAdService(
 
                 override fun onRewardedVideoClicked() = Unit
             })
-            Appodeal.show(activity, Appodeal.REWARDED_VIDEO, placement)
+            if (!Appodeal.show(activity, Appodeal.REWARDED_VIDEO, placement) && cont.isActive) {
+                cont.resume(AdLoadResult.NoFill)
+            }
         }
     }
 
@@ -132,5 +128,62 @@ class AppodealAdService(
         Appodeal.destroy(Appodeal.NATIVE)
         Appodeal.destroy(Appodeal.MREC)
         Appodeal.destroy(Appodeal.REWARDED_VIDEO)
+    }
+
+    private suspend fun awaitSdkInitialized(): Boolean {
+        if (isInitialized()) return true
+        repeat(SDK_INIT_MAX_ATTEMPTS) {
+            delay(SDK_INIT_POLL_MS)
+            if (isInitialized()) return true
+        }
+        return false
+    }
+
+    private suspend fun awaitRewardedTypeInitialized(activity: Activity) {
+        if (rewardedReady || Appodeal.isInitialized(Appodeal.REWARDED_VIDEO)) {
+            rewardedReady = true
+            return
+        }
+        suspendCancellableCoroutine { cont ->
+            Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, false)
+            Appodeal.initialize(activity, androidAppKey, rewardedAdTypes) { _ ->
+                initialized = true
+                rewardedReady = true
+                if (cont.isActive) cont.resume(Unit)
+            }
+        }
+    }
+
+    private suspend fun awaitRewardedLoaded(activity: Activity, placement: String): Boolean {
+        return withTimeoutOrNull(REWARDED_LOAD_TIMEOUT_MS) {
+            suspendCancellableCoroutine { cont ->
+                Appodeal.setRewardedVideoCallbacks(object : RewardedVideoCallbacks {
+                    override fun onRewardedVideoLoaded(isPrecache: Boolean) {
+                        if (cont.isActive) cont.resume(true)
+                    }
+
+                    override fun onRewardedVideoFailedToLoad() {
+                        if (cont.isActive) cont.resume(false)
+                    }
+
+                    override fun onRewardedVideoShown() = Unit
+                    override fun onRewardedVideoShowFailed() = Unit
+                    override fun onRewardedVideoFinished(amount: Double, currency: String) = Unit
+                    override fun onRewardedVideoClosed(finished: Boolean) = Unit
+                    override fun onRewardedVideoExpired() = Unit
+                    override fun onRewardedVideoClicked() = Unit
+                })
+                Appodeal.cache(activity, Appodeal.REWARDED_VIDEO)
+                if (Appodeal.canShow(Appodeal.REWARDED_VIDEO, placement) && cont.isActive) {
+                    cont.resume(true)
+                }
+            }
+        } ?: false
+    }
+
+    private companion object {
+        const val SDK_INIT_POLL_MS = 200L
+        const val SDK_INIT_MAX_ATTEMPTS = 50 // ~10s for post-splash consent + cold init
+        const val REWARDED_LOAD_TIMEOUT_MS = 30_000L
     }
 }
