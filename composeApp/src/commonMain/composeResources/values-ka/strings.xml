@@ -330,6 +330,8 @@
     <string name="swipe_onboarding_detail">დააჭირეთ ბარათის ცენტრს სრული განცხადების გასახსნელად.</string>
     <string name="swipe_onboarding_got_it">გასაგებია</string>
     <string name="home_ad_label">რეკლამა</string>
+    <string name="home_own_ad_text">აქ შეიძლება იყოს თქვენი რეკლამა — დაგვიკავშირდით </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">რეკლამა ახლა მიუწვდომელია</string>
     <string name="premium_error_ad_disabled">რეკლამა გამორთულია</string>
     <string name="premium_error_generic">ოპერაციის შესრულება ვერ მოხერხდა</string>

@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">انقر على وسط البطاقة لفتح الإعلان بالكامل.</string>
     <string name="swipe_onboarding_got_it">حسناً</string>
     <string name="home_ad_label">إعلان</string>
+    <string name="home_own_ad_text">يمكن أن يكون إعلانك هنا — تواصل معنا على </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">الإعلان غير متاح حالياً</string>
     <string name="premium_error_ad_disabled">الإعلانات معطّلة</string>
     <string name="premium_error_generic">فشلت العملية</string>

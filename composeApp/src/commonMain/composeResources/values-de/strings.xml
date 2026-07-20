@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Tippe in die Mitte der Karte, um das vollständige Inserat zu öffnen.</string>
     <string name="swipe_onboarding_got_it">Verstanden</string>
     <string name="home_ad_label">Anzeige</string>
+    <string name="home_own_ad_text">Hier könnte Ihre Werbung stehen — kontaktieren Sie uns auf </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">Werbung ist derzeit nicht verfügbar</string>
     <string name="premium_error_ad_disabled">Werbung ist deaktiviert</string>
     <string name="premium_error_generic">Vorgang fehlgeschlagen</string>

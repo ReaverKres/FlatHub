@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Tap the center of the card to open the full listing.</string>
     <string name="swipe_onboarding_got_it">Got it</string>
     <string name="home_ad_label">ad</string>
+    <string name="home_own_ad_text">Your ad could be here — contact us on </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">Ad is unavailable right now</string>
     <string name="premium_error_ad_disabled">Ads are disabled</string>
     <string name="premium_error_generic">Operation failed</string>

@@ -8,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,10 +63,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
@@ -78,23 +85,26 @@ import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_rent
 import flatzen.composeapp.generated.resources.filter_sale
 import flatzen.composeapp.generated.resources.home_ad_label
+import flatzen.composeapp.generated.resources.home_own_ad_telegram
+import flatzen.composeapp.generated.resources.home_own_ad_text
 import flatzen.composeapp.generated.resources.list_commercial_rooms_suffix
 import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
 import flatzen.composeapp.generated.resources.list_page
 import flatzen.composeapp.generated.resources.list_rooms_suffix
+import flatzen.composeapp.generated.resources.my_adbanner
 import flatzen.composeapp.generated.resources.no_data_available
 import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
 import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
-import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.ads.clearNativeAdReuseCache
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.common.localization.localizedArea
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -138,11 +148,16 @@ import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import listing.core.SourceCapabilities
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
 import pro.respawn.flowmvi.dsl.intent
 import io.flatzen.common.localization.stringResource as localizedStringResource
+
+private val TelegramBrandBlue = Color(0xFF2AABEE)
+private val OwnAdBannerTextColor = Color(0xFF1A2332)
+private const val OWN_AD_TELEGRAM_URL = "https://t.me/FlatHub_appbot"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -884,6 +899,12 @@ fun FlatList(
             )
         }
     val gridRows = remember(feedItems) { buildGridRows(feedItems) }
+    val firstAdIndex = remember(feedItems) {
+        feedItems.indexOfFirst { it is FeedItem.Ad }
+    }
+    val firstAdRowIndex = remember(gridRows) {
+        gridRows.indexOfFirst { it is GridRow.Ad }
+    }
     val homeFeedPlacement = if (isListView == true) {
         monetizationConfig.homeFeedListPlacement
     } else {
@@ -896,7 +917,8 @@ fun FlatList(
 
     LaunchedEffect(feedItems, homeFeedPlacement, adService.isInitialized()) {
         if (!adService.isInitialized() || homeFeedPlacement.isBlank()) return@LaunchedEffect
-        val adSlots = feedItems.count { it is FeedItem.Ad }
+        // First ad slot is our own banner; prefetch only Appodeal slots after it.
+        val adSlots = (feedItems.count { it is FeedItem.Ad } - 1)
             .coerceIn(0, MAX_NATIVE_ADS_PER_BATCH)
         if (adSlots > 0) {
             adService.prefetchNative(homeFeedPlacement, adSlots)
@@ -955,15 +977,24 @@ fun FlatList(
                     }
 
                     FeedItem.Ad -> {
-                        HomeFeedAdBlock(
-                            placement = homeFeedPlacement,
-                            reuseKey = "home-list-$index",
-                            style = NativeAdSlotStyle.AppWall,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .heightIn(max = GridFlatItemSpec.skeletonHeight),
-                        )
+                        if (index == firstAdIndex) {
+                            OwnAdBanner(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .heightIn(max = GridFlatItemSpec.skeletonHeight),
+                            )
+                        } else {
+                            HomeFeedAdBlock(
+                                placement = homeFeedPlacement,
+                                reuseKey = "home-list-$index",
+                                style = NativeAdSlotStyle.AppWall,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .heightIn(max = GridFlatItemSpec.skeletonHeight),
+                            )
+                        }
                     }
                 }
             }
@@ -1011,15 +1042,26 @@ fun FlatList(
                         }
                     }
 
-                    is GridRow.Ad -> HomeFeedAdBlock(
-                        placement = homeFeedPlacement,
-                        reuseKey = "home-grid-$index",
-                        style = NativeAdSlotStyle.AppWall,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .heightIn(max = GridFlatItemSpec.skeletonHeight),
-                    )
+                    is GridRow.Ad -> {
+                        if (index == firstAdRowIndex) {
+                            OwnAdBanner(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .heightIn(max = GridFlatItemSpec.skeletonHeight),
+                            )
+                        } else {
+                            HomeFeedAdBlock(
+                                placement = homeFeedPlacement,
+                                reuseKey = "home-grid-$index",
+                                style = NativeAdSlotStyle.AppWall,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .heightIn(max = GridFlatItemSpec.skeletonHeight),
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -1047,6 +1089,52 @@ fun FlatList(
 private sealed class GridRow {
     data class Pair(val first: UiFlat, val second: UiFlat?) : GridRow()
     data object Ad : GridRow()
+}
+
+@Composable
+private fun OwnAdBanner(
+    modifier: Modifier = Modifier,
+) {
+    val uriHandler = LocalUriHandler.current
+    val adText = buildAnnotatedString {
+        withStyle(SpanStyle(color = OwnAdBannerTextColor, fontWeight = FontWeight.SemiBold)) {
+            append(stringResource(Res.string.home_own_ad_text))
+        }
+        withStyle(SpanStyle(color = TelegramBrandBlue, fontWeight = FontWeight.SemiBold)) {
+            append(stringResource(Res.string.home_own_ad_telegram))
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { uriHandler.openUri(OWN_AD_TELEGRAM_URL) },
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.my_adbanner),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .fillMaxWidth(0.55f)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            AsyncImage(
+                model = Res.getUri("drawable/telegram.svg"),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+            )
+            Text(
+                text = adText,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
 }
 
 @Composable

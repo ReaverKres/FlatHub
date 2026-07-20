@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Нажмите по центру карточки, чтобы открыть объявление целиком.</string>
     <string name="swipe_onboarding_got_it">Понятно</string>
     <string name="home_ad_label">реклама</string>
+    <string name="home_own_ad_text">Здесь может быть ваша реклама, свяжитесь с нами в </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">Реклама сейчас недоступна</string>
     <string name="premium_error_ad_disabled">Реклама отключена</string>
     <string name="premium_error_generic">Не удалось выполнить операцию</string>

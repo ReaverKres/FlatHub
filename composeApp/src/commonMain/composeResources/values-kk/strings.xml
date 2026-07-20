@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Толық хабарландыруды ашу үшін картаның ортасын басыңыз.</string>
     <string name="swipe_onboarding_got_it">Түсінікті</string>
     <string name="home_ad_label">жарнама</string>
+    <string name="home_own_ad_text">Мұнда сіздің жарнамаңыз болуы мүмкін — бізбен байланысыңыз: </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">Жарнама қазір қолжетімсіз</string>
     <string name="premium_error_ad_disabled">Жарнама өшірілген</string>
     <string name="premium_error_generic">Операцияны орындау мүмкін болмады</string>

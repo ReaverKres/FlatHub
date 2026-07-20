@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Tam ilanı açmak için kartın ortasına dokunun.</string>
     <string name="swipe_onboarding_got_it">Anladım</string>
     <string name="home_ad_label">reklam</string>
+    <string name="home_own_ad_text">Reklamınız burada olabilir — bize şuradan ulaşın: </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">Reklam şu anda kullanılamıyor</string>
     <string name="premium_error_ad_disabled">Reklamlar kapalı</string>
     <string name="premium_error_generic">İşlem başarısız</string>

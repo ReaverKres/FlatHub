@@ -342,6 +342,8 @@
     <string name="swipe_onboarding_detail">Toca el centro de la tarjeta para abrir el anuncio completo.</string>
     <string name="swipe_onboarding_got_it">Entendido</string>
     <string name="home_ad_label">anuncio</string>
+    <string name="home_own_ad_text">Aquí puede estar tu anuncio — contáctanos en </string>
+    <string name="home_own_ad_telegram">Telegram</string>
     <string name="premium_error_ad_unavailable">El anuncio no está disponible ahora</string>
     <string name="premium_error_ad_disabled">Los anuncios están desactivados</string>
     <string name="premium_error_generic">La operación ha fallado</string>
