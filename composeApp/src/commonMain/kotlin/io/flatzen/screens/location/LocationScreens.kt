@@ -738,7 +738,7 @@ private fun CountryMarketCard(
                             painter = platform.platformImage(),
                             contentDescription = platform.value,
                             modifier = Modifier
-                                .size(14.dp)
+                                .size(18.dp)
                                 .clip(RoundedCornerShape(3.dp)),
                             alpha = if (selected) 1f else 0.85f,
                         )

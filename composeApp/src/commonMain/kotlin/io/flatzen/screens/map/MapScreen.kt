@@ -78,6 +78,7 @@ import flatzen.composeapp.generated.resources.map_undo
 import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.tab_map
 import io.flatzen.common.localization.localizedArea
+import io.flatzen.commoncomponents.DrawablePath
 import io.flatzen.commoncomponents.commonentities.Coordinates
 import io.flatzen.commoncomponents.commonentities.usesSquareFeet
 import io.flatzen.di.container
@@ -171,7 +172,7 @@ fun MapScreen(
 
     val metroChrome = remember { MetroMapChromeState() }
     val metroStationPainter = rememberAsyncImagePainter(
-        model = Res.getUri("drawable/metro_station.svg"),
+        model = Res.getUri(DrawablePath.METRO_STATION.value),
     )
     val selectedAdIdState = remember { mutableStateOf<Long?>(null) }
     selectedAdIdState.value = detailFlatId
@@ -597,7 +598,7 @@ fun MapScreen(
                                     .padding(start = 16.dp)
                             ) {
                                 AsyncImage(
-                                    model = Res.getUri("drawable/area_on_map.png"),
+                                    model = Res.getUri(DrawablePath.AREA_ON_MAP.value),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(60.dp)
@@ -607,7 +608,7 @@ fun MapScreen(
                                 )
                                 Spacer(Modifier.height(10.dp))
                                 AsyncImage(
-                                    model = Res.getUri("drawable/save_areas.svg"),
+                                    model = Res.getUri(DrawablePath.SAVE_AREAS.value),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .padding(start = 6.dp)

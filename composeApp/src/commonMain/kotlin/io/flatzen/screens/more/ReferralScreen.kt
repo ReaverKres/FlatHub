@@ -52,6 +52,7 @@ import flatzen.composeapp.generated.resources.referral_input_hint
 import flatzen.composeapp.generated.resources.referral_my_code
 import flatzen.composeapp.generated.resources.referral_notifications_available
 import flatzen.composeapp.generated.resources.referral_remaining_invites
+import io.flatzen.commoncomponents.DrawablePath
 import io.flatzen.di.container
 import io.flatzen.utils.ToastDurationType
 import io.flatzen.utils.ToastLauncher
@@ -178,7 +179,7 @@ fun ReferralScreen() {
                     )
                     Spacer(Modifier.width(12.dp))
                     AsyncImage(
-                        model = Res.getUri("drawable/copy.svg"),
+                        model = Res.getUri(DrawablePath.COPY.value),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp).clickable(onClick = onCopy),
                         colorFilter = ColorFilter.tint(Color.LightGray)

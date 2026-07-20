@@ -1,5 +1,7 @@
 package io.flatzen.commoncomponents.commonentities
 
+import io.flatzen.commoncomponents.DrawablePath
+
 enum class FlatPlatform(val value: String) {
     // Belarus
     ONLINER("onliner"),
@@ -110,4 +112,34 @@ fun platformsForMarket(country: CountryCode): List<FlatPlatform> =
 fun FlatPlatform.listExpectsRoomsField(): Boolean = when (this) {
     FlatPlatform.KRISHA, FlatPlatform.KN, FlatPlatform.LIVINGINSIDER, FlatPlatform.RENTHUB -> false
     else -> true
+}
+
+fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
+    FlatPlatform.ONLINER -> DrawablePath.ONLINER32
+    FlatPlatform.KUFAR -> DrawablePath.KUFAR32
+    FlatPlatform.REALT -> DrawablePath.REALT32
+    FlatPlatform.DOMOVITA -> DrawablePath.DOMOVITA32
+    FlatPlatform.OTODOM -> DrawablePath.OTODOM32
+    FlatPlatform.OLX_PL -> DrawablePath.OLXPL32
+    FlatPlatform.GRATKA -> DrawablePath.GRATKA32
+    FlatPlatform.MORIZON -> DrawablePath.MORIZON32
+    FlatPlatform.SS_GE -> DrawablePath.SSGE32
+    FlatPlatform.LIVO -> DrawablePath.LIVO32
+    FlatPlatform.BINEBI -> DrawablePath.BINEBI32
+    FlatPlatform.KRISHA -> DrawablePath.KRISHA32
+    FlatPlatform.OLX_KZ -> DrawablePath.OLXKZ32
+    FlatPlatform.KN -> DrawablePath.KN32
+    FlatPlatform.FOTOCASA -> DrawablePath.FOTOCASA32
+    FlatPlatform.PISOS -> DrawablePath.PISOS32
+    FlatPlatform.IS24 -> DrawablePath.IS2432
+    FlatPlatform.IMMOWELT -> DrawablePath.IMMOWELT32
+    FlatPlatform.KLEINANZEIGEN -> DrawablePath.KLEINANZEIGEN32
+    FlatPlatform.EMLAKJET -> DrawablePath.EMLAKJET32
+    FlatPlatform.PROPERTY_FINDER -> DrawablePath.PROPERTYFINDER32
+    FlatPlatform.DUBIZZLE -> DrawablePath.DUBIZZLE32
+    FlatPlatform.OPENSOOQ -> DrawablePath.OPENSOOQ32
+    FlatPlatform.PROPERTYHUB -> DrawablePath.PROPERTYHUB32
+    FlatPlatform.LIVINGINSIDER -> DrawablePath.LIVINGINSIDER32
+    FlatPlatform.RENTHUB -> DrawablePath.RENTHUB32
+    FlatPlatform.ZUMPER -> DrawablePath.ZUMPER32
 }

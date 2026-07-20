@@ -60,6 +60,7 @@ import flatzen.composeapp.generated.resources.theme_dark
 import flatzen.composeapp.generated.resources.theme_light
 import flatzen.composeapp.generated.resources.theme_system
 import flatzen.composeapp.generated.resources.theme_title
+import io.flatzen.commoncomponents.DrawablePath
 import io.flatzen.commoncomponents.commonentities.more.MoreConfigData.MoreConfigType
 import io.flatzen.commoncomponents.theme.AppLanguage
 import io.flatzen.commoncomponents.theme.ThemeMode
@@ -257,7 +258,7 @@ fun MoreScreen(
                                     Text(text = item.text)
                                     Spacer(Modifier.width(12.dp))
                                     AsyncImage(
-                                        model = Res.getUri("drawable/copy.svg"),
+                                        model = Res.getUri(DrawablePath.COPY.value),
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp).clickable(onClick = onClick),
                                         colorFilter = ColorFilter.tint(Color.LightGray)
@@ -269,7 +270,7 @@ fun MoreScreen(
                 } else {
                     DescriptionText(text = telegramSupportDescription)
                     AppTextButton(
-                        image = Res.getUri("drawable/telegram.svg"),
+                        image = Res.getUri(DrawablePath.TELEGRAM.value),
                         text = stringResource(Res.string.telegram_support),
                         onClick = { uriHandler.openUri("https://t.me/FlatHub_appbot") }
                     )

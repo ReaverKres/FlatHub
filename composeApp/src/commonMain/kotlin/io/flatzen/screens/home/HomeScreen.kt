@@ -8,7 +8,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -92,7 +91,6 @@ import flatzen.composeapp.generated.resources.list_load_more
 import flatzen.composeapp.generated.resources.list_no_more_flats
 import flatzen.composeapp.generated.resources.list_page
 import flatzen.composeapp.generated.resources.list_rooms_suffix
-import flatzen.composeapp.generated.resources.my_adbanner
 import flatzen.composeapp.generated.resources.no_data_available
 import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.sort_cheapest
@@ -105,6 +103,7 @@ import io.flatzen.ads.clearNativeAdReuseCache
 import io.flatzen.animations.rememberShimmerProgress
 import io.flatzen.common.localization.localizedArea
 import io.flatzen.commoncomponents.AppFeatures
+import io.flatzen.commoncomponents.DrawablePath
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CommercialAdType
@@ -148,7 +147,6 @@ import io.flatzen.widgets.rememberPremiumUpsellState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import listing.core.SourceCapabilities
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import pro.respawn.flowmvi.compose.dsl.subscribe
@@ -287,7 +285,7 @@ fun HomeScreen(
 
                 if (AppFeatures.Notifications.ENABLED) {
                     AsyncImage(
-                        model = Res.getUri("drawable/outline_notifications.svg"),
+                        model = Res.getUri(DrawablePath.OUTLINE_NOTIFICATIONS.value),
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {
@@ -781,7 +779,7 @@ private fun LazyListScope.topContentHeader(
                     label = { Text(text = filterState.sortOption.localizedText()) },
                     trailingIcon = {
                         AsyncImage(
-                            model = Res.getUri("drawable/sort.svg"),
+                            model = Res.getUri(DrawablePath.SORT.value),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
                             colorFilter = ColorFilter.tint(unSelectedColor)
@@ -801,7 +799,7 @@ fun ListTypeSwitches(
     activeColor: Color
 ) {
     AsyncImage(
-        model = Res.getUri("drawable/grid.svg"),
+        model = Res.getUri(DrawablePath.GRID.value),
         contentDescription = null,
         modifier = Modifier.size(22.dp).clickable {
             onToggleView()
@@ -810,7 +808,7 @@ fun ListTypeSwitches(
     )
     Spacer(Modifier.width(16.dp))
     AsyncImage(
-        model = Res.getUri("drawable/list.svg"),
+        model = Res.getUri(DrawablePath.LIST.value),
         contentDescription = null,
         modifier = Modifier.size(24.dp).clickable {
             onToggleView()
@@ -1110,8 +1108,8 @@ private fun OwnAdBanner(
             .clip(MaterialTheme.shapes.medium)
             .clickable { uriHandler.openUri(OWN_AD_TELEGRAM_URL) },
     ) {
-        Image(
-            painter = painterResource(Res.drawable.my_adbanner),
+        AsyncImage(
+            model = Res.getUri(DrawablePath.MY_ADBANNER.value),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth(),
@@ -1125,7 +1123,7 @@ private fun OwnAdBanner(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             AsyncImage(
-                model = Res.getUri("drawable/telegram.svg"),
+                model = Res.getUri(DrawablePath.TELEGRAM.value),
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
             )

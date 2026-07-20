@@ -45,42 +45,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import flatzen.composeapp.generated.resources.Res
-import flatzen.composeapp.generated.resources.binebi32
-import flatzen.composeapp.generated.resources.domovita32
-import flatzen.composeapp.generated.resources.dubizzle32
-import flatzen.composeapp.generated.resources.emlakjet32
-import flatzen.composeapp.generated.resources.eye
 import flatzen.composeapp.generated.resources.filters_title
-import flatzen.composeapp.generated.resources.fotocasa32
-import flatzen.composeapp.generated.resources.gratka32
-import flatzen.composeapp.generated.resources.immowelt32
-import flatzen.composeapp.generated.resources.is2432
-import flatzen.composeapp.generated.resources.kleinanzeigen32
-import flatzen.composeapp.generated.resources.kn32
-import flatzen.composeapp.generated.resources.krisha32
-import flatzen.composeapp.generated.resources.kufar32
-import flatzen.composeapp.generated.resources.livinginsider32
-import flatzen.composeapp.generated.resources.livo32
-import flatzen.composeapp.generated.resources.morizon32
-import flatzen.composeapp.generated.resources.olxkz32
-import flatzen.composeapp.generated.resources.olxpl32
-import flatzen.composeapp.generated.resources.onliner32
-import flatzen.composeapp.generated.resources.opensooq32
-import flatzen.composeapp.generated.resources.otodom32
-import flatzen.composeapp.generated.resources.pisos32
-import flatzen.composeapp.generated.resources.propertyfinder32
-import flatzen.composeapp.generated.resources.propertyhub32
-import flatzen.composeapp.generated.resources.realt32
-import flatzen.composeapp.generated.resources.renthub32
-import flatzen.composeapp.generated.resources.ssge32
 import flatzen.composeapp.generated.resources.tab_favorites
-import flatzen.composeapp.generated.resources.zumper32
+import io.flatzen.commoncomponents.DrawablePath
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import io.flatzen.commoncomponents.commonentities.drawablePath
 import io.flatzen.themes.FlatHubTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
@@ -91,7 +65,7 @@ fun SwipeCardsIcon(
     tint: Color = LocalContentColor.current,
 ) {
     AsyncImage(
-        model = Res.getUri("drawable/swipe_cards.svg"),
+        model = Res.getUri(DrawablePath.SWIPE_CARDS.value),
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = ContentScale.Fit,
@@ -339,35 +313,7 @@ fun BoxScope.TopLeftStatusIcon(
 
 @Composable
 fun FlatPlatform.platformImage(): Painter {
-    return when (this) {
-        FlatPlatform.ONLINER -> painterResource(Res.drawable.onliner32)
-        FlatPlatform.KUFAR -> painterResource(Res.drawable.kufar32)
-        FlatPlatform.REALT -> painterResource(Res.drawable.realt32)
-        FlatPlatform.DOMOVITA -> painterResource(Res.drawable.domovita32)
-        FlatPlatform.OTODOM -> painterResource(Res.drawable.otodom32)
-        FlatPlatform.OLX_PL -> painterResource(Res.drawable.olxpl32)
-        FlatPlatform.GRATKA -> painterResource(Res.drawable.gratka32)
-        FlatPlatform.MORIZON -> painterResource(Res.drawable.morizon32)
-        FlatPlatform.SS_GE -> painterResource(Res.drawable.ssge32)
-        FlatPlatform.LIVO -> painterResource(Res.drawable.livo32)
-        FlatPlatform.BINEBI -> painterResource(Res.drawable.binebi32)
-        FlatPlatform.KRISHA -> painterResource(Res.drawable.krisha32)
-        FlatPlatform.OLX_KZ -> painterResource(Res.drawable.olxkz32)
-        FlatPlatform.KN -> painterResource(Res.drawable.kn32)
-        FlatPlatform.FOTOCASA -> painterResource(Res.drawable.fotocasa32)
-        FlatPlatform.PISOS -> painterResource(Res.drawable.pisos32)
-        FlatPlatform.IS24 -> painterResource(Res.drawable.is2432)
-        FlatPlatform.IMMOWELT -> painterResource(Res.drawable.immowelt32)
-        FlatPlatform.KLEINANZEIGEN -> painterResource(Res.drawable.kleinanzeigen32)
-        FlatPlatform.EMLAKJET -> painterResource(Res.drawable.emlakjet32)
-        FlatPlatform.PROPERTY_FINDER -> painterResource(Res.drawable.propertyfinder32)
-        FlatPlatform.DUBIZZLE -> painterResource(Res.drawable.dubizzle32)
-        FlatPlatform.OPENSOOQ -> painterResource(Res.drawable.opensooq32)
-        FlatPlatform.PROPERTYHUB -> painterResource(Res.drawable.propertyhub32)
-        FlatPlatform.LIVINGINSIDER -> painterResource(Res.drawable.livinginsider32)
-        FlatPlatform.RENTHUB -> painterResource(Res.drawable.renthub32)
-        FlatPlatform.ZUMPER -> painterResource(Res.drawable.zumper32)
-    }
+    return rememberAsyncImagePainter(model = Res.getUri(drawablePath().value))
 }
 
 @Composable
@@ -389,7 +335,7 @@ fun BoxScope.EyeIcon() {
             .align(Alignment.TopStart)
             .padding(8.dp)
             .size(24.dp),
-        painter = painterResource(Res.drawable.eye),
+        painter = rememberAsyncImagePainter(model = Res.getUri(DrawablePath.EYE.value)),
         contentDescription = null,
     )
 }
