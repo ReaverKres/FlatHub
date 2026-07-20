@@ -1,6 +1,7 @@
 package io.flatzen
 
 import platform.UIKit.UIView
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.monetization.ads.installAppodeal as monetizationInstallAppodeal
 
 /**
@@ -32,3 +33,4 @@ fun installAppodeal(
         clearNativeAdReuseCache = clearNativeAdReuseCache,
     )
 }
+

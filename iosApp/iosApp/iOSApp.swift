@@ -24,6 +24,7 @@ struct iOSApp: App {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+    private let isNotificationsEnabled = false
 
     func application(
         _ application: UIApplication,
@@ -32,7 +33,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         FirebaseBootstrap.configureIfNeeded()
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
-        requestPushAuthorization(application: application)
+        if isNotificationsEnabled {
+            requestPushAuthorization(application: application)
+        }
         return true
     }
 

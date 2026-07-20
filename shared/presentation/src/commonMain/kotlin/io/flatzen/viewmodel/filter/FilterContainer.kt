@@ -5,6 +5,7 @@ import entities.CommonFilterRequestModel
 import entities.SavedFilter
 import io.flatzen.analytics.Analytics
 import io.flatzen.analytics.AnalyticsEvent
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.commoncomponents.analytics.AppMetrcica
 import io.flatzen.commoncomponents.commonentities.CityCode
 import io.flatzen.commoncomponents.commonentities.CommercialPropertyType
@@ -114,7 +115,7 @@ sealed interface FilterScreenAction : MVIIntent {
 data class FilterScreenState(
     val filters: FilterState,
     val savedFilters: List<SavedFilterState> = emptyList(),
-    val saveDialogState: SaveDialogState = SaveDialogState(showNotification = true),
+    val saveDialogState: SaveDialogState = SaveDialogState(showNotification = AppFeatures.Notifications.ENABLED),
     val savedAreasDialogState: SavedAreasDialogState = SavedAreasDialogState(),
     val sourceCapabilities: SourceCapabilities = SourceCapabilities(
         supportsRent = true,

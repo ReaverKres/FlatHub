@@ -8,6 +8,7 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
 import io.flatzen.commoncomponents.utils.DevicePlatform
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.notifications.NotificationsService
 import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.PipelineContext
@@ -38,6 +39,7 @@ class ToggleNotificationsContainer(
     }
 
     private suspend fun Ctx.handleToggleNotifications(intent: ToggleNotificationsIntent.ToggleNotifications) {
+        if (!AppFeatures.Notifications.ENABLED) return
         val (filterName, enabled) = intent
         if (enabled) {
             try {

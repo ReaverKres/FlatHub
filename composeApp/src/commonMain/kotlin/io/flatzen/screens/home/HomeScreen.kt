@@ -89,6 +89,7 @@ import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
 import flatzen.composeapp.generated.resources.sort_newest
 import io.flatzen.ads.MAX_NATIVE_ADS_PER_BATCH
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.ads.NativeAdSlot
 import io.flatzen.ads.NativeAdSlotStyle
 import io.flatzen.ads.clearNativeAdReuseCache
@@ -269,18 +270,20 @@ fun HomeScreen(
                     Spacer(Modifier.weight(1f))
                 }
 
-                AsyncImage(
-                    model = Res.getUri("drawable/outline_notifications.svg"),
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable {
-                            flatSearchContainer.store.intent(FlatListIntent.OpenNotifications)
-                        },
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                )
+                if (AppFeatures.Notifications.ENABLED) {
+                    AsyncImage(
+                        model = Res.getUri("drawable/outline_notifications.svg"),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                flatSearchContainer.store.intent(FlatListIntent.OpenNotifications)
+                            },
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
 
-                Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(6.dp))
+                }
 
                 TextButton(
                     onClick = {

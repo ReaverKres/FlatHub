@@ -1,6 +1,7 @@
 package io.flatzen
 
 import io.flatzen.analytics.Analytics
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.di.initKoin
 import io.flatzen.firebase.RemoteConfigRepository
 import io.flatzen.notifications.NotificationsService
@@ -37,9 +38,11 @@ object CommonApplication {
 
         analytics?.activate()
 
-        PushTokenRefreshNotifier.register { token ->
-            appScope.launch(Dispatchers.IO) {
-                runCatching { registrationUseCase?.registerUser(token) }
+        if (AppFeatures.Notifications.ENABLED) {
+            PushTokenRefreshNotifier.register { token ->
+                appScope.launch(Dispatchers.IO) {
+                    runCatching { registrationUseCase?.registerUser(token) }
+                }
             }
         }
 

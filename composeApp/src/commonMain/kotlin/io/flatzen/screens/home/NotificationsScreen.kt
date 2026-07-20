@@ -65,6 +65,7 @@ import flatzen.composeapp.generated.resources.notifications_is_empty
 import flatzen.composeapp.generated.resources.notifications_params
 import flatzen.composeapp.generated.resources.notifications_permission_message
 import flatzen.composeapp.generated.resources.notifications_title
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.EmptyScreenContent
 import io.flatzen.viewmodel.notifications.NotificationListAction
@@ -124,7 +125,9 @@ fun NotificationsScreen(
     val localDensity = LocalDensity.current
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        container.store.intent(NotificationListIntent.IsNotificationPermissionGranted)
+        if (AppFeatures.Notifications.ENABLED) {
+            container.store.intent(NotificationListIntent.IsNotificationPermissionGranted)
+        }
     }
 
     LaunchedEffect(Unit) {

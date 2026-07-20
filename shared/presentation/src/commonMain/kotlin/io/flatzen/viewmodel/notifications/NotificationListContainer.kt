@@ -8,6 +8,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.notifications.REMOTE_NOTIFICATION
 import entities.CommonFilterRequestModel
 import io.flatzen.commoncomponents.utils.DevicePlatform
+import io.flatzen.commoncomponents.AppFeatures
 import io.flatzen.error_handling.LCE
 import io.flatzen.error_handling.asLCE
 import io.flatzen.navigation.FlatHubCommand
@@ -107,13 +108,14 @@ class NotificationListContainer(
         }
 
     private suspend fun PipeCtx.onIsNotificationPermissionGranted() {
-        if (NotifPermissionMessageVisibility.isShown) return
+        if (!AppFeatures.Notifications.ENABLED || NotifPermissionMessageVisibility.isShown) return
         val isGranted =
             permissionsController.isPermissionGranted(Permission.REMOTE_NOTIFICATION)
         action(NotificationListAction.NotifPermGrantedEffect(isGranted))
     }
 
     private suspend fun PipeCtx.onProvideNotifPermission() {
+        if (!AppFeatures.Notifications.ENABLED) return
         try {
             permissionsController.providePermission(Permission.REMOTE_NOTIFICATION)
         } catch (_: DeniedAlwaysException) {
