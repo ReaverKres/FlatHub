@@ -48,7 +48,7 @@ object MonetizationDefaults {
 
     /** Override via Remote Config when needed. Empty iOS key = ads SDK not initialized on iOS. */
     const val APPODEAL_ANDROID_APP_KEY = "835e2e84e79c82f41a5ea221196738da563bfcf6287ba11c"
-    const val APPODEAL_IOS_APP_KEY = "172ce3a809776e67f1aea090524eb65ce14de7960361a21f"
+    const val APPODEAL_IOS_APP_KEY = "7d4663217e621c1d9d93f19b2f253955152a994fc103fffe"
 
     const val HOME_FEED_LIST_PLACEMENT = "home_feed_list"
     const val HOME_FEED_GRID_PLACEMENT = "home_feed_grid"

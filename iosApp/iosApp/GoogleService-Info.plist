@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.flatZen</string>
+	<string>io.flathub</string>
 	<key>PROJECT_ID</key>
 	<string>locus-9c9f0</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:602261555512:ios:b24a55df6494280019d9cd</string>
+	<string>1:602261555512:ios:60fc5cd504880b3f19d9cd</string>
 </dict>
 </plist>
