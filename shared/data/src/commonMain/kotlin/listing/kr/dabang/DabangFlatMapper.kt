@@ -145,6 +145,7 @@ object DabangFlatMapper {
             listingInsights = null,
             flatPlatform = FlatPlatform.DABANG,
             flatDetailUrl = detailUrl(roomId),
+            // List has no datetime — only monotonic `seq` (+ null formatNaverVerifyDate). Do not invent.
             publishedAt = null,
             publishedAtServer = room["seq"].longOrNull()?.toString()
                 ?: room["seq"].intOrNull()?.toString(),

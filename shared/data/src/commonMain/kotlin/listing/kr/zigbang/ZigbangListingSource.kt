@@ -19,8 +19,8 @@ import listing.core.flowById
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Zigbang (직방) — geohash map search + v3 per-item detail. KRW (만원 × 10_000).
- * See tmp/kr/api/zigbang/NOTES.md.
+ * Zigbang (직방) — geohash map search + batch items/list (≤15 ids) + v3 detail on open.
+ * KRW (만원 × 10_000). See tmp/kr/api/zigbang/NOTES.md.
  */
 class ZigbangListingSource(
     private val api: ZigbangApiClient,
@@ -72,7 +72,7 @@ class ZigbangListingSource(
 
                 val pageSize = FeedDelayListBoost.apiPageSize(platform, base = 30)
                 val batch = pins.take(pageSize)
-                val flats = enrichDetails(batch, adType)
+                val flats = enrichFromBatch(batch, adType)
                 NetworkResponseWrapper.success(flats)
             }
         } catch (e: CancellationException) {
@@ -104,23 +104,26 @@ class ZigbangListingSource(
         }
     }
 
-    private suspend fun enrichDetails(
+    /** Chunked POST `/house/property/v1/items/list` (max 15 ids) instead of N× v3 detail. */
+    private suspend fun enrichFromBatch(
         pins: List<ZigbangFlatMapper.MapPin>,
         adType: AdType,
-    ): List<AppFlat> = supervisorScope {
-        pins.map { pin ->
-            async {
-                val stub = ZigbangFlatMapper.listStub(pin, adType)
-                try {
-                    val json = api.fetchDetailJson(pin.itemId)
-                    ZigbangDetailMapper.mergeInto(stub, json)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (_: Exception) {
-                    stub
+    ): List<AppFlat> {
+        if (pins.isEmpty()) return emptyList()
+        return supervisorScope {
+            pins.chunked(ZigbangApiClient.MAX_ITEM_IDS).map { chunk ->
+                async {
+                    try {
+                        val json = api.fetchItemsListJson(chunk.map { it.itemId })
+                        ZigbangFlatMapper.mapBatch(json, adType, chunk)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        chunk.map { ZigbangFlatMapper.listStub(it, adType) }
+                    }
                 }
-            }
-        }.map { it.await() }
+            }.flatMap { it.await() }
+        }
     }
 
     private fun segmentsFor(adType: AdType): List<String> = when (adType) {
