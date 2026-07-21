@@ -49,6 +49,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.TOKYO, "Tokyo", "Tokyo", Coordinates(35.6762, 139.6503))
     val zurichUiItem =
         UiCityItem(CityCode.ZURICH, "Zurich", "Zürich", Coordinates(47.3769, 8.5417))
+    val wienUiItem =
+        UiCityItem(CityCode.WIEN, "Vienna", "Wien", Coordinates(48.2082, 16.3738))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -57,6 +59,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.KZ, "Kazakhstan"),
         UiCountryItem(CountryCode.ES, "Spain"),
         UiCountryItem(CountryCode.DE, "Germany"),
+        UiCountryItem(CountryCode.AT, "Austria"),
         UiCountryItem(CountryCode.TR, "Turkey"),
         UiCountryItem(CountryCode.AE, "UAE"),
         UiCountryItem(CountryCode.TH, "Thailand"),
@@ -72,6 +75,7 @@ object LocationUiMapper {
         CountryCode.KZ -> almatyUiItem
         CountryCode.ES -> madridUiItem
         CountryCode.DE -> berlinUiItem
+        CountryCode.AT -> wienUiItem
         CountryCode.TR -> istanbulUiItem
         CountryCode.AE -> dubaiUiItem
         CountryCode.TH -> bangkokUiItem
@@ -147,6 +151,29 @@ object LocationUiMapper {
                 Coordinates(51.2277, 6.7735)
             ),
             UiCityItem(CityCode.LEIPZIG, "Leipzig", "Leipzig", Coordinates(51.3397, 12.3731)),
+        )
+
+        CountryCode.AT -> listOf(
+            wienUiItem,
+            UiCityItem(CityCode.GRAZ, "Graz", "Graz", Coordinates(47.0707, 15.4395)),
+            UiCityItem(CityCode.LINZ, "Linz", "Linz", Coordinates(48.3069, 14.2858)),
+            UiCityItem(CityCode.SALZBURG, "Salzburg", "Salzburg", Coordinates(47.8095, 13.0550)),
+            UiCityItem(CityCode.INNSBRUCK, "Innsbruck", "Innsbruck", Coordinates(47.2692, 11.4041)),
+            UiCityItem(
+                CityCode.KLAGENFURT,
+                "Klagenfurt",
+                "Klagenfurt",
+                Coordinates(46.6247, 14.3053)
+            ),
+            UiCityItem(CityCode.VILLACH, "Villach", "Villach", Coordinates(46.6111, 13.8558)),
+            UiCityItem(CityCode.WELS, "Wels", "Wels", Coordinates(48.1575, 14.0289)),
+            UiCityItem(
+                CityCode.ST_POELTEN,
+                "St. Pölten",
+                "St. Pölten",
+                Coordinates(48.2047, 15.6256)
+            ),
+            UiCityItem(CityCode.DORNBIRN, "Dornbirn", "Dornbirn", Coordinates(47.4124, 9.7438)),
         )
 
         CountryCode.TR -> listOf(
@@ -299,6 +326,7 @@ object LocationUiMapper {
             in cities(CountryCode.KZ).map { it.code } -> CountryCode.KZ
             in cities(CountryCode.ES).map { it.code } -> CountryCode.ES
             in cities(CountryCode.DE).map { it.code } -> CountryCode.DE
+            in cities(CountryCode.AT).map { it.code } -> CountryCode.AT
             in cities(CountryCode.TR).map { it.code } -> CountryCode.TR
             in cities(CountryCode.AE).map { it.code } -> CountryCode.AE
             in cities(CountryCode.TH).map { it.code } -> CountryCode.TH

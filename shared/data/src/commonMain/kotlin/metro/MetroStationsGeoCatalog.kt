@@ -23,6 +23,7 @@ private const val BERLIN_METRO_GEO_RESOURCE = "files/berlin_metro_stations.json"
 private const val BANGKOK_METRO_GEO_RESOURCE = "files/bangkok_metro_stations.json"
 private const val SEOUL_METRO_GEO_RESOURCE = "files/seoul_metro_stations.json"
 private const val TOKYO_METRO_GEO_RESOURCE = "files/tokyo_metro_stations.json"
+private const val WIEN_METRO_GEO_RESOURCE = "files/wien_metro_stations.json"
 
 /** Synthetic metroId base for Warsaw stations (not used by BY site APIs). */
 private const val WARSAW_METRO_ID_BASE = 10_000
@@ -50,6 +51,9 @@ private const val SEOUL_METRO_ID_BASE = 80_000
 
 /** Synthetic metroId base for Tokyo stations (not used by JP site APIs). */
 private const val TOKYO_METRO_ID_BASE = 90_000
+
+/** Synthetic metroId base for Vienna stations (not used by AT site APIs). */
+private const val WIEN_METRO_ID_BASE = 100_000
 
 object MetroStationsGeoCatalog {
     private val mutex = Mutex()
@@ -102,7 +106,8 @@ object MetroStationsGeoCatalog {
         val bangkok = loadBangkokStations()
         val seoul = loadSeoulStations()
         val tokyo = loadTokyoStations()
-        return minsk + warsaw + tbilisi + almaty + madrid + barcelona + berlin + bangkok + seoul + tokyo
+        val wien = loadWienStations()
+        return minsk + warsaw + tbilisi + almaty + madrid + barcelona + berlin + bangkok + seoul + tokyo + wien
     }
 
     @OptIn(ExperimentalResourceApi::class)
@@ -311,6 +316,27 @@ object MetroStationsGeoCatalog {
                     ?: MetroLine.BLUE,
                 coordinates = Coordinates(dto.latitude, dto.longitude),
                 metroId = fromCatalog?.metroId ?: (TOKYO_METRO_ID_BASE + index),
+            )
+        }
+    }
+
+    @OptIn(ExperimentalResourceApi::class)
+    private suspend fun loadWienStations(): List<MetroStationGeo> {
+        val text = Res.readBytes(WIEN_METRO_GEO_RESOURCE).decodeToString()
+        val dtos = json.decodeFromString<List<MetroStationGeoDto>>(text)
+        val catalog = entities.WienMetroStations.allStationsRequest()
+            .groupBy { it.name.lowercase() }
+        return dtos.mapIndexedNotNull { index, dto ->
+            if (dto.coordinates.size < 2) return@mapIndexedNotNull null
+            val fromCatalog = catalog[dto.name.lowercase()]?.firstOrNull()
+            MetroStationGeo(
+                jsonName = dto.name,
+                canonicalName = dto.name,
+                line = fromCatalog?.line
+                    ?: entities.WienMetroStations.lineForStationName(dto.name)
+                    ?: MetroLine.BLUE,
+                coordinates = Coordinates(dto.latitude, dto.longitude),
+                metroId = fromCatalog?.metroId ?: (WIEN_METRO_ID_BASE + index),
             )
         }
     }

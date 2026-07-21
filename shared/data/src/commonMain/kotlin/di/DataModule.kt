@@ -25,6 +25,11 @@ import listing.ae.opensooq.OpenSooqApiClient
 import listing.ae.opensooq.OpenSooqListingSource
 import listing.ae.propertyfinder.PropertyFinderApiClient
 import listing.ae.propertyfinder.PropertyFinderListingSource
+import listing.at.immowelt.ImmoweltAtApiClient
+import listing.at.immowelt.ImmoweltAtListingSource
+import listing.at.is24.Is24AtListingSource
+import listing.at.willhaben.WillhabenApiClient
+import listing.at.willhaben.WillhabenListingSource
 import listing.by.byListingSources
 import listing.ch.flatfox.FlatfoxApiClient
 import listing.ch.flatfox.FlatfoxListingSource
@@ -249,6 +254,12 @@ val dataModule = module {
     single { KleinanzeigenApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { KleinanzeigenListingSource(api = get(), flatsDao = get()) }
 
+    single { ImmoweltAtApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { ImmoweltAtListingSource(api = get(), flatsDao = get()) }
+    single { Is24AtListingSource(api = get(), flatsDao = get()) }
+    single { WillhabenApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { WillhabenListingSource(api = get(), flatsDao = get()) }
+
     single { EmlakjetApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
     single { EmlakjetListingSource(api = get(), flatsDao = get()) }
 
@@ -327,6 +338,9 @@ val dataModule = module {
                 get<Is24ListingSource>(),
                 get<ImmoweltListingSource>(),
                 get<KleinanzeigenListingSource>(),
+                get<ImmoweltAtListingSource>(),
+                get<Is24AtListingSource>(),
+                get<WillhabenListingSource>(),
                 get<EmlakjetListingSource>(),
                 get<PropertyFinderListingSource>(),
                 get<DubizzleListingSource>(),

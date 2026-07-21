@@ -361,6 +361,7 @@ object MetroStations {
             CityCode.BANGKOK -> BangkokMetroStations.allStationsRequest()
             CityCode.SEOUL -> SeoulMetroStations.allStationsRequest()
             CityCode.TOKYO -> TokyoMetroStations.allStationsRequest()
+            CityCode.WIEN -> WienMetroStations.allStationsRequest()
             CityCode.MINSK, null -> allStationsRequest()
             else -> emptyList()
         }

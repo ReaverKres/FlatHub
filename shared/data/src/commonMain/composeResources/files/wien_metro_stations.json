@@ -1,0 +1,660 @@
+[
+  {
+    "name": "Leopoldau",
+    "coordinates": [
+      48.2769754,
+      16.4506322
+    ]
+  },
+  {
+    "name": "Großfeldsiedlung",
+    "coordinates": [
+      48.2702013,
+      16.447524
+    ]
+  },
+  {
+    "name": "Aderklaaer Straße",
+    "coordinates": [
+      48.2648196,
+      16.4526265
+    ]
+  },
+  {
+    "name": "Rennbahnweg",
+    "coordinates": [
+      48.2570809,
+      16.4494824
+    ]
+  },
+  {
+    "name": "Kagran",
+    "coordinates": [
+      48.2432991,
+      16.4337618
+    ]
+  },
+  {
+    "name": "Kagraner Platz",
+    "coordinates": [
+      48.2501426,
+      16.4427091
+    ]
+  },
+  {
+    "name": "Alte Donau",
+    "coordinates": [
+      48.2371427,
+      16.4256501
+    ]
+  },
+  {
+    "name": "Donauinsel",
+    "coordinates": [
+      48.2292562,
+      16.411286
+    ]
+  },
+  {
+    "name": "Vorgartenstraße",
+    "coordinates": [
+      48.224361,
+      16.4013776
+    ]
+  },
+  {
+    "name": "Praterstern",
+    "coordinates": [
+      48.2182682,
+      16.3913614
+    ]
+  },
+  {
+    "name": "Nestroyplatz",
+    "coordinates": [
+      48.2148204,
+      16.3842108
+    ]
+  },
+  {
+    "name": "Schwedenplatz",
+    "coordinates": [
+      48.211576,
+      16.3778597
+    ]
+  },
+  {
+    "name": "Stephansplatz",
+    "coordinates": [
+      48.2081338,
+      16.3717242
+    ]
+  },
+  {
+    "name": "Karlsplatz",
+    "coordinates": [
+      48.2003387,
+      16.369694
+    ]
+  },
+  {
+    "name": "Taubstummengasse",
+    "coordinates": [
+      48.1937999,
+      16.3704037
+    ]
+  },
+  {
+    "name": "Südtiroler Platz - Hauptbahnhof",
+    "coordinates": [
+      48.2601311,
+      16.3668374
+    ]
+  },
+  {
+    "name": "Keplerplatz",
+    "coordinates": [
+      48.1781681,
+      16.3760451
+    ]
+  },
+  {
+    "name": "Reumannplatz",
+    "coordinates": [
+      48.1753466,
+      16.3772578
+    ]
+  },
+  {
+    "name": "Troststraße",
+    "coordinates": [
+      48.1684991,
+      16.3805277
+    ]
+  },
+  {
+    "name": "Altes Landgut",
+    "coordinates": [
+      48.160626,
+      16.3837167
+    ]
+  },
+  {
+    "name": "Alaudagasse",
+    "coordinates": [
+      48.1526019,
+      16.3818302
+    ]
+  },
+  {
+    "name": "Neulaa",
+    "coordinates": [
+      48.1467762,
+      16.3825938
+    ]
+  },
+  {
+    "name": "Oberlaa",
+    "coordinates": [
+      48.1429461,
+      16.3988084
+    ]
+  },
+  {
+    "name": "Seestadt",
+    "coordinates": [
+      48.2252766,
+      16.5083939
+    ]
+  },
+  {
+    "name": "Hausfeldstraße",
+    "coordinates": [
+      48.2333372,
+      16.4864211
+    ]
+  },
+  {
+    "name": "Aspern Nord",
+    "coordinates": [
+      48.2344921,
+      16.5047467
+    ]
+  },
+  {
+    "name": "Aspernstraße",
+    "coordinates": [
+      48.2220807,
+      16.4745184
+    ]
+  },
+  {
+    "name": "Stadlau",
+    "coordinates": [
+      48.2189864,
+      16.4486739
+    ]
+  },
+  {
+    "name": "Hardeggasse",
+    "coordinates": [
+      48.2214164,
+      16.4590135
+    ]
+  },
+  {
+    "name": "Donaumarina",
+    "coordinates": [
+      48.2060325,
+      16.4307076
+    ]
+  },
+  {
+    "name": "Donaustadtbrücke",
+    "coordinates": [
+      48.2117017,
+      16.4398973
+    ]
+  },
+  {
+    "name": "Stadion",
+    "coordinates": [
+      48.2110552,
+      16.4221736
+    ]
+  },
+  {
+    "name": "Krieau",
+    "coordinates": [
+      48.2150838,
+      16.4136396
+    ]
+  },
+  {
+    "name": "Messe-Prater",
+    "coordinates": [
+      48.2177893,
+      16.4056985
+    ]
+  },
+  {
+    "name": "Taborstraße",
+    "coordinates": [
+      48.2221645,
+      16.3827196
+    ]
+  },
+  {
+    "name": "Schottenring",
+    "coordinates": [
+      48.2165922,
+      16.3712032
+    ]
+  },
+  {
+    "name": "Schottentor",
+    "coordinates": [
+      48.213725,
+      16.3621481
+    ]
+  },
+  {
+    "name": "Rathaus",
+    "coordinates": [
+      48.2091755,
+      16.3547909
+    ]
+  },
+  {
+    "name": "Volkstheater",
+    "coordinates": [
+      48.2055835,
+      16.3570367
+    ]
+  },
+  {
+    "name": "Museumsquartier",
+    "coordinates": [
+      48.2027516,
+      16.3624446
+    ]
+  },
+  {
+    "name": "Ottakring",
+    "coordinates": [
+      48.2115521,
+      16.311591
+    ]
+  },
+  {
+    "name": "Kendlerstraße",
+    "coordinates": [
+      48.2037395,
+      16.3080426
+    ]
+  },
+  {
+    "name": "Hütteldorfer Straße",
+    "coordinates": [
+      48.1995782,
+      16.3121479
+    ]
+  },
+  {
+    "name": "Johnstraße",
+    "coordinates": [
+      48.1994884,
+      16.3189931
+    ]
+  },
+  {
+    "name": "Schweglerstraße",
+    "coordinates": [
+      48.1985364,
+      16.3289734
+    ]
+  },
+  {
+    "name": "Westbahnhof",
+    "coordinates": [
+      48.1969257,
+      16.3391064
+    ]
+  },
+  {
+    "name": "Zieglergasse",
+    "coordinates": [
+      48.1971951,
+      16.34623
+    ]
+  },
+  {
+    "name": "Neubaugasse",
+    "coordinates": [
+      48.1980873,
+      16.3508024
+    ]
+  },
+  {
+    "name": "Herrengasse",
+    "coordinates": [
+      48.2105883,
+      16.3656785
+    ]
+  },
+  {
+    "name": "Stubentor",
+    "coordinates": [
+      48.2067269,
+      16.3798899
+    ]
+  },
+  {
+    "name": "Landstraße",
+    "coordinates": [
+      48.2055655,
+      16.3854235
+    ]
+  },
+  {
+    "name": "Rochusgasse",
+    "coordinates": [
+      48.2022726,
+      16.3908044
+    ]
+  },
+  {
+    "name": "Kardinal-Nagl-Platz",
+    "coordinates": [
+      48.1978598,
+      16.4013147
+    ]
+  },
+  {
+    "name": "Schlachthausgasse",
+    "coordinates": [
+      48.1941352,
+      16.4074861
+    ]
+  },
+  {
+    "name": "Erdberg",
+    "coordinates": [
+      48.1907757,
+      16.4146277
+    ]
+  },
+  {
+    "name": "Gasometer",
+    "coordinates": [
+      48.1854755,
+      16.4175023
+    ]
+  },
+  {
+    "name": "Zippererstraße",
+    "coordinates": [
+      48.1794919,
+      16.4107201
+    ]
+  },
+  {
+    "name": "Enkplatz",
+    "coordinates": [
+      48.1740107,
+      16.4161728
+    ]
+  },
+  {
+    "name": "Simmering",
+    "coordinates": [
+      48.1704702,
+      16.4194427
+    ]
+  },
+  {
+    "name": "Heiligenstadt",
+    "coordinates": [
+      48.2491556,
+      16.362768
+    ]
+  },
+  {
+    "name": "Spittelau",
+    "coordinates": [
+      48.2359939,
+      16.3567672
+    ]
+  },
+  {
+    "name": "Friedensbrücke",
+    "coordinates": [
+      48.2271438,
+      16.3651306
+    ]
+  },
+  {
+    "name": "Rossauer Lände",
+    "coordinates": [
+      48.2601311,
+      16.3668374
+    ]
+  },
+  {
+    "name": "Stadtpark",
+    "coordinates": [
+      48.2028773,
+      16.3796383
+    ]
+  },
+  {
+    "name": "Kettenbrückengasse",
+    "coordinates": [
+      48.1966622,
+      16.3580788
+    ]
+  },
+  {
+    "name": "Pilgramgasse",
+    "coordinates": [
+      48.1928956,
+      16.3545035
+    ]
+  },
+  {
+    "name": "Margaretengürtel",
+    "coordinates": [
+      48.1883263,
+      16.3417115
+    ]
+  },
+  {
+    "name": "Längenfeldgasse",
+    "coordinates": [
+      48.1852778,
+      16.3354323
+    ]
+  },
+  {
+    "name": "Meidling Hauptstraße",
+    "coordinates": [
+      48.1839182,
+      16.3285961
+    ]
+  },
+  {
+    "name": "Schönbrunn",
+    "coordinates": [
+      48.1847927,
+      16.3200351
+    ]
+  },
+  {
+    "name": "Hietzing",
+    "coordinates": [
+      48.1884041,
+      16.3039732
+    ]
+  },
+  {
+    "name": "Braunschweiggasse",
+    "coordinates": [
+      48.190063,
+      16.2948015
+    ]
+  },
+  {
+    "name": "Unter St. Veit",
+    "coordinates": [
+      48.1856911,
+      16.2820633
+    ]
+  },
+  {
+    "name": "Ober St. Veit",
+    "coordinates": [
+      48.1919974,
+      16.2766285
+    ]
+  },
+  {
+    "name": "Hütteldorf",
+    "coordinates": [
+      48.2026558,
+      16.2559493
+    ]
+  },
+  {
+    "name": "Floridsdorf",
+    "coordinates": [
+      48.2561897,
+      16.4005152
+    ]
+  },
+  {
+    "name": "Neue Donau",
+    "coordinates": [
+      48.2463979,
+      16.3948199
+    ]
+  },
+  {
+    "name": "Handelskai",
+    "coordinates": [
+      48.2418274,
+      16.385702
+    ]
+  },
+  {
+    "name": "Dresdner Straße",
+    "coordinates": [
+      48.2371906,
+      16.3793689
+    ]
+  },
+  {
+    "name": "Jägerstraße",
+    "coordinates": [
+      48.2358683,
+      16.370233
+    ]
+  },
+  {
+    "name": "Josefstädter Straße",
+    "coordinates": [
+      48.2111689,
+      16.3392591
+    ]
+  },
+  {
+    "name": "Alser Straße",
+    "coordinates": [
+      48.2172207,
+      16.3421337
+    ]
+  },
+  {
+    "name": "Michelbeuern AKH",
+    "coordinates": [
+      48.2601311,
+      16.3668374
+    ]
+  },
+  {
+    "name": "Währinger Straße - Volksoper",
+    "coordinates": [
+      48.2256776,
+      16.3494909
+    ]
+  },
+  {
+    "name": "Nußdorfer Straße",
+    "coordinates": [
+      48.2323918,
+      16.353686
+    ]
+  },
+  {
+    "name": "Thaliastraße",
+    "coordinates": [
+      48.2086307,
+      16.3383518
+    ]
+  },
+  {
+    "name": "Burggasse - Stadthalle",
+    "coordinates": [
+      48.2032844,
+      16.337148
+    ]
+  },
+  {
+    "name": "Gumpendorfer Straße",
+    "coordinates": [
+      48.1907937,
+      16.3378128
+    ]
+  },
+  {
+    "name": "Niederhofstraße",
+    "coordinates": [
+      48.1813487,
+      16.3313449
+    ]
+  },
+  {
+    "name": "Bahnhof Meidling",
+    "coordinates": [
+      48.1735135,
+      16.3313539
+    ]
+  },
+  {
+    "name": "Tscherttegasse",
+    "coordinates": [
+      48.1647664,
+      16.3274822
+    ]
+  },
+  {
+    "name": "Am Schöpfwerk",
+    "coordinates": [
+      48.1614769,
+      16.3246435
+    ]
+  },
+  {
+    "name": "Erlaaer Straße",
+    "coordinates": [
+      48.1421189,
+      16.313702
+    ]
+  },
+  {
+    "name": "Siebenhirten",
+    "coordinates": [
+      48.1297271,
+      16.2980893
+    ]
+  }
+]

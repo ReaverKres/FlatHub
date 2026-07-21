@@ -10,7 +10,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 data class Country(val country: CountryCode, val allCities: List<City>)
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, TR, AE, TH, US, KR, JP, CH;
+    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -20,6 +20,7 @@ enum class CountryCode {
             "KZ" -> KZ
             "ES" -> ES
             "DE" -> DE
+            "AT" -> AT
             "TR" -> TR
             "AE" -> AE
             "TH" -> TH
@@ -51,6 +52,9 @@ enum class CityCode {
 
     // Germany (MVP)
     BERLIN, MUENCHEN, HAMBURG, KOELN, FRANKFURT, STUTTGART, DUESSELDORF, LEIPZIG,
+
+    // Austria (MVP)
+    WIEN, GRAZ, LINZ, SALZBURG, INNSBRUCK, KLAGENFURT, VILLACH, WELS, ST_POELTEN, DORNBIRN,
 
     // Turkey (MVP)
     ISTANBUL, ANKARA, IZMIR, ANTALYA, BURSA, ADANA, GAZIANTEP, KONYA,
@@ -91,6 +95,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.KZ -> CityCode.ALMATY
     CountryCode.ES -> CityCode.MADRID
     CountryCode.DE -> CityCode.BERLIN
+    CountryCode.AT -> CityCode.WIEN
     CountryCode.TR -> CityCode.ISTANBUL
     CountryCode.AE -> CityCode.DUBAI
     CountryCode.TH -> CityCode.BANGKOK
@@ -140,6 +145,16 @@ object Location {
         CityCode.STUTTGART -> "stuttgart"
         CityCode.DUESSELDORF -> "duesseldorf"
         CityCode.LEIPZIG -> "leipzig"
+        CityCode.WIEN -> "wien"
+        CityCode.GRAZ -> "graz"
+        CityCode.LINZ -> "linz"
+        CityCode.SALZBURG -> "salzburg"
+        CityCode.INNSBRUCK -> "innsbruck"
+        CityCode.KLAGENFURT -> "klagenfurt"
+        CityCode.VILLACH -> "villach"
+        CityCode.WELS -> "wels"
+        CityCode.ST_POELTEN -> "st-poelten"
+        CityCode.DORNBIRN -> "dornbirn"
         CityCode.ISTANBUL -> "istanbul"
         CityCode.ANKARA -> "ankara"
         CityCode.IZMIR -> "izmir"

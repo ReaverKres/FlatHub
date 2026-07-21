@@ -32,7 +32,7 @@ fun CountryCode.marketContentLanguageTag(): String = when (this) {
     CountryCode.PL -> "pl"
     CountryCode.GE -> "ka"
     CountryCode.ES -> "es"
-    CountryCode.DE, CountryCode.CH -> "de"
+    CountryCode.DE, CountryCode.AT, CountryCode.CH -> "de"
     CountryCode.TR -> "tr"
     CountryCode.AE -> "en"
     CountryCode.TH -> "th"

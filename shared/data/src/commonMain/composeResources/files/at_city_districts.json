@@ -1,0 +1,648 @@
+{
+  "Wien": [
+    {
+      "id": 100001,
+      "nameEn": "Innere Stadt",
+      "nameLocal": "Innere Stadt",
+      "coordinates": [
+        {
+          "latitude": 48.1965,
+          "longitude": 16.3581
+        },
+        {
+          "latitude": 48.1965,
+          "longitude": 16.3881
+        },
+        {
+          "latitude": 48.2205,
+          "longitude": 16.3881
+        },
+        {
+          "latitude": 48.2205,
+          "longitude": 16.3581
+        },
+        {
+          "latitude": 48.1965,
+          "longitude": 16.3581
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100002,
+      "nameEn": "Leopoldstadt",
+      "nameLocal": "Leopoldstadt",
+      "coordinates": [
+        {
+          "latitude": 48.1967,
+          "longitude": 16.375
+        },
+        {
+          "latitude": 48.1967,
+          "longitude": 16.424999999999997
+        },
+        {
+          "latitude": 48.236700000000006,
+          "longitude": 16.424999999999997
+        },
+        {
+          "latitude": 48.236700000000006,
+          "longitude": 16.375
+        },
+        {
+          "latitude": 48.1967,
+          "longitude": 16.375
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100003,
+      "nameEn": "Landstraße",
+      "nameLocal": "Landstraße",
+      "coordinates": [
+        {
+          "latitude": 48.1713,
+          "longitude": 16.375
+        },
+        {
+          "latitude": 48.1713,
+          "longitude": 16.424999999999997
+        },
+        {
+          "latitude": 48.2153,
+          "longitude": 16.424999999999997
+        },
+        {
+          "latitude": 48.2153,
+          "longitude": 16.375
+        },
+        {
+          "latitude": 48.1713,
+          "longitude": 16.375
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100004,
+      "nameEn": "Wieden",
+      "nameLocal": "Wieden",
+      "coordinates": [
+        {
+          "latitude": 48.1778,
+          "longitude": 16.3506
+        },
+        {
+          "latitude": 48.1778,
+          "longitude": 16.3806
+        },
+        {
+          "latitude": 48.2078,
+          "longitude": 16.3806
+        },
+        {
+          "latitude": 48.2078,
+          "longitude": 16.3506
+        },
+        {
+          "latitude": 48.1778,
+          "longitude": 16.3506
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100005,
+      "nameEn": "Margareten",
+      "nameLocal": "Margareten",
+      "coordinates": [
+        {
+          "latitude": 48.1725,
+          "longitude": 16.3397
+        },
+        {
+          "latitude": 48.1725,
+          "longitude": 16.3697
+        },
+        {
+          "latitude": 48.2025,
+          "longitude": 16.3697
+        },
+        {
+          "latitude": 48.2025,
+          "longitude": 16.3397
+        },
+        {
+          "latitude": 48.1725,
+          "longitude": 16.3397
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100006,
+      "nameEn": "Mariahilf",
+      "nameLocal": "Mariahilf",
+      "coordinates": [
+        {
+          "latitude": 48.1836,
+          "longitude": 16.33
+        },
+        {
+          "latitude": 48.1836,
+          "longitude": 16.36
+        },
+        {
+          "latitude": 48.2136,
+          "longitude": 16.36
+        },
+        {
+          "latitude": 48.2136,
+          "longitude": 16.33
+        },
+        {
+          "latitude": 48.1836,
+          "longitude": 16.33
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100007,
+      "nameEn": "Neubau",
+      "nameLocal": "Neubau",
+      "coordinates": [
+        {
+          "latitude": 48.1916,
+          "longitude": 16.3383
+        },
+        {
+          "latitude": 48.1916,
+          "longitude": 16.3623
+        },
+        {
+          "latitude": 48.2156,
+          "longitude": 16.3623
+        },
+        {
+          "latitude": 48.2156,
+          "longitude": 16.3383
+        },
+        {
+          "latitude": 48.1916,
+          "longitude": 16.3383
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100008,
+      "nameEn": "Josefstadt",
+      "nameLocal": "Josefstadt",
+      "coordinates": [
+        {
+          "latitude": 48.1987,
+          "longitude": 16.3355
+        },
+        {
+          "latitude": 48.1987,
+          "longitude": 16.3595
+        },
+        {
+          "latitude": 48.2227,
+          "longitude": 16.3595
+        },
+        {
+          "latitude": 48.2227,
+          "longitude": 16.3355
+        },
+        {
+          "latitude": 48.1987,
+          "longitude": 16.3355
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100009,
+      "nameEn": "Alsergrund",
+      "nameLocal": "Alsergrund",
+      "coordinates": [
+        {
+          "latitude": 48.2042,
+          "longitude": 16.3417
+        },
+        {
+          "latitude": 48.2042,
+          "longitude": 16.3777
+        },
+        {
+          "latitude": 48.2402,
+          "longitude": 16.3777
+        },
+        {
+          "latitude": 48.2402,
+          "longitude": 16.3417
+        },
+        {
+          "latitude": 48.2042,
+          "longitude": 16.3417
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100010,
+      "nameEn": "Favoriten",
+      "nameLocal": "Favoriten",
+      "coordinates": [
+        {
+          "latitude": 48.1333,
+          "longitude": 16.3583
+        },
+        {
+          "latitude": 48.1333,
+          "longitude": 16.408299999999997
+        },
+        {
+          "latitude": 48.1933,
+          "longitude": 16.408299999999997
+        },
+        {
+          "latitude": 48.1933,
+          "longitude": 16.3583
+        },
+        {
+          "latitude": 48.1333,
+          "longitude": 16.3583
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100011,
+      "nameEn": "Simmering",
+      "nameLocal": "Simmering",
+      "coordinates": [
+        {
+          "latitude": 48.145,
+          "longitude": 16.403299999999998
+        },
+        {
+          "latitude": 48.145,
+          "longitude": 16.4633
+        },
+        {
+          "latitude": 48.195,
+          "longitude": 16.4633
+        },
+        {
+          "latitude": 48.195,
+          "longitude": 16.403299999999998
+        },
+        {
+          "latitude": 48.145,
+          "longitude": 16.403299999999998
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100012,
+      "nameEn": "Meidling",
+      "nameLocal": "Meidling",
+      "coordinates": [
+        {
+          "latitude": 48.153,
+          "longitude": 16.3133
+        },
+        {
+          "latitude": 48.153,
+          "longitude": 16.3533
+        },
+        {
+          "latitude": 48.196999999999996,
+          "longitude": 16.3533
+        },
+        {
+          "latitude": 48.196999999999996,
+          "longitude": 16.3133
+        },
+        {
+          "latitude": 48.153,
+          "longitude": 16.3133
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100013,
+      "nameEn": "Hietzing",
+      "nameLocal": "Hietzing",
+      "coordinates": [
+        {
+          "latitude": 48.1617,
+          "longitude": 16.275000000000002
+        },
+        {
+          "latitude": 48.1617,
+          "longitude": 16.325
+        },
+        {
+          "latitude": 48.2117,
+          "longitude": 16.325
+        },
+        {
+          "latitude": 48.2117,
+          "longitude": 16.275000000000002
+        },
+        {
+          "latitude": 48.1617,
+          "longitude": 16.275000000000002
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100014,
+      "nameEn": "Penzing",
+      "nameLocal": "Penzing",
+      "coordinates": [
+        {
+          "latitude": 48.173300000000005,
+          "longitude": 16.2533
+        },
+        {
+          "latitude": 48.173300000000005,
+          "longitude": 16.3133
+        },
+        {
+          "latitude": 48.2433,
+          "longitude": 16.3133
+        },
+        {
+          "latitude": 48.2433,
+          "longitude": 16.2533
+        },
+        {
+          "latitude": 48.173300000000005,
+          "longitude": 16.2533
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100015,
+      "nameEn": "Rudolfsheim-Fünfhaus",
+      "nameLocal": "Rudolfsheim-Fünfhaus",
+      "coordinates": [
+        {
+          "latitude": 48.1767,
+          "longitude": 16.3153
+        },
+        {
+          "latitude": 48.1767,
+          "longitude": 16.351300000000002
+        },
+        {
+          "latitude": 48.2067,
+          "longitude": 16.351300000000002
+        },
+        {
+          "latitude": 48.2067,
+          "longitude": 16.3153
+        },
+        {
+          "latitude": 48.1767,
+          "longitude": 16.3153
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100016,
+      "nameEn": "Ottakring",
+      "nameLocal": "Ottakring",
+      "coordinates": [
+        {
+          "latitude": 48.1967,
+          "longitude": 16.2967
+        },
+        {
+          "latitude": 48.1967,
+          "longitude": 16.3367
+        },
+        {
+          "latitude": 48.236700000000006,
+          "longitude": 16.3367
+        },
+        {
+          "latitude": 48.236700000000006,
+          "longitude": 16.2967
+        },
+        {
+          "latitude": 48.1967,
+          "longitude": 16.2967
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100017,
+      "nameEn": "Hernals",
+      "nameLocal": "Hernals",
+      "coordinates": [
+        {
+          "latitude": 48.205,
+          "longitude": 16.294700000000002
+        },
+        {
+          "latitude": 48.205,
+          "longitude": 16.3387
+        },
+        {
+          "latitude": 48.245000000000005,
+          "longitude": 16.3387
+        },
+        {
+          "latitude": 48.245000000000005,
+          "longitude": 16.294700000000002
+        },
+        {
+          "latitude": 48.205,
+          "longitude": 16.294700000000002
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100018,
+      "nameEn": "Währing",
+      "nameLocal": "Währing",
+      "coordinates": [
+        {
+          "latitude": 48.2153,
+          "longitude": 16.3217
+        },
+        {
+          "latitude": 48.2153,
+          "longitude": 16.3617
+        },
+        {
+          "latitude": 48.2513,
+          "longitude": 16.3617
+        },
+        {
+          "latitude": 48.2513,
+          "longitude": 16.3217
+        },
+        {
+          "latitude": 48.2153,
+          "longitude": 16.3217
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100019,
+      "nameEn": "Döbling",
+      "nameLocal": "Döbling",
+      "coordinates": [
+        {
+          "latitude": 48.215,
+          "longitude": 16.32
+        },
+        {
+          "latitude": 48.215,
+          "longitude": 16.380000000000003
+        },
+        {
+          "latitude": 48.285,
+          "longitude": 16.380000000000003
+        },
+        {
+          "latitude": 48.285,
+          "longitude": 16.32
+        },
+        {
+          "latitude": 48.215,
+          "longitude": 16.32
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100020,
+      "nameEn": "Brigittenau",
+      "nameLocal": "Brigittenau",
+      "coordinates": [
+        {
+          "latitude": 48.2183,
+          "longitude": 16.365299999999998
+        },
+        {
+          "latitude": 48.2183,
+          "longitude": 16.4013
+        },
+        {
+          "latitude": 48.2483,
+          "longitude": 16.4013
+        },
+        {
+          "latitude": 48.2483,
+          "longitude": 16.365299999999998
+        },
+        {
+          "latitude": 48.2183,
+          "longitude": 16.365299999999998
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100021,
+      "nameEn": "Floridsdorf",
+      "nameLocal": "Floridsdorf",
+      "coordinates": [
+        {
+          "latitude": 48.22,
+          "longitude": 16.365
+        },
+        {
+          "latitude": 48.22,
+          "longitude": 16.435
+        },
+        {
+          "latitude": 48.28,
+          "longitude": 16.435
+        },
+        {
+          "latitude": 48.28,
+          "longitude": 16.365
+        },
+        {
+          "latitude": 48.22,
+          "longitude": 16.365
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100022,
+      "nameEn": "Donaustadt",
+      "nameLocal": "Donaustadt",
+      "coordinates": [
+        {
+          "latitude": 48.1933,
+          "longitude": 16.41
+        },
+        {
+          "latitude": 48.1933,
+          "longitude": 16.49
+        },
+        {
+          "latitude": 48.2733,
+          "longitude": 16.49
+        },
+        {
+          "latitude": 48.2733,
+          "longitude": 16.41
+        },
+        {
+          "latitude": 48.1933,
+          "longitude": 16.41
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 100023,
+      "nameEn": "Liesing",
+      "nameLocal": "Liesing",
+      "coordinates": [
+        {
+          "latitude": 48.115,
+          "longitude": 16.265
+        },
+        {
+          "latitude": 48.115,
+          "longitude": 16.335
+        },
+        {
+          "latitude": 48.184999999999995,
+          "longitude": 16.335
+        },
+        {
+          "latitude": 48.184999999999995,
+          "longitude": 16.265
+        },
+        {
+          "latitude": 48.115,
+          "longitude": 16.265
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

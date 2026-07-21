@@ -34,6 +34,11 @@ enum class FlatPlatform(val value: String) {
     IMMOWELT("immowelt"),
     KLEINANZEIGEN("kleinanzeigen"),
 
+    // Austria (MVP)
+    IS24_AT("is24_at"),
+    IMMOWELT_AT("immowelt_at"),
+    WILLHABEN("willhaben"),
+
     // Turkey (MVP)
     EMLAKJET("emlakjet"),
 
@@ -94,6 +99,11 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.IMMOWELT,
     FlatPlatform.KLEINANZEIGEN,
         -> CountryCode.DE
+
+    FlatPlatform.IS24_AT,
+    FlatPlatform.IMMOWELT_AT,
+    FlatPlatform.WILLHABEN,
+        -> CountryCode.AT
 
     FlatPlatform.EMLAKJET,
         -> CountryCode.TR
@@ -158,6 +168,9 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.IS24 -> DrawablePath.IS2432
     FlatPlatform.IMMOWELT -> DrawablePath.IMMOWELT32
     FlatPlatform.KLEINANZEIGEN -> DrawablePath.KLEINANZEIGEN32
+    FlatPlatform.IS24_AT -> DrawablePath.IS24AT32
+    FlatPlatform.IMMOWELT_AT -> DrawablePath.IMMOWELTAT32
+    FlatPlatform.WILLHABEN -> DrawablePath.WILLHABEN32
     FlatPlatform.EMLAKJET -> DrawablePath.EMLAKJET32
     FlatPlatform.PROPERTY_FINDER -> DrawablePath.PROPERTYFINDER32
     FlatPlatform.DUBIZZLE -> DrawablePath.DUBIZZLE32

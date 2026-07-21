@@ -36,8 +36,6 @@ fun AppAsyncImage(
         ImageRequest.Builder(context)
             .data(imageUrl)
             .memoryCacheKey(imageUrl)
-//            .diskCacheKey(imageUrl)
-//            .diskCachePolicy(CachePolicy.ENABLED)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .build()
     } else {

@@ -139,6 +139,7 @@
     <string name="country_kz">ყაზახეთი</string>
     <string name="country_es">ესპანეთი</string>
     <string name="country_de">გერმანია</string>
+    <string name="country_at">Austria</string>
     <string name="country_tr">ტურყეთი</string>
     <string name="country_ae">არაბთა გაერტიანბული საამირებები</string>
     <string name="country_th">ტაილანდი</string>
@@ -184,6 +185,16 @@
     <string name="city_stuttgart">შტუტგარტი</string>
     <string name="city_duesseldorf">დშსელრუფი</string>
     <string name="city_leipzig">ლაიპციგი</string>
+    <string name="city_wien">Vienna</string>
+    <string name="city_graz">Graz</string>
+    <string name="city_linz">Linz</string>
+    <string name="city_salzburg">Salzburg</string>
+    <string name="city_innsbruck">Innsbruck</string>
+    <string name="city_klagenfurt">Klagenfurt</string>
+    <string name="city_villach">Villach</string>
+    <string name="city_wels">Wels</string>
+    <string name="city_st_poelten">St. Pölten</string>
+    <string name="city_dornbirn">Dornbirn</string>
     <string name="city_istanbul">ისტანბული</string>
     <string name="city_ankara">ანკარა</string>
     <string name="city_izmir">იზმირი</string>

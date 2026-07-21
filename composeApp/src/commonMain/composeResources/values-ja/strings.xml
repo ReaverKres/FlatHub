@@ -147,6 +147,7 @@
     <string name="country_kz">カザフスタン</string>
     <string name="country_es">スペイン</string>
     <string name="country_de">ドイツ</string>
+    <string name="country_at">Austria</string>
     <string name="country_tr">トルコ</string>
     <string name="country_ae">アラブ首長国連邦</string>
     <string name="country_th">タイ</string>
@@ -192,6 +193,16 @@
     <string name="city_stuttgart">シュトゥットガルト</string>
     <string name="city_duesseldorf">デュッセルドルフ</string>
     <string name="city_leipzig">ライプツィヒ</string>
+    <string name="city_wien">Vienna</string>
+    <string name="city_graz">Graz</string>
+    <string name="city_linz">Linz</string>
+    <string name="city_salzburg">Salzburg</string>
+    <string name="city_innsbruck">Innsbruck</string>
+    <string name="city_klagenfurt">Klagenfurt</string>
+    <string name="city_villach">Villach</string>
+    <string name="city_wels">Wels</string>
+    <string name="city_st_poelten">St. Pölten</string>
+    <string name="city_dornbirn">Dornbirn</string>
     <string name="city_istanbul">イスタンブール</string>
     <string name="city_ankara">アンカラ</string>
     <string name="city_izmir">イズミル</string>

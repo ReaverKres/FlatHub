@@ -185,6 +185,9 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.IS24,
     FlatPlatform.IMMOWELT,
     FlatPlatform.KLEINANZEIGEN,
+    FlatPlatform.IS24_AT,
+    FlatPlatform.IMMOWELT_AT,
+    FlatPlatform.WILLHABEN,
         -> "€"
 
     FlatPlatform.EMLAKJET,

@@ -38,6 +38,9 @@ object FeedDelayListBoost {
         FlatPlatform.IS24 to 3.0,
         FlatPlatform.IMMOWELT to 2.0,
         FlatPlatform.KLEINANZEIGEN to 2.5,
+        FlatPlatform.IS24_AT to 3.0,
+        FlatPlatform.IMMOWELT_AT to 2.0,
+        FlatPlatform.WILLHABEN to 2.5,
         FlatPlatform.EMLAKJET to 2.5,
         FlatPlatform.PROPERTY_FINDER to 3.0,
         FlatPlatform.DUBIZZLE to 3.0,
@@ -77,7 +80,7 @@ object FeedDelayListBoost {
     fun htmlExtraPages(platform: FlatPlatform): Int {
         if (!active) return 0
         // Immowelt pagination is DataDome-broken / ignored — first page only.
-        if (platform == FlatPlatform.IMMOWELT) return 0
+        if (platform == FlatPlatform.IMMOWELT || platform == FlatPlatform.IMMOWELT_AT) return 0
         val pop = cappedPopularity(platform)
         return if (pop >= 1.5) 1 else 0
     }
