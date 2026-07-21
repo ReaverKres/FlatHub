@@ -153,6 +153,7 @@
     <string name="country_us">アメリカ</string>
     <string name="country_kr">韓国</string>
     <string name="country_jp">日本</string>
+    <string name="country_ch">スイス</string>
     <string name="city_minsk">ミンスク</string>
     <string name="city_brest">ブレスト</string>
     <string name="city_vitebsk">ヴィテブスク</string>
@@ -247,6 +248,16 @@
     <string name="city_kobe">神戸</string>
     <string name="city_sendai">仙台</string>
     <string name="city_hiroshima">広島</string>
+    <string name="city_lausanne">Lausanne</string>
+    <string name="city_luzern">Lucerne</string>
+    <string name="city_st_gallen">St. Gallen</string>
+    <string name="city_lugano">Lugano</string>
+    <string name="city_winterthur">Winterthur</string>
+    <string name="city_basel">Basel</string>
+    <string name="city_geneva">Geneva</string>
+    <string name="city_bern">Bern</string>
+    <string name="city_zurich">Zurich</string>
+    <string name="city_biel">Biel</string>
     <string name="location_metro">沿線・駅</string>
     <string name="location_metro_any_switch">すべての駅</string>
     <string name="location_metro_line_red">赤線</string>

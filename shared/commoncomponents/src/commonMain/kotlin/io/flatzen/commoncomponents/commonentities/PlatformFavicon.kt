@@ -43,4 +43,6 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.SUUMO -> "https://suumo.jp/front/img/favicon.ico"
     FlatPlatform.YAHOO_RE -> "https://realestate.yahoo.co.jp/favicon.ico"
     FlatPlatform.ATHOME -> "https://www.athome.co.jp/favicon.ico"
+    FlatPlatform.FLATFOX ->
+        "https://flatfox.ch/public/flatfox_website/favicons/favicon-32x32.4955d0c30454.png"
 }

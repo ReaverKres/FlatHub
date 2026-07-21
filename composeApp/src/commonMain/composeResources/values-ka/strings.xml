@@ -145,6 +145,7 @@
     <string name="country_us">ამერიკის შეერტებული შთატები</string>
     <string name="country_kr">სამხრეთ კორეა</string>
     <string name="country_jp">იაპონია</string>
+    <string name="country_ch">შვეიცარია</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
     <string name="city_vitebsk">ვიტებსკი</string>
@@ -239,6 +240,16 @@
     <string name="city_kobe">კobe</string>
     <string name="city_sendai">სენდაი</string>
     <string name="city_hiroshima">ჰიროსიმა</string>
+    <string name="city_lausanne">Lausanne</string>
+    <string name="city_luzern">Lucerne</string>
+    <string name="city_st_gallen">St. Gallen</string>
+    <string name="city_lugano">Lugano</string>
+    <string name="city_winterthur">Winterthur</string>
+    <string name="city_basel">Basel</string>
+    <string name="city_geneva">Geneva</string>
+    <string name="city_bern">Bern</string>
+    <string name="city_zurich">Zurich</string>
+    <string name="city_biel">Biel</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>
     <string name="location_metro_line_red">წითელი</string>

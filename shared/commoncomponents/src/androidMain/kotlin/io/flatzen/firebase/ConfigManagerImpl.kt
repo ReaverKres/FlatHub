@@ -46,6 +46,7 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 ConfigFields.EnabledPlatformsUs.param to "",
                 // Empty = all registered KR platforms (Dabang, Zigbang).
                 ConfigFields.EnabledPlatformsKr.param to "",
+                ConfigFields.EnabledPlatformsCh.param to "",
             )
         )
     }

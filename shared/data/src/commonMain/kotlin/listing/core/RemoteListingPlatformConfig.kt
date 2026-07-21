@@ -27,6 +27,7 @@ class RemoteListingPlatformConfig(
             CountryCode.US -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsUs)
             CountryCode.KR -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsKr)
             CountryCode.JP -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsJp)
+            CountryCode.CH -> configFieldsChecker.checkString(ConfigFields.EnabledPlatformsCh)
             else -> null
         }
         return parsePlatformList(raw)

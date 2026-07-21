@@ -42,4 +42,7 @@ enum class ConfigFields(val param: String) {
 
     /** Comma-separated FlatPlatform names for Japan, e.g. `SUUMO,YAHOO_RE,ATHOME`. Empty = all. */
     EnabledPlatformsJp("enabled_platforms_jp"),
+
+    /** Comma-separated FlatPlatform names for Switzerland, e.g. `FLATFOX`. Empty = all. */
+    EnabledPlatformsCh("enabled_platforms_ch"),
 }

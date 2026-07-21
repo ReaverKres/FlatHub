@@ -153,6 +153,8 @@
     <string name="country_us">Stany Zjednoczone</string>
     <string name="country_kr">Korea Południowa</string>
     <string name="country_jp">Japonia</string>
+    <string name="country_ch">Szwajcaria</string>
+
     <string name="city_minsk">Mińsk</string>
     <string name="city_brest">Brześć</string>
     <string name="city_vitebsk">Witebsk</string>
@@ -247,6 +249,16 @@
     <string name="city_kobe">Kobe</string>
     <string name="city_sendai">Sendai</string>
     <string name="city_hiroshima">Hiroshima</string>
+    <string name="city_zurich">Zurich</string>
+    <string name="city_geneva">Geneva</string>
+    <string name="city_basel">Basel</string>
+    <string name="city_bern">Bern</string>
+    <string name="city_lausanne">Lausanne</string>
+    <string name="city_winterthur">Winterthur</string>
+    <string name="city_luzern">Lucerne</string>
+    <string name="city_st_gallen">St. Gallen</string>
+    <string name="city_lugano">Lugano</string>
+    <string name="city_biel">Biel</string>
     <string name="location_metro">Metro</string>
     <string name="location_metro_any_switch">Dowolna stacja</string>
     <string name="location_metro_line_red">Czerwona</string>

@@ -75,6 +75,14 @@ class ListingSourceRegistry(
                 supportsCommercialPropertyTypes = false,
             )
 
+            CountryCode.CH -> aggregated.copy(
+                supportsSale = false,
+                supportsDaily = false,
+                supportsJeonse = false,
+                supportsCommercial = false,
+                supportsCommercialPropertyTypes = false,
+            )
+
             else -> aggregated
         }
     }

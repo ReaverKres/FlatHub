@@ -10,7 +10,7 @@ data class City(val cityCode: CityCode, val coordinates: Coordinates)
 data class Country(val country: CountryCode, val allCities: List<City>)
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, TR, AE, TH, US, KR, JP;
+    BY, PL, GE, KZ, ES, DE, TR, AE, TH, US, KR, JP, CH;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -26,6 +26,7 @@ enum class CountryCode {
             "US" -> US
             "KR" -> KR
             "JP" -> JP
+            "CH" -> CH
             else -> BY
         }
     }
@@ -68,6 +69,9 @@ enum class CityCode {
 
     // Japan (MVP)
     TOKYO, OSAKA, YOKOHAMA, NAGOYA, SAPPORO, FUKUOKA, KYOTO, KOBE, SENDAI, HIROSHIMA,
+
+    // Switzerland (MVP)
+    ZURICH, GENEVA, BASEL, BERN, LAUSANNE, WINTERTHUR, LUZERN, ST_GALLEN, LUGANO, BIEL,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
@@ -93,6 +97,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.US -> CityCode.NEW_YORK
     CountryCode.KR -> CityCode.SEOUL
     CountryCode.JP -> CityCode.TOKYO
+    CountryCode.CH -> CityCode.ZURICH
 }
 
 object Location {
@@ -191,5 +196,15 @@ object Location {
         CityCode.KOBE -> "kobe"
         CityCode.SENDAI -> "sendai"
         CityCode.HIROSHIMA -> "hiroshima"
+        CityCode.ZURICH -> "zurich"
+        CityCode.GENEVA -> "geneva"
+        CityCode.BASEL -> "basel"
+        CityCode.BERN -> "bern"
+        CityCode.LAUSANNE -> "lausanne"
+        CityCode.WINTERTHUR -> "winterthur"
+        CityCode.LUZERN -> "luzern"
+        CityCode.ST_GALLEN -> "st-gallen"
+        CityCode.LUGANO -> "lugano"
+        CityCode.BIEL -> "biel"
     }
 }

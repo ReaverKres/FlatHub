@@ -209,6 +209,9 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.ATHOME,
         -> "¥"
 
+    FlatPlatform.FLATFOX,
+        -> "CHF"
+
     FlatPlatform.ZUMPER,
         -> "$"
 

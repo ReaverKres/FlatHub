@@ -26,6 +26,8 @@ import listing.ae.opensooq.OpenSooqListingSource
 import listing.ae.propertyfinder.PropertyFinderApiClient
 import listing.ae.propertyfinder.PropertyFinderListingSource
 import listing.by.byListingSources
+import listing.ch.flatfox.FlatfoxApiClient
+import listing.ch.flatfox.FlatfoxListingSource
 import listing.core.CoordEnrichState
 import listing.core.CoordEnricher
 import listing.core.ListingSourceRegistry
@@ -295,6 +297,14 @@ val dataModule = module {
     single { AthomeListingSource(api = get(), flatsDao = get()) }
 
     single {
+        FlatfoxApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { FlatfoxListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -330,6 +340,7 @@ val dataModule = module {
                 get<YahooListingSource>(),
                 get<SuumoListingSource>(),
                 get<AthomeListingSource>(),
+                get<FlatfoxListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

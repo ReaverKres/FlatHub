@@ -47,6 +47,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.SEOUL, "Seoul", "Seoul", Coordinates(37.5665, 126.9780))
     val tokyoUiItem =
         UiCityItem(CityCode.TOKYO, "Tokyo", "Tokyo", Coordinates(35.6762, 139.6503))
+    val zurichUiItem =
+        UiCityItem(CityCode.ZURICH, "Zurich", "Zürich", Coordinates(47.3769, 8.5417))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -61,6 +63,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.US, "United States"),
         UiCountryItem(CountryCode.KR, "South Korea"),
         UiCountryItem(CountryCode.JP, "Japan"),
+        UiCountryItem(CountryCode.CH, "Switzerland"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -75,6 +78,7 @@ object LocationUiMapper {
         CountryCode.US -> newYorkUiItem
         CountryCode.KR -> seoulUiItem
         CountryCode.JP -> tokyoUiItem
+        CountryCode.CH -> zurichUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -255,6 +259,29 @@ object LocationUiMapper {
                 Coordinates(34.3853, 132.4553)
             ),
         )
+
+        CountryCode.CH -> listOf(
+            zurichUiItem,
+            UiCityItem(CityCode.GENEVA, "Geneva", "Genève", Coordinates(46.2044, 6.1432)),
+            UiCityItem(CityCode.BASEL, "Basel", "Basel", Coordinates(47.5596, 7.5886)),
+            UiCityItem(CityCode.BERN, "Bern", "Bern", Coordinates(46.9480, 7.4474)),
+            UiCityItem(CityCode.LAUSANNE, "Lausanne", "Lausanne", Coordinates(46.5197, 6.6323)),
+            UiCityItem(
+                CityCode.WINTERTHUR,
+                "Winterthur",
+                "Winterthur",
+                Coordinates(47.5005, 8.7245),
+            ),
+            UiCityItem(CityCode.LUZERN, "Lucerne", "Luzern", Coordinates(47.0502, 8.3093)),
+            UiCityItem(
+                CityCode.ST_GALLEN,
+                "St. Gallen",
+                "St. Gallen",
+                Coordinates(47.4245, 9.3767),
+            ),
+            UiCityItem(CityCode.LUGANO, "Lugano", "Lugano", Coordinates(46.0037, 8.9511)),
+            UiCityItem(CityCode.BIEL, "Biel", "Biel/Bienne", Coordinates(47.1368, 7.2468)),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -278,6 +305,7 @@ object LocationUiMapper {
             in cities(CountryCode.US).map { it.code } -> CountryCode.US
             in cities(CountryCode.KR).map { it.code } -> CountryCode.KR
             in cities(CountryCode.JP).map { it.code } -> CountryCode.JP
+            in cities(CountryCode.CH).map { it.code } -> CountryCode.CH
             else -> CountryCode.BY
         }
 

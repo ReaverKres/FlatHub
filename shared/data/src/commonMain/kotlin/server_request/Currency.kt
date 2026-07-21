@@ -29,6 +29,9 @@ enum class Currency {
 
     @SerialName("JPY")
     JPY,
+
+    @SerialName("CHF")
+    CHF,
     ;
 
     /** Short label for filter UI / chips. */
@@ -44,6 +47,7 @@ enum class Currency {
         THB -> "฿"
         KRW -> "₩"
         JPY -> "¥"
+        CHF -> "CHF"
     }
 
     /**
@@ -53,7 +57,7 @@ enum class Currency {
      * USD markets (BY rent, US) store amounts in mainPrice; usesLocalPriceField is false for USD.
      */
     fun usesLocalPriceField(): Boolean = when (this) {
-        PLN, GEL, KZT, BYR, EUR, TRY, AED, THB, KRW, JPY -> true
+        PLN, GEL, KZT, BYR, EUR, TRY, AED, THB, KRW, JPY, CHF -> true
         USD -> false
     }
 }
@@ -72,4 +76,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.US -> Currency.USD
     CountryCode.KR -> Currency.KRW
     CountryCode.JP -> Currency.JPY
+    CountryCode.CH -> Currency.CHF
 }

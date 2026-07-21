@@ -58,6 +58,9 @@ enum class FlatPlatform(val value: String) {
     SUUMO("suumo"),
     YAHOO_RE("yahoo_re"),
     ATHOME("athome"),
+
+    // Switzerland (MVP) — Flatfox rent-only; Homegate/IS24.ch/Newhome blocked
+    FLATFOX("flatfox"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -116,6 +119,9 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.YAHOO_RE,
     FlatPlatform.ATHOME,
         -> CountryCode.JP
+
+    FlatPlatform.FLATFOX,
+        -> CountryCode.CH
 }
 
 fun FlatPlatform.usesSquareFeet(): Boolean = marketCountry().usesSquareFeet()
@@ -165,4 +171,5 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.SUUMO -> DrawablePath.SUUMO32
     FlatPlatform.YAHOO_RE -> DrawablePath.YAHOO_RE32
     FlatPlatform.ATHOME -> DrawablePath.ATHOME32
+    FlatPlatform.FLATFOX -> DrawablePath.FLATFOX32
 }

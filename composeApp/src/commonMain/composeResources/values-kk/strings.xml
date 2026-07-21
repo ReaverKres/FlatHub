@@ -153,6 +153,7 @@
     <string name="country_us">AQSh</string>
     <string name="country_kr">Ong Koreya</string>
     <string name="country_jp">Жапония</string>
+    <string name="country_ch">Швейцария</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Vitebsk</string>
@@ -247,6 +248,16 @@
     <string name="city_kobe">Кobe</string>
     <string name="city_sendai">Сендай</string>
     <string name="city_hiroshima">Хиросима</string>
+    <string name="city_lausanne">Лозанна</string>
+    <string name="city_luzern">Люцерн</string>
+    <string name="city_st_gallen">Санкт-Галлен</string>
+    <string name="city_lugano">Lugano</string>
+    <string name="city_winterthur">Winterthur</string>
+    <string name="city_basel">Базель</string>
+    <string name="city_geneva">Женева</string>
+    <string name="city_bern">Берн</string>
+    <string name="city_zurich">Цюрих</string>
+    <string name="city_biel">Биль</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>
     <string name="location_metro_line_red">Қызыл</string>
