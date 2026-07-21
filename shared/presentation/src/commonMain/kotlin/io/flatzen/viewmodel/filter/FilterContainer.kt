@@ -121,6 +121,7 @@ data class FilterScreenState(
         supportsRent = true,
         supportsSale = true,
         supportsDaily = false,
+        supportsJeonse = false,
         supportsRoom = false,
         supportsCommercial = false,
         supportsCommercialPropertyTypes = false,

@@ -47,6 +47,7 @@ class ListingSourceRegistry(
                 supportsRent = true,
                 supportsSale = false,
                 supportsDaily = false,
+                supportsJeonse = false,
                 supportsRoom = false,
                 supportsCommercial = false,
                 supportsCommercialPropertyTypes = false,
@@ -57,6 +58,7 @@ class ListingSourceRegistry(
                 supportsRent = countrySources.any { it.capabilities.supportsRent },
                 supportsSale = countrySources.any { it.capabilities.supportsSale },
                 supportsDaily = countrySources.any { it.capabilities.supportsDaily },
+                supportsJeonse = countrySources.any { it.capabilities.supportsJeonse },
                 supportsRoom = countrySources.any { it.capabilities.supportsRoom },
                 supportsCommercial = countrySources.any { it.capabilities.supportsCommercial },
                 supportsCommercialPropertyTypes =
@@ -68,6 +70,7 @@ class ListingSourceRegistry(
             CountryCode.US -> aggregated.copy(
                 supportsSale = false,
                 supportsDaily = false,
+                supportsJeonse = false,
                 supportsCommercial = false,
                 supportsCommercialPropertyTypes = false,
             )

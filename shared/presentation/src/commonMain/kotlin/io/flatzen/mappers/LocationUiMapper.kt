@@ -43,6 +43,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.BANGKOK, "Bangkok", "Bangkok", Coordinates(13.7563, 100.5018))
     val newYorkUiItem =
         UiCityItem(CityCode.NEW_YORK, "New York", "New York", Coordinates(40.7128, -74.0060))
+    val seoulUiItem =
+        UiCityItem(CityCode.SEOUL, "Seoul", "Seoul", Coordinates(37.5665, 126.9780))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -55,6 +57,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.AE, "UAE"),
         UiCountryItem(CountryCode.TH, "Thailand"),
         UiCountryItem(CountryCode.US, "United States"),
+        UiCountryItem(CountryCode.KR, "South Korea"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -67,6 +70,7 @@ object LocationUiMapper {
         CountryCode.AE -> dubaiUiItem
         CountryCode.TH -> bangkokUiItem
         CountryCode.US -> newYorkUiItem
+        CountryCode.KR -> seoulUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -205,6 +209,29 @@ object LocationUiMapper {
             UiCityItem(CityCode.BOSTON, "Boston", "Boston", Coordinates(42.3601, -71.0589)),
             UiCityItem(CityCode.DENVER, "Denver", "Denver", Coordinates(39.7392, -104.9903)),
         )
+
+        CountryCode.KR -> listOf(
+            // districtsCatalogKey "Seoul" matches future seoul_city_districts.json catalog key
+            seoulUiItem,
+            UiCityItem(CityCode.BUSAN, "Busan", "Busan", Coordinates(35.1796, 129.0756)),
+            UiCityItem(CityCode.DAEGU, "Daegu", "Daegu", Coordinates(35.8714, 128.6014)),
+            UiCityItem(CityCode.INCHEON, "Incheon", "Incheon", Coordinates(37.4563, 126.7052)),
+            UiCityItem(CityCode.GWANGJU, "Gwangju", "Gwangju", Coordinates(35.1595, 126.8526)),
+            UiCityItem(CityCode.DAEJEON, "Daejeon", "Daejeon", Coordinates(36.3504, 127.3845)),
+            UiCityItem(CityCode.ULSAN, "Ulsan", "Ulsan", Coordinates(35.5384, 129.3114)),
+            UiCityItem(CityCode.SEJONG, "Sejong", "Sejong", Coordinates(36.4800, 127.2890)),
+            UiCityItem(CityCode.SUWON, "Suwon", "Suwon", Coordinates(37.2636, 127.0286)),
+            UiCityItem(CityCode.CHANGWON, "Changwon", "Changwon", Coordinates(35.2284, 128.6811)),
+            UiCityItem(CityCode.JEONJU, "Jeonju", "Jeonju", Coordinates(35.8242, 127.1480)),
+            UiCityItem(CityCode.CHEONGJU, "Cheongju", "Cheongju", Coordinates(36.6424, 127.4890)),
+            UiCityItem(
+                CityCode.CHUNCHEON,
+                "Chuncheon",
+                "Chuncheon",
+                Coordinates(37.8813, 127.7298)
+            ),
+            UiCityItem(CityCode.JEJU, "Jeju", "Jeju", Coordinates(33.4996, 126.5312)),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -226,6 +253,7 @@ object LocationUiMapper {
             in cities(CountryCode.AE).map { it.code } -> CountryCode.AE
             in cities(CountryCode.TH).map { it.code } -> CountryCode.TH
             in cities(CountryCode.US).map { it.code } -> CountryCode.US
+            in cities(CountryCode.KR).map { it.code } -> CountryCode.KR
             else -> CountryCode.BY
         }
 

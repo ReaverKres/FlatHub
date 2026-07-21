@@ -42,6 +42,7 @@
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">العربية</string>
+    <string name="language_korean">Корейский</string>
 
     <string name="filters_title">Фильтры</string>
     <string name="filter_my_filters">Мои фильтры</string>
@@ -50,6 +51,7 @@
     <string name="filter_rent">Аренда</string>
     <string name="filter_sale">Продажа</string>
     <string name="filter_daily">Посуточно</string>
+    <string name="filter_jeonse">Чонсе</string>
     <string name="filter_commercial">Коммерческая</string>
     <string name="filter_commercial_rent">Коммерческая (Снять)</string>
     <string name="filter_commercial_sale">Коммерческая (Купить)</string>
@@ -148,6 +150,7 @@
     <string name="country_ae">ОАЭ</string>
     <string name="country_th">Таиланд</string>
     <string name="country_us">США</string>
+    <string name="country_kr">Южная Корея</string>
     <string name="city_minsk">Минск</string>
     <string name="city_brest">Брест</string>
     <string name="city_vitebsk">Витебск</string>
@@ -218,6 +221,20 @@
     <string name="city_austin">Остин</string>
     <string name="city_boston">Бостон</string>
     <string name="city_denver">Денвер</string>
+    <string name="city_seoul">Сеул</string>
+    <string name="city_busan">Пусан</string>
+    <string name="city_daegu">Тэгу</string>
+    <string name="city_incheon">Инчхон</string>
+    <string name="city_gwangju">Кванджу</string>
+    <string name="city_daejeon">Тэджон</string>
+    <string name="city_ulsan">Ульсан</string>
+    <string name="city_sejong">Седжон</string>
+    <string name="city_suwon">Сувон</string>
+    <string name="city_changwon">Чханвон</string>
+    <string name="city_jeonju">Чонджу</string>
+    <string name="city_cheongju">Чхонджу</string>
+    <string name="city_chuncheon">Чхунчхон</string>
+    <string name="city_jeju">Чеджу</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Любая станция</string>
     <string name="location_metro_line_red">Красная</string>

@@ -12,6 +12,9 @@ sealed class AdType {
     data class COMMERCIAL(val commercialAdType: CommercialAdType = CommercialAdType.RENT): AdType()
     @Serializable
     object DAILY: AdType()
+
+    @Serializable
+    object JEONSE : AdType()
 }
 
 val AdType.isCommercial: Boolean

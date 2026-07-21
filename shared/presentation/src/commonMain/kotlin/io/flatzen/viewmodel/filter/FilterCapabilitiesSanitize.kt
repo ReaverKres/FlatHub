@@ -16,6 +16,7 @@ internal fun FilterState.sanitizeForCountryCapabilities(
     var nextAdType = adType
     when {
         nextAdType is AdType.DAILY && !caps.supportsDaily -> nextAdType = AdType.RENT
+        nextAdType is AdType.JEONSE && !caps.supportsJeonse -> nextAdType = AdType.RENT
         nextAdType.isCommercial && !caps.supportsCommercial -> nextAdType = AdType.RENT
         nextAdType is AdType.SALE && !caps.supportsSale -> nextAdType = AdType.RENT
         nextAdType is AdType.RENT && !caps.supportsRent && caps.supportsSale ->

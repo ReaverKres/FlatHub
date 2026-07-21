@@ -44,6 +44,8 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 ConfigFields.EnabledPlatformsKz.param to "",
                 // Empty = all registered US platforms (Zillow, Apartments.com, Zumper).
                 ConfigFields.EnabledPlatformsUs.param to "",
+                // Empty = all registered KR platforms (Dabang, Zigbang).
+                ConfigFields.EnabledPlatformsKr.param to "",
             )
         )
     }

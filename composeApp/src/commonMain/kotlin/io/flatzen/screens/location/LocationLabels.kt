@@ -18,9 +18,15 @@ import flatzen.composeapp.generated.resources.city_berlin
 import flatzen.composeapp.generated.resources.city_boston
 import flatzen.composeapp.generated.resources.city_brest
 import flatzen.composeapp.generated.resources.city_bursa
+import flatzen.composeapp.generated.resources.city_busan
 import flatzen.composeapp.generated.resources.city_bydgoszcz
+import flatzen.composeapp.generated.resources.city_changwon
+import flatzen.composeapp.generated.resources.city_cheongju
 import flatzen.composeapp.generated.resources.city_chiang_mai
 import flatzen.composeapp.generated.resources.city_chicago
+import flatzen.composeapp.generated.resources.city_chuncheon
+import flatzen.composeapp.generated.resources.city_daegu
+import flatzen.composeapp.generated.resources.city_daejeon
 import flatzen.composeapp.generated.resources.city_denver
 import flatzen.composeapp.generated.resources.city_dubai
 import flatzen.composeapp.generated.resources.city_duesseldorf
@@ -30,11 +36,15 @@ import flatzen.composeapp.generated.resources.city_gaziantep
 import flatzen.composeapp.generated.resources.city_gdansk
 import flatzen.composeapp.generated.resources.city_gomel
 import flatzen.composeapp.generated.resources.city_grodno
+import flatzen.composeapp.generated.resources.city_gwangju
 import flatzen.composeapp.generated.resources.city_hamburg
 import flatzen.composeapp.generated.resources.city_houston
 import flatzen.composeapp.generated.resources.city_hua_hin
+import flatzen.composeapp.generated.resources.city_incheon
 import flatzen.composeapp.generated.resources.city_istanbul
 import flatzen.composeapp.generated.resources.city_izmir
+import flatzen.composeapp.generated.resources.city_jeju
+import flatzen.composeapp.generated.resources.city_jeonju
 import flatzen.composeapp.generated.resources.city_karaganda
 import flatzen.composeapp.generated.resources.city_katowice
 import flatzen.composeapp.generated.resources.city_koeln
@@ -60,12 +70,16 @@ import flatzen.composeapp.generated.resources.city_ras_al_khaimah
 import flatzen.composeapp.generated.resources.city_rustavi
 import flatzen.composeapp.generated.resources.city_san_francisco
 import flatzen.composeapp.generated.resources.city_seattle
+import flatzen.composeapp.generated.resources.city_sejong
+import flatzen.composeapp.generated.resources.city_seoul
 import flatzen.composeapp.generated.resources.city_sevilla
 import flatzen.composeapp.generated.resources.city_sharjah
 import flatzen.composeapp.generated.resources.city_shymkent
 import flatzen.composeapp.generated.resources.city_stuttgart
+import flatzen.composeapp.generated.resources.city_suwon
 import flatzen.composeapp.generated.resources.city_szczecin
 import flatzen.composeapp.generated.resources.city_tbilisi
+import flatzen.composeapp.generated.resources.city_ulsan
 import flatzen.composeapp.generated.resources.city_umm_al_quwain
 import flatzen.composeapp.generated.resources.city_valencia
 import flatzen.composeapp.generated.resources.city_vitebsk
@@ -77,6 +91,7 @@ import flatzen.composeapp.generated.resources.country_by
 import flatzen.composeapp.generated.resources.country_de
 import flatzen.composeapp.generated.resources.country_es
 import flatzen.composeapp.generated.resources.country_ge
+import flatzen.composeapp.generated.resources.country_kr
 import flatzen.composeapp.generated.resources.country_kz
 import flatzen.composeapp.generated.resources.country_pl
 import flatzen.composeapp.generated.resources.country_th
@@ -98,6 +113,7 @@ fun CountryCode.localizedNameRes(): StringResource = when (this) {
     CountryCode.AE -> Res.string.country_ae
     CountryCode.TH -> Res.string.country_th
     CountryCode.US -> Res.string.country_us
+    CountryCode.KR -> Res.string.country_kr
 }
 
 fun CityCode.localizedNameRes(): StringResource = when (this) {
@@ -171,6 +187,20 @@ fun CityCode.localizedNameRes(): StringResource = when (this) {
     CityCode.AUSTIN -> Res.string.city_austin
     CityCode.BOSTON -> Res.string.city_boston
     CityCode.DENVER -> Res.string.city_denver
+    CityCode.SEOUL -> Res.string.city_seoul
+    CityCode.BUSAN -> Res.string.city_busan
+    CityCode.DAEGU -> Res.string.city_daegu
+    CityCode.INCHEON -> Res.string.city_incheon
+    CityCode.GWANGJU -> Res.string.city_gwangju
+    CityCode.DAEJEON -> Res.string.city_daejeon
+    CityCode.ULSAN -> Res.string.city_ulsan
+    CityCode.SEJONG -> Res.string.city_sejong
+    CityCode.SUWON -> Res.string.city_suwon
+    CityCode.CHANGWON -> Res.string.city_changwon
+    CityCode.JEONJU -> Res.string.city_jeonju
+    CityCode.CHEONGJU -> Res.string.city_cheongju
+    CityCode.CHUNCHEON -> Res.string.city_chuncheon
+    CityCode.JEJU -> Res.string.city_jeju
 }
 
 @Composable

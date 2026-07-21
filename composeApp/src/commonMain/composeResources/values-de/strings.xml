@@ -42,6 +42,7 @@
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">Arabisch</string>
+    <string name="language_korean">Koreanisch</string>
 
     <string name="filters_title">Filter</string>
     <string name="filter_my_filters">Meine Filter</string>
@@ -50,6 +51,7 @@
     <string name="filter_rent">Mieten</string>
     <string name="filter_sale">Kaufen</string>
     <string name="filter_daily">Tagesmiete</string>
+    <string name="filter_jeonse">Jeonse</string>
     <string name="filter_commercial">Gewerbe</string>
     <string name="filter_commercial_rent">Gewerbe (Mieten)</string>
     <string name="filter_commercial_sale">Gewerbe (Kaufen)</string>
@@ -148,6 +150,7 @@
     <string name="country_ae">VAE</string>
     <string name="country_th">Thailand</string>
     <string name="country_us">Vereinigte Staaten</string>
+    <string name="country_kr">Südkorea</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Witebsk</string>
@@ -218,6 +221,20 @@
     <string name="city_austin">Austin</string>
     <string name="city_boston">Boston</string>
     <string name="city_denver">Denver</string>
+    <string name="city_seoul">Seoul</string>
+    <string name="city_busan">Busan</string>
+    <string name="city_daegu">Daegu</string>
+    <string name="city_incheon">Incheon</string>
+    <string name="city_gwangju">Gwangju</string>
+    <string name="city_daejeon">Daejeon</string>
+    <string name="city_ulsan">Ulsan</string>
+    <string name="city_sejong">Sejong</string>
+    <string name="city_suwon">Suwon</string>
+    <string name="city_changwon">Changwon</string>
+    <string name="city_jeonju">Jeonju</string>
+    <string name="city_cheongju">Cheongju</string>
+    <string name="city_chuncheon">Chuncheon</string>
+    <string name="city_jeju">Jeju</string>
     <string name="location_metro">U-Bahn</string>
     <string name="location_metro_any_switch">Beliebige Station</string>
     <string name="location_metro_line_red">Rot</string>

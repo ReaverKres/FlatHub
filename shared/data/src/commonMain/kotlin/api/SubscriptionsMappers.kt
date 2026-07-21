@@ -65,6 +65,7 @@ private fun AdType.toDto(): AdTypeDto =
         AdType.RENT -> AdTypeDto(type = "RENT")
         AdType.SALE -> AdTypeDto(type = "SALE")
         AdType.DAILY -> AdTypeDto(type = "DAILY")
+        AdType.JEONSE -> AdTypeDto(type = "JEONSE")
         is AdType.COMMERCIAL -> AdTypeDto(
             type = "COMMERCIAL",
             commercialAdType = when (this.commercialAdType) {
@@ -79,6 +80,7 @@ private fun AdTypeDto.toModel(): AdType =
         "RENT" -> AdType.RENT
         "SALE" -> AdType.SALE
         "DAILY" -> AdType.DAILY
+        "JEONSE" -> AdType.JEONSE
         "COMMERCIAL" -> AdType.COMMERCIAL(
             commercialAdType = when (this.commercialAdType) {
                 "RENT" -> CommercialAdType.RENT

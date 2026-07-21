@@ -46,6 +46,8 @@ object FeedDelayListBoost {
         FlatPlatform.LIVINGINSIDER to 2.5,
         FlatPlatform.RENTHUB to 2.0,
         FlatPlatform.ZUMPER to 2.0,
+        FlatPlatform.DABANG to 3.0,
+        FlatPlatform.ZIGBANG to 3.0,
     )
 
     /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */

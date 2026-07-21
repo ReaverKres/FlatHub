@@ -49,6 +49,10 @@ enum class FlatPlatform(val value: String) {
 
     // United States (MVP) — Zillow/Apartments.com blocked (PerimeterX/Akamai); restore via NOTES
     ZUMPER("zumper"),
+
+    // South Korea (MVP) — Dabang + Zigbang only (Naver/Hogangnono blocked)
+    DABANG("dabang"),
+    ZIGBANG("zigbang"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -98,6 +102,10 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
 
     FlatPlatform.ZUMPER,
         -> CountryCode.US
+
+    FlatPlatform.DABANG,
+    FlatPlatform.ZIGBANG,
+        -> CountryCode.KR
 }
 
 fun FlatPlatform.usesSquareFeet(): Boolean = marketCountry().usesSquareFeet()
@@ -142,4 +150,6 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.LIVINGINSIDER -> DrawablePath.LIVINGINSIDER32
     FlatPlatform.RENTHUB -> DrawablePath.RENTHUB32
     FlatPlatform.ZUMPER -> DrawablePath.ZUMPER32
+    FlatPlatform.DABANG -> DrawablePath.DABANG32
+    FlatPlatform.ZIGBANG -> DrawablePath.ZIGBANG32
 }

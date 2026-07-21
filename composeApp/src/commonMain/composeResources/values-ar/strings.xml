@@ -42,6 +42,7 @@
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">العربية</string>
+    <string name="language_korean">الكورية</string>
 
     <string name="filters_title">الفلاتر</string>
     <string name="filter_my_filters">فلاتري</string>
@@ -50,6 +51,7 @@
     <string name="filter_rent">إيجار</string>
     <string name="filter_sale">بيع</string>
     <string name="filter_daily">يومي</string>
+    <string name="filter_jeonse">جونسي</string>
     <string name="filter_commercial">تجاري</string>
     <string name="filter_commercial_rent">تجاري (إيجار)</string>
     <string name="filter_commercial_sale">تجاري (شراء)</string>
@@ -148,6 +150,7 @@
     <string name="country_ae">الإمارات العربية المتحدة</string>
     <string name="country_th">تايلاند</string>
     <string name="country_us">الولايات المتحدة الأمريكية</string>
+    <string name="country_kr">كوريا الجنوبية</string>
     <string name="city_minsk">مينسك</string>
     <string name="city_brest">بريست</string>
     <string name="city_vitebsk">فيتيبسك</string>
@@ -218,6 +221,20 @@
     <string name="city_austin">أوستن</string>
     <string name="city_boston">بوستون</string>
     <string name="city_denver">دنفر</string>
+    <string name="city_seoul">Seoul</string>
+    <string name="city_busan">Busan</string>
+    <string name="city_daegu">Daegu</string>
+    <string name="city_incheon">Incheon</string>
+    <string name="city_gwangju">Gwangju</string>
+    <string name="city_daejeon">Daejeon</string>
+    <string name="city_ulsan">Ulsan</string>
+    <string name="city_sejong">Sejong</string>
+    <string name="city_suwon">Suwon</string>
+    <string name="city_changwon">Changwon</string>
+    <string name="city_jeonju">Jeonju</string>
+    <string name="city_cheongju">Cheongju</string>
+    <string name="city_chuncheon">Chuncheon</string>
+    <string name="city_jeju">Jeju</string>
     <string name="location_metro">المترو</string>
     <string name="location_metro_any_switch">أي محطة</string>
     <string name="location_metro_line_red">أحمر</string>

@@ -79,6 +79,7 @@ import flatzen.composeapp.generated.resources.filter_commercial_sale
 import flatzen.composeapp.generated.resources.filter_daily
 import flatzen.composeapp.generated.resources.filter_deal_type
 import flatzen.composeapp.generated.resources.filter_districts_prefix
+import flatzen.composeapp.generated.resources.filter_jeonse
 import flatzen.composeapp.generated.resources.filter_location
 import flatzen.composeapp.generated.resources.filter_metro_any
 import flatzen.composeapp.generated.resources.filter_metro_prefix
@@ -341,6 +342,7 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.FILTER_RENT -> Res.string.filter_rent
         LocalizationKeys.FILTER_SALE -> Res.string.filter_sale
         LocalizationKeys.FILTER_DAILY -> Res.string.filter_daily
+        LocalizationKeys.FILTER_JEONSE -> Res.string.filter_jeonse
         LocalizationKeys.FILTER_COMMERCIAL -> Res.string.filter_commercial
         LocalizationKeys.FILTER_COMMERCIAL_RENT -> Res.string.filter_commercial_rent
         LocalizationKeys.FILTER_COMMERCIAL_SALE -> Res.string.filter_commercial_sale

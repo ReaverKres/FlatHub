@@ -1,0 +1,304 @@
+{
+  "Seoul": [
+    {
+      "id": 91001,
+      "nameEn": "Gangnam-gu",
+      "nameLocal": "강남구",
+      "coordinates": [
+        {
+          "latitude": 37.5172,
+          "longitude": 127.0473
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91002,
+      "nameEn": "Gangdong-gu",
+      "nameLocal": "강동구",
+      "coordinates": [
+        {
+          "latitude": 37.5301,
+          "longitude": 127.1238
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91003,
+      "nameEn": "Gangbuk-gu",
+      "nameLocal": "강북구",
+      "coordinates": [
+        {
+          "latitude": 37.6396,
+          "longitude": 127.0257
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91004,
+      "nameEn": "Gangseo-gu",
+      "nameLocal": "강서구",
+      "coordinates": [
+        {
+          "latitude": 37.5509,
+          "longitude": 126.8495
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91005,
+      "nameEn": "Gwanak-gu",
+      "nameLocal": "관악구",
+      "coordinates": [
+        {
+          "latitude": 37.4784,
+          "longitude": 126.9516
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91006,
+      "nameEn": "Gwangjin-gu",
+      "nameLocal": "광진구",
+      "coordinates": [
+        {
+          "latitude": 37.5385,
+          "longitude": 127.0823
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91007,
+      "nameEn": "Guro-gu",
+      "nameLocal": "구로구",
+      "coordinates": [
+        {
+          "latitude": 37.4954,
+          "longitude": 126.8874
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91008,
+      "nameEn": "Geumcheon-gu",
+      "nameLocal": "금천구",
+      "coordinates": [
+        {
+          "latitude": 37.4563,
+          "longitude": 126.8954
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91009,
+      "nameEn": "Nowon-gu",
+      "nameLocal": "노원구",
+      "coordinates": [
+        {
+          "latitude": 37.6542,
+          "longitude": 127.0568
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91010,
+      "nameEn": "Dobong-gu",
+      "nameLocal": "도봉구",
+      "coordinates": [
+        {
+          "latitude": 37.6688,
+          "longitude": 127.0471
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91011,
+      "nameEn": "Dongdaemun-gu",
+      "nameLocal": "동대문구",
+      "coordinates": [
+        {
+          "latitude": 37.5744,
+          "longitude": 127.0396
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91012,
+      "nameEn": "Dongjak-gu",
+      "nameLocal": "동작구",
+      "coordinates": [
+        {
+          "latitude": 37.5124,
+          "longitude": 126.9393
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91013,
+      "nameEn": "Mapo-gu",
+      "nameLocal": "마포구",
+      "coordinates": [
+        {
+          "latitude": 37.5663,
+          "longitude": 126.9019
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91014,
+      "nameEn": "Seodaemun-gu",
+      "nameLocal": "서대문구",
+      "coordinates": [
+        {
+          "latitude": 37.5791,
+          "longitude": 126.9368
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91015,
+      "nameEn": "Seocho-gu",
+      "nameLocal": "서초구",
+      "coordinates": [
+        {
+          "latitude": 37.4837,
+          "longitude": 127.0324
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91016,
+      "nameEn": "Seongdong-gu",
+      "nameLocal": "성동구",
+      "coordinates": [
+        {
+          "latitude": 37.5634,
+          "longitude": 127.0369
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91017,
+      "nameEn": "Seongbuk-gu",
+      "nameLocal": "성북구",
+      "coordinates": [
+        {
+          "latitude": 37.5894,
+          "longitude": 127.0167
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91018,
+      "nameEn": "Songpa-gu",
+      "nameLocal": "송파구",
+      "coordinates": [
+        {
+          "latitude": 37.5145,
+          "longitude": 127.1059
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91019,
+      "nameEn": "Yangcheon-gu",
+      "nameLocal": "양천구",
+      "coordinates": [
+        {
+          "latitude": 37.517,
+          "longitude": 126.8664
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91020,
+      "nameEn": "Yeongdeungpo-gu",
+      "nameLocal": "영등포구",
+      "coordinates": [
+        {
+          "latitude": 37.5264,
+          "longitude": 126.8962
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91021,
+      "nameEn": "Yongsan-gu",
+      "nameLocal": "용산구",
+      "coordinates": [
+        {
+          "latitude": 37.5326,
+          "longitude": 126.9905
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91022,
+      "nameEn": "Eunpyeong-gu",
+      "nameLocal": "은평구",
+      "coordinates": [
+        {
+          "latitude": 37.6027,
+          "longitude": 126.9291
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91023,
+      "nameEn": "Jongno-gu",
+      "nameLocal": "종로구",
+      "coordinates": [
+        {
+          "latitude": 37.573,
+          "longitude": 126.9794
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91024,
+      "nameEn": "Jung-gu",
+      "nameLocal": "중구",
+      "coordinates": [
+        {
+          "latitude": 37.5641,
+          "longitude": 126.9979
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 91025,
+      "nameEn": "Jungnang-gu",
+      "nameLocal": "중랑구",
+      "coordinates": [
+        {
+          "latitude": 37.6066,
+          "longitude": 127.0926
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

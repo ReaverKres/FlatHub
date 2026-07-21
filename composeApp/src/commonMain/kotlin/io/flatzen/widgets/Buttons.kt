@@ -35,6 +35,7 @@ import flatzen.composeapp.generated.resources.detail_open_in_map
 import flatzen.composeapp.generated.resources.filter_commercial_rent
 import flatzen.composeapp.generated.resources.filter_commercial_sale
 import flatzen.composeapp.generated.resources.filter_daily
+import flatzen.composeapp.generated.resources.filter_jeonse
 import flatzen.composeapp.generated.resources.filter_rent
 import flatzen.composeapp.generated.resources.filter_sale
 import flatzen.composeapp.generated.resources.sort_cheapest
@@ -81,6 +82,7 @@ fun RentSaleButtons(
     showRent: Boolean = true,
     showSale: Boolean = true,
     showDaily: Boolean = true,
+    showJeonse: Boolean = false,
     showCommercial: Boolean = true,
 ) {
 
@@ -137,6 +139,20 @@ fun RentSaleButtons(
                             .weight(1f, fill = false),
                         adType = AdType.DAILY,
                         adTypeBtnText = stringResource(Res.string.filter_daily),
+                        onClick = onClick,
+                        selectedAdType = selectedAdType
+                    )
+                    Spacer(Modifier.width(16.dp))
+                }
+            }
+            if (showJeonse) {
+                Row {
+                    AdTypeButton(
+                        modifier = Modifier
+                            .height(44.dp)
+                            .weight(1f, fill = false),
+                        adType = AdType.JEONSE,
+                        adTypeBtnText = stringResource(Res.string.filter_jeonse),
                         onClick = onClick,
                         selectedAdType = selectedAdType
                     )

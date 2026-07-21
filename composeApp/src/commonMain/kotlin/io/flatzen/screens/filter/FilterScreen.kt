@@ -305,6 +305,7 @@ fun FilterScreen() {
                 showRent = caps.supportsRent,
                 showSale = caps.supportsSale,
                 showDaily = caps.supportsDaily,
+                showJeonse = caps.supportsJeonse,
                 showCommercial = caps.supportsCommercial,
             )
 

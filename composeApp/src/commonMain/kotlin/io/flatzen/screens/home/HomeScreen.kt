@@ -730,6 +730,7 @@ private fun LazyListScope.topContentHeader(
         supportsRent = true,
         supportsSale = true,
         supportsDaily = false,
+        supportsJeonse = false,
         supportsRoom = false,
         supportsCommercial = false,
         supportsCommercialPropertyTypes = false,
@@ -753,6 +754,7 @@ private fun LazyListScope.topContentHeader(
                 showRent = sourceCapabilities.supportsRent,
                 showSale = sourceCapabilities.supportsSale,
                 showDaily = sourceCapabilities.supportsDaily,
+                showJeonse = sourceCapabilities.supportsJeonse,
                 showCommercial = sourceCapabilities.supportsCommercial,
             )
         }
@@ -835,6 +837,7 @@ private fun filterSummaryStrings(): Map<LocalizationKeys, String> {
         LocalizationKeys.FILTER_COMMERCIAL_RENT to localizedStringResource(LocalizationKeys.FILTER_COMMERCIAL_RENT),
         LocalizationKeys.FILTER_COMMERCIAL to localizedStringResource(LocalizationKeys.FILTER_COMMERCIAL),
         LocalizationKeys.FILTER_DAILY to localizedStringResource(LocalizationKeys.FILTER_DAILY),
+        LocalizationKeys.FILTER_JEONSE to localizedStringResource(LocalizationKeys.FILTER_JEONSE),
         LocalizationKeys.FILTER_PROPERTY_TYPE to localizedStringResource(LocalizationKeys.FILTER_PROPERTY_TYPE),
         LocalizationKeys.FILTER_PRICE_LABEL to localizedStringResource(LocalizationKeys.FILTER_PRICE_LABEL),
         LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL to localizedStringResource(LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL),

@@ -1,0 +1,1080 @@
+[
+  {
+    "name": "Line 1 Seoul Station",
+    "coordinates": [
+      37.5547,
+      126.9707
+    ]
+  },
+  {
+    "name": "Line 1 City Hall",
+    "coordinates": [
+      37.5657,
+      126.9778
+    ]
+  },
+  {
+    "name": "Line 1 Jonggak",
+    "coordinates": [
+      37.5703,
+      126.983
+    ]
+  },
+  {
+    "name": "Line 1 Jongno 3-ga",
+    "coordinates": [
+      37.5705,
+      126.9919
+    ]
+  },
+  {
+    "name": "Line 1 Jongno 5-ga",
+    "coordinates": [
+      37.5709,
+      127.0019
+    ]
+  },
+  {
+    "name": "Line 1 Dongdaemun",
+    "coordinates": [
+      37.5714,
+      127.0098
+    ]
+  },
+  {
+    "name": "Line 1 Cheongnyangni",
+    "coordinates": [
+      37.5802,
+      127.0468
+    ]
+  },
+  {
+    "name": "Line 1 Yongsan",
+    "coordinates": [
+      37.5298,
+      126.9647
+    ]
+  },
+  {
+    "name": "Line 1 Noryangjin",
+    "coordinates": [
+      37.5135,
+      126.9402
+    ]
+  },
+  {
+    "name": "Line 1 Daerim",
+    "coordinates": [
+      37.4929,
+      126.8958
+    ]
+  },
+  {
+    "name": "Line 1 Guro",
+    "coordinates": [
+      37.5034,
+      126.8819
+    ]
+  },
+  {
+    "name": "Line 1 Yeongdeungpo",
+    "coordinates": [
+      37.5155,
+      126.9076
+    ]
+  },
+  {
+    "name": "Line 1 Sindorim",
+    "coordinates": [
+      37.5087,
+      126.8872
+    ]
+  },
+  {
+    "name": "Line 1 Sinchon",
+    "coordinates": [
+      37.5558,
+      126.9368
+    ]
+  },
+  {
+    "name": "Line 1 Gwangmyeong",
+    "coordinates": [
+      37.4764,
+      126.8662
+    ]
+  },
+  {
+    "name": "Line 1 Incheon",
+    "coordinates": [
+      37.4767,
+      126.6169
+    ]
+  },
+  {
+    "name": "Line 1 Seokgye",
+    "coordinates": [
+      37.619,
+      127.051
+    ]
+  },
+  {
+    "name": "Line 1 Wangsimni",
+    "coordinates": [
+      37.5614,
+      127.037
+    ]
+  },
+  {
+    "name": "Line 4 Myeongdong",
+    "coordinates": [
+      37.5609,
+      126.9863
+    ]
+  },
+  {
+    "name": "Line 4 Chungmuro",
+    "coordinates": [
+      37.5612,
+      126.9933
+    ]
+  },
+  {
+    "name": "Line 4 Dongdaemun History & Culture Park",
+    "coordinates": [
+      37.5656,
+      127.0077
+    ]
+  },
+  {
+    "name": "Line 4 Hyehwa",
+    "coordinates": [
+      37.5874,
+      127.0019
+    ]
+  },
+  {
+    "name": "Line 4 Hansung Univ",
+    "coordinates": [
+      37.5884,
+      127.0063
+    ]
+  },
+  {
+    "name": "Line 4 Mia",
+    "coordinates": [
+      37.6266,
+      127.0259
+    ]
+  },
+  {
+    "name": "Line 4 Suyu",
+    "coordinates": [
+      37.6381,
+      127.0187
+    ]
+  },
+  {
+    "name": "Line 4 Nowon",
+    "coordinates": [
+      37.6551,
+      127.0612
+    ]
+  },
+  {
+    "name": "Line 4 Changdong",
+    "coordinates": [
+      37.6531,
+      127.0476
+    ]
+  },
+  {
+    "name": "Line 4 Sangbong",
+    "coordinates": [
+      37.5966,
+      127.0854
+    ]
+  },
+  {
+    "name": "Line 4 Geumjeong",
+    "coordinates": [
+      37.4551,
+      126.8934
+    ]
+  },
+  {
+    "name": "Line 4 Sadang",
+    "coordinates": [
+      37.4762,
+      126.9816
+    ]
+  },
+  {
+    "name": "Line 4 Isu",
+    "coordinates": [
+      37.4868,
+      126.9823
+    ]
+  },
+  {
+    "name": "Line 4 Chongshin Univ",
+    "coordinates": [
+      37.4894,
+      126.9813
+    ]
+  },
+  {
+    "name": "Line 4 Dongjak",
+    "coordinates": [
+      37.5029,
+      126.9793
+    ]
+  },
+  {
+    "name": "Line 4 Namtaeryeong",
+    "coordinates": [
+      37.4632,
+      126.9892
+    ]
+  },
+  {
+    "name": "Line 7 Gangnam-gu Office",
+    "coordinates": [
+      37.5172,
+      127.0412
+    ]
+  },
+  {
+    "name": "Line 7 Hak-dong",
+    "coordinates": [
+      37.4967,
+      127.0284
+    ]
+  },
+  {
+    "name": "Line 7 Cheonggu",
+    "coordinates": [
+      37.5604,
+      127.01
+    ]
+  },
+  {
+    "name": "Line 7 Ttukseom",
+    "coordinates": [
+      37.5385,
+      127.0467
+    ]
+  },
+  {
+    "name": "Line 7 Junggok",
+    "coordinates": [
+      37.5455,
+      127.0859
+    ]
+  },
+  {
+    "name": "Line 7 Gunja",
+    "coordinates": [
+      37.5714,
+      127.0784
+    ]
+  },
+  {
+    "name": "Line 7 Children's Grand Park",
+    "coordinates": [
+      37.548,
+      127.0747
+    ]
+  },
+  {
+    "name": "Line 7 Konkuk Univ",
+    "coordinates": [
+      37.5404,
+      127.0692
+    ]
+  },
+  {
+    "name": "Line 7 Onsu",
+    "coordinates": [
+      37.4924,
+      126.8235
+    ]
+  },
+  {
+    "name": "Line 7 Bupyeong-gu Office",
+    "coordinates": [
+      37.5084,
+      126.7205
+    ]
+  },
+  {
+    "name": "Line 7 Sangdong",
+    "coordinates": [
+      37.5618,
+      127.029
+    ]
+  },
+  {
+    "name": "Line 7 Yeongdeungpo Market",
+    "coordinates": [
+      37.5226,
+      126.9051
+    ]
+  },
+  {
+    "name": "Line 2 City Hall",
+    "coordinates": [
+      37.5656,
+      126.977
+    ]
+  },
+  {
+    "name": "Line 2 Euljiro 1-ga",
+    "coordinates": [
+      37.566,
+      126.9826
+    ]
+  },
+  {
+    "name": "Line 2 Euljiro 3-ga",
+    "coordinates": [
+      37.5663,
+      126.9919
+    ]
+  },
+  {
+    "name": "Line 2 Euljiro 4-ga",
+    "coordinates": [
+      37.5666,
+      127.0003
+    ]
+  },
+  {
+    "name": "Line 2 Sindang",
+    "coordinates": [
+      37.5656,
+      127.0195
+    ]
+  },
+  {
+    "name": "Line 2 Wangsimni",
+    "coordinates": [
+      37.5615,
+      127.0374
+    ]
+  },
+  {
+    "name": "Line 2 Seongsu",
+    "coordinates": [
+      37.5446,
+      127.0559
+    ]
+  },
+  {
+    "name": "Line 2 Konkuk Univ",
+    "coordinates": [
+      37.5404,
+      127.0692
+    ]
+  },
+  {
+    "name": "Line 2 Gangbyeon",
+    "coordinates": [
+      37.5351,
+      127.0946
+    ]
+  },
+  {
+    "name": "Line 2 Jamsil",
+    "coordinates": [
+      37.5133,
+      127.1002
+    ]
+  },
+  {
+    "name": "Line 2 Sports Complex",
+    "coordinates": [
+      37.5163,
+      127.1309
+    ]
+  },
+  {
+    "name": "Line 2 Samseong",
+    "coordinates": [
+      37.5088,
+      127.0632
+    ]
+  },
+  {
+    "name": "Line 2 Yeoksam",
+    "coordinates": [
+      37.5006,
+      127.0365
+    ]
+  },
+  {
+    "name": "Line 2 Gangnam",
+    "coordinates": [
+      37.4979,
+      127.0276
+    ]
+  },
+  {
+    "name": "Line 2 Seolleung",
+    "coordinates": [
+      37.5045,
+      127.049
+    ]
+  },
+  {
+    "name": "Line 2 Apgujeong",
+    "coordinates": [
+      37.5271,
+      127.0285
+    ]
+  },
+  {
+    "name": "Line 2 Shinnonhyeon",
+    "coordinates": [
+      37.5045,
+      127.025
+    ]
+  },
+  {
+    "name": "Line 2 Hongdae",
+    "coordinates": [
+      37.5572,
+      126.9245
+    ]
+  },
+  {
+    "name": "Line 2 Hapjeong",
+    "coordinates": [
+      37.5495,
+      126.9139
+    ]
+  },
+  {
+    "name": "Line 2 Dangsan",
+    "coordinates": [
+      37.5344,
+      126.9026
+    ]
+  },
+  {
+    "name": "Line 2 Yeongdeungpo-gu Office",
+    "coordinates": [
+      37.5248,
+      126.8959
+    ]
+  },
+  {
+    "name": "Line 2 Mullae",
+    "coordinates": [
+      37.5179,
+      126.8947
+    ]
+  },
+  {
+    "name": "Line 2 Sindorim",
+    "coordinates": [
+      37.5087,
+      126.8872
+    ]
+  },
+  {
+    "name": "Line 2 Kkachisan",
+    "coordinates": [
+      37.5519,
+      126.8562
+    ]
+  },
+  {
+    "name": "Line 2 Hongje",
+    "coordinates": [
+      37.5891,
+      126.9438
+    ]
+  },
+  {
+    "name": "Line 2 Sinchon",
+    "coordinates": [
+      37.5558,
+      126.9368
+    ]
+  },
+  {
+    "name": "Line 2 Ewha Womans Univ",
+    "coordinates": [
+      37.5617,
+      126.9465
+    ]
+  },
+  {
+    "name": "Line 2 Jamsilsaenae",
+    "coordinates": [
+      37.5117,
+      127.0862
+    ]
+  },
+  {
+    "name": "Line 2 Olympic Park",
+    "coordinates": [
+      37.5163,
+      127.1309
+    ]
+  },
+  {
+    "name": "Line 2 Gyodae",
+    "coordinates": [
+      37.4934,
+      127.0145
+    ]
+  },
+  {
+    "name": "Line 2 Gangnam-gu Office",
+    "coordinates": [
+      37.5172,
+      127.0412
+    ]
+  },
+  {
+    "name": "Line 5 Gwanghwamun",
+    "coordinates": [
+      37.5716,
+      126.9769
+    ]
+  },
+  {
+    "name": "Line 5 Seodaemun",
+    "coordinates": [
+      37.5658,
+      126.9666
+    ]
+  },
+  {
+    "name": "Line 5 Chungjeongno",
+    "coordinates": [
+      37.56,
+      126.9637
+    ]
+  },
+  {
+    "name": "Line 5 Gongdeok",
+    "coordinates": [
+      37.5446,
+      126.9513
+    ]
+  },
+  {
+    "name": "Line 5 Yeouido",
+    "coordinates": [
+      37.5219,
+      126.9245
+    ]
+  },
+  {
+    "name": "Line 5 Yeouinaru",
+    "coordinates": [
+      37.5271,
+      126.9329
+    ]
+  },
+  {
+    "name": "Line 5 Mapo",
+    "coordinates": [
+      37.5396,
+      126.9459
+    ]
+  },
+  {
+    "name": "Line 5 Banghwa",
+    "coordinates": [
+      37.5577,
+      126.8125
+    ]
+  },
+  {
+    "name": "Line 5 Gimpo Airport",
+    "coordinates": [
+      37.5624,
+      126.8014
+    ]
+  },
+  {
+    "name": "Line 5 Magok",
+    "coordinates": [
+      37.5603,
+      126.8254
+    ]
+  },
+  {
+    "name": "Line 5 Mok-dong",
+    "coordinates": [
+      37.5268,
+      126.8649
+    ]
+  },
+  {
+    "name": "Line 5 Omokgyo",
+    "coordinates": [
+      37.5244,
+      126.8753
+    ]
+  },
+  {
+    "name": "Line 5 Cheonggu",
+    "coordinates": [
+      37.5604,
+      127.01
+    ]
+  },
+  {
+    "name": "Line 5 Wangsimni",
+    "coordinates": [
+      37.5614,
+      127.037
+    ]
+  },
+  {
+    "name": "Line 5 Gunja",
+    "coordinates": [
+      37.5714,
+      127.0784
+    ]
+  },
+  {
+    "name": "Line 5 Gwangnaru",
+    "coordinates": [
+      37.5451,
+      127.1036
+    ]
+  },
+  {
+    "name": "Line 5 Achasan",
+    "coordinates": [
+      37.5517,
+      127.0898
+    ]
+  },
+  {
+    "name": "Line 8 Amsa",
+    "coordinates": [
+      37.5503,
+      127.1275
+    ]
+  },
+  {
+    "name": "Line 8 Cheonho",
+    "coordinates": [
+      37.5384,
+      127.1238
+    ]
+  },
+  {
+    "name": "Line 8 Gangdong-gu Office",
+    "coordinates": [
+      37.5303,
+      127.1205
+    ]
+  },
+  {
+    "name": "Line 8 Mongchontoseong",
+    "coordinates": [
+      37.5197,
+      127.1143
+    ]
+  },
+  {
+    "name": "Line 8 Jamsil",
+    "coordinates": [
+      37.5133,
+      127.1002
+    ]
+  },
+  {
+    "name": "Line 8 Seokchon",
+    "coordinates": [
+      37.5043,
+      127.1069
+    ]
+  },
+  {
+    "name": "Line 8 Songpa",
+    "coordinates": [
+      37.4997,
+      127.1122
+    ]
+  },
+  {
+    "name": "Line 8 Garak Market",
+    "coordinates": [
+      37.4929,
+      127.1184
+    ]
+  },
+  {
+    "name": "Line 8 Munjeong",
+    "coordinates": [
+      37.4848,
+      127.1226
+    ]
+  },
+  {
+    "name": "Line 8 Bokjeong",
+    "coordinates": [
+      37.488,
+      127.1261
+    ]
+  },
+  {
+    "name": "Line 8 Sanseong",
+    "coordinates": [
+      37.457,
+      127.1498
+    ]
+  },
+  {
+    "name": "Line 3 Gupabal",
+    "coordinates": [
+      37.6368,
+      126.9188
+    ]
+  },
+  {
+    "name": "Line 3 Yeonsinnae",
+    "coordinates": [
+      37.619,
+      126.921
+    ]
+  },
+  {
+    "name": "Line 3 Bulgwang",
+    "coordinates": [
+      37.6096,
+      126.929
+    ]
+  },
+  {
+    "name": "Line 3 Gyeongbokgung",
+    "coordinates": [
+      37.5758,
+      126.9735
+    ]
+  },
+  {
+    "name": "Line 3 Anguk",
+    "coordinates": [
+      37.5764,
+      126.9859
+    ]
+  },
+  {
+    "name": "Line 3 Chungmuro",
+    "coordinates": [
+      37.5612,
+      126.9933
+    ]
+  },
+  {
+    "name": "Line 3 Euljiro 3-ga",
+    "coordinates": [
+      37.5663,
+      126.9919
+    ]
+  },
+  {
+    "name": "Line 3 Chungjeongno",
+    "coordinates": [
+      37.56,
+      126.9637
+    ]
+  },
+  {
+    "name": "Line 3 Ahyeon",
+    "coordinates": [
+      37.5573,
+      126.9563
+    ]
+  },
+  {
+    "name": "Line 3 Yaksu",
+    "coordinates": [
+      37.5543,
+      127.0101
+    ]
+  },
+  {
+    "name": "Line 3 Apgujeong",
+    "coordinates": [
+      37.5271,
+      127.0285
+    ]
+  },
+  {
+    "name": "Line 3 Sinsa",
+    "coordinates": [
+      37.5164,
+      127.0201
+    ]
+  },
+  {
+    "name": "Line 3 Jamwon",
+    "coordinates": [
+      37.5126,
+      127.0119
+    ]
+  },
+  {
+    "name": "Line 3 Express Bus Terminal",
+    "coordinates": [
+      37.5048,
+      127.0049
+    ]
+  },
+  {
+    "name": "Line 3 Nambu Bus Terminal",
+    "coordinates": [
+      37.4843,
+      127.0166
+    ]
+  },
+  {
+    "name": "Line 3 Yangjae",
+    "coordinates": [
+      37.4841,
+      127.0346
+    ]
+  },
+  {
+    "name": "Line 3 Maebong",
+    "coordinates": [
+      37.487,
+      127.047
+    ]
+  },
+  {
+    "name": "Line 3 Suseo",
+    "coordinates": [
+      37.4874,
+      127.1019
+    ]
+  },
+  {
+    "name": "Line 3 Garak Market",
+    "coordinates": [
+      37.4929,
+      127.1184
+    ]
+  },
+  {
+    "name": "Line 3 Ogeum",
+    "coordinates": [
+      37.502,
+      127.128
+    ]
+  },
+  {
+    "name": "Line 3 Munjeong",
+    "coordinates": [
+      37.4848,
+      127.1226
+    ]
+  },
+  {
+    "name": "Line 3 Dogok",
+    "coordinates": [
+      37.4909,
+      127.0315
+    ]
+  },
+  {
+    "name": "Line 3 Daehwa",
+    "coordinates": [
+      37.6431,
+      126.9178
+    ]
+  },
+  {
+    "name": "Line 6 Sangsu",
+    "coordinates": [
+      37.5477,
+      126.9225
+    ]
+  },
+  {
+    "name": "Line 6 Hapjeong",
+    "coordinates": [
+      37.5495,
+      126.9139
+    ]
+  },
+  {
+    "name": "Line 6 World Cup Stadium",
+    "coordinates": [
+      37.5685,
+      126.8993
+    ]
+  },
+  {
+    "name": "Line 6 Digital Media City",
+    "coordinates": [
+      37.5766,
+      126.9009
+    ]
+  },
+  {
+    "name": "Line 6 Mangwon",
+    "coordinates": [
+      37.556,
+      126.91
+    ]
+  },
+  {
+    "name": "Line 6 Itaewon",
+    "coordinates": [
+      37.5345,
+      126.9943
+    ]
+  },
+  {
+    "name": "Line 6 Samgakji",
+    "coordinates": [
+      37.5349,
+      127.0026
+    ]
+  },
+  {
+    "name": "Line 6 Cheonggu",
+    "coordinates": [
+      37.5604,
+      127.01
+    ]
+  },
+  {
+    "name": "Line 6 Wangsimni",
+    "coordinates": [
+      37.5614,
+      127.037
+    ]
+  },
+  {
+    "name": "Line 6 Ddukseom",
+    "coordinates": [
+      37.5384,
+      127.0467
+    ]
+  },
+  {
+    "name": "Line 6 Seongsu",
+    "coordinates": [
+      37.5446,
+      127.0559
+    ]
+  },
+  {
+    "name": "Line 6 Bonghwasan",
+    "coordinates": [
+      37.5884,
+      127.087
+    ]
+  },
+  {
+    "name": "Line 6 Taereung",
+    "coordinates": [
+      37.6176,
+      127.075
+    ]
+  },
+  {
+    "name": "Line 6 Hwarangdae",
+    "coordinates": [
+      37.6199,
+      127.0629
+    ]
+  },
+  {
+    "name": "Line 9 Gaehwa",
+    "coordinates": [
+      37.5574,
+      126.8125
+    ]
+  },
+  {
+    "name": "Line 9 Gimpo Airport",
+    "coordinates": [
+      37.5624,
+      126.8014
+    ]
+  },
+  {
+    "name": "Line 9 Yangcheon Hyanggyo",
+    "coordinates": [
+      37.5684,
+      126.8416
+    ]
+  },
+  {
+    "name": "Line 9 Dangsan",
+    "coordinates": [
+      37.5344,
+      126.9026
+    ]
+  },
+  {
+    "name": "Line 9 Yeouido",
+    "coordinates": [
+      37.5219,
+      126.9245
+    ]
+  },
+  {
+    "name": "Line 9 National Assembly",
+    "coordinates": [
+      37.5281,
+      126.9179
+    ]
+  },
+  {
+    "name": "Line 9 Express Bus Terminal",
+    "coordinates": [
+      37.5048,
+      127.0049
+    ]
+  },
+  {
+    "name": "Line 9 Sinnonhyeon",
+    "coordinates": [
+      37.5045,
+      127.025
+    ]
+  },
+  {
+    "name": "Line 9 Sports Complex",
+    "coordinates": [
+      37.5163,
+      127.1309
+    ]
+  },
+  {
+    "name": "Line 9 VHS Medical Center",
+    "coordinates": [
+      37.4954,
+      127.1408
+    ]
+  },
+  {
+    "name": "Line 9 Suseo",
+    "coordinates": [
+      37.4874,
+      127.1019
+    ]
+  },
+  {
+    "name": "Line 9 Seonjeongneung",
+    "coordinates": [
+      37.5045,
+      127.049
+    ]
+  }
+]

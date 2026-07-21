@@ -46,6 +46,10 @@ import listing.ge.livo.LivoApiClient
 import listing.ge.livo.LivoListingSource
 import listing.ge.ss.SsApiClient
 import listing.ge.ss.SsListingSource
+import listing.kr.dabang.DabangApiClient
+import listing.kr.dabang.DabangListingSource
+import listing.kr.zigbang.ZigbangApiClient
+import listing.kr.zigbang.ZigbangListingSource
 import listing.kz.kn.KnApiClient
 import listing.kz.kn.KnListingSource
 import listing.kz.krisha.KrishaApiClient
@@ -263,6 +267,16 @@ val dataModule = module {
     single { ZumperListingSource(api = get(), flatsDao = get()) }
 
     single {
+        DabangApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { DabangListingSource(api = get(), flatsDao = get()) }
+    single { ZigbangApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { ZigbangListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -293,6 +307,8 @@ val dataModule = module {
                 get<LivinginsiderListingSource>(),
                 get<RentHubListingSource>(),
                 get<ZumperListingSource>(),
+                get<DabangListingSource>(),
+                get<ZigbangListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

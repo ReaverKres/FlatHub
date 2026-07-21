@@ -5,6 +5,7 @@ import entities.UserMapArea
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.AdType.COMMERCIAL
 import io.flatzen.commoncomponents.commonentities.AdType.DAILY
+import io.flatzen.commoncomponents.commonentities.AdType.JEONSE
 import io.flatzen.commoncomponents.commonentities.AdType.RENT
 import io.flatzen.commoncomponents.commonentities.AdType.SALE
 import io.flatzen.commoncomponents.commonentities.BookingDatesFilter
@@ -185,6 +186,7 @@ data class FilterState(
             COMMERCIAL(CommercialAdType.RENT) -> resolve(LocalizationKeys.FILTER_COMMERCIAL_RENT)
             is COMMERCIAL -> resolve(LocalizationKeys.FILTER_COMMERCIAL)
             is DAILY -> resolve(LocalizationKeys.FILTER_DAILY)
+            is JEONSE -> resolve(LocalizationKeys.FILTER_JEONSE)
         }}")
 
         if (adType.isCommercial) {
@@ -306,6 +308,7 @@ private fun defaultRussianString(key: LocalizationKeys): String {
         LocalizationKeys.FILTER_COMMERCIAL_RENT -> "Коммерческая (Снять)"
         LocalizationKeys.FILTER_COMMERCIAL -> "Коммерческая"
         LocalizationKeys.FILTER_DAILY -> "Посуточно"
+        LocalizationKeys.FILTER_JEONSE -> "Чонсе"
         LocalizationKeys.FILTER_PROPERTY_TYPE -> "Тип помещения"
         LocalizationKeys.FILTER_PRICE_LABEL -> "Цена"
         LocalizationKeys.FILTER_PRICE_PER_SQUARE_LABEL -> "Цена за м²"

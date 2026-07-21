@@ -42,6 +42,7 @@
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">العربية</string>
+    <string name="language_korean">Korean</string>
 
     <string name="filters_title">Filters</string>
     <string name="filter_my_filters">My filters</string>
@@ -50,6 +51,7 @@
     <string name="filter_rent">Rent</string>
     <string name="filter_sale">Sale</string>
     <string name="filter_daily">Daily</string>
+    <string name="filter_jeonse">Jeonse</string>
     <string name="filter_commercial">Commercial</string>
     <string name="filter_commercial_rent">Commercial (Rent)</string>
     <string name="filter_commercial_sale">Commercial (Buy)</string>
@@ -148,6 +150,7 @@
     <string name="country_ae">UAE</string>
     <string name="country_th">Thailand</string>
     <string name="country_us">United States</string>
+    <string name="country_kr">South Korea</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Vitebsk</string>
@@ -218,6 +221,20 @@
     <string name="city_austin">Austin</string>
     <string name="city_boston">Boston</string>
     <string name="city_denver">Denver</string>
+    <string name="city_seoul">Seoul</string>
+    <string name="city_busan">Busan</string>
+    <string name="city_daegu">Daegu</string>
+    <string name="city_incheon">Incheon</string>
+    <string name="city_gwangju">Gwangju</string>
+    <string name="city_daejeon">Daejeon</string>
+    <string name="city_ulsan">Ulsan</string>
+    <string name="city_sejong">Sejong</string>
+    <string name="city_suwon">Suwon</string>
+    <string name="city_changwon">Changwon</string>
+    <string name="city_jeonju">Jeonju</string>
+    <string name="city_cheongju">Cheongju</string>
+    <string name="city_chuncheon">Chuncheon</string>
+    <string name="city_jeju">Jeju</string>
     <string name="location_metro">Metro</string>
     <string name="location_metro_any_switch">Any station</string>
     <string name="location_metro_line_red">Red</string>

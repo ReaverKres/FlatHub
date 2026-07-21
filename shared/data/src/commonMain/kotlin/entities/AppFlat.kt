@@ -200,6 +200,10 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.RENTHUB,
         -> "฿"
 
+    FlatPlatform.DABANG,
+    FlatPlatform.ZIGBANG,
+        -> "₩"
+
     FlatPlatform.ZUMPER,
         -> "$"
 

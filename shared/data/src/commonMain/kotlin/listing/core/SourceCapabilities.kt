@@ -7,6 +7,7 @@ data class SourceCapabilities(
     val supportsRent: Boolean = true,
     val supportsSale: Boolean = true,
     val supportsDaily: Boolean = false,
+    val supportsJeonse: Boolean = false,
     val supportsRoom: Boolean = false,
     val supportsCommercial: Boolean = false,
     /** BY/AE commercial subtype picker (office/retail/…). PL commercial has no mapped subtypes. */
@@ -21,8 +22,8 @@ data class SourceCapabilities(
             is AdType.RENT -> supportsRent
             is AdType.SALE -> supportsSale
             is AdType.DAILY -> supportsDaily
+            is AdType.JEONSE -> supportsJeonse
             is AdType.COMMERCIAL -> supportsCommercial
-            else -> supportsRent
         }
     }
 }

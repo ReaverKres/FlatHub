@@ -40,6 +40,7 @@
     <string name="language_kazakh">Қазақша</string>
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">არაბული</string>
+    <string name="language_korean">კორეული</string>
     <string name="filters_title">ფილტრები</string>
     <string name="filter_my_filters">ჩემი ფილტრები</string>
     <string name="filter_property_type">ფართის ტიპი</string>
@@ -47,6 +48,7 @@
     <string name="filter_rent">იჯარა</string>
     <string name="filter_sale">გაყიდვა</string>
     <string name="filter_daily">დღიური</string>
+    <string name="filter_jeonse">ჯონსე</string>
     <string name="filter_commercial">კომერციული</string>
     <string name="filter_commercial_rent">კომერციული (იჯარა)</string>
     <string name="filter_commercial_sale">კომერციული (ყიდვა)</string>
@@ -140,6 +142,7 @@
     <string name="country_ae">არაბთა გაერტიანბული საამირებები</string>
     <string name="country_th">ტაილანდი</string>
     <string name="country_us">ამერიკის შეერტებული შთატები</string>
+    <string name="country_kr">სამხრეთ კორეა</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
     <string name="city_vitebsk">ვიტებსკი</string>
@@ -210,6 +213,20 @@
     <string name="city_austin">ოსტინი</string>
     <string name="city_boston">ბოსტონი</string>
     <string name="city_denver">დენვერი</string>
+    <string name="city_seoul">Seoul</string>
+    <string name="city_busan">Busan</string>
+    <string name="city_daegu">Daegu</string>
+    <string name="city_incheon">Incheon</string>
+    <string name="city_gwangju">Gwangju</string>
+    <string name="city_daejeon">Daejeon</string>
+    <string name="city_ulsan">Ulsan</string>
+    <string name="city_sejong">Sejong</string>
+    <string name="city_suwon">Suwon</string>
+    <string name="city_changwon">Changwon</string>
+    <string name="city_jeonju">Jeonju</string>
+    <string name="city_cheongju">Cheongju</string>
+    <string name="city_chuncheon">Chuncheon</string>
+    <string name="city_jeju">Jeju</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>
     <string name="location_metro_line_red">წითელი</string>
