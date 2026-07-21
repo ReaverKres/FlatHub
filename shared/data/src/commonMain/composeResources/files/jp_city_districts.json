@@ -1,0 +1,280 @@
+{
+  "Tokyo": [
+    {
+      "id": 92001,
+      "nameEn": "Chiyoda-ku",
+      "nameLocal": "千代田区",
+      "coordinates": [
+        {
+          "latitude": 35.694,
+          "longitude": 139.7536
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92002,
+      "nameEn": "Chuo-ku",
+      "nameLocal": "中央区",
+      "coordinates": [
+        {
+          "latitude": 35.6706,
+          "longitude": 139.772
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92003,
+      "nameEn": "Minato-ku",
+      "nameLocal": "港区",
+      "coordinates": [
+        {
+          "latitude": 35.6581,
+          "longitude": 139.7514
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92004,
+      "nameEn": "Shinjuku-ku",
+      "nameLocal": "新宿区",
+      "coordinates": [
+        {
+          "latitude": 35.6938,
+          "longitude": 139.7036
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92005,
+      "nameEn": "Bunkyo-ku",
+      "nameLocal": "文京区",
+      "coordinates": [
+        {
+          "latitude": 35.7081,
+          "longitude": 139.7522
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92006,
+      "nameEn": "Taito-ku",
+      "nameLocal": "台東区",
+      "coordinates": [
+        {
+          "latitude": 35.7126,
+          "longitude": 139.78
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92007,
+      "nameEn": "Sumida-ku",
+      "nameLocal": "墨田区",
+      "coordinates": [
+        {
+          "latitude": 35.7107,
+          "longitude": 139.8015
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92008,
+      "nameEn": "Koto-ku",
+      "nameLocal": "江東区",
+      "coordinates": [
+        {
+          "latitude": 35.6731,
+          "longitude": 139.817
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92009,
+      "nameEn": "Shinagawa-ku",
+      "nameLocal": "品川区",
+      "coordinates": [
+        {
+          "latitude": 35.6092,
+          "longitude": 139.7302
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92010,
+      "nameEn": "Meguro-ku",
+      "nameLocal": "目黒区",
+      "coordinates": [
+        {
+          "latitude": 35.6414,
+          "longitude": 139.6982
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92011,
+      "nameEn": "Ota-ku",
+      "nameLocal": "大田区",
+      "coordinates": [
+        {
+          "latitude": 35.5614,
+          "longitude": 139.7161
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92012,
+      "nameEn": "Setagaya-ku",
+      "nameLocal": "世田谷区",
+      "coordinates": [
+        {
+          "latitude": 35.6464,
+          "longitude": 139.6533
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92013,
+      "nameEn": "Shibuya-ku",
+      "nameLocal": "渋谷区",
+      "coordinates": [
+        {
+          "latitude": 35.664,
+          "longitude": 139.6982
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92014,
+      "nameEn": "Nakano-ku",
+      "nameLocal": "中野区",
+      "coordinates": [
+        {
+          "latitude": 35.7074,
+          "longitude": 139.6638
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92015,
+      "nameEn": "Suginami-ku",
+      "nameLocal": "杉並区",
+      "coordinates": [
+        {
+          "latitude": 35.6995,
+          "longitude": 139.6364
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92016,
+      "nameEn": "Toshima-ku",
+      "nameLocal": "豊島区",
+      "coordinates": [
+        {
+          "latitude": 35.726,
+          "longitude": 139.7164
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92017,
+      "nameEn": "Kita-ku",
+      "nameLocal": "北区",
+      "coordinates": [
+        {
+          "latitude": 35.7528,
+          "longitude": 139.7335
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92018,
+      "nameEn": "Arakawa-ku",
+      "nameLocal": "荒川区",
+      "coordinates": [
+        {
+          "latitude": 35.7362,
+          "longitude": 139.7833
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92019,
+      "nameEn": "Itabashi-ku",
+      "nameLocal": "板橋区",
+      "coordinates": [
+        {
+          "latitude": 35.7512,
+          "longitude": 139.7099
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92020,
+      "nameEn": "Nerima-ku",
+      "nameLocal": "練馬区",
+      "coordinates": [
+        {
+          "latitude": 35.7356,
+          "longitude": 139.6517
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92021,
+      "nameEn": "Adachi-ku",
+      "nameLocal": "足立区",
+      "coordinates": [
+        {
+          "latitude": 35.775,
+          "longitude": 139.8044
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92022,
+      "nameEn": "Katsushika-ku",
+      "nameLocal": "葛飾区",
+      "coordinates": [
+        {
+          "latitude": 35.7434,
+          "longitude": 139.8472
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 92023,
+      "nameEn": "Edogawa-ku",
+      "nameLocal": "江戸川区",
+      "coordinates": [
+        {
+          "latitude": 35.7064,
+          "longitude": 139.8685
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

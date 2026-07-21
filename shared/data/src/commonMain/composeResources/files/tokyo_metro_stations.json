@@ -1,0 +1,842 @@
+[
+  {
+    "name": "JR Yamanote Tokyo",
+    "coordinates": [
+      35.6812,
+      139.7671
+    ]
+  },
+  {
+    "name": "JR Yamanote Kanda",
+    "coordinates": [
+      35.6917,
+      139.7709
+    ]
+  },
+  {
+    "name": "JR Yamanote Akihabara",
+    "coordinates": [
+      35.6984,
+      139.7731
+    ]
+  },
+  {
+    "name": "JR Yamanote Okachimachi",
+    "coordinates": [
+      35.7074,
+      139.7748
+    ]
+  },
+  {
+    "name": "JR Yamanote Ueno",
+    "coordinates": [
+      35.7138,
+      139.7773
+    ]
+  },
+  {
+    "name": "JR Yamanote Uguisudani",
+    "coordinates": [
+      35.7205,
+      139.7788
+    ]
+  },
+  {
+    "name": "JR Yamanote Nippori",
+    "coordinates": [
+      35.7278,
+      139.7713
+    ]
+  },
+  {
+    "name": "JR Yamanote Nishi-Nippori",
+    "coordinates": [
+      35.732,
+      139.7668
+    ]
+  },
+  {
+    "name": "JR Yamanote Tabata",
+    "coordinates": [
+      35.7381,
+      139.7607
+    ]
+  },
+  {
+    "name": "JR Yamanote Komagome",
+    "coordinates": [
+      35.7365,
+      139.7467
+    ]
+  },
+  {
+    "name": "JR Yamanote Sugamo",
+    "coordinates": [
+      35.7335,
+      139.7393
+    ]
+  },
+  {
+    "name": "JR Yamanote Otsuka",
+    "coordinates": [
+      35.7312,
+      139.7285
+    ]
+  },
+  {
+    "name": "JR Yamanote Ikebukuro",
+    "coordinates": [
+      35.7295,
+      139.7109
+    ]
+  },
+  {
+    "name": "JR Yamanote Mejiro",
+    "coordinates": [
+      35.72,
+      139.7066
+    ]
+  },
+  {
+    "name": "JR Yamanote Takadanobaba",
+    "coordinates": [
+      35.7128,
+      139.7038
+    ]
+  },
+  {
+    "name": "JR Yamanote Shin-Okubo",
+    "coordinates": [
+      35.7013,
+      139.7003
+    ]
+  },
+  {
+    "name": "JR Yamanote Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "JR Yamanote Yoyogi",
+    "coordinates": [
+      35.6831,
+      139.702
+    ]
+  },
+  {
+    "name": "JR Yamanote Harajuku",
+    "coordinates": [
+      35.6707,
+      139.7026
+    ]
+  },
+  {
+    "name": "JR Yamanote Shibuya",
+    "coordinates": [
+      35.658,
+      139.7016
+    ]
+  },
+  {
+    "name": "JR Yamanote Ebisu",
+    "coordinates": [
+      35.6467,
+      139.71
+    ]
+  },
+  {
+    "name": "JR Yamanote Meguro",
+    "coordinates": [
+      35.6339,
+      139.7158
+    ]
+  },
+  {
+    "name": "JR Yamanote Gotanda",
+    "coordinates": [
+      35.6264,
+      139.7234
+    ]
+  },
+  {
+    "name": "JR Yamanote Osaki",
+    "coordinates": [
+      35.6197,
+      139.7282
+    ]
+  },
+  {
+    "name": "JR Yamanote Shinagawa",
+    "coordinates": [
+      35.6284,
+      139.7387
+    ]
+  },
+  {
+    "name": "JR Yamanote Tamachi",
+    "coordinates": [
+      35.6457,
+      139.7474
+    ]
+  },
+  {
+    "name": "JR Yamanote Hamamatsucho",
+    "coordinates": [
+      35.6554,
+      139.7571
+    ]
+  },
+  {
+    "name": "JR Yamanote Shinbashi",
+    "coordinates": [
+      35.6662,
+      139.7583
+    ]
+  },
+  {
+    "name": "JR Yamanote Yurakucho",
+    "coordinates": [
+      35.6751,
+      139.7631
+    ]
+  },
+  {
+    "name": "JR Chuo Tokyo",
+    "coordinates": [
+      35.6812,
+      139.7671
+    ]
+  },
+  {
+    "name": "JR Chuo Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "JR Keihin-Tohoku Shinagawa",
+    "coordinates": [
+      35.6284,
+      139.7387
+    ]
+  },
+  {
+    "name": "JR Keihin-Tohoku Ueno",
+    "coordinates": [
+      35.7138,
+      139.7773
+    ]
+  },
+  {
+    "name": "JR Sobu Ryogoku",
+    "coordinates": [
+      35.6961,
+      139.7933
+    ]
+  },
+  {
+    "name": "JR Sobu Kinshicho",
+    "coordinates": [
+      35.697,
+      139.8143
+    ]
+  },
+  {
+    "name": "JR Joban Ayase",
+    "coordinates": [
+      35.762,
+      139.8244
+    ]
+  },
+  {
+    "name": "Metro Ginza Shibuya",
+    "coordinates": [
+      35.6595,
+      139.7024
+    ]
+  },
+  {
+    "name": "Metro Ginza Omotesando",
+    "coordinates": [
+      35.6652,
+      139.7126
+    ]
+  },
+  {
+    "name": "Metro Ginza Gaienmae",
+    "coordinates": [
+      35.6717,
+      139.7249
+    ]
+  },
+  {
+    "name": "Metro Ginza Akasaka-mitsuke",
+    "coordinates": [
+      35.677,
+      139.7368
+    ]
+  },
+  {
+    "name": "Metro Ginza Tameike-Sanno",
+    "coordinates": [
+      35.6736,
+      139.7414
+    ]
+  },
+  {
+    "name": "Metro Ginza Toranomon",
+    "coordinates": [
+      35.6702,
+      139.7496
+    ]
+  },
+  {
+    "name": "Metro Ginza Shimbashi",
+    "coordinates": [
+      35.6669,
+      139.7596
+    ]
+  },
+  {
+    "name": "Metro Ginza Ginza",
+    "coordinates": [
+      35.6719,
+      139.7659
+    ]
+  },
+  {
+    "name": "Metro Ginza Kyobashi",
+    "coordinates": [
+      35.6769,
+      139.77
+    ]
+  },
+  {
+    "name": "Metro Ginza Nihombashi",
+    "coordinates": [
+      35.682,
+      139.7743
+    ]
+  },
+  {
+    "name": "Metro Ginza Mitsukoshimae",
+    "coordinates": [
+      35.687,
+      139.7732
+    ]
+  },
+  {
+    "name": "Metro Ginza Kanda",
+    "coordinates": [
+      35.6917,
+      139.7709
+    ]
+  },
+  {
+    "name": "Metro Ginza Ueno",
+    "coordinates": [
+      35.7138,
+      139.7773
+    ]
+  },
+  {
+    "name": "Metro Ginza Asakusa",
+    "coordinates": [
+      35.7114,
+      139.7967
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Tokyo",
+    "coordinates": [
+      35.6812,
+      139.7671
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Otemachi",
+    "coordinates": [
+      35.6858,
+      139.7661
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Akasaka-mitsuke",
+    "coordinates": [
+      35.677,
+      139.7368
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Ikebukuro",
+    "coordinates": [
+      35.7295,
+      139.7109
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Korakuen",
+    "coordinates": [
+      35.7074,
+      139.7519
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Yotsuya",
+    "coordinates": [
+      35.686,
+      139.7306
+    ]
+  },
+  {
+    "name": "Metro Marunouchi Nishi-Shinjuku",
+    "coordinates": [
+      35.6937,
+      139.6917
+    ]
+  },
+  {
+    "name": "Metro Hibiya Ebisu",
+    "coordinates": [
+      35.6467,
+      139.71
+    ]
+  },
+  {
+    "name": "Metro Hibiya Roppongi",
+    "coordinates": [
+      35.663,
+      139.731
+    ]
+  },
+  {
+    "name": "Metro Hibiya Kamiyacho",
+    "coordinates": [
+      35.6669,
+      139.745
+    ]
+  },
+  {
+    "name": "Metro Hibiya Kasumigaseki",
+    "coordinates": [
+      35.674,
+      139.7514
+    ]
+  },
+  {
+    "name": "Metro Hibiya Hibiya",
+    "coordinates": [
+      35.6748,
+      139.7596
+    ]
+  },
+  {
+    "name": "Metro Hibiya Ginza",
+    "coordinates": [
+      35.6719,
+      139.7659
+    ]
+  },
+  {
+    "name": "Metro Hibiya Tsukiji",
+    "coordinates": [
+      35.6674,
+      139.772
+    ]
+  },
+  {
+    "name": "Metro Hibiya Minowa",
+    "coordinates": [
+      35.7323,
+      139.7822
+    ]
+  },
+  {
+    "name": "Metro Hibiya Kita-Senju",
+    "coordinates": [
+      35.7495,
+      139.8049
+    ]
+  },
+  {
+    "name": "Metro Tozai Nakano",
+    "coordinates": [
+      35.7058,
+      139.6658
+    ]
+  },
+  {
+    "name": "Metro Tozai Takadanobaba",
+    "coordinates": [
+      35.7128,
+      139.7038
+    ]
+  },
+  {
+    "name": "Metro Tozai Iidabashi",
+    "coordinates": [
+      35.7021,
+      139.745
+    ]
+  },
+  {
+    "name": "Metro Tozai Otemachi",
+    "coordinates": [
+      35.6858,
+      139.7661
+    ]
+  },
+  {
+    "name": "Metro Tozai Nihombashi",
+    "coordinates": [
+      35.682,
+      139.7743
+    ]
+  },
+  {
+    "name": "Metro Tozai Monzen-Nakacho",
+    "coordinates": [
+      35.672,
+      139.796
+    ]
+  },
+  {
+    "name": "Metro Tozai Nishi-Funabashi",
+    "coordinates": [
+      35.7074,
+      139.9595
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Omotesando",
+    "coordinates": [
+      35.6652,
+      139.7126
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Meiji-Jingumae",
+    "coordinates": [
+      35.669,
+      139.705
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Yoyogi-Koen",
+    "coordinates": [
+      35.6719,
+      139.6897
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Nezu",
+    "coordinates": [
+      35.7203,
+      139.7657
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Sendagi",
+    "coordinates": [
+      35.7255,
+      139.7628
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Nishi-Nippori",
+    "coordinates": [
+      35.732,
+      139.7668
+    ]
+  },
+  {
+    "name": "Metro Chiyoda Ayase",
+    "coordinates": [
+      35.762,
+      139.8244
+    ]
+  },
+  {
+    "name": "Metro Yurakucho Ikebukuro",
+    "coordinates": [
+      35.7295,
+      139.7109
+    ]
+  },
+  {
+    "name": "Metro Yurakucho Higashi-Ikebukuro",
+    "coordinates": [
+      35.726,
+      139.7178
+    ]
+  },
+  {
+    "name": "Metro Yurakucho Iidabashi",
+    "coordinates": [
+      35.7021,
+      139.745
+    ]
+  },
+  {
+    "name": "Metro Yurakucho Nagatacho",
+    "coordinates": [
+      35.6781,
+      139.7404
+    ]
+  },
+  {
+    "name": "Metro Yurakucho Yurakucho",
+    "coordinates": [
+      35.6751,
+      139.7631
+    ]
+  },
+  {
+    "name": "Metro Fukutoshin Shibuya",
+    "coordinates": [
+      35.658,
+      139.7016
+    ]
+  },
+  {
+    "name": "Metro Fukutoshin Meiji-Jingumae",
+    "coordinates": [
+      35.669,
+      139.705
+    ]
+  },
+  {
+    "name": "Metro Namboku Meguro",
+    "coordinates": [
+      35.6339,
+      139.7158
+    ]
+  },
+  {
+    "name": "Metro Namboku Shirokane-Takanawa",
+    "coordinates": [
+      35.642,
+      139.73
+    ]
+  },
+  {
+    "name": "Metro Namboku Azabu-Juban",
+    "coordinates": [
+      35.6544,
+      139.7369
+    ]
+  },
+  {
+    "name": "Metro Namboku Roppongi-Itchome",
+    "coordinates": [
+      35.6657,
+      139.739
+    ]
+  },
+  {
+    "name": "Metro Namboku Nagatacho",
+    "coordinates": [
+      35.6781,
+      139.7404
+    ]
+  },
+  {
+    "name": "Metro Namboku Komagome",
+    "coordinates": [
+      35.7365,
+      139.7467
+    ]
+  },
+  {
+    "name": "Metro Namboku Akabane-Iwabuchi",
+    "coordinates": [
+      35.783,
+      139.721
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Shibuya",
+    "coordinates": [
+      35.658,
+      139.7016
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Omotesando",
+    "coordinates": [
+      35.6652,
+      139.7126
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Nagatacho",
+    "coordinates": [
+      35.6781,
+      139.7404
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Otemachi",
+    "coordinates": [
+      35.6858,
+      139.7661
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Suitengumae",
+    "coordinates": [
+      35.6827,
+      139.7855
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Oshiage",
+    "coordinates": [
+      35.7104,
+      139.8133
+    ]
+  },
+  {
+    "name": "Toei Asakusa Nishi-Magome",
+    "coordinates": [
+      35.5867,
+      139.714
+    ]
+  },
+  {
+    "name": "Toei Asakusa Gotanda",
+    "coordinates": [
+      35.6264,
+      139.7234
+    ]
+  },
+  {
+    "name": "Toei Asakusa Asakusabashi",
+    "coordinates": [
+      35.6976,
+      139.7934
+    ]
+  },
+  {
+    "name": "Toei Asakusa Asakusa",
+    "coordinates": [
+      35.7114,
+      139.7967
+    ]
+  },
+  {
+    "name": "Toei Asakusa Oshiage",
+    "coordinates": [
+      35.7104,
+      139.8133
+    ]
+  },
+  {
+    "name": "Toei Oedo Tocho-mae",
+    "coordinates": [
+      35.6896,
+      139.6917
+    ]
+  },
+  {
+    "name": "Toei Oedo Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "Toei Oedo Roppongi",
+    "coordinates": [
+      35.663,
+      139.731
+    ]
+  },
+  {
+    "name": "Toei Oedo Azabu-Juban",
+    "coordinates": [
+      35.6544,
+      139.7369
+    ]
+  },
+  {
+    "name": "Toei Oedo Tsukishima",
+    "coordinates": [
+      35.6644,
+      139.7845
+    ]
+  },
+  {
+    "name": "Toei Oedo Monzen-Nakacho",
+    "coordinates": [
+      35.672,
+      139.796
+    ]
+  },
+  {
+    "name": "Toei Oedo Ryogoku",
+    "coordinates": [
+      35.6961,
+      139.7933
+    ]
+  },
+  {
+    "name": "Toei Oedo Iidabashi",
+    "coordinates": [
+      35.7021,
+      139.745
+    ]
+  },
+  {
+    "name": "Toei Oedo Higashi-Shinjuku",
+    "coordinates": [
+      35.6978,
+      139.7078
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Ichigaya",
+    "coordinates": [
+      35.691,
+      139.7356
+    ]
+  },
+  {
+    "name": "Toei Mita Mita",
+    "coordinates": [
+      35.6477,
+      139.7402
+    ]
+  },
+  {
+    "name": "Toei Mita Shirokane-Takanawa",
+    "coordinates": [
+      35.642,
+      139.73
+    ]
+  },
+  {
+    "name": "Toei Mita Sugamo",
+    "coordinates": [
+      35.7335,
+      139.7393
+    ]
+  }
+]

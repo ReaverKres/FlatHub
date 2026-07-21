@@ -43,4 +43,7 @@ enum class DrawablePath(val value: String) {
     ZUMPER32("drawable/zumper32.webp"),
     DABANG32("drawable/dabang32.png"),
     ZIGBANG32("drawable/zigbang32.png"),
+    SUUMO32("drawable/suumo32.png"),
+    YAHOO_RE32("drawable/yahoo_re32.png"),
+    ATHOME32("drawable/athome32.png"),
 }

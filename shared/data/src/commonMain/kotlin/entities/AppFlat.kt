@@ -204,6 +204,11 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.ZIGBANG,
         -> "₩"
 
+    FlatPlatform.SUUMO,
+    FlatPlatform.YAHOO_RE,
+    FlatPlatform.ATHOME,
+        -> "¥"
+
     FlatPlatform.ZUMPER,
         -> "$"
 

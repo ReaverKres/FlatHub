@@ -43,6 +43,7 @@
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">Арабша</string>
     <string name="language_korean">Корей тілі</string>
+    <string name="language_japanese">Жапон тілі</string>
 
     <string name="filters_title">Сүзгілер</string>
     <string name="filter_my_filters">Менің сүзгілерім</string>
@@ -151,6 +152,7 @@
     <string name="country_th">Tailand</string>
     <string name="country_us">AQSh</string>
     <string name="country_kr">Ong Koreya</string>
+    <string name="country_jp">Жапония</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Vitebsk</string>
@@ -235,6 +237,16 @@
     <string name="city_cheongju">Cheongju</string>
     <string name="city_chuncheon">Chuncheon</string>
     <string name="city_jeju">Jeju</string>
+    <string name="city_tokyo">Токио</string>
+    <string name="city_osaka">Осака</string>
+    <string name="city_yokohama">Йокогама</string>
+    <string name="city_nagoya">Нагоя</string>
+    <string name="city_sapporo">Саппoro</string>
+    <string name="city_fukuoka">Фукуока</string>
+    <string name="city_kyoto">Киото</string>
+    <string name="city_kobe">Кobe</string>
+    <string name="city_sendai">Сендай</string>
+    <string name="city_hiroshima">Хиросима</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>
     <string name="location_metro_line_red">Қызыл</string>

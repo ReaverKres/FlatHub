@@ -45,6 +45,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.NEW_YORK, "New York", "New York", Coordinates(40.7128, -74.0060))
     val seoulUiItem =
         UiCityItem(CityCode.SEOUL, "Seoul", "Seoul", Coordinates(37.5665, 126.9780))
+    val tokyoUiItem =
+        UiCityItem(CityCode.TOKYO, "Tokyo", "Tokyo", Coordinates(35.6762, 139.6503))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -58,6 +60,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.TH, "Thailand"),
         UiCountryItem(CountryCode.US, "United States"),
         UiCountryItem(CountryCode.KR, "South Korea"),
+        UiCountryItem(CountryCode.JP, "Japan"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -71,6 +74,7 @@ object LocationUiMapper {
         CountryCode.TH -> bangkokUiItem
         CountryCode.US -> newYorkUiItem
         CountryCode.KR -> seoulUiItem
+        CountryCode.JP -> tokyoUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -232,6 +236,25 @@ object LocationUiMapper {
             ),
             UiCityItem(CityCode.JEJU, "Jeju", "Jeju", Coordinates(33.4996, 126.5312)),
         )
+
+        CountryCode.JP -> listOf(
+            // districtsCatalogKey "Tokyo" matches jp_city_districts.json catalog key
+            tokyoUiItem,
+            UiCityItem(CityCode.OSAKA, "Osaka", "Osaka", Coordinates(34.6937, 135.5023)),
+            UiCityItem(CityCode.YOKOHAMA, "Yokohama", "Yokohama", Coordinates(35.4437, 139.6380)),
+            UiCityItem(CityCode.NAGOYA, "Nagoya", "Nagoya", Coordinates(35.1815, 136.9066)),
+            UiCityItem(CityCode.SAPPORO, "Sapporo", "Sapporo", Coordinates(43.0618, 141.3545)),
+            UiCityItem(CityCode.FUKUOKA, "Fukuoka", "Fukuoka", Coordinates(33.5904, 130.4017)),
+            UiCityItem(CityCode.KYOTO, "Kyoto", "Kyoto", Coordinates(35.0116, 135.7681)),
+            UiCityItem(CityCode.KOBE, "Kobe", "Kobe", Coordinates(34.6901, 135.1955)),
+            UiCityItem(CityCode.SENDAI, "Sendai", "Sendai", Coordinates(38.2682, 140.8694)),
+            UiCityItem(
+                CityCode.HIROSHIMA,
+                "Hiroshima",
+                "Hiroshima",
+                Coordinates(34.3853, 132.4553)
+            ),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -254,6 +277,7 @@ object LocationUiMapper {
             in cities(CountryCode.TH).map { it.code } -> CountryCode.TH
             in cities(CountryCode.US).map { it.code } -> CountryCode.US
             in cities(CountryCode.KR).map { it.code } -> CountryCode.KR
+            in cities(CountryCode.JP).map { it.code } -> CountryCode.JP
             else -> CountryCode.BY
         }
 

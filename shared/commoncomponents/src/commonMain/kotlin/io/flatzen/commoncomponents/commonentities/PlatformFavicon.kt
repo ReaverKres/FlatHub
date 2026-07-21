@@ -40,4 +40,7 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.ZUMPER -> "https://www.zumper.com/favicon.ico"
     FlatPlatform.DABANG -> "https://www.dabangapp.com/static/favicon.ico"
     FlatPlatform.ZIGBANG -> "https://www.zigbang.com/favicon.ico"
+    FlatPlatform.SUUMO -> "https://suumo.jp/front/img/favicon.ico"
+    FlatPlatform.YAHOO_RE -> "https://realestate.yahoo.co.jp/favicon.ico"
+    FlatPlatform.ATHOME -> "https://www.athome.co.jp/favicon.ico"
 }

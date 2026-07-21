@@ -53,6 +53,11 @@ enum class FlatPlatform(val value: String) {
     // South Korea (MVP) — Dabang + Zigbang only (Naver/Hogangnono blocked)
     DABANG("dabang"),
     ZIGBANG("zigbang"),
+
+    // Japan (MVP) — SUUMO + Yahoo!不動産 + at home (LIFULL HOME'S blocked)
+    SUUMO("suumo"),
+    YAHOO_RE("yahoo_re"),
+    ATHOME("athome"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -106,6 +111,11 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.DABANG,
     FlatPlatform.ZIGBANG,
         -> CountryCode.KR
+
+    FlatPlatform.SUUMO,
+    FlatPlatform.YAHOO_RE,
+    FlatPlatform.ATHOME,
+        -> CountryCode.JP
 }
 
 fun FlatPlatform.usesSquareFeet(): Boolean = marketCountry().usesSquareFeet()
@@ -152,4 +162,7 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.ZUMPER -> DrawablePath.ZUMPER32
     FlatPlatform.DABANG -> DrawablePath.DABANG32
     FlatPlatform.ZIGBANG -> DrawablePath.ZIGBANG32
+    FlatPlatform.SUUMO -> DrawablePath.SUUMO32
+    FlatPlatform.YAHOO_RE -> DrawablePath.YAHOO_RE32
+    FlatPlatform.ATHOME -> DrawablePath.ATHOME32
 }

@@ -48,6 +48,9 @@ object FeedDelayListBoost {
         FlatPlatform.ZUMPER to 2.0,
         FlatPlatform.DABANG to 3.0,
         FlatPlatform.ZIGBANG to 3.0,
+        FlatPlatform.SUUMO to 3.0,
+        FlatPlatform.YAHOO_RE to 2.5,
+        FlatPlatform.ATHOME to 2.5,
     )
 
     /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */

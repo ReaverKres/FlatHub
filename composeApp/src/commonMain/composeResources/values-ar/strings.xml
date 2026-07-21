@@ -43,6 +43,7 @@
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">العربية</string>
     <string name="language_korean">الكورية</string>
+    <string name="language_japanese">اليابانية</string>
 
     <string name="filters_title">الفلاتر</string>
     <string name="filter_my_filters">فلاتري</string>
@@ -151,6 +152,7 @@
     <string name="country_th">تايلاند</string>
     <string name="country_us">الولايات المتحدة الأمريكية</string>
     <string name="country_kr">كوريا الجنوبية</string>
+    <string name="country_jp">اليابان</string>
     <string name="city_minsk">مينسك</string>
     <string name="city_brest">بريست</string>
     <string name="city_vitebsk">فيتيبسك</string>
@@ -235,6 +237,16 @@
     <string name="city_cheongju">Cheongju</string>
     <string name="city_chuncheon">Chuncheon</string>
     <string name="city_jeju">Jeju</string>
+    <string name="city_tokyo">طوكيو</string>
+    <string name="city_osaka">أوساكا</string>
+    <string name="city_yokohama">يوكوهاما</string>
+    <string name="city_nagoya">ناغoya</string>
+    <string name="city_sapporo">سapporo</string>
+    <string name="city_fukuoka">فوكوoka</string>
+    <string name="city_kyoto">Kyoto</string>
+    <string name="city_kobe">Kobe</string>
+    <string name="city_sendai">Sendai</string>
+    <string name="city_hiroshima">Hiroshima</string>
     <string name="location_metro">المترو</string>
     <string name="location_metro_any_switch">أي محطة</string>
     <string name="location_metro_line_red">أحمر</string>

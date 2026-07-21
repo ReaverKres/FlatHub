@@ -41,6 +41,7 @@
     <string name="language_georgian">ქართული</string>
     <string name="language_arabic">არაბული</string>
     <string name="language_korean">კორეული</string>
+    <string name="language_japanese">იaponური</string>
     <string name="filters_title">ფილტრები</string>
     <string name="filter_my_filters">ჩემი ფილტრები</string>
     <string name="filter_property_type">ფართის ტიპი</string>
@@ -143,6 +144,7 @@
     <string name="country_th">ტაილანდი</string>
     <string name="country_us">ამერიკის შეერტებული შთატები</string>
     <string name="country_kr">სამხრეთ კორეა</string>
+    <string name="country_jp">იაპონია</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
     <string name="city_vitebsk">ვიტებსკი</string>
@@ -227,6 +229,16 @@
     <string name="city_cheongju">Cheongju</string>
     <string name="city_chuncheon">Chuncheon</string>
     <string name="city_jeju">Jeju</string>
+    <string name="city_tokyo">ტოკიო</string>
+    <string name="city_osaka">ოსაკა</string>
+    <string name="city_yokohama">იოკოჰამა</string>
+    <string name="city_nagoya">ნაგოია</string>
+    <string name="city_sapporo">საპoro</string>
+    <string name="city_fukuoka">ფუკუოკა</string>
+    <string name="city_kyoto">კიოტო</string>
+    <string name="city_kobe">კobe</string>
+    <string name="city_sendai">სენდაი</string>
+    <string name="city_hiroshima">ჰიროსიმა</string>
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>
     <string name="location_metro_line_red">წითელი</string>

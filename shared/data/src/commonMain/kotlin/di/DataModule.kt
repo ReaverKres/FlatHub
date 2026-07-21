@@ -46,6 +46,12 @@ import listing.ge.livo.LivoApiClient
 import listing.ge.livo.LivoListingSource
 import listing.ge.ss.SsApiClient
 import listing.ge.ss.SsListingSource
+import listing.jp.athome.AthomeApiClient
+import listing.jp.athome.AthomeListingSource
+import listing.jp.suumo.SuumoApiClient
+import listing.jp.suumo.SuumoListingSource
+import listing.jp.yahoo.YahooApiClient
+import listing.jp.yahoo.YahooListingSource
 import listing.kr.dabang.DabangApiClient
 import listing.kr.dabang.DabangListingSource
 import listing.kr.zigbang.ZigbangApiClient
@@ -277,6 +283,18 @@ val dataModule = module {
     single { ZigbangListingSource(api = get(), flatsDao = get()) }
 
     single {
+        YahooApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { YahooListingSource(api = get(), flatsDao = get()) }
+    single { SuumoApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { SuumoListingSource(api = get(), flatsDao = get()) }
+    single { AthomeApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { AthomeListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -309,6 +327,9 @@ val dataModule = module {
                 get<ZumperListingSource>(),
                 get<DabangListingSource>(),
                 get<ZigbangListingSource>(),
+                get<YahooListingSource>(),
+                get<SuumoListingSource>(),
+                get<AthomeListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )
