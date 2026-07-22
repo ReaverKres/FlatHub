@@ -67,6 +67,13 @@ android {
     packaging.resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
 
     configurations.configureEach {
+        // MyTarget (via Appodeal) requests billing:[7.0.0, 8.0.0); Play requires ≥8 from Aug 2026.
+        resolutionStrategy {
+            force(
+                "com.android.billingclient:billing:${libs.versions.billing.get()}",
+                "com.android.billingclient:billing-ktx:${libs.versions.billing.get()}",
+            )
+        }
         exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue")
         exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-admob-v23")
         exclude(group = "io.appmetrica.analytics", module = "analytics-ad-revenue-applovin-v12")
@@ -96,6 +103,10 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.core)
     implementation(libs.flowmvi.compose)
+
+    // Pin Play Billing explicitly (MyTarget via Appodeal otherwise resolves 7.x).
+    implementation(libs.androidx.billing)
+    implementation(libs.androidx.billing.ktx)
 
     // Appodeal mediation adapters — generated from Appodeal Dashboard Configure Mediated Networks
     implementation(libs.appodeal.core)

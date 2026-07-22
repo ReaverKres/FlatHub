@@ -21,6 +21,7 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.androidx.datastore.preferences)
+                implementation(libs.androidx.billing)
                 implementation(libs.androidx.billing.ktx)
                 implementation(libs.appodeal.core)
                 implementation(libs.ktor.client.okhttp)

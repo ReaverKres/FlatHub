@@ -34,8 +34,8 @@ gServices = "4.4.3"
 android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "37"
-android-versionCode = "15"
-android-versionName = "1.2.0"
+android-versionCode = "16"
+android-versionName = "1.2.02"
 collections-immutable = "0.5.1"
 datastore = "1.1.7"
 billing = "9.1.0"
@@ -97,6 +97,7 @@ flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
 flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 appodeal-core = { module = "com.appodeal.ads.sdk:core", version.ref = "appodeal" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
