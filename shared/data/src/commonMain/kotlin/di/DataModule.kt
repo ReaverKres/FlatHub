@@ -47,6 +47,8 @@ import listing.es.fotocasa.FotocasaApiClient
 import listing.es.fotocasa.FotocasaListingSource
 import listing.es.pisos.PisosApiClient
 import listing.es.pisos.PisosListingSource
+import listing.fr.bienici.BieniciApiClient
+import listing.fr.bienici.BieniciListingSource
 import listing.gb.onthemarket.OnTheMarketApiClient
 import listing.gb.onthemarket.OnTheMarketListingSource
 import listing.gb.openrent.OpenRentApiClient
@@ -334,6 +336,14 @@ val dataModule = module {
     single { OpenRentListingSource(api = get(), flatsDao = get()) }
 
     single {
+        BieniciApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { BieniciListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -376,6 +386,7 @@ val dataModule = module {
                 get<RightmoveListingSource>(),
                 get<OnTheMarketListingSource>(),
                 get<OpenRentListingSource>(),
+                get<BieniciListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

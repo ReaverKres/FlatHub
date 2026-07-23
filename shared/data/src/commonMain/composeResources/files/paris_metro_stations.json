@@ -1,0 +1,1675 @@
+[
+  {
+    "name": "Abbesses",
+    "coordinates": [
+      48.8847,
+      2.3386
+    ]
+  },
+  {
+    "name": "Aéroport Charles de Gaulle 1",
+    "coordinates": [
+      49.0097,
+      2.5479
+    ]
+  },
+  {
+    "name": "Aéroport Charles de Gaulle 2 TGV",
+    "coordinates": [
+      49.0038,
+      2.5712
+    ]
+  },
+  {
+    "name": "Alésia",
+    "coordinates": [
+      48.8282,
+      2.3266
+    ]
+  },
+  {
+    "name": "Alexandre Dumas",
+    "coordinates": [
+      48.8558,
+      2.3944
+    ]
+  },
+  {
+    "name": "Alma - Marceau",
+    "coordinates": [
+      48.8659,
+      2.3004
+    ]
+  },
+  {
+    "name": "Anatole France",
+    "coordinates": [
+      48.8926,
+      2.2876
+    ]
+  },
+  {
+    "name": "Anvers",
+    "coordinates": [
+      48.8832,
+      2.3442
+    ]
+  },
+  {
+    "name": "Argentine",
+    "coordinates": [
+      48.8738,
+      2.2894
+    ]
+  },
+  {
+    "name": "Arts et Métiers",
+    "coordinates": [
+      48.8661,
+      2.3554
+    ]
+  },
+  {
+    "name": "Assemblée Nationale",
+    "coordinates": [
+      48.8617,
+      2.3204
+    ]
+  },
+  {
+    "name": "Auber",
+    "coordinates": [
+      48.8727,
+      2.3292
+    ]
+  },
+  {
+    "name": "Avron",
+    "coordinates": [
+      48.8533,
+      2.3985
+    ]
+  },
+  {
+    "name": "Balard",
+    "coordinates": [
+      48.8365,
+      2.2781
+    ]
+  },
+  {
+    "name": "Barbès - Rochechouart",
+    "coordinates": [
+      48.8841,
+      2.3494
+    ]
+  },
+  {
+    "name": "Basilique de Saint-Denis",
+    "coordinates": [
+      48.9356,
+      2.3598
+    ]
+  },
+  {
+    "name": "Bastille",
+    "coordinates": [
+      48.8533,
+      2.3692
+    ]
+  },
+  {
+    "name": "Belleville",
+    "coordinates": [
+      48.8721,
+      2.3768
+    ]
+  },
+  {
+    "name": "Bercy",
+    "coordinates": [
+      48.8396,
+      2.3827
+    ]
+  },
+  {
+    "name": "Bibliothèque François Mitterrand",
+    "coordinates": [
+      48.8297,
+      2.3772
+    ]
+  },
+  {
+    "name": "Billancourt",
+    "coordinates": [
+      48.8324,
+      2.2381
+    ]
+  },
+  {
+    "name": "Bir-Hakeim",
+    "coordinates": [
+      48.8534,
+      2.2892
+    ]
+  },
+  {
+    "name": "Blanche",
+    "coordinates": [
+      48.8836,
+      2.3325
+    ]
+  },
+  {
+    "name": "Bobigny - Pablo Picasso",
+    "coordinates": [
+      48.9068,
+      2.4501
+    ]
+  },
+  {
+    "name": "Boissière",
+    "coordinates": [
+      48.8669,
+      2.2903
+    ]
+  },
+  {
+    "name": "Boissy-Saint-Léger",
+    "coordinates": [
+      48.7512,
+      2.5056
+    ]
+  },
+  {
+    "name": "Bonne Nouvelle",
+    "coordinates": [
+      48.8706,
+      2.3485
+    ]
+  },
+  {
+    "name": "Boucicaut",
+    "coordinates": [
+      48.843,
+      2.2936
+    ]
+  },
+  {
+    "name": "Boulogne - Pont de Saint-Cloud",
+    "coordinates": [
+      48.8414,
+      2.2288
+    ]
+  },
+  {
+    "name": "Bourse",
+    "coordinates": [
+      48.8687,
+      2.341
+    ]
+  },
+  {
+    "name": "Bréguet - Sabin",
+    "coordinates": [
+      48.8558,
+      2.3708
+    ]
+  },
+  {
+    "name": "Cadet",
+    "coordinates": [
+      48.8762,
+      2.3426
+    ]
+  },
+  {
+    "name": "Cambronne",
+    "coordinates": [
+      48.8445,
+      2.3018
+    ]
+  },
+  {
+    "name": "Campo-Formio",
+    "coordinates": [
+      48.8358,
+      2.3582
+    ]
+  },
+  {
+    "name": "Cardinal Lemoine",
+    "coordinates": [
+      48.8485,
+      2.3514
+    ]
+  },
+  {
+    "name": "Censier - Daubenton",
+    "coordinates": [
+      48.8409,
+      2.3522
+    ]
+  },
+  {
+    "name": "Champs-Élysées - Clemenceau",
+    "coordinates": [
+      48.8679,
+      2.3139
+    ]
+  },
+  {
+    "name": "Charles de Gaulle - Étoile",
+    "coordinates": [
+      48.8738,
+      2.295
+    ]
+  },
+  {
+    "name": "Charles Michels",
+    "coordinates": [
+      48.8447,
+      2.2893
+    ]
+  },
+  {
+    "name": "Charonne",
+    "coordinates": [
+      48.8535,
+      2.3854
+    ]
+  },
+  {
+    "name": "Château d'Eau",
+    "coordinates": [
+      48.8718,
+      2.3545
+    ]
+  },
+  {
+    "name": "Château de Vincennes",
+    "coordinates": [
+      48.8449,
+      2.4328
+    ]
+  },
+  {
+    "name": "Château Rouge",
+    "coordinates": [
+      48.887,
+      2.3497
+    ]
+  },
+  {
+    "name": "Châtelet",
+    "coordinates": [
+      48.8584,
+      2.3475
+    ]
+  },
+  {
+    "name": "Châtelet - Les Halles",
+    "coordinates": [
+      48.8619,
+      2.3469
+    ]
+  },
+  {
+    "name": "Châtillon - Montrouge",
+    "coordinates": [
+      48.8024,
+      2.3012
+    ]
+  },
+  {
+    "name": "Chaussée d'Antin - La Fayette",
+    "coordinates": [
+      48.8739,
+      2.3339
+    ]
+  },
+  {
+    "name": "Chemin Vert",
+    "coordinates": [
+      48.8573,
+      2.3686
+    ]
+  },
+  {
+    "name": "Chevaleret",
+    "coordinates": [
+      48.8353,
+      2.3666
+    ]
+  },
+  {
+    "name": "Cité",
+    "coordinates": [
+      48.8534,
+      2.3474
+    ]
+  },
+  {
+    "name": "Cité Universitaire",
+    "coordinates": [
+      48.8197,
+      2.3389
+    ]
+  },
+  {
+    "name": "Cluny - La Sorbonne",
+    "coordinates": [
+      48.8494,
+      2.3429
+    ]
+  },
+  {
+    "name": "Colonel Fabien",
+    "coordinates": [
+      48.8774,
+      2.3701
+    ]
+  },
+  {
+    "name": "Commerce",
+    "coordinates": [
+      48.845,
+      2.2972
+    ]
+  },
+  {
+    "name": "Concorde",
+    "coordinates": [
+      48.8656,
+      2.3212
+    ]
+  },
+  {
+    "name": "Convention",
+    "coordinates": [
+      48.8356,
+      2.2965
+    ]
+  },
+  {
+    "name": "Corentin Cariou",
+    "coordinates": [
+      48.8944,
+      2.3827
+    ]
+  },
+  {
+    "name": "Corvisart",
+    "coordinates": [
+      48.8297,
+      2.3494
+    ]
+  },
+  {
+    "name": "Cour Saint-Émilion",
+    "coordinates": [
+      48.8336,
+      2.3864
+    ]
+  },
+  {
+    "name": "Courcelles",
+    "coordinates": [
+      48.8793,
+      2.3038
+    ]
+  },
+  {
+    "name": "Créteil - Université",
+    "coordinates": [
+      48.7798,
+      2.4517
+    ]
+  },
+  {
+    "name": "Crimée",
+    "coordinates": [
+      48.8903,
+      2.3785
+    ]
+  },
+  {
+    "name": "Daumesnil",
+    "coordinates": [
+      48.8396,
+      2.3956
+    ]
+  },
+  {
+    "name": "Denfert-Rochereau",
+    "coordinates": [
+      48.8339,
+      2.3324
+    ]
+  },
+  {
+    "name": "Dupleix",
+    "coordinates": [
+      48.8498,
+      2.2947
+    ]
+  },
+  {
+    "name": "Duroc",
+    "coordinates": [
+      48.8486,
+      2.3167
+    ]
+  },
+  {
+    "name": "École Militaire",
+    "coordinates": [
+      48.849,
+      2.3015
+    ]
+  },
+  {
+    "name": "Edgar Quinet",
+    "coordinates": [
+      48.8408,
+      2.3236
+    ]
+  },
+  {
+    "name": "Église de Pantin",
+    "coordinates": [
+      48.8938,
+      2.4088
+    ]
+  },
+  {
+    "name": "Esplanade de La Défense",
+    "coordinates": [
+      48.8885,
+      2.2508
+    ]
+  },
+  {
+    "name": "Étienne Marcel",
+    "coordinates": [
+      48.864,
+      2.3525
+    ]
+  },
+  {
+    "name": "Europe",
+    "coordinates": [
+      48.8759,
+      2.3267
+    ]
+  },
+  {
+    "name": "Exelmans",
+    "coordinates": [
+      48.842,
+      2.2594
+    ]
+  },
+  {
+    "name": "Filles du Calvaire",
+    "coordinates": [
+      48.8635,
+      2.3672
+    ]
+  },
+  {
+    "name": "Fort d'Aubervilliers",
+    "coordinates": [
+      48.9138,
+      2.4049
+    ]
+  },
+  {
+    "name": "Franklin D. Roosevelt",
+    "coordinates": [
+      48.8699,
+      2.3099
+    ]
+  },
+  {
+    "name": "Front Populaire",
+    "coordinates": [
+      48.9066,
+      2.3654
+    ]
+  },
+  {
+    "name": "Gaîté",
+    "coordinates": [
+      48.8392,
+      2.3218
+    ]
+  },
+  {
+    "name": "Gallieni",
+    "coordinates": [
+      48.8647,
+      2.4158
+    ]
+  },
+  {
+    "name": "Gambetta",
+    "coordinates": [
+      48.8651,
+      2.3983
+    ]
+  },
+  {
+    "name": "Gare d'Austerlitz",
+    "coordinates": [
+      48.8422,
+      2.3661
+    ]
+  },
+  {
+    "name": "Gare de l'Est",
+    "coordinates": [
+      48.8768,
+      2.359
+    ]
+  },
+  {
+    "name": "Gare de Lyon",
+    "coordinates": [
+      48.8448,
+      2.3735
+    ]
+  },
+  {
+    "name": "Gare du Nord",
+    "coordinates": [
+      48.8809,
+      2.3553
+    ]
+  },
+  {
+    "name": "Garibaldi",
+    "coordinates": [
+      48.9258,
+      2.3538
+    ]
+  },
+  {
+    "name": "George V",
+    "coordinates": [
+      48.872,
+      2.3008
+    ]
+  },
+  {
+    "name": "Glacière",
+    "coordinates": [
+      48.8313,
+      2.3436
+    ]
+  },
+  {
+    "name": "Goncourt",
+    "coordinates": [
+      48.8724,
+      2.3711
+    ]
+  },
+  {
+    "name": "Grands Boulevards",
+    "coordinates": [
+      48.8717,
+      2.3434
+    ]
+  },
+  {
+    "name": "Guy Môquet",
+    "coordinates": [
+      48.8932,
+      2.3285
+    ]
+  },
+  {
+    "name": "Havre - Caumartin",
+    "coordinates": [
+      48.8737,
+      2.3275
+    ]
+  },
+  {
+    "name": "Hoche",
+    "coordinates": [
+      48.8906,
+      2.4021
+    ]
+  },
+  {
+    "name": "Hôtel de Ville",
+    "coordinates": [
+      48.8573,
+      2.3522
+    ]
+  },
+  {
+    "name": "Iéna",
+    "coordinates": [
+      48.8644,
+      2.2938
+    ]
+  },
+  {
+    "name": "Invalides",
+    "coordinates": [
+      48.8554,
+      2.3127
+    ]
+  },
+  {
+    "name": "Jacques Bonsergent",
+    "coordinates": [
+      48.8709,
+      2.3622
+    ]
+  },
+  {
+    "name": "Jasmin",
+    "coordinates": [
+      48.8486,
+      2.2674
+    ]
+  },
+  {
+    "name": "Jaurès",
+    "coordinates": [
+      48.8824,
+      2.3702
+    ]
+  },
+  {
+    "name": "Javel - André Citroën",
+    "coordinates": [
+      48.8466,
+      2.2788
+    ]
+  },
+  {
+    "name": "Jourdain",
+    "coordinates": [
+      48.8754,
+      2.3894
+    ]
+  },
+  {
+    "name": "Jules Joffrin",
+    "coordinates": [
+      48.889,
+      2.3437
+    ]
+  },
+  {
+    "name": "Jussieu",
+    "coordinates": [
+      48.8462,
+      2.3549
+    ]
+  },
+  {
+    "name": "Kléber",
+    "coordinates": [
+      48.869,
+      2.2935
+    ]
+  },
+  {
+    "name": "La Chapelle",
+    "coordinates": [
+      48.8847,
+      2.3596
+    ]
+  },
+  {
+    "name": "La Courneuve - 8 Mai 1945",
+    "coordinates": [
+      48.924,
+      2.4106
+    ]
+  },
+  {
+    "name": "La Défense",
+    "coordinates": [
+      48.8918,
+      2.2389
+    ]
+  },
+  {
+    "name": "La Motte-Picquet - Grenelle",
+    "coordinates": [
+      48.847,
+      2.2989
+    ]
+  },
+  {
+    "name": "La Muette",
+    "coordinates": [
+      48.8581,
+      2.2741
+    ]
+  },
+  {
+    "name": "Laumière",
+    "coordinates": [
+      48.8818,
+      2.3797
+    ]
+  },
+  {
+    "name": "Le Peletier",
+    "coordinates": [
+      48.8744,
+      2.3398
+    ]
+  },
+  {
+    "name": "Ledru-Rollin",
+    "coordinates": [
+      48.8512,
+      2.3764
+    ]
+  },
+  {
+    "name": "Les Gobelins",
+    "coordinates": [
+      48.8363,
+      2.3528
+    ]
+  },
+  {
+    "name": "Les Halles",
+    "coordinates": [
+      48.8622,
+      2.3469
+    ]
+  },
+  {
+    "name": "Les Sablons",
+    "coordinates": [
+      48.8792,
+      2.2728
+    ]
+  },
+  {
+    "name": "Liège",
+    "coordinates": [
+      48.8766,
+      2.328
+    ]
+  },
+  {
+    "name": "Louis Blanc",
+    "coordinates": [
+      48.8817,
+      2.3654
+    ]
+  },
+  {
+    "name": "Lourmel",
+    "coordinates": [
+      48.8412,
+      2.2878
+    ]
+  },
+  {
+    "name": "Luxembourg",
+    "coordinates": [
+      48.8462,
+      2.3403
+    ]
+  },
+  {
+    "name": "Mabillon",
+    "coordinates": [
+      48.8513,
+      2.3351
+    ]
+  },
+  {
+    "name": "Madeleine",
+    "coordinates": [
+      48.8698,
+      2.3242
+    ]
+  },
+  {
+    "name": "Mairie d'Issy",
+    "coordinates": [
+      48.8231,
+      2.2701
+    ]
+  },
+  {
+    "name": "Mairie de Montreuil",
+    "coordinates": [
+      48.8622,
+      2.4418
+    ]
+  },
+  {
+    "name": "Mairie de Montrouge",
+    "coordinates": [
+      48.8163,
+      2.3198
+    ]
+  },
+  {
+    "name": "Mairie des Lilas",
+    "coordinates": [
+      48.8798,
+      2.4164
+    ]
+  },
+  {
+    "name": "Maison Blanche",
+    "coordinates": [
+      48.8222,
+      2.3589
+    ]
+  },
+  {
+    "name": "Malesherbes",
+    "coordinates": [
+      48.883,
+      2.3088
+    ]
+  },
+  {
+    "name": "Marcadet - Poissonniers",
+    "coordinates": [
+      48.8906,
+      2.3492
+    ]
+  },
+  {
+    "name": "Marcel Sembat",
+    "coordinates": [
+      48.8347,
+      2.2448
+    ]
+  },
+  {
+    "name": "Marne-la-Vallée - Chessy",
+    "coordinates": [
+      48.8708,
+      2.7829
+    ]
+  },
+  {
+    "name": "Maubert - Mutualité",
+    "coordinates": [
+      48.8497,
+      2.3497
+    ]
+  },
+  {
+    "name": "Ménilmontant",
+    "coordinates": [
+      48.867,
+      2.3837
+    ]
+  },
+  {
+    "name": "Michel-Ange - Molitor",
+    "coordinates": [
+      48.8456,
+      2.2638
+    ]
+  },
+  {
+    "name": "Miromesnil",
+    "coordinates": [
+      48.8738,
+      2.3158
+    ]
+  },
+  {
+    "name": "Monceau",
+    "coordinates": [
+      48.8796,
+      2.3098
+    ]
+  },
+  {
+    "name": "Montgallet",
+    "coordinates": [
+      48.8493,
+      2.3887
+    ]
+  },
+  {
+    "name": "Montparnasse - Bienvenüe",
+    "coordinates": [
+      48.8422,
+      2.3218
+    ]
+  },
+  {
+    "name": "Nation",
+    "coordinates": [
+      48.8483,
+      2.3958
+    ]
+  },
+  {
+    "name": "Neuilly - Porte Maillot",
+    "coordinates": [
+      48.879,
+      2.2825
+    ]
+  },
+  {
+    "name": "Notre-Dame-de-Lorette",
+    "coordinates": [
+      48.8795,
+      2.3371
+    ]
+  },
+  {
+    "name": "Notre-Dame-des-Champs",
+    "coordinates": [
+      48.8429,
+      2.3275
+    ]
+  },
+  {
+    "name": "Oberkampf",
+    "coordinates": [
+      48.865,
+      2.3681
+    ]
+  },
+  {
+    "name": "Odéon",
+    "coordinates": [
+      48.8516,
+      2.3388
+    ]
+  },
+  {
+    "name": "Olympiades",
+    "coordinates": [
+      48.8237,
+      2.3662
+    ]
+  },
+  {
+    "name": "Opéra",
+    "coordinates": [
+      48.8719,
+      2.3316
+    ]
+  },
+  {
+    "name": "Orly Airport",
+    "coordinates": [
+      48.7262,
+      2.3653
+    ]
+  },
+  {
+    "name": "Ourcq",
+    "coordinates": [
+      48.8822,
+      2.3854
+    ]
+  },
+  {
+    "name": "Palais Royal - Musée du Louvre",
+    "coordinates": [
+      48.8619,
+      2.3364
+    ]
+  },
+  {
+    "name": "Parmentier",
+    "coordinates": [
+      48.865,
+      2.3748
+    ]
+  },
+  {
+    "name": "Passy",
+    "coordinates": [
+      48.8577,
+      2.2787
+    ]
+  },
+  {
+    "name": "Pasteur",
+    "coordinates": [
+      48.8423,
+      2.3145
+    ]
+  },
+  {
+    "name": "Pelleport",
+    "coordinates": [
+      48.8682,
+      2.4064
+    ]
+  },
+  {
+    "name": "Père Lachaise",
+    "coordinates": [
+      48.8633,
+      2.3874
+    ]
+  },
+  {
+    "name": "Pereire",
+    "coordinates": [
+      48.8844,
+      2.2981
+    ]
+  },
+  {
+    "name": "Pernety",
+    "coordinates": [
+      48.8339,
+      2.3187
+    ]
+  },
+  {
+    "name": "Philippe Auguste",
+    "coordinates": [
+      48.8584,
+      2.3897
+    ]
+  },
+  {
+    "name": "Pigalle",
+    "coordinates": [
+      48.8822,
+      2.3373
+    ]
+  },
+  {
+    "name": "Place d'Italie",
+    "coordinates": [
+      48.8311,
+      2.3556
+    ]
+  },
+  {
+    "name": "Place de Clichy",
+    "coordinates": [
+      48.8837,
+      2.3275
+    ]
+  },
+  {
+    "name": "Place des Fêtes",
+    "coordinates": [
+      48.8771,
+      2.3935
+    ]
+  },
+  {
+    "name": "Place Monge",
+    "coordinates": [
+      48.8434,
+      2.3518
+    ]
+  },
+  {
+    "name": "Plaisance",
+    "coordinates": [
+      48.8316,
+      2.3156
+    ]
+  },
+  {
+    "name": "Poissonnière",
+    "coordinates": [
+      48.877,
+      2.3481
+    ]
+  },
+  {
+    "name": "Pont de Levallois - Bécon",
+    "coordinates": [
+      48.8978,
+      2.2804
+    ]
+  },
+  {
+    "name": "Pont de Neuilly",
+    "coordinates": [
+      48.8845,
+      2.2594
+    ]
+  },
+  {
+    "name": "Pont de Sèvres",
+    "coordinates": [
+      48.8297,
+      2.2303
+    ]
+  },
+  {
+    "name": "Pont Marie",
+    "coordinates": [
+      48.8539,
+      2.3574
+    ]
+  },
+  {
+    "name": "Pont Neuf",
+    "coordinates": [
+      48.8586,
+      2.3418
+    ]
+  },
+  {
+    "name": "Port-Royal",
+    "coordinates": [
+      48.8402,
+      2.3368
+    ]
+  },
+  {
+    "name": "Porte d'Auteuil",
+    "coordinates": [
+      48.8479,
+      2.2584
+    ]
+  },
+  {
+    "name": "Porte d'Italie",
+    "coordinates": [
+      48.8188,
+      2.3599
+    ]
+  },
+  {
+    "name": "Porte d'Orléans",
+    "coordinates": [
+      48.8238,
+      2.3255
+    ]
+  },
+  {
+    "name": "Porte Dauphine",
+    "coordinates": [
+      48.8717,
+      2.2747
+    ]
+  },
+  {
+    "name": "Porte de Bagnolet",
+    "coordinates": [
+      48.8685,
+      2.4166
+    ]
+  },
+  {
+    "name": "Porte de Champerret",
+    "coordinates": [
+      48.8866,
+      2.2927
+    ]
+  },
+  {
+    "name": "Porte de Clignancourt",
+    "coordinates": [
+      48.8974,
+      2.3444
+    ]
+  },
+  {
+    "name": "Porte de la Villette",
+    "coordinates": [
+      48.8973,
+      2.3864
+    ]
+  },
+  {
+    "name": "Porte de Montreuil",
+    "coordinates": [
+      48.8511,
+      2.4109
+    ]
+  },
+  {
+    "name": "Porte de Pantin",
+    "coordinates": [
+      48.8874,
+      2.3929
+    ]
+  },
+  {
+    "name": "Porte de Saint-Cloud",
+    "coordinates": [
+      48.838,
+      2.2561
+    ]
+  },
+  {
+    "name": "Porte de Saint-Ouen",
+    "coordinates": [
+      48.8974,
+      2.3344
+    ]
+  },
+  {
+    "name": "Porte de Vanves",
+    "coordinates": [
+      48.8269,
+      2.3058
+    ]
+  },
+  {
+    "name": "Porte de Versailles",
+    "coordinates": [
+      48.8326,
+      2.2877
+    ]
+  },
+  {
+    "name": "Porte de Vincennes",
+    "coordinates": [
+      48.8475,
+      2.4115
+    ]
+  },
+  {
+    "name": "Porte des Lilas",
+    "coordinates": [
+      48.8774,
+      2.4069
+    ]
+  },
+  {
+    "name": "Porte Dorée",
+    "coordinates": [
+      48.8355,
+      2.4062
+    ]
+  },
+  {
+    "name": "Porte Maillot",
+    "coordinates": [
+      48.8789,
+      2.2823
+    ]
+  },
+  {
+    "name": "Pyramides",
+    "coordinates": [
+      48.8665,
+      2.3342
+    ]
+  },
+  {
+    "name": "Pyrénées",
+    "coordinates": [
+      48.8734,
+      2.3852
+    ]
+  },
+  {
+    "name": "Quai de la Gare",
+    "coordinates": [
+      48.8368,
+      2.3718
+    ]
+  },
+  {
+    "name": "Quai de la Rapée",
+    "coordinates": [
+      48.8466,
+      2.3667
+    ]
+  },
+  {
+    "name": "Quatre-Septembre",
+    "coordinates": [
+      48.8707,
+      2.3356
+    ]
+  },
+  {
+    "name": "Rambuteau",
+    "coordinates": [
+      48.8617,
+      2.354
+    ]
+  },
+  {
+    "name": "Ranelagh",
+    "coordinates": [
+      48.855,
+      2.2697
+    ]
+  },
+  {
+    "name": "Raspail",
+    "coordinates": [
+      48.8392,
+      2.3272
+    ]
+  },
+  {
+    "name": "Réaumur - Sébastopol",
+    "coordinates": [
+      48.8656,
+      2.3495
+    ]
+  },
+  {
+    "name": "République",
+    "coordinates": [
+      48.8674,
+      2.3634
+    ]
+  },
+  {
+    "name": "Reuilly - Diderot",
+    "coordinates": [
+      48.8466,
+      2.3865
+    ]
+  },
+  {
+    "name": "Richard-Lenoir",
+    "coordinates": [
+      48.8593,
+      2.3686
+    ]
+  },
+  {
+    "name": "Richelieu - Drouot",
+    "coordinates": [
+      48.8718,
+      2.3395
+    ]
+  },
+  {
+    "name": "Riquet",
+    "coordinates": [
+      48.8872,
+      2.3749
+    ]
+  },
+  {
+    "name": "Rome",
+    "coordinates": [
+      48.8822,
+      2.319
+    ]
+  },
+  {
+    "name": "Rue du Bac",
+    "coordinates": [
+      48.8562,
+      2.3268
+    ]
+  },
+  {
+    "name": "Saint-Ambroise",
+    "coordinates": [
+      48.8612,
+      2.3744
+    ]
+  },
+  {
+    "name": "Saint-Augustin",
+    "coordinates": [
+      48.874,
+      2.3195
+    ]
+  },
+  {
+    "name": "Saint-Denis - Université",
+    "coordinates": [
+      48.9464,
+      2.3644
+    ]
+  },
+  {
+    "name": "Saint-Germain-des-Prés",
+    "coordinates": [
+      48.8538,
+      2.3335
+    ]
+  },
+  {
+    "name": "Saint-Jacques",
+    "coordinates": [
+      48.8336,
+      2.3374
+    ]
+  },
+  {
+    "name": "Saint-Lazare",
+    "coordinates": [
+      48.8758,
+      2.3255
+    ]
+  },
+  {
+    "name": "Saint-Marcel",
+    "coordinates": [
+      48.8381,
+      2.3604
+    ]
+  },
+  {
+    "name": "Saint-Michel",
+    "coordinates": [
+      48.8534,
+      2.3438
+    ]
+  },
+  {
+    "name": "Saint-Michel - Notre-Dame",
+    "coordinates": [
+      48.853,
+      2.3448
+    ]
+  },
+  {
+    "name": "Saint-Paul",
+    "coordinates": [
+      48.8556,
+      2.3612
+    ]
+  },
+  {
+    "name": "Saint-Philippe du Roule",
+    "coordinates": [
+      48.8715,
+      2.3107
+    ]
+  },
+  {
+    "name": "Saint-Placide",
+    "coordinates": [
+      48.8467,
+      2.3272
+    ]
+  },
+  {
+    "name": "Saint-Sulpice",
+    "coordinates": [
+      48.851,
+      2.3306
+    ]
+  },
+  {
+    "name": "Ségur",
+    "coordinates": [
+      48.8471,
+      2.3075
+    ]
+  },
+  {
+    "name": "Sentier",
+    "coordinates": [
+      48.8669,
+      2.3448
+    ]
+  },
+  {
+    "name": "Sèvres - Babylone",
+    "coordinates": [
+      48.851,
+      2.3247
+    ]
+  },
+  {
+    "name": "Sèvres - Lecourbe",
+    "coordinates": [
+      48.8433,
+      2.3075
+    ]
+  },
+  {
+    "name": "Simplon",
+    "coordinates": [
+      48.8938,
+      2.3494
+    ]
+  },
+  {
+    "name": "Solférino",
+    "coordinates": [
+      48.8597,
+      2.3244
+    ]
+  },
+  {
+    "name": "Stalingrad",
+    "coordinates": [
+      48.8846,
+      2.3684
+    ]
+  },
+  {
+    "name": "Strasbourg - Saint-Denis",
+    "coordinates": [
+      48.8691,
+      2.3544
+    ]
+  },
+  {
+    "name": "Sully - Morland",
+    "coordinates": [
+      48.8515,
+      2.3615
+    ]
+  },
+  {
+    "name": "Temple",
+    "coordinates": [
+      48.8661,
+      2.3613
+    ]
+  },
+  {
+    "name": "Ternes",
+    "coordinates": [
+      48.878,
+      2.2952
+    ]
+  },
+  {
+    "name": "Tolbiac",
+    "coordinates": [
+      48.8264,
+      2.3647
+    ]
+  },
+  {
+    "name": "Trinité - d'Estienne d'Orves",
+    "coordinates": [
+      48.8762,
+      2.3324
+    ]
+  },
+  {
+    "name": "Trocadéro",
+    "coordinates": [
+      48.8638,
+      2.2873
+    ]
+  },
+  {
+    "name": "Tuileries",
+    "coordinates": [
+      48.8639,
+      2.3272
+    ]
+  },
+  {
+    "name": "Val de Fontenay",
+    "coordinates": [
+      48.8541,
+      2.4828
+    ]
+  },
+  {
+    "name": "Vaugirard",
+    "coordinates": [
+      48.837,
+      2.3018
+    ]
+  },
+  {
+    "name": "Victor Hugo",
+    "coordinates": [
+      48.8698,
+      2.2847
+    ]
+  },
+  {
+    "name": "Villejuif - Louis Aragon",
+    "coordinates": [
+      48.7874,
+      2.3676
+    ]
+  },
+  {
+    "name": "Villiers",
+    "coordinates": [
+      48.8837,
+      2.3098
+    ]
+  },
+  {
+    "name": "Vincennes",
+    "coordinates": [
+      48.8476,
+      2.4398
+    ]
+  },
+  {
+    "name": "Volontaires",
+    "coordinates": [
+      48.8391,
+      2.3078
+    ]
+  },
+  {
+    "name": "Voltaire",
+    "coordinates": [
+      48.8576,
+      2.3794
+    ]
+  },
+  {
+    "name": "Wagram",
+    "coordinates": [
+      48.884,
+      2.3047
+    ]
+  }
+]

@@ -32,6 +32,15 @@ object MetroStationsMapper {
             MetroLineState.VICTORIA, MetroLineState.WATERLOO_CITY, MetroLineState.ELIZABETH,
         )
 
+        CityCode.PARIS -> listOf(
+            MetroLineState.PARIS_M1, MetroLineState.PARIS_M2, MetroLineState.PARIS_M3,
+            MetroLineState.PARIS_M4, MetroLineState.PARIS_M5, MetroLineState.PARIS_M6,
+            MetroLineState.PARIS_M7, MetroLineState.PARIS_M8, MetroLineState.PARIS_M9,
+            MetroLineState.PARIS_M10, MetroLineState.PARIS_M11, MetroLineState.PARIS_M12,
+            MetroLineState.PARIS_M13, MetroLineState.PARIS_M14,
+            MetroLineState.PARIS_RER_A, MetroLineState.PARIS_RER_B,
+        )
+
         CityCode.WIEN -> listOf(
             MetroLineState.WIEN_U1, MetroLineState.WIEN_U2, MetroLineState.WIEN_U3,
             MetroLineState.WIEN_U4, MetroLineState.WIEN_U6,

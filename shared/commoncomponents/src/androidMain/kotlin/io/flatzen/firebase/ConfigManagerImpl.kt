@@ -47,6 +47,8 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 // Empty = all registered KR platforms (Dabang, Zigbang).
                 ConfigFields.EnabledPlatformsKr.param to "",
                 ConfigFields.EnabledPlatformsCh.param to "",
+                // Empty = all registered FR platforms (Bien'ici, SeLoger, + soft stubs).
+                ConfigFields.EnabledPlatformsFr.param to "",
             )
         )
     }

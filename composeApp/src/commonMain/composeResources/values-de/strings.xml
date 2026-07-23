@@ -156,6 +156,7 @@
     <string name="country_jp">Japan</string>
     <string name="country_ch">Schweiz</string>
     <string name="country_gb">Vereinigtes Königreich</string>
+    <string name="country_fr">Frankreich</string>
 
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
@@ -281,6 +282,16 @@
     <string name="city_liverpool">Liverpool</string>
     <string name="city_newcastle">Newcastle</string>
     <string name="city_sheffield">Sheffield</string>
+    <string name="city_paris">Paris</string>
+    <string name="city_lyon">Lyon</string>
+    <string name="city_marseille">Marseille</string>
+    <string name="city_toulouse">Toulouse</string>
+    <string name="city_nice">Nizza</string>
+    <string name="city_nantes">Nantes</string>
+    <string name="city_bordeaux">Bordeaux</string>
+    <string name="city_lille">Lille</string>
+    <string name="city_strasbourg">Straßburg</string>
+    <string name="city_montpellier">Montpellier</string>
     <string name="location_metro">U-Bahn</string>
     <string name="location_metro_any_switch">Beliebige Station</string>
     <string name="location_metro_line_red">Rot</string>

@@ -148,6 +148,7 @@
     <string name="country_jp">იაპონია</string>
     <string name="country_ch">შვეიცარია</string>
     <string name="country_gb">გაერთიანებული სამეფო</string>
+    <string name="country_fr">საფრანგეთი</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
     <string name="city_vitebsk">ვიტებსკი</string>
@@ -272,6 +273,17 @@
     <string name="city_liverpool">Liverpool</string>
     <string name="city_newcastle">Newcastle</string>
     <string name="city_sheffield">Sheffield</string>
+    <string name="city_paris">პარიზი</string>
+    <string name="city_lyon">ლიონი</string>
+    <string name="city_marseille">მარსელი</string>
+    <string name="city_toulouse">ტულუზა</string>
+    <string name="city_nice">ნიცა</string>
+    <string name="city_nantes">ნანტი</string>
+    <string name="city_bordeaux">ბორდო</string>
+    <string name="city_lille">ლილი</string>
+    <string name="city_strasbourg">სტრასბურგი</string>
+    <string name="city_montpellier">მონპელიე</string>
+
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>
     <string name="location_metro_line_red">წითელი</string>

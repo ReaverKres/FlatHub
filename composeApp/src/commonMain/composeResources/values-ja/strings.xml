@@ -156,6 +156,7 @@
     <string name="country_jp">日本</string>
     <string name="country_ch">スイス</string>
     <string name="country_gb">イギリス</string>
+    <string name="country_fr">フランス</string>
     <string name="city_minsk">ミンスク</string>
     <string name="city_brest">ブレスト</string>
     <string name="city_vitebsk">ヴィテブスク</string>
@@ -280,6 +281,16 @@
     <string name="city_liverpool">リバプール</string>
     <string name="city_newcastle">ニューカッスル</string>
     <string name="city_sheffield">シェフィールド</string>
+    <string name="city_paris">パリ</string>
+    <string name="city_lyon">リヨン</string>
+    <string name="city_marseille">マルセイユ</string>
+    <string name="city_toulouse">トゥールーズ</string>
+    <string name="city_nice">ニース</string>
+    <string name="city_nantes">ナント</string>
+    <string name="city_bordeaux">ボルドー</string>
+    <string name="city_lille">リール</string>
+    <string name="city_strasbourg">ストラスブール</string>
+    <string name="city_montpellier">モンペリエ</string>
     <string name="location_metro">沿線・駅</string>
     <string name="location_metro_any_switch">すべての駅</string>
     <string name="location_metro_line_red">赤線</string>

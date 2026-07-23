@@ -1,0 +1,564 @@
+{
+  "Paris": [
+    {
+      "id": 300001,
+      "nameEn": "1st Arrondissement",
+      "nameLocal": "1er arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8426,
+          "longitude": 2.3156
+        },
+        {
+          "latitude": 48.8426,
+          "longitude": 2.3596
+        },
+        {
+          "latitude": 48.8786,
+          "longitude": 2.3596
+        },
+        {
+          "latitude": 48.8786,
+          "longitude": 2.3156
+        },
+        {
+          "latitude": 48.8426,
+          "longitude": 2.3156
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300002,
+      "nameEn": "2nd Arrondissement",
+      "nameLocal": "2e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8502,
+          "longitude": 2.3192
+        },
+        {
+          "latitude": 48.8502,
+          "longitude": 2.3632
+        },
+        {
+          "latitude": 48.8862,
+          "longitude": 2.3632
+        },
+        {
+          "latitude": 48.8862,
+          "longitude": 2.3192
+        },
+        {
+          "latitude": 48.8502,
+          "longitude": 2.3192
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300003,
+      "nameEn": "3rd Arrondissement",
+      "nameLocal": "3e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8454,
+          "longitude": 2.3394
+        },
+        {
+          "latitude": 48.8454,
+          "longitude": 2.3834
+        },
+        {
+          "latitude": 48.8814,
+          "longitude": 2.3834
+        },
+        {
+          "latitude": 48.8814,
+          "longitude": 2.3394
+        },
+        {
+          "latitude": 48.8454,
+          "longitude": 2.3394
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300004,
+      "nameEn": "4th Arrondissement",
+      "nameLocal": "4e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8366,
+          "longitude": 2.3302
+        },
+        {
+          "latitude": 48.8366,
+          "longitude": 2.3742
+        },
+        {
+          "latitude": 48.8726,
+          "longitude": 2.3742
+        },
+        {
+          "latitude": 48.8726,
+          "longitude": 2.3302
+        },
+        {
+          "latitude": 48.8366,
+          "longitude": 2.3302
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300005,
+      "nameEn": "5th Arrondissement",
+      "nameLocal": "5e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8282,
+          "longitude": 2.3224
+        },
+        {
+          "latitude": 48.8282,
+          "longitude": 2.3664
+        },
+        {
+          "latitude": 48.8642,
+          "longitude": 2.3664
+        },
+        {
+          "latitude": 48.8642,
+          "longitude": 2.3224
+        },
+        {
+          "latitude": 48.8282,
+          "longitude": 2.3224
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300006,
+      "nameEn": "6th Arrondissement",
+      "nameLocal": "6e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8315,
+          "longitude": 2.3080
+        },
+        {
+          "latitude": 48.8315,
+          "longitude": 2.3520
+        },
+        {
+          "latitude": 48.8675,
+          "longitude": 2.3520
+        },
+        {
+          "latitude": 48.8675,
+          "longitude": 2.3080
+        },
+        {
+          "latitude": 48.8315,
+          "longitude": 2.3080
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300007,
+      "nameEn": "7th Arrondissement",
+      "nameLocal": "7e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8386,
+          "longitude": 2.2902
+        },
+        {
+          "latitude": 48.8386,
+          "longitude": 2.3342
+        },
+        {
+          "latitude": 48.8746,
+          "longitude": 2.3342
+        },
+        {
+          "latitude": 48.8746,
+          "longitude": 2.2902
+        },
+        {
+          "latitude": 48.8386,
+          "longitude": 2.2902
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300008,
+      "nameEn": "8th Arrondissement",
+      "nameLocal": "8e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8576,
+          "longitude": 2.2891
+        },
+        {
+          "latitude": 48.8576,
+          "longitude": 2.3331
+        },
+        {
+          "latitude": 48.8936,
+          "longitude": 2.3331
+        },
+        {
+          "latitude": 48.8936,
+          "longitude": 2.2891
+        },
+        {
+          "latitude": 48.8576,
+          "longitude": 2.2891
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300009,
+      "nameEn": "9th Arrondissement",
+      "nameLocal": "9e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8588,
+          "longitude": 2.3160
+        },
+        {
+          "latitude": 48.8588,
+          "longitude": 2.3600
+        },
+        {
+          "latitude": 48.8948,
+          "longitude": 2.3600
+        },
+        {
+          "latitude": 48.8948,
+          "longitude": 2.3160
+        },
+        {
+          "latitude": 48.8588,
+          "longitude": 2.3160
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300010,
+      "nameEn": "10th Arrondissement",
+      "nameLocal": "10e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8580,
+          "longitude": 2.3370
+        },
+        {
+          "latitude": 48.8580,
+          "longitude": 2.3810
+        },
+        {
+          "latitude": 48.8940,
+          "longitude": 2.3810
+        },
+        {
+          "latitude": 48.8940,
+          "longitude": 2.3370
+        },
+        {
+          "latitude": 48.8580,
+          "longitude": 2.3370
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300011,
+      "nameEn": "11th Arrondissement",
+      "nameLocal": "11e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8410,
+          "longitude": 2.3570
+        },
+        {
+          "latitude": 48.8410,
+          "longitude": 2.4010
+        },
+        {
+          "latitude": 48.8770,
+          "longitude": 2.4010
+        },
+        {
+          "latitude": 48.8770,
+          "longitude": 2.3570
+        },
+        {
+          "latitude": 48.8410,
+          "longitude": 2.3570
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300012,
+      "nameEn": "12th Arrondissement",
+      "nameLocal": "12e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8232,
+          "longitude": 2.3656
+        },
+        {
+          "latitude": 48.8232,
+          "longitude": 2.4096
+        },
+        {
+          "latitude": 48.8592,
+          "longitude": 2.4096
+        },
+        {
+          "latitude": 48.8592,
+          "longitude": 2.3656
+        },
+        {
+          "latitude": 48.8232,
+          "longitude": 2.3656
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300013,
+      "nameEn": "13th Arrondissement",
+      "nameLocal": "13e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8142,
+          "longitude": 2.3341
+        },
+        {
+          "latitude": 48.8142,
+          "longitude": 2.3781
+        },
+        {
+          "latitude": 48.8502,
+          "longitude": 2.3781
+        },
+        {
+          "latitude": 48.8502,
+          "longitude": 2.3341
+        },
+        {
+          "latitude": 48.8142,
+          "longitude": 2.3341
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300014,
+      "nameEn": "14th Arrondissement",
+      "nameLocal": "14e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8151,
+          "longitude": 2.3044
+        },
+        {
+          "latitude": 48.8151,
+          "longitude": 2.3484
+        },
+        {
+          "latitude": 48.8511,
+          "longitude": 2.3484
+        },
+        {
+          "latitude": 48.8511,
+          "longitude": 2.3044
+        },
+        {
+          "latitude": 48.8151,
+          "longitude": 2.3044
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300015,
+      "nameEn": "15th Arrondissement",
+      "nameLocal": "15e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8240,
+          "longitude": 2.2760
+        },
+        {
+          "latitude": 48.8240,
+          "longitude": 2.3200
+        },
+        {
+          "latitude": 48.8600,
+          "longitude": 2.3200
+        },
+        {
+          "latitude": 48.8600,
+          "longitude": 2.2760
+        },
+        {
+          "latitude": 48.8240,
+          "longitude": 2.2760
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300016,
+      "nameEn": "16th Arrondissement",
+      "nameLocal": "16e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8457,
+          "longitude": 2.2549
+        },
+        {
+          "latitude": 48.8457,
+          "longitude": 2.2989
+        },
+        {
+          "latitude": 48.8817,
+          "longitude": 2.2989
+        },
+        {
+          "latitude": 48.8817,
+          "longitude": 2.2549
+        },
+        {
+          "latitude": 48.8457,
+          "longitude": 2.2549
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300017,
+      "nameEn": "17th Arrondissement",
+      "nameLocal": "17e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8655,
+          "longitude": 2.2999
+        },
+        {
+          "latitude": 48.8655,
+          "longitude": 2.3439
+        },
+        {
+          "latitude": 48.9015,
+          "longitude": 2.3439
+        },
+        {
+          "latitude": 48.9015,
+          "longitude": 2.2999
+        },
+        {
+          "latitude": 48.8655,
+          "longitude": 2.2999
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300018,
+      "nameEn": "18th Arrondissement",
+      "nameLocal": "18e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8744,
+          "longitude": 2.3224
+        },
+        {
+          "latitude": 48.8744,
+          "longitude": 2.3664
+        },
+        {
+          "latitude": 48.9104,
+          "longitude": 2.3664
+        },
+        {
+          "latitude": 48.9104,
+          "longitude": 2.3224
+        },
+        {
+          "latitude": 48.8744,
+          "longitude": 2.3224
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300019,
+      "nameEn": "19th Arrondissement",
+      "nameLocal": "19e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8647,
+          "longitude": 2.3520
+        },
+        {
+          "latitude": 48.8647,
+          "longitude": 2.3960
+        },
+        {
+          "latitude": 48.9007,
+          "longitude": 2.3960
+        },
+        {
+          "latitude": 48.9007,
+          "longitude": 2.3520
+        },
+        {
+          "latitude": 48.8647,
+          "longitude": 2.3520
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 300020,
+      "nameEn": "20th Arrondissement",
+      "nameLocal": "20e arrondissement",
+      "coordinates": [
+        {
+          "latitude": 48.8450,
+          "longitude": 2.3767
+        },
+        {
+          "latitude": 48.8450,
+          "longitude": 2.4207
+        },
+        {
+          "latitude": 48.8810,
+          "longitude": 2.4207
+        },
+        {
+          "latitude": 48.8810,
+          "longitude": 2.3767
+        },
+        {
+          "latitude": 48.8450,
+          "longitude": 2.3767
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

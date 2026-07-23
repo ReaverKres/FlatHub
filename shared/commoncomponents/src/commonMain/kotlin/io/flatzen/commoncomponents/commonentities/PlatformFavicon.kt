@@ -55,4 +55,5 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
         "https://www.onthemarket.com/assets/images/icons-otm2/favicon.ico"
 
     FlatPlatform.OPENRENT -> "https://www.openrent.co.uk/favicon.ico"
+    FlatPlatform.BIENICI -> "https://www.bienici.com/favicon.ico"
 }

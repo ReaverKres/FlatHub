@@ -1,7 +1,7 @@
 package io.flatzen.commoncomponents.commonentities
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB;
+    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB, FR;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -20,6 +20,7 @@ enum class CountryCode {
             "JP" -> JP
             "CH" -> CH
             "GB" -> GB
+            "FR" -> FR
             else -> BY
         }
     }
@@ -71,6 +72,9 @@ enum class CityCode {
 
     // United Kingdom (MVP)
     LONDON, MANCHESTER, BIRMINGHAM, LEEDS, GLASGOW, EDINBURGH, BRISTOL, LIVERPOOL, NEWCASTLE, SHEFFIELD,
+
+    // France (MVP)
+    PARIS, LYON, MARSEILLE, TOULOUSE, NICE, NANTES, BORDEAUX, LILLE, STRASBOURG, MONTPELLIER,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
@@ -96,6 +100,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.JP -> CityCode.TOKYO
     CountryCode.CH -> CityCode.ZURICH
     CountryCode.GB -> CityCode.LONDON
+    CountryCode.FR -> CityCode.PARIS
 }
 
 object Location {
@@ -224,5 +229,15 @@ object Location {
         CityCode.LIVERPOOL -> "liverpool"
         CityCode.NEWCASTLE -> "newcastle"
         CityCode.SHEFFIELD -> "sheffield"
+        CityCode.PARIS -> "paris"
+        CityCode.LYON -> "lyon"
+        CityCode.MARSEILLE -> "marseille"
+        CityCode.TOULOUSE -> "toulouse"
+        CityCode.NICE -> "nice"
+        CityCode.NANTES -> "nantes"
+        CityCode.BORDEAUX -> "bordeaux"
+        CityCode.LILLE -> "lille"
+        CityCode.STRASBOURG -> "strasbourg"
+        CityCode.MONTPELLIER -> "montpellier"
     }
 }

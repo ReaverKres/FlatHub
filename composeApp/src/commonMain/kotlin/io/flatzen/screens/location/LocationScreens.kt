@@ -1088,6 +1088,23 @@ private fun metroLineTitle(line: MetroLineState, useNumbered: Boolean): String =
     MetroLineState.WATERLOO_CITY -> "Waterloo & City"
     MetroLineState.ELIZABETH -> "Elizabeth"
 
+    MetroLineState.PARIS_M1 -> "M1"
+    MetroLineState.PARIS_M2 -> "M2"
+    MetroLineState.PARIS_M3 -> "M3"
+    MetroLineState.PARIS_M4 -> "M4"
+    MetroLineState.PARIS_M5 -> "M5"
+    MetroLineState.PARIS_M6 -> "M6"
+    MetroLineState.PARIS_M7 -> "M7"
+    MetroLineState.PARIS_M8 -> "M8"
+    MetroLineState.PARIS_M9 -> "M9"
+    MetroLineState.PARIS_M10 -> "M10"
+    MetroLineState.PARIS_M11 -> "M11"
+    MetroLineState.PARIS_M12 -> "M12"
+    MetroLineState.PARIS_M13 -> "M13"
+    MetroLineState.PARIS_M14 -> "M14"
+    MetroLineState.PARIS_RER_A -> "RER A"
+    MetroLineState.PARIS_RER_B -> "RER B"
+
     MetroLineState.WIEN_U1 -> "U1"
     MetroLineState.WIEN_U2 -> "U2"
     MetroLineState.WIEN_U3 -> "U3"
@@ -1183,6 +1200,23 @@ private fun metroLineColor(line: MetroLineState): Color = when (line) {
     MetroLineState.VICTORIA -> Color(0xFF0098D4)
     MetroLineState.WATERLOO_CITY -> Color(0xFF95CDBA)
     MetroLineState.ELIZABETH -> Color(0xFF6950A1)
+
+    MetroLineState.PARIS_M1 -> Color(0xFFFFCD00)
+    MetroLineState.PARIS_M2 -> Color(0xFF003CA6)
+    MetroLineState.PARIS_M3 -> Color(0xFF837902)
+    MetroLineState.PARIS_M4 -> Color(0xFFCF009E)
+    MetroLineState.PARIS_M5 -> Color(0xFFFF7E2E)
+    MetroLineState.PARIS_M6 -> Color(0xFF6ECA97)
+    MetroLineState.PARIS_M7 -> Color(0xFFFA9ABA)
+    MetroLineState.PARIS_M8 -> Color(0xFFE19BDF)
+    MetroLineState.PARIS_M9 -> Color(0xFFB6BD00)
+    MetroLineState.PARIS_M10 -> Color(0xFFC9910D)
+    MetroLineState.PARIS_M11 -> Color(0xFF704B1C)
+    MetroLineState.PARIS_M12 -> Color(0xFF007852)
+    MetroLineState.PARIS_M13 -> Color(0xFF6EC4E8)
+    MetroLineState.PARIS_M14 -> Color(0xFF62259D)
+    MetroLineState.PARIS_RER_A -> Color(0xFFF7403A)
+    MetroLineState.PARIS_RER_B -> Color(0xFF5291CE)
 
     MetroLineState.WIEN_U1 -> Color(0xFFE20613)
     MetroLineState.WIEN_U2 -> Color(0xFFA862A4)

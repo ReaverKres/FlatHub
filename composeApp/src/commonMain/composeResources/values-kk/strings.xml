@@ -156,6 +156,7 @@
     <string name="country_jp">Жапония</string>
     <string name="country_ch">Швейцария</string>
     <string name="country_gb">Ұлыбритания</string>
+    <string name="country_fr">Франция</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Vitebsk</string>
@@ -280,6 +281,17 @@
     <string name="city_liverpool">Liverpool</string>
     <string name="city_newcastle">Newcastle</string>
     <string name="city_sheffield">Sheffield</string>
+    <string name="city_paris">Париж</string>
+    <string name="city_lyon">Лион</string>
+    <string name="city_marseille">Марсель</string>
+    <string name="city_toulouse">Тулуза</string>
+    <string name="city_nice">Ницца</string>
+    <string name="city_nantes">Нант</string>
+    <string name="city_bordeaux">Bordeaux</string>
+    <string name="city_lille">Лилль</string>
+    <string name="city_strasbourg">Страсбург</string>
+    <string name="city_montpellier">Монпелье</string>
+
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>
     <string name="location_metro_line_red">Қызыл</string>

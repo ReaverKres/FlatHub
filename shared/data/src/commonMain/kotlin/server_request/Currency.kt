@@ -83,4 +83,5 @@ fun CountryCode.filterCurrency(adType: AdType): Currency = when (this) {
     CountryCode.JP -> Currency.JPY
     CountryCode.CH -> Currency.CHF
     CountryCode.GB -> Currency.GBP
+    CountryCode.FR -> Currency.EUR
 }

@@ -53,6 +53,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.WIEN, "Vienna", "Wien", Coordinates(48.2082, 16.3738))
     val londonUiItem =
         UiCityItem(CityCode.LONDON, "London", "London", Coordinates(51.5074, -0.1278))
+    val parisUiItem =
+        UiCityItem(CityCode.PARIS, "Paris", "Paris", Coordinates(48.8566, 2.3522))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -70,6 +72,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.JP, "Japan"),
         UiCountryItem(CountryCode.CH, "Switzerland"),
         UiCountryItem(CountryCode.GB, "United Kingdom"),
+        UiCountryItem(CountryCode.FR, "France"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -87,6 +90,7 @@ object LocationUiMapper {
         CountryCode.JP -> tokyoUiItem
         CountryCode.CH -> zurichUiItem
         CountryCode.GB -> londonUiItem
+        CountryCode.FR -> parisUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -356,6 +360,44 @@ object LocationUiMapper {
                 Coordinates(53.3811, -1.4701),
             ),
         )
+
+        CountryCode.FR -> listOf(
+            parisUiItem,
+            UiCityItem(CityCode.LYON, "Lyon", "Lyon", Coordinates(45.7640, 4.8357)),
+            UiCityItem(
+                CityCode.MARSEILLE,
+                "Marseille",
+                "Marseille",
+                Coordinates(43.2965, 5.3698),
+            ),
+            UiCityItem(
+                CityCode.TOULOUSE,
+                "Toulouse",
+                "Toulouse",
+                Coordinates(43.6047, 1.4442),
+            ),
+            UiCityItem(CityCode.NICE, "Nice", "Nice", Coordinates(43.7102, 7.2620)),
+            UiCityItem(CityCode.NANTES, "Nantes", "Nantes", Coordinates(47.2184, -1.5536)),
+            UiCityItem(
+                CityCode.BORDEAUX,
+                "Bordeaux",
+                "Bordeaux",
+                Coordinates(44.8378, -0.5792),
+            ),
+            UiCityItem(CityCode.LILLE, "Lille", "Lille", Coordinates(50.6292, 3.0573)),
+            UiCityItem(
+                CityCode.STRASBOURG,
+                "Strasbourg",
+                "Strasbourg",
+                Coordinates(48.5734, 7.7521),
+            ),
+            UiCityItem(
+                CityCode.MONTPELLIER,
+                "Montpellier",
+                "Montpellier",
+                Coordinates(43.6108, 3.8767),
+            ),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -382,6 +424,7 @@ object LocationUiMapper {
             in cities(CountryCode.JP).map { it.code } -> CountryCode.JP
             in cities(CountryCode.CH).map { it.code } -> CountryCode.CH
             in cities(CountryCode.GB).map { it.code } -> CountryCode.GB
+            in cities(CountryCode.FR).map { it.code } -> CountryCode.FR
             else -> CountryCode.BY
         }
 

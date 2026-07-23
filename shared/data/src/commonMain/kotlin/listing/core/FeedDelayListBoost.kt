@@ -1,9 +1,10 @@
 package listing.core
 
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import listing.core.FeedDelayListBoost.active
 import kotlin.concurrent.Volatile
 
@@ -58,6 +59,7 @@ object FeedDelayListBoost {
         FlatPlatform.RIGHTMOVE to 1.0,
         FlatPlatform.ONTHEMARKET to 2.0,
         FlatPlatform.OPENRENT to 2.5,
+        FlatPlatform.BIENICI to 2.0,
     )
 
     /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */
@@ -94,10 +96,21 @@ object FeedDelayListBoost {
         platform: FlatPlatform,
         key: (T) -> Any?,
         fetchPage: suspend (Int) -> List<T>,
-    ): List<T> = coroutineScope {
+    ): List<T> = supervisorScope {
         val extra = htmlExtraPages(platform)
         val pages = (startPage..(startPage + extra)).toList()
-        pages.map { p -> async { fetchPage(p) } }
+        pages.map { p ->
+            async {
+                try {
+                    fetchPage(p)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    println("FeedDelayListBoost $platform page $p soft-fail: ${e.message}")
+                    emptyList()
+                }
+            }
+        }
             .awaitAll()
             .flatten()
             .distinctBy(key)
