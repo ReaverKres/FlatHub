@@ -2,6 +2,7 @@ package listing.pl.morizon
 
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import listing.pl.isPlSaleDeal
 
 /**
  * Morizon listing URL paths.
@@ -33,10 +34,7 @@ object MorizonCities {
         val estate = if (isCommercial) "lokale-uzytkowe" else "mieszkania"
         // Rent: /do-wynajecia/mieszkania/warszawa/
         // Sale: /sprzedaz/mieszkania/warszawa/  (NOT /na-sprzedaz — that returns searchResult: null)
-        val transaction = when (adType) {
-            is AdType.SALE -> "sprzedaz"
-            else -> "do-wynajecia"
-        }
+        val transaction = if (adType.isPlSaleDeal()) "sprzedaz" else "do-wynajecia"
         val base = "/$transaction/$estate/${citySlug(city)}/"
         val query = buildList {
             if (page > 1) add("page=$page")

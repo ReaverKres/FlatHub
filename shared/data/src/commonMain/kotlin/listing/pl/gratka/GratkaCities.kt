@@ -2,6 +2,7 @@ package listing.pl.gratka
 
 import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CityCode
+import listing.pl.isPlSaleDeal
 
 /**
  * Gratka listing URL path segments (city slug).
@@ -36,10 +37,7 @@ object GratkaCities {
             isRoom -> "pokoje"
             else -> "mieszkania"
         }
-        val transaction = when (adType) {
-            is AdType.SALE -> "sprzedaz"
-            else -> "wynajem"
-        }
+        val transaction = if (adType.isPlSaleDeal()) "sprzedaz" else "wynajem"
         val base = "/nieruchomosci/$estate/${citySlug(city)}/$transaction"
         val query = buildList {
             if (page > 1) add("page=$page")

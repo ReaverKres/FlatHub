@@ -5,7 +5,6 @@ import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
 import listing.core.flowById
+import listing.pl.isPlSaleDeal
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -43,7 +43,7 @@ class OlxPlListingSource(
             val offset = (page - 1) * limit
             val ids = OlxPlCities.idsFor(filter.location?.city)
             val categoryId = OlxPlCities.categoryId(
-                isSale = filter.adType is AdType.SALE,
+                isSale = filter.adType.isPlSaleDeal(),
                 isRoom = filter.isRoomForRent || filter.roomOnly,
                 isCommercial = filter.isCommercial,
             )

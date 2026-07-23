@@ -5,7 +5,6 @@ import core.NetworkResponseWrapper
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
-import io.flatzen.commoncomponents.commonentities.AdType
 import io.flatzen.commoncomponents.commonentities.CountryCode
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import listing.core.ListingSource
 import listing.core.SourceCapabilities
 import listing.core.flowById
+import listing.pl.isPlSaleDeal
 import kotlin.coroutines.cancellation.CancellationException
 
 class OtodomListingSource(
@@ -36,10 +36,7 @@ class OtodomListingSource(
     ): Flow<NetworkResponseWrapper<List<AppFlat>>> = flow {
         val result = try {
             val adType = filter.adType
-            val transaction = when (adType) {
-                is AdType.SALE -> "sprzedaz"
-                else -> "wynajem"
-            }
+            val transaction = if (adType.isPlSaleDeal()) "sprzedaz" else "wynajem"
             val estate = when {
                 filter.isCommercial -> "lokal"
                 filter.isRoomForRent || filter.roomOnly -> "pokoj"

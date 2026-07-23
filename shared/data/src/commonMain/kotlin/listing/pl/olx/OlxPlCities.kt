@@ -23,10 +23,10 @@ object OlxPlCities {
         else -> OlxCityIds(regionId = 2, cityId = 17871)
     }
 
-    /** category_id on OLX.pl real-estate tree. */
     fun categoryId(isSale: Boolean, isRoom: Boolean, isCommercial: Boolean): Int = when {
-        isCommercial -> 16
-        isRoom -> 15
-        else -> 15 // mieszkania; sale/rent filtered via path/refiners where possible
+        isCommercial -> if (isSale) 125 else 127
+        isRoom -> 11
+        isSale -> 14
+        else -> 15
     }
 }
