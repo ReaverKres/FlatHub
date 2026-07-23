@@ -358,6 +358,8 @@
     <string name="force_update_description">Bu sürüm artık desteklenmiyor. Lütfen uygulamayı güncelleyin</string>
     <string name="search_error_title">Bir şeyler ters gitti</string>
     <string name="search_error_vpn_hint">VPN açık görünüyor. Kapatıp tekrar deneyin</string>
+    <string name="search_error_try_vpn_hint">Bazı siteler bölgenizde kullanılamıyor olabilir. VPN kullanmayı deneyin</string>
+    <string name="search_error_dont_show_again">Bu hatayı bir daha gösterme</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Gecikmesiz yeni ilanlar ve tüm filtreler</string>

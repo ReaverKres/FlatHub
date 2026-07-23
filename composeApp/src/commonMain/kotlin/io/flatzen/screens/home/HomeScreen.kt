@@ -76,6 +76,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.AsyncImage
 import flatzen.composeapp.generated.resources.Res
 import flatzen.composeapp.generated.resources.detail_agent
@@ -204,6 +206,12 @@ fun HomeScreen(
     }
     val scrollToTopBtnSize: Dp = 48.dp
 
+    // Only show while this screen is resumed — otherwise Dialog under Filter steals back
+    // and clears errorDialogState via onDismissRequest during navigation.
+    var isResumed by remember { mutableStateOf(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { isResumed = true }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { isResumed = false }
+
     LaunchedEffect(Unit) {
         flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
     }
@@ -245,11 +253,13 @@ fun HomeScreen(
                 ForceUpdateDialog(state.infoDialogState!!)
             }
 
-            if (state.errorDialogState?.isVisible == true) {
+            if (isResumed && state.errorDialogState?.isVisible == true) {
                 SearchErrorDialog(
                     dialogState = state.errorDialogState!!,
-                    onDismiss = {
-                        flatSearchContainer.store.intent(FlatListIntent.HideNetworkErrorDialog)
+                    onDismiss = { dontShowAgain ->
+                        flatSearchContainer.store.intent(
+                            FlatListIntent.HideNetworkErrorDialog(dontShowAgain)
+                        )
                     }
                 )
             }

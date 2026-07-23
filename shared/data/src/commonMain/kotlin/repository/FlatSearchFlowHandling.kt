@@ -1,8 +1,8 @@
 package repository
 
-import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
 import core.networkEmptyList
+import core.networkErrorInfo
 import entities.AppFlat
 import io.flatzen.commoncomponents.commonentities.FlatPlatform
 import io.ktor.client.plugins.ResponseException
@@ -23,8 +23,9 @@ private suspend fun FlowCollector<NetworkResponseWrapper<List<AppFlat>>>.emitPla
     emit(
         NetworkResponseWrapper.error(
             e,
-            NetworkErrorInfo(
+            networkErrorInfo(
                 platform = platform,
+                throwable = e,
                 errorMessages = parsedMessages?.takeIf { it.isNotEmpty() }
                     ?: listOf(messageFallback(e)),
             ),

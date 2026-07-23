@@ -358,6 +358,8 @@
     <string name="force_update_description">Bieżąca wersja nie działa poprawnie, zaktualizuj aplikację</string>
     <string name="search_error_title">Wystąpił błąd</string>
     <string name="search_error_vpn_hint">Wygląda na to, że masz włączony VPN. Wyłącz go i spróbuj ponownie</string>
+    <string name="search_error_try_vpn_hint">Niektóre strony mogą być niedostępne w Twoim regionie. Spróbuj użyć VPN</string>
+    <string name="search_error_dont_show_again">Nie pokazuj więcej tego błędu</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Nowe mieszkania bez opóźnienia i wszystkie filtry</string>

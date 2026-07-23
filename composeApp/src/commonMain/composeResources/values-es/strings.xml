@@ -358,6 +358,8 @@
     <string name="force_update_description">Esta versión ya no es compatible. Actualiza la aplicación</string>
     <string name="search_error_title">Algo ha salido mal</string>
     <string name="search_error_vpn_hint">Parece que la VPN está activada. Desactívala e inténtalo de nuevo</string>
+    <string name="search_error_try_vpn_hint">Algunos sitios pueden no estar disponibles en tu región. Prueba a usar una VPN</string>
+    <string name="search_error_dont_show_again">No volver a mostrar este error</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Anuncios nuevos sin demora y todos los filtros</string>

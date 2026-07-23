@@ -346,6 +346,8 @@
     <string name="force_update_description">მიმდინარე ვერსია არ მუშაობს, გთხოვთ განაახლოთ აპლიკაცია</string>
     <string name="search_error_title">დაფიქსირდა შეცდომა</string>
     <string name="search_error_vpn_hint">როგორც ჩანს, ჩართული გაქვთ VPN. გამორთეთ და სცადეთ თავიდან</string>
+    <string name="search_error_try_vpn_hint">ზოგიერთი საიტი თქვენს რეგიონში შეიძლება ხელმიუწვდომელი იყოს. სცადეთ VPN-ის გამოყენება</string>
+    <string name="search_error_dont_show_again">აღარ მაჩვენო ეს შეცდომა</string>
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">ახალი ბინები დაყოვნების გარეშე და ყველა ფილტრი</string>
     <string name="premium_feature_realtime">განცხადებები რეალურ დროში</string>

@@ -357,6 +357,8 @@
     <string name="force_update_description">هذا الإصدار لم يعد مدعوماً. يرجى تحديث التطبيق</string>
     <string name="search_error_title">حدث خطأ ما</string>
     <string name="search_error_vpn_hint">يبدو أن VPN مفعّل. قم بإيقافه ثم حاول مرة أخرى</string>
+    <string name="search_error_try_vpn_hint">قد تكون بعض المواقع غير متاحة في منطقتك. جرّب استخدام VPN</string>
+    <string name="search_error_dont_show_again">عدم إظهار هذا الخطأ مرة أخرى</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">إعلانات جديدة بدون تأخير وجميع الفلاتر</string>

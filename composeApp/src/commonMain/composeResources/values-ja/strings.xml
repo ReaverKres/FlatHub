@@ -357,6 +357,8 @@
     <string name="force_update_description">このバージョンはサポートされていません。アプリを更新してください</string>
     <string name="search_error_title">問題が発生しました</string>
     <string name="search_error_vpn_hint">VPNがオンになっているようです。VPNをオフにして再度お試しください</string>
+    <string name="search_error_try_vpn_hint">お住まいの地域では一部のサイトにアクセスできない場合があります。VPNの利用をお試しください</string>
+    <string name="search_error_dont_show_again">このエラーを再表示しない</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">遅延なしの新着物件とすべてのフィルター</string>

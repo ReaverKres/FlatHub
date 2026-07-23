@@ -357,6 +357,8 @@
     <string name="force_update_description">This version is no longer supported. Please update the app</string>
     <string name="search_error_title">Something went wrong</string>
     <string name="search_error_vpn_hint">It looks like VPN is on. Turn it off and try again</string>
+    <string name="search_error_try_vpn_hint">Some sites may be unavailable in your region. Try using a VPN</string>
+    <string name="search_error_dont_show_again">Do not show this error again</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">New listings without delay and all filters</string>

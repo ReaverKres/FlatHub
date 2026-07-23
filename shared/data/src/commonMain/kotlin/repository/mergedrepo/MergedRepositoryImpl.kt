@@ -2,6 +2,8 @@ package repository.mergedrepo
 
 import core.NetworkErrorInfo
 import core.NetworkResponseWrapper
+import core.isHostUnresolved
+import core.networkErrorInfo
 import database.FlatsDao
 import entities.AppFlat
 import entities.CommonFilterRequestModel
@@ -99,7 +101,7 @@ class MergedRepositoryImpl(
             println("MergedRepository $platform searchFlats ex ${e.message}")
             NetworkResponseWrapper.error(
                 e,
-                NetworkErrorInfo(platform, listOf(e.message.orEmpty())),
+                networkErrorInfo(platform, e),
             )
         }
     }
@@ -151,7 +153,11 @@ class MergedRepositoryImpl(
 
                 is NetworkResponseWrapper.Error -> {
                     nett.error?.let { err ->
-                        platformErrors.add(err)
+                        platformErrors.add(
+                            err.copy(
+                                isHostUnresolved = err.isHostUnresolved || nett.ex.isHostUnresolved(),
+                            ),
+                        )
                     }
                 }
             }
@@ -163,8 +169,15 @@ class MergedRepositoryImpl(
         val sortedFlatList = applyLocalSortOrFilters(appFlats, filter)
         lastEmittedFlats.emit(sortedFlatList)
 
-        val generalError = LocalizationKeys.SEARCH_ERROR_VPN_HINT
-            .takeIf { platformErrors.isNotEmpty() && connectionMonitor.isVpnConnected() }
+        val hasHostUnresolved = platformErrors.any { it.isHostUnresolved }
+        val generalError = when {
+            platformErrors.isEmpty() -> null
+            // VPN may break DNS for some regions — suggest turning it off.
+            connectionMonitor.isVpnConnected() -> LocalizationKeys.SEARCH_ERROR_VPN_HINT
+            // Host unreachable without VPN — often geo-blocked (e.g. Rightmove from BY).
+            hasHostUnresolved -> LocalizationKeys.SEARCH_ERROR_TRY_VPN_HINT
+            else -> null
+        }
 
         return MergedFlatResponse(
             flats = sortedFlatList,

@@ -357,6 +357,8 @@
     <string name="force_update_description">Ағымдағы нұсқа жұмыс істемейді, қолданбаны жаңартыңыз</string>
     <string name="search_error_title">Қате орын алды</string>
     <string name="search_error_vpn_hint">VPN қосулы сияқты. Оны өшіріп, қайталап көріңіз</string>
+    <string name="search_error_try_vpn_hint">Кейбір сайттар сіздің аймағыңызда қолжетімсіз болуы мүмкін. VPN қолданып көріңіз</string>
+    <string name="search_error_dont_show_again">Бұл қатені енді көрсетпеу</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Кідіріссіз жаңа пәтерлер және барлық сүзгілер</string>

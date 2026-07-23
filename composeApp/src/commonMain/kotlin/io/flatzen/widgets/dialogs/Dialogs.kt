@@ -1,5 +1,6 @@
 package io.flatzen.widgets.dialogs
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.system_notifications_description
 import flatzen.composeapp.generated.resources.system_notifications_title
 import flatzen.composeapp.generated.resources.system_open_settings
+import io.flatzen.commoncomponents.localization.LocalizationKeys
 import io.flatzen.entities.SingleChoiceEntity
 import io.flatzen.viewmodel.filter.SaveDialogState
 import io.flatzen.viewmodel.sharedstates.InfoDialogState
@@ -144,9 +147,13 @@ fun ForceUpdateDialog(infoDialogState: InfoDialogState) {
 @Composable
 fun SearchErrorDialog(
     dialogState: SearchErrorDialogState,
-    onDismiss: () -> Unit
+    onDismiss: (dontShowAgain: Boolean) -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
+    var dontShowAgain by remember { mutableStateOf(false) }
+
+    Dialog(
+        onDismissRequest = { onDismiss(dontShowAgain) },
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -231,6 +238,23 @@ fun SearchErrorDialog(
                     }
                 }
 
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .clickable { dontShowAgain = !dontShowAgain }
+                ) {
+                    Checkbox(
+                        checked = dontShowAgain,
+                        onCheckedChange = { dontShowAgain = it },
+                    )
+                    Text(
+                        text = localizedStringResource(LocalizationKeys.SEARCH_ERROR_DONT_SHOW_AGAIN),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
                 // Close button
                 Row(
                     modifier = Modifier
@@ -238,7 +262,7 @@ fun SearchErrorDialog(
                         .padding(top = 4.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    TextButton(onClick = { onDismiss(dontShowAgain) }) {
                         Text(stringResource(Res.string.close))
                     }
                 }

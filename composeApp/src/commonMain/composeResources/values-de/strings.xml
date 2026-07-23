@@ -358,6 +358,8 @@
     <string name="force_update_description">Diese Version wird nicht mehr unterstützt. Bitte aktualisiere die App</string>
     <string name="search_error_title">Etwas ist schiefgelaufen</string>
     <string name="search_error_vpn_hint">Es sieht so aus, als wäre ein VPN aktiv. Schalte es aus und versuche es erneut</string>
+    <string name="search_error_try_vpn_hint">Einige Seiten sind in deiner Region möglicherweise nicht erreichbar. Versuche es mit einem VPN</string>
+    <string name="search_error_dont_show_again">Diesen Fehler nicht mehr anzeigen</string>
 
     <string name="premium_title">Premium</string>
     <string name="premium_subtitle">Neue Inserate ohne Verzögerung und alle Filter</string>

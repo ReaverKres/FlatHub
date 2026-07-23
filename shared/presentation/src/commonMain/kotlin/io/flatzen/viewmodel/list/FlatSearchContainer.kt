@@ -119,7 +119,7 @@ class FlatSearchContainer(
 
                 FlatListIntent.ToggleView -> handleToggleView()
                 is FlatListIntent.SetListView -> handleSetListView(intent)
-                FlatListIntent.HideNetworkErrorDialog -> onHideNetworkErrorDialog()
+                is FlatListIntent.HideNetworkErrorDialog -> onHideNetworkErrorDialog(intent)
 
                 is FlatListIntent.OpenDetail -> onOpenDetail(intent)
 
@@ -160,7 +160,12 @@ class FlatSearchContainer(
         }
     }
 
-    private suspend fun PipeCtx.onHideNetworkErrorDialog() {
+    private suspend fun PipeCtx.onHideNetworkErrorDialog(intent: FlatListIntent.HideNetworkErrorDialog) {
+        if (intent.dontShowAgain) {
+            var fingerprint = ""
+            withState { fingerprint = errorDialogState?.fingerprint.orEmpty() }
+            SearchNetworkErrorDismissStore.suppress(fingerprint)
+        }
         updateState { copy(errorDialogState = null) }
     }
 
@@ -507,26 +512,37 @@ class FlatSearchContainer(
                     is LCE.Content -> {
                         val response = lceResult.value
                         applyFlatsLoaded(response.flats, isLoadMore, isRefreshing)
-                        // Soft-fail: show dialog only when search yielded nothing, or VPN hint.
+                        // Soft-fail: show dialog when search yielded nothing, or a general hint
+                        // (VPN on / try VPN for DNS failures). Sticky until the user dismisses —
+                        // do not clear on later successful / partial results.
                         val shouldShowErrors = response.errors.hasDisplayableErrors &&
                                 (response.flats.isEmpty() || response.errors.generalError != null)
                         if (shouldShowErrors) {
-                            updateState {
-                                copy(
-                                    errorDialogState = SearchErrorDialogState(
-                                        isVisible = true,
-                                        dialogType = DialogType.NetworkError,
-                                        title = LocalizationKeys.SEARCH_ERROR_TITLE,
-                                        generalError = response.errors.generalError,
-                                        searchedPlatforms = response.searchedPlatforms,
-                                        errorInfo = response.errors.platformErrors.map {
-                                            SearchErrorDialogState.ErrorInfo(
-                                                platform = it.platform,
-                                                errorMessages = it.errorMessages
-                                            )
-                                        }
+                            val fingerprint = SearchNetworkErrorDismissStore.fingerprint(
+                                generalError = response.errors.generalError,
+                                platformErrors = response.errors.platformErrors.map {
+                                    it.platform to it.errorMessages
+                                },
+                            )
+                            if (!SearchNetworkErrorDismissStore.isSuppressed(fingerprint)) {
+                                updateState {
+                                    copy(
+                                        errorDialogState = SearchErrorDialogState(
+                                            isVisible = true,
+                                            dialogType = DialogType.NetworkError,
+                                            title = LocalizationKeys.SEARCH_ERROR_TITLE,
+                                            generalError = response.errors.generalError,
+                                            searchedPlatforms = response.searchedPlatforms,
+                                            fingerprint = fingerprint,
+                                            errorInfo = response.errors.platformErrors.map {
+                                                SearchErrorDialogState.ErrorInfo(
+                                                    platform = it.platform,
+                                                    errorMessages = it.errorMessages
+                                                )
+                                            }
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }

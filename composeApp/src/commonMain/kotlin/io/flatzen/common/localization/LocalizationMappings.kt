@@ -222,7 +222,9 @@ import flatzen.composeapp.generated.resources.referral_remaining_invites
 import flatzen.composeapp.generated.resources.reset
 import flatzen.composeapp.generated.resources.save
 import flatzen.composeapp.generated.resources.scroll_to_top
+import flatzen.composeapp.generated.resources.search_error_dont_show_again
 import flatzen.composeapp.generated.resources.search_error_title
+import flatzen.composeapp.generated.resources.search_error_try_vpn_hint
 import flatzen.composeapp.generated.resources.search_error_vpn_hint
 import flatzen.composeapp.generated.resources.sort_cheapest
 import flatzen.composeapp.generated.resources.sort_expensive
@@ -489,6 +491,8 @@ val LocalizationKeys.resource: StringResource
         LocalizationKeys.FORCE_UPDATE_DESCRIPTION -> Res.string.force_update_description
         LocalizationKeys.SEARCH_ERROR_TITLE -> Res.string.search_error_title
         LocalizationKeys.SEARCH_ERROR_VPN_HINT -> Res.string.search_error_vpn_hint
+        LocalizationKeys.SEARCH_ERROR_TRY_VPN_HINT -> Res.string.search_error_try_vpn_hint
+        LocalizationKeys.SEARCH_ERROR_DONT_SHOW_AGAIN -> Res.string.search_error_dont_show_again
         LocalizationKeys.PREMIUM_TITLE -> Res.string.premium_title
         LocalizationKeys.PREMIUM_SUBTITLE -> Res.string.premium_subtitle
         LocalizationKeys.PREMIUM_FEATURE_REALTIME -> Res.string.premium_feature_realtime

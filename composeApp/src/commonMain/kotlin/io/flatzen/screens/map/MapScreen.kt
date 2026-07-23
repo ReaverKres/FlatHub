@@ -55,6 +55,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import entities.MetroLine
@@ -424,6 +426,10 @@ fun MapScreen(
         flatSearchContainer.store.intent(FlatListIntent.ScreenVisible)
     }
 
+    var isResumed by remember { mutableStateOf(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { isResumed = true }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { isResumed = false }
+
     if (mapModelState.saveAreaDialogState.isVisible) {
         SaveDialog(
             title = stringResource(Res.string.map_save_area_title),
@@ -549,11 +555,13 @@ fun MapScreen(
                     )
                 }
 
-                if (listState.errorDialogState?.isVisible == true) {
+                if (isResumed && listState.errorDialogState?.isVisible == true) {
                     SearchErrorDialog(
                         dialogState = listState.errorDialogState!!,
-                        onDismiss = {
-                            flatSearchContainer.intent(FlatListIntent.HideNetworkErrorDialog)
+                        onDismiss = { dontShowAgain ->
+                            flatSearchContainer.intent(
+                                FlatListIntent.HideNetworkErrorDialog(dontShowAgain)
+                            )
                         }
                     )
                 }

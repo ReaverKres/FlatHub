@@ -19,6 +19,8 @@ data class SearchErrorDialogState(
     val generalError: LocalizationKeys? = null,
     /** Platforms that participated in this search (country-scoped). Empty → fall back to errorInfo only. */
     val searchedPlatforms: List<FlatPlatform> = emptyList(),
+    /** Stable id for [io.flatzen.viewmodel.list.SearchNetworkErrorDismissStore]. */
+    val fingerprint: String = "",
 ) {
     class ErrorInfo(
         val platform: FlatPlatform,
