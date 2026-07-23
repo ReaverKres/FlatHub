@@ -50,4 +50,9 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
     FlatPlatform.ATHOME -> "https://www.athome.co.jp/favicon.ico"
     FlatPlatform.FLATFOX ->
         "https://flatfox.ch/public/flatfox_website/favicons/favicon-32x32.4955d0c30454.png"
+    FlatPlatform.RIGHTMOVE -> "https://www.rightmove.co.uk/favicon.ico"
+    FlatPlatform.ONTHEMARKET ->
+        "https://www.onthemarket.com/assets/images/icons-otm2/favicon.ico"
+
+    FlatPlatform.OPENRENT -> "https://www.openrent.co.uk/favicon.ico"
 }

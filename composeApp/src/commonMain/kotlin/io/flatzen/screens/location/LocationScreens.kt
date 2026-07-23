@@ -32,7 +32,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +53,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -111,6 +115,7 @@ import io.flatzen.commoncomponents.commonentities.platformsForMarket
 import io.flatzen.di.container
 import io.flatzen.kmpapp.screens.ShimmerBox
 import io.flatzen.mappers.LocationUiMapper
+import io.flatzen.mappers.MetroStationsMapper
 import io.flatzen.utils.LaunchedEffectOnce
 import io.flatzen.viewmodel.DistrictsContainer
 import io.flatzen.viewmodel.DistrictsIntent
@@ -831,105 +836,218 @@ fun MetroSelectScreen(
                 filterContainer.intent(FilterScreenAction.UpdateWithAnyMetro(it))
             }
 
-            val useNumberedMetroLines = when (state.filters.location?.selectedCity?.code) {
-                CityCode.WARSZAWA, CityCode.TBILISI, CityCode.MADRID, CityCode.BARCELONA,
-                CityCode.BERLIN,
-                    -> true
-                // Almaty / Bangkok: colour titles (BTS green, MRT blue), not M1/M2.
+            val cityCode = state.filters.location?.selectedCity?.code
+            val useNumberedMetroLines = when (cityCode) {
+                CityCode.WARSZAWA, CityCode.TBILISI -> true
                 else -> false
             }
-            val lineItems = listOf(
+            val lineItems = MetroStationsMapper.lineOrderForCity(cityCode).mapNotNull { line ->
+                val onLine = stations.filter { it.line == line }
+                if (onLine.isEmpty()) return@mapNotNull null
                 MetroLineUi(
-                    line = MetroLineState.BLUE,
-                    title = if (useNumberedMetroLines) {
-                        stringResource(Res.string.location_metro_line_m1)
-                    } else {
-                        stringResource(Res.string.location_metro_line_blue)
-                    },
-                    color = Color(0xFF1976D2),
-                    stations = stationsOf(MetroLineState.BLUE),
-                    allStationsOnLine = stations.filter { it.line == MetroLineState.BLUE },
-                ),
-                MetroLineUi(
-                    line = MetroLineState.RED,
-                    title = if (useNumberedMetroLines) {
-                        stringResource(Res.string.location_metro_line_m2)
-                    } else {
-                        stringResource(Res.string.location_metro_line_red)
-                    },
-                    color = Color(0xFFD32F2F),
-                    stations = stationsOf(MetroLineState.RED),
-                    allStationsOnLine = stations.filter { it.line == MetroLineState.RED },
-                ),
-                MetroLineUi(
-                    line = MetroLineState.GREEN,
-                    title = stringResource(Res.string.location_metro_line_green),
-                    color = Color(0xFF388E3C),
-                    stations = stationsOf(MetroLineState.GREEN),
-                    allStationsOnLine = stations.filter { it.line == MetroLineState.GREEN },
-                ),
-            ).filter { it.stations.isNotEmpty() }
+                    line = line,
+                    title = metroLineTitle(line, useNumberedMetroLines),
+                    color = metroLineColor(line),
+                    stations = stationsOf(line),
+                    allStationsOnLine = onLine,
+                )
+            }
 
             if (lineItems.isNotEmpty()) {
-                BoxWithConstraints(
+                val onToggleLine: (MetroLineState, Boolean) -> Unit = { line, selected ->
+                    filterContainer.intent(FilterScreenAction.UpdateMetroLine(line, selected))
+                }
+                val onToggleStation: (UiMetroStation, Boolean) -> Unit = { station, selected ->
+                    filterContainer.intent(
+                        FilterScreenAction.UpdateMetroFilter(station.copy(selected = selected))
+                    )
+                }
+
+                if (lineItems.size <= MetroGridMaxLines) {
+                    MetroLinesGrid(
+                        lineItems = lineItems,
+                        enabled = !withAnyMetro,
+                        onToggleLine = onToggleLine,
+                        onToggleStation = onToggleStation,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp)
+                            .padding(bottom = 8.dp),
+                    )
+                } else {
+                    MetroLinesMasterDetail(
+                        lineItems = lineItems,
+                        cityCode = cityCode,
+                        queryText = queryText,
+                        enabled = !withAnyMetro,
+                        onToggleLine = onToggleLine,
+                        onToggleStation = onToggleStation,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Keep the multi-column grid only for small networks (e.g. Minsk, Warsaw). */
+private const val MetroGridMaxLines = 3
+
+@Composable
+private fun MetroLinesGrid(
+    lineItems: List<MetroLineUi>,
+    enabled: Boolean,
+    onToggleLine: (MetroLineState, Boolean) -> Unit,
+    onToggleStation: (UiMetroStation, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val gap = 8.dp
+        val minColumnWidth = 140.dp
+        val columnsCount = max(
+            1,
+            ((maxWidth + gap) / (minColumnWidth + gap)).toInt()
+        ).coerceAtMost(lineItems.size)
+        val rows = lineItems.chunked(columnsCount)
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(gap),
+        ) {
+            rows.forEach { rowItems ->
+                Row(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 8.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(gap),
                 ) {
-                    val gap = 8.dp
-                    val minColumnWidth = 140.dp
-                    val columnsCount = max(
-                        1,
-                        ((maxWidth + gap) / (minColumnWidth + gap)).toInt()
-                    ).coerceAtMost(lineItems.size)
-                    val rows = lineItems.chunked(columnsCount)
-
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(gap),
-                    ) {
-                        rows.forEach { rowItems ->
-                            Row(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(gap),
-                            ) {
-                                rowItems.forEach { lineUi ->
-                                    MetroLineColumn(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxHeight(),
-                                        title = lineUi.title,
-                                        lineColor = lineUi.color,
-                                        stations = lineUi.stations,
-                                        allStationsOnLine = lineUi.allStationsOnLine,
-                                        enabled = !withAnyMetro,
-                                        onToggleLine = { selected ->
-                                            filterContainer.intent(
-                                                FilterScreenAction.UpdateMetroLine(
-                                                    lineUi.line,
-                                                    selected
-                                                )
-                                            )
-                                        },
-                                        onToggleStation = { station, selected ->
-                                            filterContainer.intent(
-                                                FilterScreenAction.UpdateMetroFilter(
-                                                    station.copy(selected = selected)
-                                                )
-                                            )
-                                        },
-                                    )
-                                }
-                            }
-                        }
+                    rowItems.forEach { lineUi ->
+                        MetroLineColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            title = lineUi.title,
+                            lineColor = lineUi.color,
+                            stations = lineUi.stations,
+                            allStationsOnLine = lineUi.allStationsOnLine,
+                            enabled = enabled,
+                            onToggleLine = { selected -> onToggleLine(lineUi.line, selected) },
+                            onToggleStation = onToggleStation,
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MetroLinesMasterDetail(
+    lineItems: List<MetroLineUi>,
+    cityCode: CityCode?,
+    queryText: String,
+    enabled: Boolean,
+    onToggleLine: (MetroLineState, Boolean) -> Unit,
+    onToggleStation: (UiMetroStation, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var selectedLine by remember(cityCode) { mutableStateOf<MetroLineState?>(null) }
+    val chipsState = rememberLazyListState()
+
+    val stillValid = selectedLine != null && lineItems.any { it.line == selectedLine }
+    val resolvedLine = when {
+        stillValid && queryText.isBlank() -> selectedLine
+        stillValid && lineItems.first { it.line == selectedLine }.stations.isNotEmpty() ->
+            selectedLine
+
+        queryText.isNotBlank() ->
+            lineItems.firstOrNull { it.stations.isNotEmpty() }?.line
+                ?: selectedLine?.takeIf { stillValid }
+                ?: lineItems.firstOrNull()?.line
+
+        else ->
+            lineItems.firstOrNull { line -> line.allStationsOnLine.any { it.selected } }?.line
+                ?: selectedLine?.takeIf { stillValid }
+                ?: lineItems.firstOrNull()?.line
+    }
+
+    LaunchedEffect(resolvedLine) {
+        if (resolvedLine != null && selectedLine != resolvedLine) {
+            selectedLine = resolvedLine
+        }
+        val index = lineItems.indexOfFirst { it.line == resolvedLine }
+        if (index >= 0) {
+            chipsState.animateScrollToItem(index)
+        }
+    }
+
+    val activeLine = lineItems.firstOrNull { it.line == resolvedLine } ?: lineItems.first()
+
+    Column(modifier = modifier) {
+        LazyRow(
+            state = chipsState,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(lineItems, key = { it.line }) { lineUi ->
+                val selectedCount = lineUi.allStationsOnLine.count { it.selected }
+                val isSelected = lineUi.line == resolvedLine
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { selectedLine = lineUi.line },
+                    enabled = enabled,
+                    label = {
+                        Text(
+                            text = if (selectedCount > 0) {
+                                "${lineUi.title} · $selectedCount"
+                            } else {
+                                lineUi.title
+                            },
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    leadingIcon = {
+                        Surface(
+                            color = lineUi.color,
+                            shape = CircleShape,
+                            modifier = Modifier.size(10.dp),
+                        ) {}
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = lineUi.color.copy(alpha = 0.18f),
+                        selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+                        selectedLeadingIconColor = lineUi.color,
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = enabled,
+                        selected = isSelected,
+                        selectedBorderColor = lineUi.color,
+                    ),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        MetroLineColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            title = activeLine.title,
+            lineColor = activeLine.color,
+            stations = activeLine.stations,
+            allStationsOnLine = activeLine.allStationsOnLine,
+            enabled = enabled,
+            onToggleLine = { selected -> onToggleLine(activeLine.line, selected) },
+            onToggleStation = onToggleStation,
+        )
     }
 }
 
@@ -940,6 +1058,209 @@ private data class MetroLineUi(
     val stations: List<UiMetroStation>,
     val allStationsOnLine: List<UiMetroStation>,
 )
+
+@Composable
+private fun metroLineTitle(line: MetroLineState, useNumbered: Boolean): String = when (line) {
+    MetroLineState.BLUE -> if (useNumbered) {
+        stringResource(Res.string.location_metro_line_m1)
+    } else {
+        stringResource(Res.string.location_metro_line_blue)
+    }
+
+    MetroLineState.RED -> if (useNumbered) {
+        stringResource(Res.string.location_metro_line_m2)
+    } else {
+        stringResource(Res.string.location_metro_line_red)
+    }
+
+    MetroLineState.GREEN -> stringResource(Res.string.location_metro_line_green)
+
+    MetroLineState.BAKERLOO -> "Bakerloo"
+    MetroLineState.CENTRAL -> "Central"
+    MetroLineState.CIRCLE -> "Circle"
+    MetroLineState.DISTRICT -> "District"
+    MetroLineState.HAMMERSMITH_CITY -> "Hammersmith & City"
+    MetroLineState.JUBILEE -> "Jubilee"
+    MetroLineState.METROPOLITAN -> "Metropolitan"
+    MetroLineState.NORTHERN -> "Northern"
+    MetroLineState.PICCADILLY -> "Piccadilly"
+    MetroLineState.VICTORIA -> "Victoria"
+    MetroLineState.WATERLOO_CITY -> "Waterloo & City"
+    MetroLineState.ELIZABETH -> "Elizabeth"
+
+    MetroLineState.WIEN_U1 -> "U1"
+    MetroLineState.WIEN_U2 -> "U2"
+    MetroLineState.WIEN_U3 -> "U3"
+    MetroLineState.WIEN_U4 -> "U4"
+    MetroLineState.WIEN_U6 -> "U6"
+
+    MetroLineState.SEOUL_1 -> "Line 1"
+    MetroLineState.SEOUL_2 -> "Line 2"
+    MetroLineState.SEOUL_3 -> "Line 3"
+    MetroLineState.SEOUL_4 -> "Line 4"
+    MetroLineState.SEOUL_5 -> "Line 5"
+    MetroLineState.SEOUL_6 -> "Line 6"
+    MetroLineState.SEOUL_7 -> "Line 7"
+    MetroLineState.SEOUL_8 -> "Line 8"
+    MetroLineState.SEOUL_9 -> "Line 9"
+
+    MetroLineState.BERLIN_U1 -> "U1"
+    MetroLineState.BERLIN_U2 -> "U2"
+    MetroLineState.BERLIN_U3 -> "U3"
+    MetroLineState.BERLIN_U4 -> "U4"
+    MetroLineState.BERLIN_U5 -> "U5"
+    MetroLineState.BERLIN_U6 -> "U6"
+    MetroLineState.BERLIN_U7 -> "U7"
+    MetroLineState.BERLIN_U8 -> "U8"
+    MetroLineState.BERLIN_U9 -> "U9"
+    MetroLineState.BERLIN_S1 -> "S1"
+    MetroLineState.BERLIN_S2 -> "S2"
+    MetroLineState.BERLIN_S3 -> "S3"
+    MetroLineState.BERLIN_S5 -> "S5"
+    MetroLineState.BERLIN_S7 -> "S7"
+    MetroLineState.BERLIN_S9 -> "S9"
+
+    MetroLineState.MADRID_1 -> "L1"
+    MetroLineState.MADRID_2 -> "L2"
+    MetroLineState.MADRID_3 -> "L3"
+    MetroLineState.MADRID_4 -> "L4"
+    MetroLineState.MADRID_5 -> "L5"
+    MetroLineState.MADRID_6 -> "L6"
+    MetroLineState.MADRID_7 -> "L7"
+    MetroLineState.MADRID_8 -> "L8"
+    MetroLineState.MADRID_9 -> "L9"
+    MetroLineState.MADRID_10 -> "L10"
+    MetroLineState.MADRID_11 -> "L11"
+    MetroLineState.MADRID_12 -> "L12"
+    MetroLineState.MADRID_R -> "Ramal"
+
+    MetroLineState.BCN_L1 -> "L1"
+    MetroLineState.BCN_L2 -> "L2"
+    MetroLineState.BCN_L3 -> "L3"
+    MetroLineState.BCN_L4 -> "L4"
+    MetroLineState.BCN_L5 -> "L5"
+    MetroLineState.BCN_L9N -> "L9 Nord"
+    MetroLineState.BCN_L9S -> "L9 Sud"
+    MetroLineState.BCN_L10 -> "L10"
+    MetroLineState.BCN_L11 -> "L11"
+
+    MetroLineState.BKK_BTS_SUKHUMVIT -> "BTS Sukhumvit"
+    MetroLineState.BKK_BTS_SILOM -> "BTS Silom"
+    MetroLineState.BKK_MRT_BLUE -> "MRT Blue"
+    MetroLineState.BKK_MRT_PURPLE -> "MRT Purple"
+    MetroLineState.BKK_ARL -> "Airport Rail"
+
+    MetroLineState.TOKYO_YAMANOTE -> "JR Yamanote"
+    MetroLineState.TOKYO_GINZA -> "Ginza"
+    MetroLineState.TOKYO_MARUNOUCHI -> "Marunouchi"
+    MetroLineState.TOKYO_HIBIYA -> "Hibiya"
+    MetroLineState.TOKYO_TOZAI -> "Tozai"
+    MetroLineState.TOKYO_CHIYODA -> "Chiyoda"
+    MetroLineState.TOKYO_YURAKUCHO -> "Yurakucho"
+    MetroLineState.TOKYO_HANZOMON -> "Hanzomon"
+    MetroLineState.TOKYO_NAMBOKU -> "Namboku"
+    MetroLineState.TOKYO_FUKUTOSHIN -> "Fukutoshin"
+    MetroLineState.TOKYO_ASAKUSA -> "Asakusa"
+    MetroLineState.TOKYO_MITA -> "Mita"
+    MetroLineState.TOKYO_SHINJUKU -> "Shinjuku"
+    MetroLineState.TOKYO_OEDO -> "Oedo"
+}
+
+private fun metroLineColor(line: MetroLineState): Color = when (line) {
+    MetroLineState.BLUE -> Color(0xFF1976D2)
+    MetroLineState.RED -> Color(0xFFD32F2F)
+    MetroLineState.GREEN -> Color(0xFF388E3C)
+
+    MetroLineState.BAKERLOO -> Color(0xFFB36305)
+    MetroLineState.CENTRAL -> Color(0xFFE32017)
+    MetroLineState.CIRCLE -> Color(0xFFFFD300)
+    MetroLineState.DISTRICT -> Color(0xFF00782A)
+    MetroLineState.HAMMERSMITH_CITY -> Color(0xFFF3A9BB)
+    MetroLineState.JUBILEE -> Color(0xFFA0A5A9)
+    MetroLineState.METROPOLITAN -> Color(0xFF9B0056)
+    MetroLineState.NORTHERN -> Color(0xFF000000)
+    MetroLineState.PICCADILLY -> Color(0xFF003688)
+    MetroLineState.VICTORIA -> Color(0xFF0098D4)
+    MetroLineState.WATERLOO_CITY -> Color(0xFF95CDBA)
+    MetroLineState.ELIZABETH -> Color(0xFF6950A1)
+
+    MetroLineState.WIEN_U1 -> Color(0xFFE20613)
+    MetroLineState.WIEN_U2 -> Color(0xFFA862A4)
+    MetroLineState.WIEN_U3 -> Color(0xFFE8702A)
+    MetroLineState.WIEN_U4 -> Color(0xFF00963F)
+    MetroLineState.WIEN_U6 -> Color(0xFF9D6910)
+
+    MetroLineState.SEOUL_1 -> Color(0xFF0052A4)
+    MetroLineState.SEOUL_2 -> Color(0xFF00A84D)
+    MetroLineState.SEOUL_3 -> Color(0xFFEF7C1C)
+    MetroLineState.SEOUL_4 -> Color(0xFF00A5DE)
+    MetroLineState.SEOUL_5 -> Color(0xFF996CAC)
+    MetroLineState.SEOUL_6 -> Color(0xFFCD7C2F)
+    MetroLineState.SEOUL_7 -> Color(0xFF747F00)
+    MetroLineState.SEOUL_8 -> Color(0xFFE6186C)
+    MetroLineState.SEOUL_9 -> Color(0xFFBDB092)
+
+    MetroLineState.BERLIN_U1 -> Color(0xFF7DAD4C)
+    MetroLineState.BERLIN_U2 -> Color(0xFFDA421E)
+    MetroLineState.BERLIN_U3 -> Color(0xFF16683D)
+    MetroLineState.BERLIN_U4 -> Color(0xFFF0D722)
+    MetroLineState.BERLIN_U5 -> Color(0xFF7E5330)
+    MetroLineState.BERLIN_U6 -> Color(0xFF8C6DAB)
+    MetroLineState.BERLIN_U7 -> Color(0xFF528DCA)
+    MetroLineState.BERLIN_U8 -> Color(0xFF224F86)
+    MetroLineState.BERLIN_U9 -> Color(0xFFF3791D)
+    MetroLineState.BERLIN_S1 -> Color(0xFFDE4DA4)
+    MetroLineState.BERLIN_S2 -> Color(0xFF007734)
+    MetroLineState.BERLIN_S3 -> Color(0xFF0066A6)
+    MetroLineState.BERLIN_S5 -> Color(0xFFF29EC3)
+    MetroLineState.BERLIN_S7 -> Color(0xFF816DA6)
+    MetroLineState.BERLIN_S9 -> Color(0xFF992746)
+
+    MetroLineState.MADRID_1 -> Color(0xFF29B0E0)
+    MetroLineState.MADRID_2 -> Color(0xFFC4002D)
+    MetroLineState.MADRID_3 -> Color(0xFFFFD100)
+    MetroLineState.MADRID_4 -> Color(0xFFA05A2C)
+    MetroLineState.MADRID_5 -> Color(0xFF8EC63F)
+    MetroLineState.MADRID_6 -> Color(0xFF999999)
+    MetroLineState.MADRID_7 -> Color(0xFFF07A25)
+    MetroLineState.MADRID_8 -> Color(0xFFEB82BD)
+    MetroLineState.MADRID_9 -> Color(0xFFA61C4D)
+    MetroLineState.MADRID_10 -> Color(0xFF005CA9)
+    MetroLineState.MADRID_11 -> Color(0xFF009640)
+    MetroLineState.MADRID_12 -> Color(0xFFA49700)
+    MetroLineState.MADRID_R -> Color(0xFFCCCCCC)
+
+    MetroLineState.BCN_L1 -> Color(0xFFCE1126)
+    MetroLineState.BCN_L2 -> Color(0xFF7B2D8E)
+    MetroLineState.BCN_L3 -> Color(0xFF00A650)
+    MetroLineState.BCN_L4 -> Color(0xFFFAB914)
+    MetroLineState.BCN_L5 -> Color(0xFF0077C8)
+    MetroLineState.BCN_L9N -> Color(0xFFFF6B00)
+    MetroLineState.BCN_L9S -> Color(0xFFFF8C00)
+    MetroLineState.BCN_L10 -> Color(0xFF00A0E3)
+    MetroLineState.BCN_L11 -> Color(0xFF8DC63F)
+
+    MetroLineState.BKK_BTS_SUKHUMVIT -> Color(0xFF5BBF21)
+    MetroLineState.BKK_BTS_SILOM -> Color(0xFF008C45)
+    MetroLineState.BKK_MRT_BLUE -> Color(0xFF1E3A8A)
+    MetroLineState.BKK_MRT_PURPLE -> Color(0xFF6B21A8)
+    MetroLineState.BKK_ARL -> Color(0xFFC8102E)
+
+    MetroLineState.TOKYO_YAMANOTE -> Color(0xFF9ACD32)
+    MetroLineState.TOKYO_GINZA -> Color(0xFFFF9500)
+    MetroLineState.TOKYO_MARUNOUCHI -> Color(0xFFE60012)
+    MetroLineState.TOKYO_HIBIYA -> Color(0xFFB5B5AC)
+    MetroLineState.TOKYO_TOZAI -> Color(0xFF009BBF)
+    MetroLineState.TOKYO_CHIYODA -> Color(0xFF00BB85)
+    MetroLineState.TOKYO_YURAKUCHO -> Color(0xFFC1A470)
+    MetroLineState.TOKYO_HANZOMON -> Color(0xFF8F76D6)
+    MetroLineState.TOKYO_NAMBOKU -> Color(0xFF00ADA9)
+    MetroLineState.TOKYO_FUKUTOSHIN -> Color(0xFF9C5E31)
+    MetroLineState.TOKYO_ASAKUSA -> Color(0xFFE85298)
+    MetroLineState.TOKYO_MITA -> Color(0xFF0079C2)
+    MetroLineState.TOKYO_SHINJUKU -> Color(0xFF6CBB5A)
+    MetroLineState.TOKYO_OEDO -> Color(0xFFB6007A)
+}
 
 @Composable
 private fun MetroLineColumn(
@@ -986,7 +1307,7 @@ private fun MetroLineColumn(
         HorizontalDivider(color = lineColor.copy(alpha = 0.4f))
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(stations, key = { it.name }) { station ->
+            items(stations, key = { "${it.line}_${it.name}" }) { station ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier

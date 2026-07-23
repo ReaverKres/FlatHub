@@ -155,6 +155,7 @@
     <string name="country_kr">Южная Корея</string>
     <string name="country_jp">Япония</string>
     <string name="country_ch">Швейцария</string>
+    <string name="country_gb">Великобритания</string>
     <string name="city_minsk">Минск</string>
     <string name="city_brest">Брест</string>
     <string name="city_vitebsk">Витебск</string>
@@ -269,6 +270,16 @@
     <string name="city_bern">Берн</string>
     <string name="city_zurich">Цюрих</string>
     <string name="city_biel">Биль</string>
+    <string name="city_london">Лондон</string>
+    <string name="city_manchester">Манчестер</string>
+    <string name="city_birmingham">Бирмингем</string>
+    <string name="city_leeds">Лидс</string>
+    <string name="city_glasgow">Глазго</string>
+    <string name="city_edinburgh">Эдинбург</string>
+    <string name="city_bristol">Бристоль</string>
+    <string name="city_liverpool">Ливерпуль</string>
+    <string name="city_newcastle">Ньюкасл</string>
+    <string name="city_sheffield">Шеффилд</string>
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Любая станция</string>
     <string name="location_metro_line_red">Красная</string>

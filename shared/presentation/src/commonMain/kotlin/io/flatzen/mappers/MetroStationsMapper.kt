@@ -15,17 +15,84 @@ object MetroStationsMapper {
         return MetroStations.stationsForCity(city).map { info ->
             UiMetroStation(
                 name = info.name,
-                line = when (info.line) {
-                    MetroLine.BLUE -> MetroLineState.BLUE
-                    MetroLine.RED -> MetroLineState.RED
-                    MetroLine.GREEN -> MetroLineState.GREEN
-                }
+                line = info.line.toUiState(),
             )
         }
     }
 
     fun hasStations(city: CityCode?): Boolean =
         MetroStations.stationsForCity(city).isNotEmpty()
+
+    /** Display order of line columns for the metro filter screen. */
+    fun lineOrderForCity(city: CityCode?): List<MetroLineState> = when (city) {
+        CityCode.LONDON -> listOf(
+            MetroLineState.BAKERLOO, MetroLineState.CENTRAL, MetroLineState.CIRCLE,
+            MetroLineState.DISTRICT, MetroLineState.HAMMERSMITH_CITY, MetroLineState.JUBILEE,
+            MetroLineState.METROPOLITAN, MetroLineState.NORTHERN, MetroLineState.PICCADILLY,
+            MetroLineState.VICTORIA, MetroLineState.WATERLOO_CITY, MetroLineState.ELIZABETH,
+        )
+
+        CityCode.WIEN -> listOf(
+            MetroLineState.WIEN_U1, MetroLineState.WIEN_U2, MetroLineState.WIEN_U3,
+            MetroLineState.WIEN_U4, MetroLineState.WIEN_U6,
+        )
+
+        CityCode.SEOUL -> listOf(
+            MetroLineState.SEOUL_1, MetroLineState.SEOUL_2, MetroLineState.SEOUL_3,
+            MetroLineState.SEOUL_4, MetroLineState.SEOUL_5, MetroLineState.SEOUL_6,
+            MetroLineState.SEOUL_7, MetroLineState.SEOUL_8, MetroLineState.SEOUL_9,
+        )
+
+        CityCode.BERLIN -> listOf(
+            MetroLineState.BERLIN_U1, MetroLineState.BERLIN_U2, MetroLineState.BERLIN_U3,
+            MetroLineState.BERLIN_U4, MetroLineState.BERLIN_U5, MetroLineState.BERLIN_U6,
+            MetroLineState.BERLIN_U7, MetroLineState.BERLIN_U8, MetroLineState.BERLIN_U9,
+            MetroLineState.BERLIN_S1, MetroLineState.BERLIN_S2, MetroLineState.BERLIN_S3,
+            MetroLineState.BERLIN_S5, MetroLineState.BERLIN_S7, MetroLineState.BERLIN_S9,
+        )
+
+        CityCode.MADRID -> listOf(
+            MetroLineState.MADRID_1, MetroLineState.MADRID_2, MetroLineState.MADRID_3,
+            MetroLineState.MADRID_4, MetroLineState.MADRID_5, MetroLineState.MADRID_6,
+            MetroLineState.MADRID_7, MetroLineState.MADRID_8, MetroLineState.MADRID_9,
+            MetroLineState.MADRID_10, MetroLineState.MADRID_11, MetroLineState.MADRID_12,
+            MetroLineState.MADRID_R,
+        )
+
+        CityCode.BARCELONA -> listOf(
+            MetroLineState.BCN_L1, MetroLineState.BCN_L2, MetroLineState.BCN_L3,
+            MetroLineState.BCN_L4, MetroLineState.BCN_L5, MetroLineState.BCN_L9N,
+            MetroLineState.BCN_L9S, MetroLineState.BCN_L10, MetroLineState.BCN_L11,
+        )
+
+        CityCode.BANGKOK -> listOf(
+            MetroLineState.BKK_BTS_SUKHUMVIT, MetroLineState.BKK_BTS_SILOM,
+            MetroLineState.BKK_MRT_BLUE, MetroLineState.BKK_MRT_PURPLE, MetroLineState.BKK_ARL,
+        )
+
+        CityCode.TOKYO -> listOf(
+            MetroLineState.TOKYO_YAMANOTE,
+            MetroLineState.TOKYO_GINZA,
+            MetroLineState.TOKYO_MARUNOUCHI,
+            MetroLineState.TOKYO_HIBIYA,
+            MetroLineState.TOKYO_TOZAI,
+            MetroLineState.TOKYO_CHIYODA,
+            MetroLineState.TOKYO_YURAKUCHO,
+            MetroLineState.TOKYO_HANZOMON,
+            MetroLineState.TOKYO_NAMBOKU,
+            MetroLineState.TOKYO_FUKUTOSHIN,
+            MetroLineState.TOKYO_ASAKUSA,
+            MetroLineState.TOKYO_MITA,
+            MetroLineState.TOKYO_SHINJUKU,
+            MetroLineState.TOKYO_OEDO,
+        )
+
+        CityCode.WARSZAWA, CityCode.TBILISI -> listOf(
+            MetroLineState.BLUE, MetroLineState.RED,
+        )
+
+        else -> listOf(MetroLineState.BLUE, MetroLineState.RED, MetroLineState.GREEN)
+    }
+
+    fun MetroLine.toUiState(): MetroLineState = MetroLineState.valueOf(name)
 }
-
-

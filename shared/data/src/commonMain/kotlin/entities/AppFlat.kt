@@ -215,6 +215,11 @@ private fun localCurrencyLabel(platform: FlatPlatform): String = when (platform)
     FlatPlatform.FLATFOX,
         -> "CHF"
 
+    FlatPlatform.RIGHTMOVE,
+    FlatPlatform.ONTHEMARKET,
+    FlatPlatform.OPENRENT,
+        -> "£"
+
     FlatPlatform.ZUMPER,
         -> "$"
 

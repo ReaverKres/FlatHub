@@ -18,8 +18,10 @@ import flatzen.composeapp.generated.resources.city_batumi
 import flatzen.composeapp.generated.resources.city_berlin
 import flatzen.composeapp.generated.resources.city_bern
 import flatzen.composeapp.generated.resources.city_biel
+import flatzen.composeapp.generated.resources.city_birmingham
 import flatzen.composeapp.generated.resources.city_boston
 import flatzen.composeapp.generated.resources.city_brest
+import flatzen.composeapp.generated.resources.city_bristol
 import flatzen.composeapp.generated.resources.city_bursa
 import flatzen.composeapp.generated.resources.city_busan
 import flatzen.composeapp.generated.resources.city_bydgoszcz
@@ -34,12 +36,14 @@ import flatzen.composeapp.generated.resources.city_denver
 import flatzen.composeapp.generated.resources.city_dornbirn
 import flatzen.composeapp.generated.resources.city_dubai
 import flatzen.composeapp.generated.resources.city_duesseldorf
+import flatzen.composeapp.generated.resources.city_edinburgh
 import flatzen.composeapp.generated.resources.city_frankfurt
 import flatzen.composeapp.generated.resources.city_fujairah
 import flatzen.composeapp.generated.resources.city_fukuoka
 import flatzen.composeapp.generated.resources.city_gaziantep
 import flatzen.composeapp.generated.resources.city_gdansk
 import flatzen.composeapp.generated.resources.city_geneva
+import flatzen.composeapp.generated.resources.city_glasgow
 import flatzen.composeapp.generated.resources.city_gomel
 import flatzen.composeapp.generated.resources.city_graz
 import flatzen.composeapp.generated.resources.city_grodno
@@ -65,21 +69,26 @@ import flatzen.composeapp.generated.resources.city_krakow
 import flatzen.composeapp.generated.resources.city_kutaisi
 import flatzen.composeapp.generated.resources.city_kyoto
 import flatzen.composeapp.generated.resources.city_lausanne
+import flatzen.composeapp.generated.resources.city_leeds
 import flatzen.composeapp.generated.resources.city_leipzig
 import flatzen.composeapp.generated.resources.city_linz
+import flatzen.composeapp.generated.resources.city_liverpool
 import flatzen.composeapp.generated.resources.city_lodz
+import flatzen.composeapp.generated.resources.city_london
 import flatzen.composeapp.generated.resources.city_los_angeles
 import flatzen.composeapp.generated.resources.city_lublin
 import flatzen.composeapp.generated.resources.city_lugano
 import flatzen.composeapp.generated.resources.city_luzern
 import flatzen.composeapp.generated.resources.city_madrid
 import flatzen.composeapp.generated.resources.city_malaga
+import flatzen.composeapp.generated.resources.city_manchester
 import flatzen.composeapp.generated.resources.city_miami
 import flatzen.composeapp.generated.resources.city_minsk
 import flatzen.composeapp.generated.resources.city_mogilev
 import flatzen.composeapp.generated.resources.city_muenchen
 import flatzen.composeapp.generated.resources.city_nagoya
 import flatzen.composeapp.generated.resources.city_new_york
+import flatzen.composeapp.generated.resources.city_newcastle
 import flatzen.composeapp.generated.resources.city_osaka
 import flatzen.composeapp.generated.resources.city_pattaya
 import flatzen.composeapp.generated.resources.city_phuket
@@ -95,6 +104,7 @@ import flatzen.composeapp.generated.resources.city_sendai
 import flatzen.composeapp.generated.resources.city_seoul
 import flatzen.composeapp.generated.resources.city_sevilla
 import flatzen.composeapp.generated.resources.city_sharjah
+import flatzen.composeapp.generated.resources.city_sheffield
 import flatzen.composeapp.generated.resources.city_shymkent
 import flatzen.composeapp.generated.resources.city_st_gallen
 import flatzen.composeapp.generated.resources.city_st_poelten
@@ -122,6 +132,7 @@ import flatzen.composeapp.generated.resources.country_by
 import flatzen.composeapp.generated.resources.country_ch
 import flatzen.composeapp.generated.resources.country_de
 import flatzen.composeapp.generated.resources.country_es
+import flatzen.composeapp.generated.resources.country_gb
 import flatzen.composeapp.generated.resources.country_ge
 import flatzen.composeapp.generated.resources.country_jp
 import flatzen.composeapp.generated.resources.country_kr
@@ -150,6 +161,7 @@ fun CountryCode.localizedNameRes(): StringResource = when (this) {
     CountryCode.KR -> Res.string.country_kr
     CountryCode.JP -> Res.string.country_jp
     CountryCode.CH -> Res.string.country_ch
+    CountryCode.GB -> Res.string.country_gb
 }
 
 fun CityCode.localizedNameRes(): StringResource = when (this) {
@@ -267,6 +279,16 @@ fun CityCode.localizedNameRes(): StringResource = when (this) {
     CityCode.ST_GALLEN -> Res.string.city_st_gallen
     CityCode.LUGANO -> Res.string.city_lugano
     CityCode.BIEL -> Res.string.city_biel
+    CityCode.LONDON -> Res.string.city_london
+    CityCode.MANCHESTER -> Res.string.city_manchester
+    CityCode.BIRMINGHAM -> Res.string.city_birmingham
+    CityCode.LEEDS -> Res.string.city_leeds
+    CityCode.GLASGOW -> Res.string.city_glasgow
+    CityCode.EDINBURGH -> Res.string.city_edinburgh
+    CityCode.BRISTOL -> Res.string.city_bristol
+    CityCode.LIVERPOOL -> Res.string.city_liverpool
+    CityCode.NEWCASTLE -> Res.string.city_newcastle
+    CityCode.SHEFFIELD -> Res.string.city_sheffield
 }
 
 @Composable

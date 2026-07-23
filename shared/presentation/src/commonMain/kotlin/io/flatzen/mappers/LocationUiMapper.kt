@@ -51,6 +51,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.ZURICH, "Zurich", "Zürich", Coordinates(47.3769, 8.5417))
     val wienUiItem =
         UiCityItem(CityCode.WIEN, "Vienna", "Wien", Coordinates(48.2082, 16.3738))
+    val londonUiItem =
+        UiCityItem(CityCode.LONDON, "London", "London", Coordinates(51.5074, -0.1278))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -67,6 +69,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.KR, "South Korea"),
         UiCountryItem(CountryCode.JP, "Japan"),
         UiCountryItem(CountryCode.CH, "Switzerland"),
+        UiCountryItem(CountryCode.GB, "United Kingdom"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -83,6 +86,7 @@ object LocationUiMapper {
         CountryCode.KR -> seoulUiItem
         CountryCode.JP -> tokyoUiItem
         CountryCode.CH -> zurichUiItem
+        CountryCode.GB -> londonUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -309,6 +313,49 @@ object LocationUiMapper {
             UiCityItem(CityCode.LUGANO, "Lugano", "Lugano", Coordinates(46.0037, 8.9511)),
             UiCityItem(CityCode.BIEL, "Biel", "Biel/Bienne", Coordinates(47.1368, 7.2468)),
         )
+
+        CountryCode.GB -> listOf(
+            londonUiItem,
+            UiCityItem(
+                CityCode.MANCHESTER,
+                "Manchester",
+                "Manchester",
+                Coordinates(53.4808, -2.2426),
+            ),
+            UiCityItem(
+                CityCode.BIRMINGHAM,
+                "Birmingham",
+                "Birmingham",
+                Coordinates(52.4862, -1.8904),
+            ),
+            UiCityItem(CityCode.LEEDS, "Leeds", "Leeds", Coordinates(53.8008, -1.5491)),
+            UiCityItem(CityCode.GLASGOW, "Glasgow", "Glasgow", Coordinates(55.8642, -4.2518)),
+            UiCityItem(
+                CityCode.EDINBURGH,
+                "Edinburgh",
+                "Edinburgh",
+                Coordinates(55.9533, -3.1883),
+            ),
+            UiCityItem(CityCode.BRISTOL, "Bristol", "Bristol", Coordinates(51.4545, -2.5879)),
+            UiCityItem(
+                CityCode.LIVERPOOL,
+                "Liverpool",
+                "Liverpool",
+                Coordinates(53.4084, -2.9916),
+            ),
+            UiCityItem(
+                CityCode.NEWCASTLE,
+                "Newcastle",
+                "Newcastle upon Tyne",
+                Coordinates(54.9783, -1.6178),
+            ),
+            UiCityItem(
+                CityCode.SHEFFIELD,
+                "Sheffield",
+                "Sheffield",
+                Coordinates(53.3811, -1.4701),
+            ),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -334,6 +381,7 @@ object LocationUiMapper {
             in cities(CountryCode.KR).map { it.code } -> CountryCode.KR
             in cities(CountryCode.JP).map { it.code } -> CountryCode.JP
             in cities(CountryCode.CH).map { it.code } -> CountryCode.CH
+            in cities(CountryCode.GB).map { it.code } -> CountryCode.GB
             else -> CountryCode.BY
         }
 

@@ -1,0 +1,928 @@
+{
+  "London": [
+    {
+      "id": 200001,
+      "nameEn": "City of London",
+      "nameLocal": "City of London",
+      "coordinates": [
+        {
+          "latitude": 51.5035,
+          "longitude": -0.1072
+        },
+        {
+          "latitude": 51.5035,
+          "longitude": -0.0772
+        },
+        {
+          "latitude": 51.5275,
+          "longitude": -0.0772
+        },
+        {
+          "latitude": 51.5275,
+          "longitude": -0.1072
+        },
+        {
+          "latitude": 51.5035,
+          "longitude": -0.1072
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200002,
+      "nameEn": "Westminster",
+      "nameLocal": "Westminster",
+      "coordinates": [
+        {
+          "latitude": 51.4725,
+          "longitude": -0.1657
+        },
+        {
+          "latitude": 51.4725,
+          "longitude": -0.1057
+        },
+        {
+          "latitude": 51.5225,
+          "longitude": -0.1057
+        },
+        {
+          "latitude": 51.5225,
+          "longitude": -0.1657
+        },
+        {
+          "latitude": 51.4725,
+          "longitude": -0.1657
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200003,
+      "nameEn": "Kensington and Chelsea",
+      "nameLocal": "Kensington and Chelsea",
+      "coordinates": [
+        {
+          "latitude": 51.48,
+          "longitude": -0.2197
+        },
+        {
+          "latitude": 51.48,
+          "longitude": -0.1697
+        },
+        {
+          "latitude": 51.524,
+          "longitude": -0.1697
+        },
+        {
+          "latitude": 51.524,
+          "longitude": -0.2197
+        },
+        {
+          "latitude": 51.48,
+          "longitude": -0.2197
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200004,
+      "nameEn": "Hammersmith and Fulham",
+      "nameLocal": "Hammersmith and Fulham",
+      "coordinates": [
+        {
+          "latitude": 51.47,
+          "longitude": -0.2639
+        },
+        {
+          "latitude": 51.47,
+          "longitude": -0.2039
+        },
+        {
+          "latitude": 51.514,
+          "longitude": -0.2039
+        },
+        {
+          "latitude": 51.514,
+          "longitude": -0.2639
+        },
+        {
+          "latitude": 51.47,
+          "longitude": -0.2639
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200005,
+      "nameEn": "Wandsworth",
+      "nameLocal": "Wandsworth",
+      "coordinates": [
+        {
+          "latitude": 51.4271,
+          "longitude": -0.2167
+        },
+        {
+          "latitude": 51.4271,
+          "longitude": -0.1467
+        },
+        {
+          "latitude": 51.4871,
+          "longitude": -0.1467
+        },
+        {
+          "latitude": 51.4871,
+          "longitude": -0.2167
+        },
+        {
+          "latitude": 51.4271,
+          "longitude": -0.2167
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200006,
+      "nameEn": "Lambeth",
+      "nameLocal": "Lambeth",
+      "coordinates": [
+        {
+          "latitude": 51.4291,
+          "longitude": -0.1531
+        },
+        {
+          "latitude": 51.4291,
+          "longitude": -0.0931
+        },
+        {
+          "latitude": 51.4851,
+          "longitude": -0.0931
+        },
+        {
+          "latitude": 51.4851,
+          "longitude": -0.1531
+        },
+        {
+          "latitude": 51.4291,
+          "longitude": -0.1531
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200007,
+      "nameEn": "Southwark",
+      "nameLocal": "Southwark",
+      "coordinates": [
+        {
+          "latitude": 51.4602,
+          "longitude": -0.1115
+        },
+        {
+          "latitude": 51.4602,
+          "longitude": -0.0415
+        },
+        {
+          "latitude": 51.5162,
+          "longitude": -0.0415
+        },
+        {
+          "latitude": 51.5162,
+          "longitude": -0.1115
+        },
+        {
+          "latitude": 51.4602,
+          "longitude": -0.1115
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200008,
+      "nameEn": "Tower Hamlets",
+      "nameLocal": "Tower Hamlets",
+      "coordinates": [
+        {
+          "latitude": 51.4903,
+          "longitude": -0.0693
+        },
+        {
+          "latitude": 51.4903,
+          "longitude": 0.0107
+        },
+        {
+          "latitude": 51.5503,
+          "longitude": 0.0107
+        },
+        {
+          "latitude": 51.5503,
+          "longitude": -0.0693
+        },
+        {
+          "latitude": 51.4903,
+          "longitude": -0.0693
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200009,
+      "nameEn": "Hackney",
+      "nameLocal": "Hackney",
+      "coordinates": [
+        {
+          "latitude": 51.515,
+          "longitude": -0.09
+        },
+        {
+          "latitude": 51.515,
+          "longitude": -0.02
+        },
+        {
+          "latitude": 51.575,
+          "longitude": -0.02
+        },
+        {
+          "latitude": 51.575,
+          "longitude": -0.09
+        },
+        {
+          "latitude": 51.515,
+          "longitude": -0.09
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200010,
+      "nameEn": "Islington",
+      "nameLocal": "Islington",
+      "coordinates": [
+        {
+          "latitude": 51.5166,
+          "longitude": -0.1322
+        },
+        {
+          "latitude": 51.5166,
+          "longitude": -0.0722
+        },
+        {
+          "latitude": 51.5666,
+          "longitude": -0.0722
+        },
+        {
+          "latitude": 51.5666,
+          "longitude": -0.1322
+        },
+        {
+          "latitude": 51.5166,
+          "longitude": -0.1322
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200011,
+      "nameEn": "Camden",
+      "nameLocal": "Camden",
+      "coordinates": [
+        {
+          "latitude": 51.5236,
+          "longitude": -0.1938
+        },
+        {
+          "latitude": 51.5236,
+          "longitude": -0.1238
+        },
+        {
+          "latitude": 51.5796,
+          "longitude": -0.1238
+        },
+        {
+          "latitude": 51.5796,
+          "longitude": -0.1938
+        },
+        {
+          "latitude": 51.5236,
+          "longitude": -0.1938
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200012,
+      "nameEn": "Brent",
+      "nameLocal": "Brent",
+      "coordinates": [
+        {
+          "latitude": 51.5238,
+          "longitude": -0.3217
+        },
+        {
+          "latitude": 51.5238,
+          "longitude": -0.2417
+        },
+        {
+          "latitude": 51.5938,
+          "longitude": -0.2417
+        },
+        {
+          "latitude": 51.5938,
+          "longitude": -0.3217
+        },
+        {
+          "latitude": 51.5238,
+          "longitude": -0.3217
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200013,
+      "nameEn": "Ealing",
+      "nameLocal": "Ealing",
+      "coordinates": [
+        {
+          "latitude": 51.478,
+          "longitude": -0.3539
+        },
+        {
+          "latitude": 51.478,
+          "longitude": -0.2639
+        },
+        {
+          "latitude": 51.548,
+          "longitude": -0.2639
+        },
+        {
+          "latitude": 51.548,
+          "longitude": -0.3539
+        },
+        {
+          "latitude": 51.478,
+          "longitude": -0.3539
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200014,
+      "nameEn": "Hounslow",
+      "nameLocal": "Hounslow",
+      "coordinates": [
+        {
+          "latitude": 51.4346,
+          "longitude": -0.418
+        },
+        {
+          "latitude": 51.4346,
+          "longitude": -0.318
+        },
+        {
+          "latitude": 51.5146,
+          "longitude": -0.318
+        },
+        {
+          "latitude": 51.5146,
+          "longitude": -0.418
+        },
+        {
+          "latitude": 51.4346,
+          "longitude": -0.418
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200015,
+      "nameEn": "Richmond upon Thames",
+      "nameLocal": "Richmond upon Thames",
+      "coordinates": [
+        {
+          "latitude": 51.4263,
+          "longitude": -0.3487
+        },
+        {
+          "latitude": 51.4263,
+          "longitude": -0.2587
+        },
+        {
+          "latitude": 51.4963,
+          "longitude": -0.2587
+        },
+        {
+          "latitude": 51.4963,
+          "longitude": -0.3487
+        },
+        {
+          "latitude": 51.4263,
+          "longitude": -0.3487
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200016,
+      "nameEn": "Kingston upon Thames",
+      "nameLocal": "Kingston upon Thames",
+      "coordinates": [
+        {
+          "latitude": 51.3785,
+          "longitude": -0.3464
+        },
+        {
+          "latitude": 51.3785,
+          "longitude": -0.2664
+        },
+        {
+          "latitude": 51.4385,
+          "longitude": -0.2664
+        },
+        {
+          "latitude": 51.4385,
+          "longitude": -0.3464
+        },
+        {
+          "latitude": 51.3785,
+          "longitude": -0.3464
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200017,
+      "nameEn": "Merton",
+      "nameLocal": "Merton",
+      "coordinates": [
+        {
+          "latitude": 51.3798,
+          "longitude": -0.2508
+        },
+        {
+          "latitude": 51.3798,
+          "longitude": -0.1708
+        },
+        {
+          "latitude": 51.4398,
+          "longitude": -0.1708
+        },
+        {
+          "latitude": 51.4398,
+          "longitude": -0.2508
+        },
+        {
+          "latitude": 51.3798,
+          "longitude": -0.2508
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200018,
+      "nameEn": "Sutton",
+      "nameLocal": "Sutton",
+      "coordinates": [
+        {
+          "latitude": 51.3268,
+          "longitude": -0.2345
+        },
+        {
+          "latitude": 51.3268,
+          "longitude": -0.1545
+        },
+        {
+          "latitude": 51.3968,
+          "longitude": -0.1545
+        },
+        {
+          "latitude": 51.3968,
+          "longitude": -0.2345
+        },
+        {
+          "latitude": 51.3268,
+          "longitude": -0.2345
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200019,
+      "nameEn": "Croydon",
+      "nameLocal": "Croydon",
+      "coordinates": [
+        {
+          "latitude": 51.3362,
+          "longitude": -0.1432
+        },
+        {
+          "latitude": 51.3362,
+          "longitude": -0.0532
+        },
+        {
+          "latitude": 51.4162,
+          "longitude": -0.0532
+        },
+        {
+          "latitude": 51.4162,
+          "longitude": -0.1432
+        },
+        {
+          "latitude": 51.3362,
+          "longitude": -0.1432
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200020,
+      "nameEn": "Bromley",
+      "nameLocal": "Bromley",
+      "coordinates": [
+        {
+          "latitude": 51.3539,
+          "longitude": -0.0798
+        },
+        {
+          "latitude": 51.3539,
+          "longitude": 0.0402
+        },
+        {
+          "latitude": 51.4539,
+          "longitude": 0.0402
+        },
+        {
+          "latitude": 51.4539,
+          "longitude": -0.0798
+        },
+        {
+          "latitude": 51.3539,
+          "longitude": -0.0798
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200021,
+      "nameEn": "Lewisham",
+      "nameLocal": "Lewisham",
+      "coordinates": [
+        {
+          "latitude": 51.4152,
+          "longitude": -0.0609
+        },
+        {
+          "latitude": 51.4152,
+          "longitude": 0.0191
+        },
+        {
+          "latitude": 51.4752,
+          "longitude": 0.0191
+        },
+        {
+          "latitude": 51.4752,
+          "longitude": -0.0609
+        },
+        {
+          "latitude": 51.4152,
+          "longitude": -0.0609
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200022,
+      "nameEn": "Greenwich",
+      "nameLocal": "Greenwich",
+      "coordinates": [
+        {
+          "latitude": 51.4412,
+          "longitude": -0.0275
+        },
+        {
+          "latitude": 51.4412,
+          "longitude": 0.0625
+        },
+        {
+          "latitude": 51.5112,
+          "longitude": 0.0625
+        },
+        {
+          "latitude": 51.5112,
+          "longitude": -0.0275
+        },
+        {
+          "latitude": 51.4412,
+          "longitude": -0.0275
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200023,
+      "nameEn": "Bexley",
+      "nameLocal": "Bexley",
+      "coordinates": [
+        {
+          "latitude": 51.4099,
+          "longitude": 0.0955
+        },
+        {
+          "latitude": 51.4099,
+          "longitude": 0.2055
+        },
+        {
+          "latitude": 51.4999,
+          "longitude": 0.2055
+        },
+        {
+          "latitude": 51.4999,
+          "longitude": 0.0955
+        },
+        {
+          "latitude": 51.4099,
+          "longitude": 0.0955
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200024,
+      "nameEn": "Havering",
+      "nameLocal": "Havering",
+      "coordinates": [
+        {
+          "latitude": 51.525,
+          "longitude": 0.1239
+        },
+        {
+          "latitude": 51.525,
+          "longitude": 0.2439
+        },
+        {
+          "latitude": 51.625,
+          "longitude": 0.2439
+        },
+        {
+          "latitude": 51.625,
+          "longitude": 0.1239
+        },
+        {
+          "latitude": 51.525,
+          "longitude": 0.1239
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200025,
+      "nameEn": "Barking and Dagenham",
+      "nameLocal": "Barking and Dagenham",
+      "coordinates": [
+        {
+          "latitude": 51.4964,
+          "longitude": 0.0964
+        },
+        {
+          "latitude": 51.4964,
+          "longitude": 0.1964
+        },
+        {
+          "latitude": 51.5764,
+          "longitude": 0.1964
+        },
+        {
+          "latitude": 51.5764,
+          "longitude": 0.0964
+        },
+        {
+          "latitude": 51.4964,
+          "longitude": 0.0964
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200026,
+      "nameEn": "Redbridge",
+      "nameLocal": "Redbridge",
+      "coordinates": [
+        {
+          "latitude": 51.524,
+          "longitude": 0.0291
+        },
+        {
+          "latitude": 51.524,
+          "longitude": 0.1191
+        },
+        {
+          "latitude": 51.594,
+          "longitude": 0.1191
+        },
+        {
+          "latitude": 51.594,
+          "longitude": 0.0291
+        },
+        {
+          "latitude": 51.524,
+          "longitude": 0.0291
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200027,
+      "nameEn": "Newham",
+      "nameLocal": "Newham",
+      "coordinates": [
+        {
+          "latitude": 51.4905,
+          "longitude": -0.0098
+        },
+        {
+          "latitude": 51.4905,
+          "longitude": 0.0802
+        },
+        {
+          "latitude": 51.5605,
+          "longitude": 0.0802
+        },
+        {
+          "latitude": 51.5605,
+          "longitude": -0.0098
+        },
+        {
+          "latitude": 51.4905,
+          "longitude": -0.0098
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200028,
+      "nameEn": "Waltham Forest",
+      "nameLocal": "Waltham Forest",
+      "coordinates": [
+        {
+          "latitude": 51.5486,
+          "longitude": -0.0568
+        },
+        {
+          "latitude": 51.5486,
+          "longitude": 0.0332
+        },
+        {
+          "latitude": 51.6286,
+          "longitude": 0.0332
+        },
+        {
+          "latitude": 51.6286,
+          "longitude": -0.0568
+        },
+        {
+          "latitude": 51.5486,
+          "longitude": -0.0568
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200029,
+      "nameEn": "Haringey",
+      "nameLocal": "Haringey",
+      "coordinates": [
+        {
+          "latitude": 51.555,
+          "longitude": -0.1519
+        },
+        {
+          "latitude": 51.555,
+          "longitude": -0.0719
+        },
+        {
+          "latitude": 51.625,
+          "longitude": -0.0719
+        },
+        {
+          "latitude": 51.625,
+          "longitude": -0.1519
+        },
+        {
+          "latitude": 51.555,
+          "longitude": -0.1519
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200030,
+      "nameEn": "Enfield",
+      "nameLocal": "Enfield",
+      "coordinates": [
+        {
+          "latitude": 51.6073,
+          "longitude": -0.1337
+        },
+        {
+          "latitude": 51.6073,
+          "longitude": -0.0337
+        },
+        {
+          "latitude": 51.6973,
+          "longitude": -0.0337
+        },
+        {
+          "latitude": 51.6973,
+          "longitude": -0.1337
+        },
+        {
+          "latitude": 51.6073,
+          "longitude": -0.1337
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200031,
+      "nameEn": "Barnet",
+      "nameLocal": "Barnet",
+      "coordinates": [
+        {
+          "latitude": 51.5802,
+          "longitude": -0.2067
+        },
+        {
+          "latitude": 51.5802,
+          "longitude": -0.0967
+        },
+        {
+          "latitude": 51.6702,
+          "longitude": -0.0967
+        },
+        {
+          "latitude": 51.6702,
+          "longitude": -0.2067
+        },
+        {
+          "latitude": 51.5802,
+          "longitude": -0.2067
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200032,
+      "nameEn": "Harrow",
+      "nameLocal": "Harrow",
+      "coordinates": [
+        {
+          "latitude": 51.5544,
+          "longitude": -0.3746
+        },
+        {
+          "latitude": 51.5544,
+          "longitude": -0.2946
+        },
+        {
+          "latitude": 51.6244,
+          "longitude": -0.2946
+        },
+        {
+          "latitude": 51.6244,
+          "longitude": -0.3746
+        },
+        {
+          "latitude": 51.5544,
+          "longitude": -0.3746
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 200033,
+      "nameEn": "Hillingdon",
+      "nameLocal": "Hillingdon",
+      "coordinates": [
+        {
+          "latitude": 51.4991,
+          "longitude": -0.531
+        },
+        {
+          "latitude": 51.4991,
+          "longitude": -0.421
+        },
+        {
+          "latitude": 51.5891,
+          "longitude": -0.421
+        },
+        {
+          "latitude": 51.5891,
+          "longitude": -0.531
+        },
+        {
+          "latitude": 51.4991,
+          "longitude": -0.531
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

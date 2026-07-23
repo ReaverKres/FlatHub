@@ -1,16 +1,7 @@
 package io.flatzen.commoncomponents.commonentities
 
-data class LocationCommon(
-    val country: Country,
-    val selectedCity: City
-)
-
-data class City(val cityCode: CityCode, val coordinates: Coordinates)
-
-data class Country(val country: CountryCode, val allCities: List<City>)
-
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH;
+    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -28,6 +19,7 @@ enum class CountryCode {
             "KR" -> KR
             "JP" -> JP
             "CH" -> CH
+            "GB" -> GB
             else -> BY
         }
     }
@@ -76,14 +68,14 @@ enum class CityCode {
 
     // Switzerland (MVP)
     ZURICH, GENEVA, BASEL, BERN, LAUSANNE, WINTERTHUR, LUZERN, ST_GALLEN, LUGANO, BIEL,
+
+    // United Kingdom (MVP)
+    LONDON, MANCHESTER, BIRMINGHAM, LEEDS, GLASGOW, EDINBURGH, BRISTOL, LIVERPOOL, NEWCASTLE, SHEFFIELD,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
 fun CountryCode.hasCommercialPropertyTypeCatalog(): Boolean =
     this == CountryCode.BY || this == CountryCode.AE
-
-/** Prefer SourceCapabilities.supportsCommercialPropertyTypes for UI gating. */
-fun CountryCode.supportsCommercialPropertyTypeFilter(): Boolean = hasCommercialPropertyTypeCatalog()
 
 /** US listings store area in square feet; other markets use m² (AE converts on ingest). */
 fun CountryCode.usesSquareFeet(): Boolean = this == CountryCode.US
@@ -103,6 +95,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.KR -> CityCode.SEOUL
     CountryCode.JP -> CityCode.TOKYO
     CountryCode.CH -> CityCode.ZURICH
+    CountryCode.GB -> CityCode.LONDON
 }
 
 object Location {
@@ -221,5 +214,15 @@ object Location {
         CityCode.ST_GALLEN -> "st-gallen"
         CityCode.LUGANO -> "lugano"
         CityCode.BIEL -> "biel"
+        CityCode.LONDON -> "london"
+        CityCode.MANCHESTER -> "manchester"
+        CityCode.BIRMINGHAM -> "birmingham"
+        CityCode.LEEDS -> "leeds"
+        CityCode.GLASGOW -> "glasgow"
+        CityCode.EDINBURGH -> "edinburgh"
+        CityCode.BRISTOL -> "bristol"
+        CityCode.LIVERPOOL -> "liverpool"
+        CityCode.NEWCASTLE -> "newcastle"
+        CityCode.SHEFFIELD -> "sheffield"
     }
 }

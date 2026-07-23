@@ -203,55 +203,6 @@
     ]
   },
   {
-    "name": "JR Chuo Tokyo",
-    "coordinates": [
-      35.6812,
-      139.7671
-    ]
-  },
-  {
-    "name": "JR Chuo Shinjuku",
-    "coordinates": [
-      35.6896,
-      139.7006
-    ]
-  },
-  {
-    "name": "JR Keihin-Tohoku Shinagawa",
-    "coordinates": [
-      35.6284,
-      139.7387
-    ]
-  },
-  {
-    "name": "JR Keihin-Tohoku Ueno",
-    "coordinates": [
-      35.7138,
-      139.7773
-    ]
-  },
-  {
-    "name": "JR Sobu Ryogoku",
-    "coordinates": [
-      35.6961,
-      139.7933
-    ]
-  },
-  {
-    "name": "JR Sobu Kinshicho",
-    "coordinates": [
-      35.697,
-      139.8143
-    ]
-  },
-  {
-    "name": "JR Joban Ayase",
-    "coordinates": [
-      35.762,
-      139.8244
-    ]
-  },
-  {
     "name": "Metro Ginza Shibuya",
     "coordinates": [
       35.6595,
@@ -602,17 +553,45 @@
     ]
   },
   {
-    "name": "Metro Fukutoshin Shibuya",
+    "name": "Metro Hanzomon Shibuya",
     "coordinates": [
       35.658,
       139.7016
     ]
   },
   {
-    "name": "Metro Fukutoshin Meiji-Jingumae",
+    "name": "Metro Hanzomon Omotesando",
     "coordinates": [
-      35.669,
-      139.705
+      35.6652,
+      139.7126
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Nagatacho",
+    "coordinates": [
+      35.6781,
+      139.7404
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Otemachi",
+    "coordinates": [
+      35.6858,
+      139.7661
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Suitengumae",
+    "coordinates": [
+      35.6827,
+      139.7855
+    ]
+  },
+  {
+    "name": "Metro Hanzomon Oshiage",
+    "coordinates": [
+      35.7104,
+      139.8133
     ]
   },
   {
@@ -665,45 +644,52 @@
     ]
   },
   {
-    "name": "Metro Hanzomon Shibuya",
+    "name": "Metro Fukutoshin Shibuya",
     "coordinates": [
       35.658,
       139.7016
     ]
   },
   {
-    "name": "Metro Hanzomon Omotesando",
+    "name": "Metro Fukutoshin Meiji-Jingumae",
     "coordinates": [
-      35.6652,
-      139.7126
+      35.669,
+      139.705
     ]
   },
   {
-    "name": "Metro Hanzomon Nagatacho",
+    "name": "Metro Fukutoshin Ikebukuro",
     "coordinates": [
-      35.6781,
-      139.7404
+      35.7295,
+      139.7109
     ]
   },
   {
-    "name": "Metro Hanzomon Otemachi",
+    "name": "Metro Fukutoshin Zoshigaya",
     "coordinates": [
-      35.6858,
-      139.7661
+      35.7208,
+      139.7148
     ]
   },
   {
-    "name": "Metro Hanzomon Suitengumae",
+    "name": "Metro Fukutoshin Nishi-Waseda",
     "coordinates": [
-      35.6827,
-      139.7855
+      35.7077,
+      139.7195
     ]
   },
   {
-    "name": "Metro Hanzomon Oshiage",
+    "name": "Metro Fukutoshin Higashi-Shinjuku",
     "coordinates": [
-      35.7104,
-      139.8133
+      35.6978,
+      139.7078
+    ]
+  },
+  {
+    "name": "Metro Fukutoshin Shinjuku-sanchome",
+    "coordinates": [
+      35.6905,
+      139.7049
     ]
   },
   {
@@ -739,6 +725,132 @@
     "coordinates": [
       35.7104,
       139.8133
+    ]
+  },
+  {
+    "name": "Toei Mita Mita",
+    "coordinates": [
+      35.6477,
+      139.7402
+    ]
+  },
+  {
+    "name": "Toei Mita Shirokane-Takanawa",
+    "coordinates": [
+      35.642,
+      139.73
+    ]
+  },
+  {
+    "name": "Toei Mita Sugamo",
+    "coordinates": [
+      35.7335,
+      139.7393
+    ]
+  },
+  {
+    "name": "Toei Mita Meguro",
+    "coordinates": [
+      35.6339,
+      139.7158
+    ]
+  },
+  {
+    "name": "Toei Mita Shiba-Koen",
+    "coordinates": [
+      35.6542,
+      139.7517
+    ]
+  },
+  {
+    "name": "Toei Mita Onarimon",
+    "coordinates": [
+      35.6588,
+      139.7517
+    ]
+  },
+  {
+    "name": "Toei Mita Uchisaiwaicho",
+    "coordinates": [
+      35.6702,
+      139.7546
+    ]
+  },
+  {
+    "name": "Toei Mita Hibiya",
+    "coordinates": [
+      35.6748,
+      139.7596
+    ]
+  },
+  {
+    "name": "Toei Mita Otemachi",
+    "coordinates": [
+      35.6858,
+      139.7661
+    ]
+  },
+  {
+    "name": "Toei Mita Kasuga",
+    "coordinates": [
+      35.7106,
+      139.7278
+    ]
+  },
+  {
+    "name": "Toei Mita Hakusan",
+    "coordinates": [
+      35.7213,
+      139.7412
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Shinjuku",
+    "coordinates": [
+      35.6896,
+      139.7006
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Ichigaya",
+    "coordinates": [
+      35.691,
+      139.7356
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Kudanshita",
+    "coordinates": [
+      35.6959,
+      139.7538
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Jimbocho",
+    "coordinates": [
+      35.6938,
+      139.7576
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Shinjuku-sanchome",
+    "coordinates": [
+      35.6905,
+      139.7049
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Akebonobashi",
+    "coordinates": [
+      35.6947,
+      139.7134
+    ]
+  },
+  {
+    "name": "Toei Shinjuku Wakamatsu-Kawada",
+    "coordinates": [
+      35.7014,
+      139.7201
     ]
   },
   {
@@ -802,41 +914,6 @@
     "coordinates": [
       35.6978,
       139.7078
-    ]
-  },
-  {
-    "name": "Toei Shinjuku Shinjuku",
-    "coordinates": [
-      35.6896,
-      139.7006
-    ]
-  },
-  {
-    "name": "Toei Shinjuku Ichigaya",
-    "coordinates": [
-      35.691,
-      139.7356
-    ]
-  },
-  {
-    "name": "Toei Mita Mita",
-    "coordinates": [
-      35.6477,
-      139.7402
-    ]
-  },
-  {
-    "name": "Toei Mita Shirokane-Takanawa",
-    "coordinates": [
-      35.642,
-      139.73
-    ]
-  },
-  {
-    "name": "Toei Mita Sugamo",
-    "coordinates": [
-      35.7335,
-      139.7393
     ]
   }
 ]

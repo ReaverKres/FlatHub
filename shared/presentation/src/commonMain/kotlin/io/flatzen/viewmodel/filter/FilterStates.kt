@@ -26,10 +26,6 @@ import io.flatzen.viewmodel.UiDistrict
 import server_request.Currency
 import server_request.filterCurrency
 
-enum class MetroLineState() {
-    GREEN, BLUE, RED,
-}
-
 @Immutable
 data class UiMetroStation(
     val name: String, val line: MetroLineState, val selected: Boolean = false

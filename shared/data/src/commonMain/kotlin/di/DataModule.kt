@@ -47,6 +47,12 @@ import listing.es.fotocasa.FotocasaApiClient
 import listing.es.fotocasa.FotocasaListingSource
 import listing.es.pisos.PisosApiClient
 import listing.es.pisos.PisosListingSource
+import listing.gb.onthemarket.OnTheMarketApiClient
+import listing.gb.onthemarket.OnTheMarketListingSource
+import listing.gb.openrent.OpenRentApiClient
+import listing.gb.openrent.OpenRentListingSource
+import listing.gb.rightmove.RightmoveApiClient
+import listing.gb.rightmove.RightmoveListingSource
 import listing.ge.binebi.BinebiApiClient
 import listing.ge.binebi.BinebiListingSource
 import listing.ge.livo.LivoApiClient
@@ -316,6 +322,18 @@ val dataModule = module {
     single { FlatfoxListingSource(api = get(), flatsDao = get()) }
 
     single {
+        RightmoveApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson")),
+        )
+    }
+    single { RightmoveListingSource(api = get(), flatsDao = get()) }
+    single { OnTheMarketApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { OnTheMarketListingSource(api = get(), flatsDao = get()) }
+    single { OpenRentApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { OpenRentListingSource(api = get(), flatsDao = get()) }
+
+    single {
         ListingSourceRegistry(
             sources = byListingSources(
                 kufar = get(),
@@ -355,6 +373,9 @@ val dataModule = module {
                 get<SuumoListingSource>(),
                 get<AthomeListingSource>(),
                 get<FlatfoxListingSource>(),
+                get<RightmoveListingSource>(),
+                get<OnTheMarketListingSource>(),
+                get<OpenRentListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

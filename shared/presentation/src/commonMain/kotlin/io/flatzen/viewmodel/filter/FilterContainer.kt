@@ -273,7 +273,11 @@ class FilterContainer(
             current.filters.copy(
                 withAnyMetro = false,
                 metroStationsState = current.filters.metroStationsState.map {
-                    if (it.name == intent.metroStation.name) intent.metroStation else it
+                    if (it.name == intent.metroStation.name && it.line == intent.metroStation.line) {
+                        intent.metroStation
+                    } else {
+                        it
+                    }
                 },
             ),
             doNetworkCall = false,

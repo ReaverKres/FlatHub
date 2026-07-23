@@ -265,11 +265,6 @@ data class LocationFilter(val country: CountryCode, val city: CityCode) {
 }
 
 @Serializable
-enum class MetroLine {
-    GREEN, BLUE, RED,
-}
-
-@Serializable
 data class MetroStation(
     val line: MetroLine,
     val metroId: Int,
@@ -329,25 +324,18 @@ object MetroStations {
         MetroStation(MetroLine.GREEN, 29, FRUNZENSKAYA),
     )
 
-    // Получить ID станций по ветке
     fun getStationIdsByLine(line: MetroLine): List<Int> {
         return when (line) {
             MetroLine.RED -> RED_LINE.map { it.metroId }
             MetroLine.BLUE -> BLUE_LINE.map { it.metroId }
             MetroLine.GREEN -> GREEN_LINE.map { it.metroId }
+            else -> emptyList()
         }
     }
 
     fun allStationsRequest(): List<MetroStation> {
         // Порядок: Московская (BLUE), Автозаводская (RED), Зеленолужская (GREEN)
-        val orderedLines = listOf(MetroLine.BLUE, MetroLine.RED, MetroLine.GREEN)
-        return orderedLines.flatMap { line ->
-            when (line) {
-                MetroLine.BLUE -> BLUE_LINE
-                MetroLine.RED -> RED_LINE
-                MetroLine.GREEN -> GREEN_LINE
-            }.map { MetroStation(it.line, it.metroId, it.name) }
-        }
+        return BLUE_LINE + RED_LINE + GREEN_LINE
     }
 
     fun stationsForCity(city: CityCode?): List<MetroStation> {
@@ -362,6 +350,7 @@ object MetroStations {
             CityCode.SEOUL -> SeoulMetroStations.allStationsRequest()
             CityCode.TOKYO -> TokyoMetroStations.allStationsRequest()
             CityCode.WIEN -> WienMetroStations.allStationsRequest()
+            CityCode.LONDON -> LondonMetroStations.allStationsRequest()
             CityCode.MINSK, null -> allStationsRequest()
             else -> emptyList()
         }

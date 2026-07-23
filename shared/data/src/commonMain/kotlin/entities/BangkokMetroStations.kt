@@ -2,115 +2,130 @@ package entities
 
 /**
  * Bangkok BTS/MRT/Airport Link catalog for filter UI + geo line resolution.
- * GREEN = BTS (Sukhumvit + Silom), BLUE = MRT Blue, RED = other mass transit.
  * Names match bangkok_metro_stations.json.
  */
 object BangkokMetroStations {
     private const val ID_BASE = 70_000
 
-    private val BLUE_LINE = listOf(
-        MetroStation(MetroLine.BLUE, ID_BASE + 0, "MRT Bang Khae"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 1, "MRT Bang Pho"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 2, "MRT Bang Wa"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 3, "MRT Charan 13"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 4, "MRT Chatuchak Park"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 5, "MRT Fai Chai"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 6, "MRT Hua Lamphong"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 7, "MRT Huai Khwang"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 8, "MRT Itsaraphap"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 9, "MRT Kamphaeng Phet"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 10, "MRT Khlong Toei"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 11, "MRT Lat Phrao"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 12, "MRT Lumphini"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 13, "MRT Phahon Yothin"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 14, "MRT Phetchaburi"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 15, "MRT Phra Ram 9"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 16, "MRT Queen Sirikit National Convention Center"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 17, "MRT Si Lom"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 18, "MRT Sirindhorn"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 19, "MRT Sukhumvit"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 20, "MRT Sutthisan"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 21, "MRT Tao Poon"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 22, "MRT Tha Phra"),
-        MetroStation(MetroLine.BLUE, ID_BASE + 23, "MRT Thailand Cultural Centre"),
+    private val SUKHUMVIT_LINE = listOf(
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 0, "BTS 11 Infantry Regiment"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 1, "BTS Ari"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 2, "BTS Asok"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 3, "BTS Bang Chak"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 4, "BTS Bang Na"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 5, "BTS Bearing"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 6, "BTS Chang Erawan"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 7, "BTS Chit Lom"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 8, "BTS Ekkamai"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 9, "BTS Khu Khot"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 10, "BTS Ladphrao Intersection"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 11, "BTS Mo Chit"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 12, "BTS Nana"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 13, "BTS On Nut"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 14, "BTS Pak Nam"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 15, "BTS Phaholyothin 24"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 16, "BTS Phaya Thai"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 17, "BTS Phra Khanong"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 18, "BTS Phrom Phong"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 19, "BTS Punnawithi"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 20, "BTS Ratchathewi"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 21, "BTS Samrong"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 22, "BTS Saphan Khwai"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 23, "BTS Saphan Mai"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 24, "BTS Siam"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 25, "BTS Thong Lo (Thong Lor)"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 26, "BTS Udom Suk"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 27, "BTS Victory Monument"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 28, "BTS Wat Phra Sri Mahathat"),
+        MetroStation(MetroLine.BKK_BTS_SUKHUMVIT, ID_BASE + 29, "BTS Yaek Kor Por Aor"),
     )
 
-    private val RED_LINE = listOf(
-        MetroStation(MetroLine.RED, ID_BASE + 200, "Airport Link Ban Thap Chang"),
-        MetroStation(MetroLine.RED, ID_BASE + 201, "Airport Link Hua Mak"),
-        MetroStation(MetroLine.RED, ID_BASE + 202, "Airport Link Lat Krabang"),
-        MetroStation(MetroLine.RED, ID_BASE + 203, "Airport Link Makkasan"),
-        MetroStation(MetroLine.RED, ID_BASE + 204, "Airport Link Ramkhamhaeng"),
-        MetroStation(MetroLine.RED, ID_BASE + 205, "Airport Link Ratchaprarop"),
-        MetroStation(MetroLine.RED, ID_BASE + 206, "Bang Son Station"),
-        MetroStation(MetroLine.RED, ID_BASE + 207, "Charoen Nakhon Station"),
-        MetroStation(MetroLine.RED, ID_BASE + 208, "Krung Thep Aphiwat Station"),
-        MetroStation(MetroLine.RED, ID_BASE + 209, "MRT Bang Kapi"),
-        MetroStation(MetroLine.RED, ID_BASE + 210, "MRT Bang Kraso"),
-        MetroStation(MetroLine.RED, ID_BASE + 211, "MRT Bang Phlu"),
-        MetroStation(MetroLine.RED, ID_BASE + 212, "MRT Bang Son"),
-        MetroStation(MetroLine.RED, ID_BASE + 213, "MRT Lat Phrao 83"),
-        MetroStation(MetroLine.RED, ID_BASE + 214, "MRT Ministry of Public Health"),
-        MetroStation(MetroLine.RED, ID_BASE + 215, "MRT Nonthaburi Civic Center"),
-        MetroStation(MetroLine.RED, ID_BASE + 216, "MRT Ratchada"),
-        MetroStation(MetroLine.RED, ID_BASE + 217, "MRT Sam Yaek Bang Yai"),
-        MetroStation(MetroLine.RED, ID_BASE + 218, "MRT Si Dan"),
-        MetroStation(MetroLine.RED, ID_BASE + 219, "MRT Si Thepha"),
-        MetroStation(MetroLine.RED, ID_BASE + 220, "MRT Talad Bang Yai"),
-        MetroStation(MetroLine.RED, ID_BASE + 221, "MRT Yaek Lam Sali"),
+    private val SILOM_LINE = listOf(
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 30, "BTS Chong Nonsi"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 31, "BTS Krung Thon Buri"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 32, "BTS National Stadium"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 33, "BTS Ratchadamri"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 34, "BTS Saint Louis"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 35, "BTS Sala Daeng"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 36, "BTS Saphan Taksin"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 37, "BTS Talat Phlu"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 38, "BTS Wongwian Yai"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 39, "BTS Wutthakat"),
+        MetroStation(MetroLine.BKK_BTS_SILOM, ID_BASE + 40, "Charoen Nakhon Station"),
     )
 
-    private val GREEN_LINE = listOf(
-        MetroStation(MetroLine.GREEN, ID_BASE + 400, "BTS 11 Infantry Regiment"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 401, "BTS Ari"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 402, "BTS Asok"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 403, "BTS Bang Chak"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 404, "BTS Bang Na"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 405, "BTS Bearing"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 406, "BTS Chang Erawan"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 407, "BTS Chit Lom"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 408, "BTS Chong Nonsi"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 409, "BTS Ekkamai"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 410, "BTS Khu Khot"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 411, "BTS Krung Thon Buri"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 412, "BTS Ladphrao Intersection"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 413, "BTS Mo Chit"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 414, "BTS Nana"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 415, "BTS National Stadium"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 416, "BTS On Nut"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 417, "BTS Pak Nam"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 418, "BTS Phaholyothin 24"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 419, "BTS Phaya Thai"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 420, "BTS Phra Khanong"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 421, "BTS Phrom Phong"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 422, "BTS Punnawithi"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 423, "BTS Ratchadamri"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 424, "BTS Ratchathewi"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 425, "BTS Saint Louis"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 426, "BTS Sala Daeng"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 427, "BTS Samrong"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 428, "BTS Saphan Khwai"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 429, "BTS Saphan Mai"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 430, "BTS Saphan Taksin"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 431, "BTS Siam"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 432, "BTS Talat Phlu"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 433, "BTS Thong Lo (Thong Lor)"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 434, "BTS Udom Suk"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 435, "BTS Victory Monument"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 436, "BTS Wat Phra Sri Mahathat"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 437, "BTS Wongwian Yai"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 438, "BTS Wutthakat"),
-        MetroStation(MetroLine.GREEN, ID_BASE + 439, "BTS Yaek Kor Por Aor"),
+    private val MRT_BLUE_LINE = listOf(
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 41, "Krung Thep Aphiwat Station"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 42, "MRT Bang Khae"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 43, "MRT Bang Pho"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 44, "MRT Bang Wa"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 45, "MRT Charan 13"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 46, "MRT Chatuchak Park"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 47, "MRT Fai Chai"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 48, "MRT Hua Lamphong"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 49, "MRT Huai Khwang"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 50, "MRT Itsaraphap"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 51, "MRT Kamphaeng Phet"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 52, "MRT Khlong Toei"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 53, "MRT Lat Phrao"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 54, "MRT Lumphini"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 55, "MRT Phahon Yothin"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 56, "MRT Phetchaburi"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 57, "MRT Phra Ram 9"),
+        MetroStation(
+            MetroLine.BKK_MRT_BLUE,
+            ID_BASE + 58,
+            "MRT Queen Sirikit National Convention Center"
+        ),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 59, "MRT Si Lom"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 60, "MRT Sirindhorn"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 61, "MRT Sukhumvit"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 62, "MRT Sutthisan"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 63, "MRT Tao Poon"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 64, "MRT Tha Phra"),
+        MetroStation(MetroLine.BKK_MRT_BLUE, ID_BASE + 65, "MRT Thailand Cultural Centre"),
+    )
+
+    private val MRT_PURPLE_LINE = listOf(
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 66, "Bang Son Station"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 67, "MRT Bang Kapi"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 68, "MRT Bang Kraso"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 69, "MRT Bang Phlu"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 70, "MRT Bang Son"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 71, "MRT Lat Phrao 83"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 72, "MRT Ministry of Public Health"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 73, "MRT Nonthaburi Civic Center"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 74, "MRT Ratchada"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 75, "MRT Sam Yaek Bang Yai"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 76, "MRT Si Dan"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 77, "MRT Si Thepha"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 78, "MRT Talad Bang Yai"),
+        MetroStation(MetroLine.BKK_MRT_PURPLE, ID_BASE + 79, "MRT Yaek Lam Sali"),
+    )
+
+    private val ARL_LINE = listOf(
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 80, "Airport Link Ban Thap Chang"),
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 81, "Airport Link Hua Mak"),
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 82, "Airport Link Lat Krabang"),
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 83, "Airport Link Makkasan"),
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 84, "Airport Link Ramkhamhaeng"),
+        MetroStation(MetroLine.BKK_ARL, ID_BASE + 85, "Airport Link Ratchaprarop"),
     )
 
     fun lineForStationName(name: String): MetroLine? {
         val n = name.lowercase()
-        if (BLUE_LINE.any { it.name.lowercase() == n }) return MetroLine.BLUE
-        if (RED_LINE.any { it.name.lowercase() == n }) return MetroLine.RED
-        if (GREEN_LINE.any { it.name.lowercase() == n }) return MetroLine.GREEN
+        if (SUKHUMVIT_LINE.any { it.name.lowercase() == n }) return MetroLine.BKK_BTS_SUKHUMVIT
+        if (SILOM_LINE.any { it.name.lowercase() == n }) return MetroLine.BKK_BTS_SILOM
+        if (MRT_BLUE_LINE.any { it.name.lowercase() == n }) return MetroLine.BKK_MRT_BLUE
+        if (MRT_PURPLE_LINE.any { it.name.lowercase() == n }) return MetroLine.BKK_MRT_PURPLE
+        if (ARL_LINE.any { it.name.lowercase() == n }) return MetroLine.BKK_ARL
         return null
     }
 
     fun allStationsRequest(): List<MetroStation> =
-        BLUE_LINE + RED_LINE + GREEN_LINE
+        SUKHUMVIT_LINE +
+                SILOM_LINE +
+                MRT_BLUE_LINE +
+                MRT_PURPLE_LINE +
+                ARL_LINE
 }

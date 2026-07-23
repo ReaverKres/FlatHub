@@ -140,6 +140,13 @@
     ]
   },
   {
+    "name": "Bernau",
+    "coordinates": [
+      52.6797,
+      13.5889
+    ]
+  },
+  {
     "name": "Bernauer Straße",
     "coordinates": [
       52.537438,
@@ -350,6 +357,13 @@
     ]
   },
   {
+    "name": "Erkner",
+    "coordinates": [
+      52.42,
+      13.7517
+    ]
+  },
+  {
     "name": "Ernst-Reuter-Platz",
     "coordinates": [
       52.511885,
@@ -368,6 +382,13 @@
     "coordinates": [
       52.463673,
       13.332699
+    ]
+  },
+  {
+    "name": "Flughafen BER",
+    "coordinates": [
+      52.3667,
+      13.5033
     ]
   },
   {
@@ -669,6 +690,13 @@
     "coordinates": [
       52.538434,
       13.633123
+    ]
+  },
+  {
+    "name": "Hoppegarten",
+    "coordinates": [
+      52.515,
+      13.667
     ]
   },
   {
@@ -1043,6 +1071,13 @@
     ]
   },
   {
+    "name": "Mohrenstraße",
+    "coordinates": [
+      52.5117,
+      13.3864
+    ]
+  },
+  {
     "name": "Moritzplatz",
     "coordinates": [
       52.503662,
@@ -1138,6 +1173,13 @@
     "coordinates": [
       52.449891,
       13.253075
+    ]
+  },
+  {
+    "name": "Oranienburg",
+    "coordinates": [
+      52.7539,
+      13.241
     ]
   },
   {
@@ -1285,6 +1327,13 @@
     "coordinates": [
       52.535871,
       13.535578
+    ]
+  },
+  {
+    "name": "Potsdam Hauptbahnhof",
+    "coordinates": [
+      52.3917,
+      13.0669
     ]
   },
   {
@@ -1645,6 +1694,13 @@
     ]
   },
   {
+    "name": "Staaken",
+    "coordinates": [
+      52.5361,
+      13.1417
+    ]
+  },
+  {
     "name": "Stadtmitte",
     "coordinates": [
       52.51135,
@@ -1656,6 +1712,20 @@
     "coordinates": [
       52.523743,
       13.464889
+    ]
+  },
+  {
+    "name": "Strausberg",
+    "coordinates": [
+      52.5789,
+      13.8878
+    ]
+  },
+  {
+    "name": "Strausberg Nord",
+    "coordinates": [
+      52.5897,
+      13.9178
     ]
   },
   {

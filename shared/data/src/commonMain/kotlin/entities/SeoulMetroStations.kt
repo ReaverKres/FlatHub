@@ -2,183 +2,228 @@ package entities
 
 /**
  * Seoul Subway Lines 1-9 catalog for filter UI + geo line resolution.
- * BLUE = Lines 1, 4, 7; GREEN = Lines 2, 5, 8; RED = Lines 3, 6, 9.
  * Names match seoul_metro_stations.json.
  */
 object SeoulMetroStations {
     private const val ID_BASE = 80_000
 
-    private val BLUE_LINE = listOf(
-        MetroStation(MetroLine.BLUE, 80000, "Line 1 Seoul Station"),
-        MetroStation(MetroLine.BLUE, 80001, "Line 1 City Hall"),
-        MetroStation(MetroLine.BLUE, 80002, "Line 1 Jonggak"),
-        MetroStation(MetroLine.BLUE, 80003, "Line 1 Jongno 3-ga"),
-        MetroStation(MetroLine.BLUE, 80004, "Line 1 Jongno 5-ga"),
-        MetroStation(MetroLine.BLUE, 80005, "Line 1 Dongdaemun"),
-        MetroStation(MetroLine.BLUE, 80006, "Line 1 Cheongnyangni"),
-        MetroStation(MetroLine.BLUE, 80007, "Line 1 Yongsan"),
-        MetroStation(MetroLine.BLUE, 80008, "Line 1 Noryangjin"),
-        MetroStation(MetroLine.BLUE, 80009, "Line 1 Daerim"),
-        MetroStation(MetroLine.BLUE, 80010, "Line 1 Guro"),
-        MetroStation(MetroLine.BLUE, 80011, "Line 1 Yeongdeungpo"),
-        MetroStation(MetroLine.BLUE, 80012, "Line 1 Sindorim"),
-        MetroStation(MetroLine.BLUE, 80013, "Line 1 Sinchon"),
-        MetroStation(MetroLine.BLUE, 80014, "Line 1 Gwangmyeong"),
-        MetroStation(MetroLine.BLUE, 80015, "Line 1 Incheon"),
-        MetroStation(MetroLine.BLUE, 80016, "Line 1 Seokgye"),
-        MetroStation(MetroLine.BLUE, 80017, "Line 1 Wangsimni"),
-        MetroStation(MetroLine.BLUE, 80018, "Line 4 Myeongdong"),
-        MetroStation(MetroLine.BLUE, 80019, "Line 4 Chungmuro"),
-        MetroStation(MetroLine.BLUE, 80020, "Line 4 Dongdaemun History & Culture Park"),
-        MetroStation(MetroLine.BLUE, 80021, "Line 4 Hyehwa"),
-        MetroStation(MetroLine.BLUE, 80022, "Line 4 Hansung Univ"),
-        MetroStation(MetroLine.BLUE, 80023, "Line 4 Mia"),
-        MetroStation(MetroLine.BLUE, 80024, "Line 4 Suyu"),
-        MetroStation(MetroLine.BLUE, 80025, "Line 4 Nowon"),
-        MetroStation(MetroLine.BLUE, 80026, "Line 4 Changdong"),
-        MetroStation(MetroLine.BLUE, 80027, "Line 4 Sangbong"),
-        MetroStation(MetroLine.BLUE, 80028, "Line 4 Geumjeong"),
-        MetroStation(MetroLine.BLUE, 80029, "Line 4 Sadang"),
-        MetroStation(MetroLine.BLUE, 80030, "Line 4 Isu"),
-        MetroStation(MetroLine.BLUE, 80031, "Line 4 Chongshin Univ"),
-        MetroStation(MetroLine.BLUE, 80032, "Line 4 Dongjak"),
-        MetroStation(MetroLine.BLUE, 80033, "Line 4 Namtaeryeong"),
-        MetroStation(MetroLine.BLUE, 80034, "Line 7 Gangnam-gu Office"),
-        MetroStation(MetroLine.BLUE, 80035, "Line 7 Hak-dong"),
-        MetroStation(MetroLine.BLUE, 80036, "Line 7 Cheonggu"),
-        MetroStation(MetroLine.BLUE, 80037, "Line 7 Ttukseom"),
-        MetroStation(MetroLine.BLUE, 80038, "Line 7 Junggok"),
-        MetroStation(MetroLine.BLUE, 80039, "Line 7 Gunja"),
-        MetroStation(MetroLine.BLUE, 80040, "Line 7 Children's Grand Park"),
-        MetroStation(MetroLine.BLUE, 80041, "Line 7 Konkuk Univ"),
-        MetroStation(MetroLine.BLUE, 80042, "Line 7 Onsu"),
-        MetroStation(MetroLine.BLUE, 80043, "Line 7 Bupyeong-gu Office"),
-        MetroStation(MetroLine.BLUE, 80044, "Line 7 Sangdong"),
-        MetroStation(MetroLine.BLUE, 80045, "Line 7 Yeongdeungpo Market"),
+    private val LINE_1 = listOf(
+        MetroStation(MetroLine.SEOUL_1, 80000, "Line 1 Seoul Station"),
+        MetroStation(MetroLine.SEOUL_1, 80001, "Line 1 City Hall"),
+        MetroStation(MetroLine.SEOUL_1, 80002, "Line 1 Jonggak"),
+        MetroStation(MetroLine.SEOUL_1, 80003, "Line 1 Jongno 3-ga"),
+        MetroStation(MetroLine.SEOUL_1, 80004, "Line 1 Jongno 5-ga"),
+        MetroStation(MetroLine.SEOUL_1, 80005, "Line 1 Dongdaemun"),
+        MetroStation(MetroLine.SEOUL_1, 80006, "Line 1 Cheongnyangni"),
+        MetroStation(MetroLine.SEOUL_1, 80007, "Line 1 Yongsan"),
+        MetroStation(MetroLine.SEOUL_1, 80008, "Line 1 Noryangjin"),
+        MetroStation(MetroLine.SEOUL_1, 80009, "Line 1 Daerim"),
+        MetroStation(MetroLine.SEOUL_1, 80010, "Line 1 Guro"),
+        MetroStation(MetroLine.SEOUL_1, 80011, "Line 1 Yeongdeungpo"),
+        MetroStation(MetroLine.SEOUL_1, 80012, "Line 1 Sindorim"),
+        MetroStation(MetroLine.SEOUL_1, 80013, "Line 1 Sinchon"),
+        MetroStation(MetroLine.SEOUL_1, 80014, "Line 1 Gwangmyeong"),
+        MetroStation(MetroLine.SEOUL_1, 80015, "Line 1 Incheon"),
+        MetroStation(MetroLine.SEOUL_1, 80016, "Line 1 Seokgye"),
+        MetroStation(MetroLine.SEOUL_1, 80017, "Line 1 Wangsimni"),
     )
 
-    private val GREEN_LINE = listOf(
-        MetroStation(MetroLine.GREEN, 80200, "Line 2 City Hall"),
-        MetroStation(MetroLine.GREEN, 80201, "Line 2 Euljiro 1-ga"),
-        MetroStation(MetroLine.GREEN, 80202, "Line 2 Euljiro 3-ga"),
-        MetroStation(MetroLine.GREEN, 80203, "Line 2 Euljiro 4-ga"),
-        MetroStation(MetroLine.GREEN, 80204, "Line 2 Sindang"),
-        MetroStation(MetroLine.GREEN, 80205, "Line 2 Wangsimni"),
-        MetroStation(MetroLine.GREEN, 80206, "Line 2 Seongsu"),
-        MetroStation(MetroLine.GREEN, 80207, "Line 2 Konkuk Univ"),
-        MetroStation(MetroLine.GREEN, 80208, "Line 2 Gangbyeon"),
-        MetroStation(MetroLine.GREEN, 80209, "Line 2 Jamsil"),
-        MetroStation(MetroLine.GREEN, 80210, "Line 2 Sports Complex"),
-        MetroStation(MetroLine.GREEN, 80211, "Line 2 Samseong"),
-        MetroStation(MetroLine.GREEN, 80212, "Line 2 Yeoksam"),
-        MetroStation(MetroLine.GREEN, 80213, "Line 2 Gangnam"),
-        MetroStation(MetroLine.GREEN, 80214, "Line 2 Seolleung"),
-        MetroStation(MetroLine.GREEN, 80215, "Line 2 Apgujeong"),
-        MetroStation(MetroLine.GREEN, 80216, "Line 2 Shinnonhyeon"),
-        MetroStation(MetroLine.GREEN, 80217, "Line 2 Hongdae"),
-        MetroStation(MetroLine.GREEN, 80218, "Line 2 Hapjeong"),
-        MetroStation(MetroLine.GREEN, 80219, "Line 2 Dangsan"),
-        MetroStation(MetroLine.GREEN, 80220, "Line 2 Yeongdeungpo-gu Office"),
-        MetroStation(MetroLine.GREEN, 80221, "Line 2 Mullae"),
-        MetroStation(MetroLine.GREEN, 80222, "Line 2 Sindorim"),
-        MetroStation(MetroLine.GREEN, 80223, "Line 2 Kkachisan"),
-        MetroStation(MetroLine.GREEN, 80224, "Line 2 Hongje"),
-        MetroStation(MetroLine.GREEN, 80225, "Line 2 Sinchon"),
-        MetroStation(MetroLine.GREEN, 80226, "Line 2 Ewha Womans Univ"),
-        MetroStation(MetroLine.GREEN, 80227, "Line 2 Jamsilsaenae"),
-        MetroStation(MetroLine.GREEN, 80228, "Line 2 Olympic Park"),
-        MetroStation(MetroLine.GREEN, 80229, "Line 2 Gyodae"),
-        MetroStation(MetroLine.GREEN, 80230, "Line 2 Gangnam-gu Office"),
-        MetroStation(MetroLine.GREEN, 80231, "Line 5 Gwanghwamun"),
-        MetroStation(MetroLine.GREEN, 80232, "Line 5 Seodaemun"),
-        MetroStation(MetroLine.GREEN, 80233, "Line 5 Chungjeongno"),
-        MetroStation(MetroLine.GREEN, 80234, "Line 5 Gongdeok"),
-        MetroStation(MetroLine.GREEN, 80235, "Line 5 Yeouido"),
-        MetroStation(MetroLine.GREEN, 80236, "Line 5 Yeouinaru"),
-        MetroStation(MetroLine.GREEN, 80237, "Line 5 Mapo"),
-        MetroStation(MetroLine.GREEN, 80238, "Line 5 Banghwa"),
-        MetroStation(MetroLine.GREEN, 80239, "Line 5 Gimpo Airport"),
-        MetroStation(MetroLine.GREEN, 80240, "Line 5 Magok"),
-        MetroStation(MetroLine.GREEN, 80241, "Line 5 Mok-dong"),
-        MetroStation(MetroLine.GREEN, 80242, "Line 5 Omokgyo"),
-        MetroStation(MetroLine.GREEN, 80243, "Line 5 Cheonggu"),
-        MetroStation(MetroLine.GREEN, 80244, "Line 5 Wangsimni"),
-        MetroStation(MetroLine.GREEN, 80245, "Line 5 Gunja"),
-        MetroStation(MetroLine.GREEN, 80246, "Line 5 Gwangnaru"),
-        MetroStation(MetroLine.GREEN, 80247, "Line 5 Achasan"),
-        MetroStation(MetroLine.GREEN, 80248, "Line 8 Amsa"),
-        MetroStation(MetroLine.GREEN, 80249, "Line 8 Cheonho"),
-        MetroStation(MetroLine.GREEN, 80250, "Line 8 Gangdong-gu Office"),
-        MetroStation(MetroLine.GREEN, 80251, "Line 8 Mongchontoseong"),
-        MetroStation(MetroLine.GREEN, 80252, "Line 8 Jamsil"),
-        MetroStation(MetroLine.GREEN, 80253, "Line 8 Seokchon"),
-        MetroStation(MetroLine.GREEN, 80254, "Line 8 Songpa"),
-        MetroStation(MetroLine.GREEN, 80255, "Line 8 Garak Market"),
-        MetroStation(MetroLine.GREEN, 80256, "Line 8 Munjeong"),
-        MetroStation(MetroLine.GREEN, 80257, "Line 8 Bokjeong"),
-        MetroStation(MetroLine.GREEN, 80258, "Line 8 Sanseong"),
+    private val LINE_2 = listOf(
+        MetroStation(MetroLine.SEOUL_2, 80018, "Line 2 City Hall"),
+        MetroStation(MetroLine.SEOUL_2, 80019, "Line 2 Euljiro 1-ga"),
+        MetroStation(MetroLine.SEOUL_2, 80020, "Line 2 Euljiro 3-ga"),
+        MetroStation(MetroLine.SEOUL_2, 80021, "Line 2 Euljiro 4-ga"),
+        MetroStation(MetroLine.SEOUL_2, 80022, "Line 2 Sindang"),
+        MetroStation(MetroLine.SEOUL_2, 80023, "Line 2 Wangsimni"),
+        MetroStation(MetroLine.SEOUL_2, 80024, "Line 2 Seongsu"),
+        MetroStation(MetroLine.SEOUL_2, 80025, "Line 2 Konkuk Univ"),
+        MetroStation(MetroLine.SEOUL_2, 80026, "Line 2 Gangbyeon"),
+        MetroStation(MetroLine.SEOUL_2, 80027, "Line 2 Jamsil"),
+        MetroStation(MetroLine.SEOUL_2, 80028, "Line 2 Sports Complex"),
+        MetroStation(MetroLine.SEOUL_2, 80029, "Line 2 Samseong"),
+        MetroStation(MetroLine.SEOUL_2, 80030, "Line 2 Yeoksam"),
+        MetroStation(MetroLine.SEOUL_2, 80031, "Line 2 Gangnam"),
+        MetroStation(MetroLine.SEOUL_2, 80032, "Line 2 Seolleung"),
+        MetroStation(MetroLine.SEOUL_2, 80033, "Line 2 Apgujeong"),
+        MetroStation(MetroLine.SEOUL_2, 80034, "Line 2 Shinnonhyeon"),
+        MetroStation(MetroLine.SEOUL_2, 80035, "Line 2 Hongdae"),
+        MetroStation(MetroLine.SEOUL_2, 80036, "Line 2 Hapjeong"),
+        MetroStation(MetroLine.SEOUL_2, 80037, "Line 2 Dangsan"),
+        MetroStation(MetroLine.SEOUL_2, 80038, "Line 2 Yeongdeungpo-gu Office"),
+        MetroStation(MetroLine.SEOUL_2, 80039, "Line 2 Mullae"),
+        MetroStation(MetroLine.SEOUL_2, 80040, "Line 2 Sindorim"),
+        MetroStation(MetroLine.SEOUL_2, 80041, "Line 2 Kkachisan"),
+        MetroStation(MetroLine.SEOUL_2, 80042, "Line 2 Hongje"),
+        MetroStation(MetroLine.SEOUL_2, 80043, "Line 2 Sinchon"),
+        MetroStation(MetroLine.SEOUL_2, 80044, "Line 2 Ewha Womans Univ"),
+        MetroStation(MetroLine.SEOUL_2, 80045, "Line 2 Jamsilsaenae"),
+        MetroStation(MetroLine.SEOUL_2, 80046, "Line 2 Olympic Park"),
+        MetroStation(MetroLine.SEOUL_2, 80047, "Line 2 Gyodae"),
+        MetroStation(MetroLine.SEOUL_2, 80048, "Line 2 Gangnam-gu Office"),
     )
 
-    private val RED_LINE = listOf(
-        MetroStation(MetroLine.RED, 80400, "Line 3 Gupabal"),
-        MetroStation(MetroLine.RED, 80401, "Line 3 Yeonsinnae"),
-        MetroStation(MetroLine.RED, 80402, "Line 3 Bulgwang"),
-        MetroStation(MetroLine.RED, 80403, "Line 3 Gyeongbokgung"),
-        MetroStation(MetroLine.RED, 80404, "Line 3 Anguk"),
-        MetroStation(MetroLine.RED, 80405, "Line 3 Chungmuro"),
-        MetroStation(MetroLine.RED, 80406, "Line 3 Euljiro 3-ga"),
-        MetroStation(MetroLine.RED, 80407, "Line 3 Chungjeongno"),
-        MetroStation(MetroLine.RED, 80408, "Line 3 Ahyeon"),
-        MetroStation(MetroLine.RED, 80409, "Line 3 Yaksu"),
-        MetroStation(MetroLine.RED, 80410, "Line 3 Apgujeong"),
-        MetroStation(MetroLine.RED, 80411, "Line 3 Sinsa"),
-        MetroStation(MetroLine.RED, 80412, "Line 3 Jamwon"),
-        MetroStation(MetroLine.RED, 80413, "Line 3 Express Bus Terminal"),
-        MetroStation(MetroLine.RED, 80414, "Line 3 Nambu Bus Terminal"),
-        MetroStation(MetroLine.RED, 80415, "Line 3 Yangjae"),
-        MetroStation(MetroLine.RED, 80416, "Line 3 Maebong"),
-        MetroStation(MetroLine.RED, 80417, "Line 3 Suseo"),
-        MetroStation(MetroLine.RED, 80418, "Line 3 Garak Market"),
-        MetroStation(MetroLine.RED, 80419, "Line 3 Ogeum"),
-        MetroStation(MetroLine.RED, 80420, "Line 3 Munjeong"),
-        MetroStation(MetroLine.RED, 80421, "Line 3 Dogok"),
-        MetroStation(MetroLine.RED, 80422, "Line 3 Daehwa"),
-        MetroStation(MetroLine.RED, 80423, "Line 6 Sangsu"),
-        MetroStation(MetroLine.RED, 80424, "Line 6 Hapjeong"),
-        MetroStation(MetroLine.RED, 80425, "Line 6 World Cup Stadium"),
-        MetroStation(MetroLine.RED, 80426, "Line 6 Digital Media City"),
-        MetroStation(MetroLine.RED, 80427, "Line 6 Mangwon"),
-        MetroStation(MetroLine.RED, 80428, "Line 6 Itaewon"),
-        MetroStation(MetroLine.RED, 80429, "Line 6 Samgakji"),
-        MetroStation(MetroLine.RED, 80430, "Line 6 Cheonggu"),
-        MetroStation(MetroLine.RED, 80431, "Line 6 Wangsimni"),
-        MetroStation(MetroLine.RED, 80432, "Line 6 Ddukseom"),
-        MetroStation(MetroLine.RED, 80433, "Line 6 Seongsu"),
-        MetroStation(MetroLine.RED, 80434, "Line 6 Bonghwasan"),
-        MetroStation(MetroLine.RED, 80435, "Line 6 Taereung"),
-        MetroStation(MetroLine.RED, 80436, "Line 6 Hwarangdae"),
-        MetroStation(MetroLine.RED, 80437, "Line 9 Gaehwa"),
-        MetroStation(MetroLine.RED, 80438, "Line 9 Gimpo Airport"),
-        MetroStation(MetroLine.RED, 80439, "Line 9 Yangcheon Hyanggyo"),
-        MetroStation(MetroLine.RED, 80440, "Line 9 Dangsan"),
-        MetroStation(MetroLine.RED, 80441, "Line 9 Yeouido"),
-        MetroStation(MetroLine.RED, 80442, "Line 9 National Assembly"),
-        MetroStation(MetroLine.RED, 80443, "Line 9 Express Bus Terminal"),
-        MetroStation(MetroLine.RED, 80444, "Line 9 Sinnonhyeon"),
-        MetroStation(MetroLine.RED, 80445, "Line 9 Sports Complex"),
-        MetroStation(MetroLine.RED, 80446, "Line 9 VHS Medical Center"),
-        MetroStation(MetroLine.RED, 80447, "Line 9 Suseo"),
-        MetroStation(MetroLine.RED, 80448, "Line 9 Seonjeongneung"),
+    private val LINE_3 = listOf(
+        MetroStation(MetroLine.SEOUL_3, 80049, "Line 3 Gupabal"),
+        MetroStation(MetroLine.SEOUL_3, 80050, "Line 3 Yeonsinnae"),
+        MetroStation(MetroLine.SEOUL_3, 80051, "Line 3 Bulgwang"),
+        MetroStation(MetroLine.SEOUL_3, 80052, "Line 3 Gyeongbokgung"),
+        MetroStation(MetroLine.SEOUL_3, 80053, "Line 3 Anguk"),
+        MetroStation(MetroLine.SEOUL_3, 80054, "Line 3 Chungmuro"),
+        MetroStation(MetroLine.SEOUL_3, 80055, "Line 3 Euljiro 3-ga"),
+        MetroStation(MetroLine.SEOUL_3, 80056, "Line 3 Chungjeongno"),
+        MetroStation(MetroLine.SEOUL_3, 80057, "Line 3 Ahyeon"),
+        MetroStation(MetroLine.SEOUL_3, 80058, "Line 3 Yaksu"),
+        MetroStation(MetroLine.SEOUL_3, 80059, "Line 3 Apgujeong"),
+        MetroStation(MetroLine.SEOUL_3, 80060, "Line 3 Sinsa"),
+        MetroStation(MetroLine.SEOUL_3, 80061, "Line 3 Jamwon"),
+        MetroStation(MetroLine.SEOUL_3, 80062, "Line 3 Express Bus Terminal"),
+        MetroStation(MetroLine.SEOUL_3, 80063, "Line 3 Nambu Bus Terminal"),
+        MetroStation(MetroLine.SEOUL_3, 80064, "Line 3 Yangjae"),
+        MetroStation(MetroLine.SEOUL_3, 80065, "Line 3 Maebong"),
+        MetroStation(MetroLine.SEOUL_3, 80066, "Line 3 Suseo"),
+        MetroStation(MetroLine.SEOUL_3, 80067, "Line 3 Garak Market"),
+        MetroStation(MetroLine.SEOUL_3, 80068, "Line 3 Ogeum"),
+        MetroStation(MetroLine.SEOUL_3, 80069, "Line 3 Munjeong"),
+        MetroStation(MetroLine.SEOUL_3, 80070, "Line 3 Dogok"),
+        MetroStation(MetroLine.SEOUL_3, 80071, "Line 3 Daehwa"),
+    )
+
+    private val LINE_4 = listOf(
+        MetroStation(MetroLine.SEOUL_4, 80072, "Line 4 Myeongdong"),
+        MetroStation(MetroLine.SEOUL_4, 80073, "Line 4 Chungmuro"),
+        MetroStation(MetroLine.SEOUL_4, 80074, "Line 4 Dongdaemun History & Culture Park"),
+        MetroStation(MetroLine.SEOUL_4, 80075, "Line 4 Hyehwa"),
+        MetroStation(MetroLine.SEOUL_4, 80076, "Line 4 Hansung Univ"),
+        MetroStation(MetroLine.SEOUL_4, 80077, "Line 4 Mia"),
+        MetroStation(MetroLine.SEOUL_4, 80078, "Line 4 Suyu"),
+        MetroStation(MetroLine.SEOUL_4, 80079, "Line 4 Nowon"),
+        MetroStation(MetroLine.SEOUL_4, 80080, "Line 4 Changdong"),
+        MetroStation(MetroLine.SEOUL_4, 80081, "Line 4 Sangbong"),
+        MetroStation(MetroLine.SEOUL_4, 80082, "Line 4 Geumjeong"),
+        MetroStation(MetroLine.SEOUL_4, 80083, "Line 4 Sadang"),
+        MetroStation(MetroLine.SEOUL_4, 80084, "Line 4 Isu"),
+        MetroStation(MetroLine.SEOUL_4, 80085, "Line 4 Chongshin Univ"),
+        MetroStation(MetroLine.SEOUL_4, 80086, "Line 4 Dongjak"),
+        MetroStation(MetroLine.SEOUL_4, 80087, "Line 4 Namtaeryeong"),
+    )
+
+    private val LINE_5 = listOf(
+        MetroStation(MetroLine.SEOUL_5, 80088, "Line 5 Gwanghwamun"),
+        MetroStation(MetroLine.SEOUL_5, 80089, "Line 5 Seodaemun"),
+        MetroStation(MetroLine.SEOUL_5, 80090, "Line 5 Chungjeongno"),
+        MetroStation(MetroLine.SEOUL_5, 80091, "Line 5 Gongdeok"),
+        MetroStation(MetroLine.SEOUL_5, 80092, "Line 5 Yeouido"),
+        MetroStation(MetroLine.SEOUL_5, 80093, "Line 5 Yeouinaru"),
+        MetroStation(MetroLine.SEOUL_5, 80094, "Line 5 Mapo"),
+        MetroStation(MetroLine.SEOUL_5, 80095, "Line 5 Banghwa"),
+        MetroStation(MetroLine.SEOUL_5, 80096, "Line 5 Gimpo Airport"),
+        MetroStation(MetroLine.SEOUL_5, 80097, "Line 5 Magok"),
+        MetroStation(MetroLine.SEOUL_5, 80098, "Line 5 Mok-dong"),
+        MetroStation(MetroLine.SEOUL_5, 80099, "Line 5 Omokgyo"),
+        MetroStation(MetroLine.SEOUL_5, 80100, "Line 5 Cheonggu"),
+        MetroStation(MetroLine.SEOUL_5, 80101, "Line 5 Wangsimni"),
+        MetroStation(MetroLine.SEOUL_5, 80102, "Line 5 Gunja"),
+        MetroStation(MetroLine.SEOUL_5, 80103, "Line 5 Gwangnaru"),
+        MetroStation(MetroLine.SEOUL_5, 80104, "Line 5 Achasan"),
+    )
+
+    private val LINE_6 = listOf(
+        MetroStation(MetroLine.SEOUL_6, 80105, "Line 6 Sangsu"),
+        MetroStation(MetroLine.SEOUL_6, 80106, "Line 6 Hapjeong"),
+        MetroStation(MetroLine.SEOUL_6, 80107, "Line 6 World Cup Stadium"),
+        MetroStation(MetroLine.SEOUL_6, 80108, "Line 6 Digital Media City"),
+        MetroStation(MetroLine.SEOUL_6, 80109, "Line 6 Mangwon"),
+        MetroStation(MetroLine.SEOUL_6, 80110, "Line 6 Itaewon"),
+        MetroStation(MetroLine.SEOUL_6, 80111, "Line 6 Samgakji"),
+        MetroStation(MetroLine.SEOUL_6, 80112, "Line 6 Cheonggu"),
+        MetroStation(MetroLine.SEOUL_6, 80113, "Line 6 Wangsimni"),
+        MetroStation(MetroLine.SEOUL_6, 80114, "Line 6 Ddukseom"),
+        MetroStation(MetroLine.SEOUL_6, 80115, "Line 6 Seongsu"),
+        MetroStation(MetroLine.SEOUL_6, 80116, "Line 6 Bonghwasan"),
+        MetroStation(MetroLine.SEOUL_6, 80117, "Line 6 Taereung"),
+        MetroStation(MetroLine.SEOUL_6, 80118, "Line 6 Hwarangdae"),
+    )
+
+    private val LINE_7 = listOf(
+        MetroStation(MetroLine.SEOUL_7, 80119, "Line 7 Gangnam-gu Office"),
+        MetroStation(MetroLine.SEOUL_7, 80120, "Line 7 Hak-dong"),
+        MetroStation(MetroLine.SEOUL_7, 80121, "Line 7 Cheonggu"),
+        MetroStation(MetroLine.SEOUL_7, 80122, "Line 7 Ttukseom"),
+        MetroStation(MetroLine.SEOUL_7, 80123, "Line 7 Junggok"),
+        MetroStation(MetroLine.SEOUL_7, 80124, "Line 7 Gunja"),
+        MetroStation(MetroLine.SEOUL_7, 80125, "Line 7 Children's Grand Park"),
+        MetroStation(MetroLine.SEOUL_7, 80126, "Line 7 Konkuk Univ"),
+        MetroStation(MetroLine.SEOUL_7, 80127, "Line 7 Onsu"),
+        MetroStation(MetroLine.SEOUL_7, 80128, "Line 7 Bupyeong-gu Office"),
+        MetroStation(MetroLine.SEOUL_7, 80129, "Line 7 Sangdong"),
+        MetroStation(MetroLine.SEOUL_7, 80130, "Line 7 Yeongdeungpo Market"),
+    )
+
+    private val LINE_8 = listOf(
+        MetroStation(MetroLine.SEOUL_8, 80131, "Line 8 Amsa"),
+        MetroStation(MetroLine.SEOUL_8, 80132, "Line 8 Cheonho"),
+        MetroStation(MetroLine.SEOUL_8, 80133, "Line 8 Gangdong-gu Office"),
+        MetroStation(MetroLine.SEOUL_8, 80134, "Line 8 Mongchontoseong"),
+        MetroStation(MetroLine.SEOUL_8, 80135, "Line 8 Jamsil"),
+        MetroStation(MetroLine.SEOUL_8, 80136, "Line 8 Seokchon"),
+        MetroStation(MetroLine.SEOUL_8, 80137, "Line 8 Songpa"),
+        MetroStation(MetroLine.SEOUL_8, 80138, "Line 8 Garak Market"),
+        MetroStation(MetroLine.SEOUL_8, 80139, "Line 8 Munjeong"),
+        MetroStation(MetroLine.SEOUL_8, 80140, "Line 8 Bokjeong"),
+        MetroStation(MetroLine.SEOUL_8, 80141, "Line 8 Sanseong"),
+    )
+
+    private val LINE_9 = listOf(
+        MetroStation(MetroLine.SEOUL_9, 80142, "Line 9 Gaehwa"),
+        MetroStation(MetroLine.SEOUL_9, 80143, "Line 9 Gimpo Airport"),
+        MetroStation(MetroLine.SEOUL_9, 80144, "Line 9 Yangcheon Hyanggyo"),
+        MetroStation(MetroLine.SEOUL_9, 80145, "Line 9 Dangsan"),
+        MetroStation(MetroLine.SEOUL_9, 80146, "Line 9 Yeouido"),
+        MetroStation(MetroLine.SEOUL_9, 80147, "Line 9 National Assembly"),
+        MetroStation(MetroLine.SEOUL_9, 80148, "Line 9 Express Bus Terminal"),
+        MetroStation(MetroLine.SEOUL_9, 80149, "Line 9 Sinnonhyeon"),
+        MetroStation(MetroLine.SEOUL_9, 80150, "Line 9 Sports Complex"),
+        MetroStation(MetroLine.SEOUL_9, 80151, "Line 9 VHS Medical Center"),
+        MetroStation(MetroLine.SEOUL_9, 80152, "Line 9 Suseo"),
+        MetroStation(MetroLine.SEOUL_9, 80153, "Line 9 Seonjeongneung"),
     )
 
     fun lineForStationName(name: String): MetroLine? {
-        val n = name.lowercase()
-        if (BLUE_LINE.any { it.name.lowercase() == n }) return MetroLine.BLUE
-        if (RED_LINE.any { it.name.lowercase() == n }) return MetroLine.RED
-        if (GREEN_LINE.any { it.name.lowercase() == n }) return MetroLine.GREEN
-        return null
+        val lowered = name.lowercase()
+        if (LINE_1.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_1
+        if (LINE_2.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_2
+        if (LINE_3.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_3
+        if (LINE_4.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_4
+        if (LINE_5.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_5
+        if (LINE_6.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_6
+        if (LINE_7.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_7
+        if (LINE_8.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_8
+        if (LINE_9.any { it.name.lowercase() == lowered }) return MetroLine.SEOUL_9
+        val prefix = Regex("^Line (\\d+) ", RegexOption.IGNORE_CASE).find(name)
+        return prefix?.groupValues?.get(1)?.toIntOrNull()?.let { num ->
+            when (num) {
+                1 -> MetroLine.SEOUL_1
+                2 -> MetroLine.SEOUL_2
+                3 -> MetroLine.SEOUL_3
+                4 -> MetroLine.SEOUL_4
+                5 -> MetroLine.SEOUL_5
+                6 -> MetroLine.SEOUL_6
+                7 -> MetroLine.SEOUL_7
+                8 -> MetroLine.SEOUL_8
+                9 -> MetroLine.SEOUL_9
+                else -> null
+            }
+        }
     }
 
     fun allStationsRequest(): List<MetroStation> =
-        BLUE_LINE + RED_LINE + GREEN_LINE
+        LINE_1 +
+                LINE_2 +
+                LINE_3 +
+                LINE_4 +
+                LINE_5 +
+                LINE_6 +
+                LINE_7 +
+                LINE_8 +
+                LINE_9
 }

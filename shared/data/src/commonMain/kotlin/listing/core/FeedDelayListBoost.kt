@@ -55,6 +55,9 @@ object FeedDelayListBoost {
         FlatPlatform.YAHOO_RE to 2.5,
         FlatPlatform.ATHOME to 2.5,
         FlatPlatform.FLATFOX to 2.0,
+        FlatPlatform.RIGHTMOVE to 1.0,
+        FlatPlatform.ONTHEMARKET to 2.0,
+        FlatPlatform.OPENRENT to 2.5,
     )
 
     /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */

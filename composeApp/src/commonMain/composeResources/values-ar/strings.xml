@@ -155,6 +155,7 @@
     <string name="country_kr">كوريا الجنوبية</string>
     <string name="country_jp">اليابان</string>
     <string name="country_ch">سويسرا</string>
+    <string name="country_gb">المملكة المتحدة</string>
     <string name="city_minsk">مينسك</string>
     <string name="city_brest">بريست</string>
     <string name="city_vitebsk">فيتيبسك</string>
@@ -269,6 +270,16 @@
     <string name="city_st_gallen">St. Gallen</string>
     <string name="city_lugano">Lugano</string>
     <string name="city_biel">Biel</string>
+    <string name="city_london">London</string>
+    <string name="city_manchester">Manchester</string>
+    <string name="city_birmingham">Birmingham</string>
+    <string name="city_leeds">Leeds</string>
+    <string name="city_glasgow">Glasgow</string>
+    <string name="city_edinburgh">Edinburgh</string>
+    <string name="city_bristol">Bristol</string>
+    <string name="city_liverpool">Liverpool</string>
+    <string name="city_newcastle">Newcastle</string>
+    <string name="city_sheffield">Sheffield</string>
     <string name="location_metro">المترو</string>
     <string name="location_metro_any_switch">أي محطة</string>
     <string name="location_metro_line_red">أحمر</string>
