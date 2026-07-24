@@ -1,0 +1,506 @@
+[
+  {
+    "name": "Finch",
+    "coordinates": [
+      43.7815,
+      -79.4154
+    ]
+  },
+  {
+    "name": "North York Centre",
+    "coordinates": [
+      43.7703,
+      -79.4135
+    ]
+  },
+  {
+    "name": "Sheppard-Yonge",
+    "coordinates": [
+      43.7614,
+      -79.4108
+    ]
+  },
+  {
+    "name": "York Mills",
+    "coordinates": [
+      43.7443,
+      -79.4067
+    ]
+  },
+  {
+    "name": "Lawrence",
+    "coordinates": [
+      43.725,
+      -79.4023
+    ]
+  },
+  {
+    "name": "Eglinton",
+    "coordinates": [
+      43.7068,
+      -79.3986
+    ]
+  },
+  {
+    "name": "Davisville",
+    "coordinates": [
+      43.6977,
+      -79.3969
+    ]
+  },
+  {
+    "name": "St Clair",
+    "coordinates": [
+      43.6883,
+      -79.3947
+    ]
+  },
+  {
+    "name": "Summerhill",
+    "coordinates": [
+      43.6823,
+      -79.3928
+    ]
+  },
+  {
+    "name": "Rosedale",
+    "coordinates": [
+      43.6769,
+      -79.3893
+    ]
+  },
+  {
+    "name": "Bloor-Yonge",
+    "coordinates": [
+      43.6706,
+      -79.3856
+    ]
+  },
+  {
+    "name": "Wellesley",
+    "coordinates": [
+      43.6655,
+      -79.3839
+    ]
+  },
+  {
+    "name": "College",
+    "coordinates": [
+      43.6617,
+      -79.3792
+    ]
+  },
+  {
+    "name": "Queen's Park",
+    "coordinates": [
+      43.6605,
+      -79.389
+    ]
+  },
+  {
+    "name": "Museum",
+    "coordinates": [
+      43.658,
+      -79.3947
+    ]
+  },
+  {
+    "name": "St Patrick",
+    "coordinates": [
+      43.6562,
+      -79.3887
+    ]
+  },
+  {
+    "name": "Osgoode",
+    "coordinates": [
+      43.6508,
+      -79.3863
+    ]
+  },
+  {
+    "name": "St Andrew",
+    "coordinates": [
+      43.6486,
+      -79.3852
+    ]
+  },
+  {
+    "name": "Union",
+    "coordinates": [
+      43.6455,
+      -79.3806
+    ]
+  },
+  {
+    "name": "King",
+    "coordinates": [
+      43.649,
+      -79.3789
+    ]
+  },
+  {
+    "name": "Queen",
+    "coordinates": [
+      43.6525,
+      -79.3793
+    ]
+  },
+  {
+    "name": "Dundas",
+    "coordinates": [
+      43.656,
+      -79.3802
+    ]
+  },
+  {
+    "name": "St George",
+    "coordinates": [
+      43.6682,
+      -79.3997
+    ]
+  },
+  {
+    "name": "Spadina",
+    "coordinates": [
+      43.6677,
+      -79.4037
+    ]
+  },
+  {
+    "name": "Dupont",
+    "coordinates": [
+      43.6749,
+      -79.4067
+    ]
+  },
+  {
+    "name": "St Clair West",
+    "coordinates": [
+      43.6835,
+      -79.4147
+    ]
+  },
+  {
+    "name": "Eglinton West",
+    "coordinates": [
+      43.6953,
+      -79.4247
+    ]
+  },
+  {
+    "name": "Glencairn",
+    "coordinates": [
+      43.708,
+      -79.4352
+    ]
+  },
+  {
+    "name": "Lawrence West",
+    "coordinates": [
+      43.7152,
+      -79.4444
+    ]
+  },
+  {
+    "name": "Yorkdale",
+    "coordinates": [
+      43.7246,
+      -79.453
+    ]
+  },
+  {
+    "name": "Wilson",
+    "coordinates": [
+      43.7393,
+      -79.4503
+    ]
+  },
+  {
+    "name": "Sheppard West",
+    "coordinates": [
+      43.7505,
+      -79.461
+    ]
+  },
+  {
+    "name": "Downsview Park",
+    "coordinates": [
+      43.742,
+      -79.4905
+    ]
+  },
+  {
+    "name": "Finch West",
+    "coordinates": [
+      43.7618,
+      -79.491
+    ]
+  },
+  {
+    "name": "Pioneer Village",
+    "coordinates": [
+      43.7766,
+      -79.5085
+    ]
+  },
+  {
+    "name": "Highway 407",
+    "coordinates": [
+      43.7935,
+      -79.527
+    ]
+  },
+  {
+    "name": "Vaughan Metropolitan Centre",
+    "coordinates": [
+      43.7948,
+      -79.5273
+    ]
+  },
+  {
+    "name": "Kipling",
+    "coordinates": [
+      43.637,
+      -79.536
+    ]
+  },
+  {
+    "name": "Islington",
+    "coordinates": [
+      43.6453,
+      -79.5238
+    ]
+  },
+  {
+    "name": "Royal York",
+    "coordinates": [
+      43.6486,
+      -79.511
+    ]
+  },
+  {
+    "name": "Old Mill",
+    "coordinates": [
+      43.6518,
+      -79.4952
+    ]
+  },
+  {
+    "name": "Jane",
+    "coordinates": [
+      43.6551,
+      -79.4856
+    ]
+  },
+  {
+    "name": "Runnymede",
+    "coordinates": [
+      43.6585,
+      -79.4764
+    ]
+  },
+  {
+    "name": "High Park",
+    "coordinates": [
+      43.6538,
+      -79.4652
+    ]
+  },
+  {
+    "name": "Keele",
+    "coordinates": [
+      43.6556,
+      -79.459
+    ]
+  },
+  {
+    "name": "Dundas West",
+    "coordinates": [
+      43.6568,
+      -79.4528
+    ]
+  },
+  {
+    "name": "Lansdowne",
+    "coordinates": [
+      43.6583,
+      -79.4424
+    ]
+  },
+  {
+    "name": "Dufferin",
+    "coordinates": [
+      43.6605,
+      -79.4355
+    ]
+  },
+  {
+    "name": "Ossington",
+    "coordinates": [
+      43.6628,
+      -79.4262
+    ]
+  },
+  {
+    "name": "Christie",
+    "coordinates": [
+      43.6653,
+      -79.4186
+    ]
+  },
+  {
+    "name": "Bathurst",
+    "coordinates": [
+      43.6663,
+      -79.4115
+    ]
+  },
+  {
+    "name": "Broadview",
+    "coordinates": [
+      43.6768,
+      -79.3578
+    ]
+  },
+  {
+    "name": "Chester",
+    "coordinates": [
+      43.6793,
+      -79.3525
+    ]
+  },
+  {
+    "name": "Pape",
+    "coordinates": [
+      43.6816,
+      -79.3455
+    ]
+  },
+  {
+    "name": "Donlands",
+    "coordinates": [
+      43.6847,
+      -79.3398
+    ]
+  },
+  {
+    "name": "Greenwood",
+    "coordinates": [
+      43.6883,
+      -79.327
+    ]
+  },
+  {
+    "name": "Coxwell",
+    "coordinates": [
+      43.692,
+      -79.3185
+    ]
+  },
+  {
+    "name": "Woodbine",
+    "coordinates": [
+      43.6955,
+      -79.3128
+    ]
+  },
+  {
+    "name": "Main Street",
+    "coordinates": [
+      43.6995,
+      -79.3035
+    ]
+  },
+  {
+    "name": "Victoria Park",
+    "coordinates": [
+      43.7035,
+      -79.2955
+    ]
+  },
+  {
+    "name": "Warden",
+    "coordinates": [
+      43.7075,
+      -79.2798
+    ]
+  },
+  {
+    "name": "Kennedy",
+    "coordinates": [
+      43.732,
+      -79.264
+    ]
+  },
+  {
+    "name": "Scarborough Centre",
+    "coordinates": [
+      43.774,
+      -79.258
+    ]
+  },
+  {
+    "name": "McCowan",
+    "coordinates": [
+      43.77,
+      -79.249
+    ]
+  },
+  {
+    "name": "Midland",
+    "coordinates": [
+      43.757,
+      -79.243
+    ]
+  },
+  {
+    "name": "Lawrence East",
+    "coordinates": [
+      43.745,
+      -79.24
+    ]
+  },
+  {
+    "name": "Ellesmere",
+    "coordinates": [
+      43.733,
+      -79.238
+    ]
+  },
+  {
+    "name": "Sheppard-Yonge",
+    "coordinates": [
+      43.7614,
+      -79.4108
+    ]
+  },
+  {
+    "name": "Bayview",
+    "coordinates": [
+      43.767,
+      -79.399
+    ]
+  },
+  {
+    "name": "Bessarion",
+    "coordinates": [
+      43.7695,
+      -79.388
+    ]
+  },
+  {
+    "name": "Leslie",
+    "coordinates": [
+      43.7715,
+      -79.377
+    ]
+  },
+  {
+    "name": "Don Mills",
+    "coordinates": [
+      43.775,
+      -79.346
+    ]
+  }
+]

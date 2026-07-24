@@ -55,6 +55,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.LONDON, "London", "London", Coordinates(51.5074, -0.1278))
     val parisUiItem =
         UiCityItem(CityCode.PARIS, "Paris", "Paris", Coordinates(48.8566, 2.3522))
+    val torontoUiItem =
+        UiCityItem(CityCode.TORONTO, "Toronto", "Toronto", Coordinates(43.6532, -79.3832))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -73,6 +75,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.CH, "Switzerland"),
         UiCountryItem(CountryCode.GB, "United Kingdom"),
         UiCountryItem(CountryCode.FR, "France"),
+        UiCountryItem(CountryCode.CA, "Canada"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -91,6 +94,7 @@ object LocationUiMapper {
         CountryCode.CH -> zurichUiItem
         CountryCode.GB -> londonUiItem
         CountryCode.FR -> parisUiItem
+        CountryCode.CA -> torontoUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -398,6 +402,64 @@ object LocationUiMapper {
                 Coordinates(43.6108, 3.8767),
             ),
         )
+
+        CountryCode.CA -> listOf(
+            torontoUiItem,
+            UiCityItem(
+                CityCode.VANCOUVER,
+                "Vancouver",
+                "Vancouver",
+                Coordinates(49.2827, -123.1207),
+            ),
+            UiCityItem(
+                CityCode.MONTREAL,
+                "Montreal",
+                "Montreal",
+                Coordinates(45.5017, -73.5673),
+            ),
+            UiCityItem(
+                CityCode.CALGARY,
+                "Calgary",
+                "Calgary",
+                Coordinates(51.0447, -114.0719),
+            ),
+            UiCityItem(
+                CityCode.OTTAWA,
+                "Ottawa",
+                "Ottawa",
+                Coordinates(45.4215, -75.6972),
+            ),
+            UiCityItem(
+                CityCode.EDMONTON,
+                "Edmonton",
+                "Edmonton",
+                Coordinates(53.5461, -113.4938),
+            ),
+            UiCityItem(
+                CityCode.WINNIPEG,
+                "Winnipeg",
+                "Winnipeg",
+                Coordinates(49.8951, -97.1384),
+            ),
+            UiCityItem(
+                CityCode.QUEBEC_CITY,
+                "Quebec City",
+                "Québec",
+                Coordinates(46.8139, -71.2080),
+            ),
+            UiCityItem(
+                CityCode.HAMILTON,
+                "Hamilton",
+                "Hamilton",
+                Coordinates(43.2557, -79.8711),
+            ),
+            UiCityItem(
+                CityCode.VICTORIA,
+                "Victoria",
+                "Victoria",
+                Coordinates(48.4284, -123.3656),
+            ),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -425,6 +487,7 @@ object LocationUiMapper {
             in cities(CountryCode.CH).map { it.code } -> CountryCode.CH
             in cities(CountryCode.GB).map { it.code } -> CountryCode.GB
             in cities(CountryCode.FR).map { it.code } -> CountryCode.FR
+            in cities(CountryCode.CA).map { it.code } -> CountryCode.CA
             else -> CountryCode.BY
         }
 

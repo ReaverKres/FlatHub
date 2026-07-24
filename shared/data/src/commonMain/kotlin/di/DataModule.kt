@@ -31,6 +31,12 @@ import listing.at.is24.Is24AtListingSource
 import listing.at.willhaben.WillhabenApiClient
 import listing.at.willhaben.WillhabenListingSource
 import listing.by.byListingSources
+import listing.ca.centris.CentrisApiClient
+import listing.ca.centris.CentrisListingSource
+import listing.ca.housesigma.HouseSigmaApiClient
+import listing.ca.housesigma.HouseSigmaListingSource
+import listing.ca.zolo.ZoloApiClient
+import listing.ca.zolo.ZoloListingSource
 import listing.ch.flatfox.FlatfoxApiClient
 import listing.ch.flatfox.FlatfoxListingSource
 import listing.core.CoordEnrichState
@@ -343,6 +349,18 @@ val dataModule = module {
     }
     single { BieniciListingSource(api = get(), flatsDao = get()) }
 
+    single { CentrisApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { CentrisListingSource(api = get(), flatsDao = get()) }
+    single { ZoloApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { ZoloListingSource(api = get(), flatsDao = get()) }
+    single {
+        HouseSigmaApiClient(
+            httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
+            json = get(named("defaultJson"))
+        )
+    }
+    single { HouseSigmaListingSource(api = get(), flatsDao = get()) }
+
     single {
         ListingSourceRegistry(
             sources = byListingSources(
@@ -387,6 +405,9 @@ val dataModule = module {
                 get<OnTheMarketListingSource>(),
                 get<OpenRentListingSource>(),
                 get<BieniciListingSource>(),
+                get<CentrisListingSource>(),
+                get<HouseSigmaListingSource>(),
+                get<ZoloListingSource>(),
             ),
             platformConfig = RemoteListingPlatformConfig(get<ConfigFieldsChecker>()),
         )

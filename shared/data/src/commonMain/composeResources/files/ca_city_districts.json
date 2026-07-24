@@ -1,0 +1,594 @@
+{
+  "Toronto": [
+    {
+      "id": 400001,
+      "nameEn": "Downtown",
+      "nameLocal": "Downtown",
+      "coordinates": [
+        {
+          "latitude": 43.635,
+          "longitude": -79.42
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.42
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.42
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400002,
+      "nameEn": "Midtown",
+      "nameLocal": "Midtown",
+      "coordinates": [
+        {
+          "latitude": 43.685,
+          "longitude": -79.44
+        },
+        {
+          "latitude": 43.685,
+          "longitude": -79.38
+        },
+        {
+          "latitude": 43.715,
+          "longitude": -79.38
+        },
+        {
+          "latitude": 43.715,
+          "longitude": -79.44
+        },
+        {
+          "latitude": 43.685,
+          "longitude": -79.44
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400003,
+      "nameEn": "North York",
+      "nameLocal": "North York",
+      "coordinates": [
+        {
+          "latitude": 43.735,
+          "longitude": -79.52
+        },
+        {
+          "latitude": 43.735,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.82,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.82,
+          "longitude": -79.52
+        },
+        {
+          "latitude": 43.735,
+          "longitude": -79.52
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400004,
+      "nameEn": "Scarborough",
+      "nameLocal": "Scarborough",
+      "coordinates": [
+        {
+          "latitude": 43.68,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.68,
+          "longitude": -79.12
+        },
+        {
+          "latitude": 43.85,
+          "longitude": -79.12
+        },
+        {
+          "latitude": 43.85,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.68,
+          "longitude": -79.32
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400005,
+      "nameEn": "Etobicoke",
+      "nameLocal": "Etobicoke",
+      "coordinates": [
+        {
+          "latitude": 43.6,
+          "longitude": -79.62
+        },
+        {
+          "latitude": 43.6,
+          "longitude": -79.48
+        },
+        {
+          "latitude": 43.72,
+          "longitude": -79.48
+        },
+        {
+          "latitude": 43.72,
+          "longitude": -79.62
+        },
+        {
+          "latitude": 43.6,
+          "longitude": -79.62
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400006,
+      "nameEn": "East York",
+      "nameLocal": "East York",
+      "coordinates": [
+        {
+          "latitude": 43.67,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.28
+        },
+        {
+          "latitude": 43.72,
+          "longitude": -79.28
+        },
+        {
+          "latitude": 43.72,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.36
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400007,
+      "nameEn": "The Beaches",
+      "nameLocal": "The Beaches",
+      "coordinates": [
+        {
+          "latitude": 43.655,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.655,
+          "longitude": -79.28
+        },
+        {
+          "latitude": 43.685,
+          "longitude": -79.28
+        },
+        {
+          "latitude": 43.685,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.655,
+          "longitude": -79.32
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400008,
+      "nameEn": "Leslieville",
+      "nameLocal": "Leslieville",
+      "coordinates": [
+        {
+          "latitude": 43.645,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.645,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.32
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.645,
+          "longitude": -79.36
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400009,
+      "nameEn": "High Park",
+      "nameLocal": "High Park",
+      "coordinates": [
+        {
+          "latitude": 43.635,
+          "longitude": -79.5
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.44
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.44
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.5
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.5
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400010,
+      "nameEn": "Liberty Village",
+      "nameLocal": "Liberty Village",
+      "coordinates": [
+        {
+          "latitude": 43.635,
+          "longitude": -79.43
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.405
+        },
+        {
+          "latitude": 43.65,
+          "longitude": -79.405
+        },
+        {
+          "latitude": 43.65,
+          "longitude": -79.43
+        },
+        {
+          "latitude": 43.635,
+          "longitude": -79.43
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400011,
+      "nameEn": "Yorkville",
+      "nameLocal": "Yorkville",
+      "coordinates": [
+        {
+          "latitude": 43.665,
+          "longitude": -79.4
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.38
+        },
+        {
+          "latitude": 43.68,
+          "longitude": -79.38
+        },
+        {
+          "latitude": 43.68,
+          "longitude": -79.4
+        },
+        {
+          "latitude": 43.665,
+          "longitude": -79.4
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400012,
+      "nameEn": "The Annex",
+      "nameLocal": "The Annex",
+      "coordinates": [
+        {
+          "latitude": 43.66,
+          "longitude": -79.42
+        },
+        {
+          "latitude": 43.66,
+          "longitude": -79.395
+        },
+        {
+          "latitude": 43.675,
+          "longitude": -79.395
+        },
+        {
+          "latitude": 43.675,
+          "longitude": -79.42
+        },
+        {
+          "latitude": 43.66,
+          "longitude": -79.42
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400013,
+      "nameEn": "Riverdale",
+      "nameLocal": "Riverdale",
+      "coordinates": [
+        {
+          "latitude": 43.655,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.655,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.675,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.675,
+          "longitude": -79.36
+        },
+        {
+          "latitude": 43.655,
+          "longitude": -79.36
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400014,
+      "nameEn": "Danforth",
+      "nameLocal": "Danforth",
+      "coordinates": [
+        {
+          "latitude": 43.67,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.3
+        },
+        {
+          "latitude": 43.69,
+          "longitude": -79.3
+        },
+        {
+          "latitude": 43.69,
+          "longitude": -79.34
+        },
+        {
+          "latitude": 43.67,
+          "longitude": -79.34
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400015,
+      "nameEn": "Yonge and Eglinton",
+      "nameLocal": "Yonge and Eglinton",
+      "coordinates": [
+        {
+          "latitude": 43.7,
+          "longitude": -79.41
+        },
+        {
+          "latitude": 43.7,
+          "longitude": -79.385
+        },
+        {
+          "latitude": 43.715,
+          "longitude": -79.385
+        },
+        {
+          "latitude": 43.715,
+          "longitude": -79.41
+        },
+        {
+          "latitude": 43.7,
+          "longitude": -79.41
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ],
+  "Montreal": [
+    {
+      "id": 400101,
+      "nameEn": "Ville-Marie",
+      "nameLocal": "Ville-Marie",
+      "coordinates": [
+        {
+          "latitude": 45.49,
+          "longitude": -73.58
+        },
+        {
+          "latitude": 45.49,
+          "longitude": -73.54
+        },
+        {
+          "latitude": 45.52,
+          "longitude": -73.54
+        },
+        {
+          "latitude": 45.52,
+          "longitude": -73.58
+        },
+        {
+          "latitude": 45.49,
+          "longitude": -73.58
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400102,
+      "nameEn": "Plateau-Mont-Royal",
+      "nameLocal": "Plateau-Mont-Royal",
+      "coordinates": [
+        {
+          "latitude": 45.515,
+          "longitude": -73.6
+        },
+        {
+          "latitude": 45.515,
+          "longitude": -73.56
+        },
+        {
+          "latitude": 45.535,
+          "longitude": -73.56
+        },
+        {
+          "latitude": 45.535,
+          "longitude": -73.6
+        },
+        {
+          "latitude": 45.515,
+          "longitude": -73.6
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400103,
+      "nameEn": "Rosemont",
+      "nameLocal": "Rosemont",
+      "coordinates": [
+        {
+          "latitude": 45.535,
+          "longitude": -73.6
+        },
+        {
+          "latitude": 45.535,
+          "longitude": -73.56
+        },
+        {
+          "latitude": 45.56,
+          "longitude": -73.56
+        },
+        {
+          "latitude": 45.56,
+          "longitude": -73.6
+        },
+        {
+          "latitude": 45.535,
+          "longitude": -73.6
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400104,
+      "nameEn": "Verdun",
+      "nameLocal": "Verdun",
+      "coordinates": [
+        {
+          "latitude": 45.45,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.45,
+          "longitude": -73.55
+        },
+        {
+          "latitude": 45.475,
+          "longitude": -73.55
+        },
+        {
+          "latitude": 45.475,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.45,
+          "longitude": -73.59
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400105,
+      "nameEn": "Outremont",
+      "nameLocal": "Outremont",
+      "coordinates": [
+        {
+          "latitude": 45.505,
+          "longitude": -73.63
+        },
+        {
+          "latitude": 45.505,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.525,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.525,
+          "longitude": -73.63
+        },
+        {
+          "latitude": 45.505,
+          "longitude": -73.63
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    },
+    {
+      "id": 400106,
+      "nameEn": "CDN-NDG",
+      "nameLocal": "CDN-NDG",
+      "coordinates": [
+        {
+          "latitude": 45.47,
+          "longitude": -73.64
+        },
+        {
+          "latitude": 45.47,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.505,
+          "longitude": -73.59
+        },
+        {
+          "latitude": 45.505,
+          "longitude": -73.64
+        },
+        {
+          "latitude": 45.47,
+          "longitude": -73.64
+        }
+      ],
+      "districtType": "ADMINISTRATIVE"
+    }
+  ]
+}

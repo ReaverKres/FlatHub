@@ -157,6 +157,7 @@
     <string name="country_ch">Швейцария</string>
     <string name="country_gb">Ұлыбритания</string>
     <string name="country_fr">Франция</string>
+    <string name="country_ca">Канада</string>
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
     <string name="city_vitebsk">Vitebsk</string>
@@ -291,6 +292,16 @@
     <string name="city_lille">Лилль</string>
     <string name="city_strasbourg">Страсбург</string>
     <string name="city_montpellier">Монпелье</string>
+    <string name="city_toronto">Торонто</string>
+    <string name="city_vancouver">Ванкувер</string>
+    <string name="city_montreal">Монреаль</string>
+    <string name="city_calgary">Калгари</string>
+    <string name="city_ottawa">Оттава</string>
+    <string name="city_edmonton">Edmonton</string>
+    <string name="city_winnipeg">Виннипег</string>
+    <string name="city_quebec_city">Квебек</string>
+    <string name="city_hamilton">Hamilton</string>
+    <string name="city_victoria">Виктория</string>
 
     <string name="location_metro">Метро</string>
     <string name="location_metro_any_switch">Кез келген станция</string>

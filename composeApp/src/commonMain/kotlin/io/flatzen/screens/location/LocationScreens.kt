@@ -1105,6 +1105,11 @@ private fun metroLineTitle(line: MetroLineState, useNumbered: Boolean): String =
     MetroLineState.PARIS_RER_A -> "RER A"
     MetroLineState.PARIS_RER_B -> "RER B"
 
+    MetroLineState.TORONTO_L1 -> "Line 1"
+    MetroLineState.TORONTO_L2 -> "Line 2"
+    MetroLineState.TORONTO_L3 -> "Line 3"
+    MetroLineState.TORONTO_L4 -> "Line 4"
+
     MetroLineState.WIEN_U1 -> "U1"
     MetroLineState.WIEN_U2 -> "U2"
     MetroLineState.WIEN_U3 -> "U3"
@@ -1217,6 +1222,11 @@ private fun metroLineColor(line: MetroLineState): Color = when (line) {
     MetroLineState.PARIS_M14 -> Color(0xFF62259D)
     MetroLineState.PARIS_RER_A -> Color(0xFFF7403A)
     MetroLineState.PARIS_RER_B -> Color(0xFF5291CE)
+
+    MetroLineState.TORONTO_L1 -> Color(0xFFFFCC00)
+    MetroLineState.TORONTO_L2 -> Color(0xFF008000)
+    MetroLineState.TORONTO_L3 -> Color(0xFF0080FF)
+    MetroLineState.TORONTO_L4 -> Color(0xFF9D2089)
 
     MetroLineState.WIEN_U1 -> Color(0xFFE20613)
     MetroLineState.WIEN_U2 -> Color(0xFFA862A4)

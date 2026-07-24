@@ -40,6 +40,7 @@ collections-immutable = "0.5.1"
 datastore = "1.1.7"
 billing = "9.1.0"
 appodeal = "4.2.0"
+kotlincrypto = "0.7.0"
 
 [libraries]
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -100,6 +101,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 androidx-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 appodeal-core = { module = "com.appodeal.ads.sdk:core", version.ref = "appodeal" }
+kotlincrypto-hash-md = { module = "org.kotlincrypto.hash:md", version.ref = "kotlincrypto" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 

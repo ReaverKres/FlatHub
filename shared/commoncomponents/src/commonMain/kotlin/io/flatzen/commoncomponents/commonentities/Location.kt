@@ -1,7 +1,7 @@
 package io.flatzen.commoncomponents.commonentities
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB, FR;
+    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB, FR, CA;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -21,6 +21,7 @@ enum class CountryCode {
             "CH" -> CH
             "GB" -> GB
             "FR" -> FR
+            "CA" -> CA
             else -> BY
         }
     }
@@ -75,14 +76,17 @@ enum class CityCode {
 
     // France (MVP)
     PARIS, LYON, MARSEILLE, TOULOUSE, NICE, NANTES, BORDEAUX, LILLE, STRASBOURG, MONTPELLIER,
+
+    // Canada (MVP)
+    TORONTO, VANCOUVER, MONTREAL, CALGARY, OTTAWA, EDMONTON, WINNIPEG, QUEBEC_CITY, HAMILTON, VICTORIA,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
 fun CountryCode.hasCommercialPropertyTypeCatalog(): Boolean =
     this == CountryCode.BY || this == CountryCode.AE
 
-/** US listings store area in square feet; other markets use m² (AE converts on ingest). */
-fun CountryCode.usesSquareFeet(): Boolean = this == CountryCode.US
+/** US/CA listings store area in square feet; other markets use m² (AE converts on ingest). */
+fun CountryCode.usesSquareFeet(): Boolean = this == CountryCode.US || this == CountryCode.CA
 
 fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.BY -> CityCode.MINSK
@@ -101,6 +105,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.CH -> CityCode.ZURICH
     CountryCode.GB -> CityCode.LONDON
     CountryCode.FR -> CityCode.PARIS
+    CountryCode.CA -> CityCode.TORONTO
 }
 
 object Location {
@@ -239,5 +244,15 @@ object Location {
         CityCode.LILLE -> "lille"
         CityCode.STRASBOURG -> "strasbourg"
         CityCode.MONTPELLIER -> "montpellier"
+        CityCode.TORONTO -> "toronto"
+        CityCode.VANCOUVER -> "vancouver"
+        CityCode.MONTREAL -> "montreal"
+        CityCode.CALGARY -> "calgary"
+        CityCode.OTTAWA -> "ottawa"
+        CityCode.EDMONTON -> "edmonton"
+        CityCode.WINNIPEG -> "winnipeg"
+        CityCode.QUEBEC_CITY -> "quebec-city"
+        CityCode.HAMILTON -> "hamilton"
+        CityCode.VICTORIA -> "victoria"
     }
 }

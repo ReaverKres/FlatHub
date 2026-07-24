@@ -35,6 +35,7 @@ kotlin {
 
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.components.resources)
+                implementation(libs.kotlincrypto.hash.md)
             }
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
         }

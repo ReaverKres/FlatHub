@@ -23,6 +23,7 @@ private val DISTRICTS_RESOURCES = listOf(
     "files/at_city_districts.json",
     "files/gb_city_districts.json",
     "files/fr_city_districts.json",
+    "files/ca_city_districts.json",
 )
 
 @Serializable

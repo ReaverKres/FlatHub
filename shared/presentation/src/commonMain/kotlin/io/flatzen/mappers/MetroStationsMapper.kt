@@ -41,6 +41,11 @@ object MetroStationsMapper {
             MetroLineState.PARIS_RER_A, MetroLineState.PARIS_RER_B,
         )
 
+        CityCode.TORONTO -> listOf(
+            MetroLineState.TORONTO_L1, MetroLineState.TORONTO_L2,
+            MetroLineState.TORONTO_L3, MetroLineState.TORONTO_L4,
+        )
+
         CityCode.WIEN -> listOf(
             MetroLineState.WIEN_U1, MetroLineState.WIEN_U2, MetroLineState.WIEN_U3,
             MetroLineState.WIEN_U4, MetroLineState.WIEN_U6,

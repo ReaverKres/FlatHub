@@ -41,6 +41,7 @@ fun CountryCode.marketContentLanguageTag(): String = when (this) {
     CountryCode.JP -> "ja"
     CountryCode.GB -> "en"
     CountryCode.FR -> "fr"
+    CountryCode.CA -> "en"
 }
 
 fun FlatPlatform.marketContentLanguageTag(): String =

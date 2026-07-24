@@ -157,6 +157,7 @@
     <string name="country_ch">スイス</string>
     <string name="country_gb">イギリス</string>
     <string name="country_fr">フランス</string>
+    <string name="country_ca">カナダ</string>
     <string name="city_minsk">ミンスク</string>
     <string name="city_brest">ブレスト</string>
     <string name="city_vitebsk">ヴィテブスク</string>
@@ -291,6 +292,16 @@
     <string name="city_lille">リール</string>
     <string name="city_strasbourg">ストラスブール</string>
     <string name="city_montpellier">モンペリエ</string>
+    <string name="city_toronto">トロント</string>
+    <string name="city_vancouver">バンクーバー</string>
+    <string name="city_montreal">モントリオール</string>
+    <string name="city_calgary">カルガリー</string>
+    <string name="city_ottawa">オタワ</string>
+    <string name="city_edmonton">エドモントン</string>
+    <string name="city_winnipeg">ウィニペグ</string>
+    <string name="city_quebec_city">ケベック</string>
+    <string name="city_hamilton">ハミルトン</string>
+    <string name="city_victoria">ビクトリア</string>
     <string name="location_metro">沿線・駅</string>
     <string name="location_metro_any_switch">すべての駅</string>
     <string name="location_metro_line_red">赤線</string>

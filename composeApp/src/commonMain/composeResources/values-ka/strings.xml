@@ -149,6 +149,7 @@
     <string name="country_ch">შვეიცარია</string>
     <string name="country_gb">გაერთიანებული სამეფო</string>
     <string name="country_fr">საფრანგეთი</string>
+    <string name="country_ca">კანადა</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
     <string name="city_vitebsk">ვიტებსკი</string>
@@ -283,6 +284,16 @@
     <string name="city_lille">ლილი</string>
     <string name="city_strasbourg">სტრასბურგი</string>
     <string name="city_montpellier">მონპელიე</string>
+    <string name="city_toronto">ტორონტო</string>
+    <string name="city_vancouver">ვანკუვერი</string>
+    <string name="city_montreal">მონტრელი</string>
+    <string name="city_calgary">კალგარი</string>
+    <string name="city_ottawa">ოტავა</string>
+    <string name="city_edmonton">Edmonton</string>
+    <string name="city_winnipeg">Winnipeg</string>
+    <string name="city_quebec_city">კვებეკი</string>
+    <string name="city_hamilton">Hamilton</string>
+    <string name="city_victoria">Victoria</string>
 
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>

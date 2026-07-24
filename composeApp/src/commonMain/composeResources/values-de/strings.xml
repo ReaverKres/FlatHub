@@ -157,6 +157,7 @@
     <string name="country_ch">Schweiz</string>
     <string name="country_gb">Vereinigtes Königreich</string>
     <string name="country_fr">Frankreich</string>
+    <string name="country_ca">Kanada</string>
 
     <string name="city_minsk">Minsk</string>
     <string name="city_brest">Brest</string>
@@ -292,6 +293,16 @@
     <string name="city_lille">Lille</string>
     <string name="city_strasbourg">Straßburg</string>
     <string name="city_montpellier">Montpellier</string>
+    <string name="city_toronto">Toronto</string>
+    <string name="city_vancouver">Vancouver</string>
+    <string name="city_montreal">Montreal</string>
+    <string name="city_calgary">Calgary</string>
+    <string name="city_ottawa">Ottawa</string>
+    <string name="city_edmonton">Edmonton</string>
+    <string name="city_winnipeg">Winnipeg</string>
+    <string name="city_quebec_city">Quebec City</string>
+    <string name="city_hamilton">Hamilton</string>
+    <string name="city_victoria">Victoria</string>
     <string name="location_metro">U-Bahn</string>
     <string name="location_metro_any_switch">Beliebige Station</string>
     <string name="location_metro_line_red">Rot</string>

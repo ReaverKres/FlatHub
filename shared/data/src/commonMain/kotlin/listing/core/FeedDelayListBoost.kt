@@ -60,6 +60,9 @@ object FeedDelayListBoost {
         FlatPlatform.ONTHEMARKET to 2.0,
         FlatPlatform.OPENRENT to 2.5,
         FlatPlatform.BIENICI to 2.0,
+        FlatPlatform.CENTRIS to 2.0,
+        FlatPlatform.HOUSESIGMA to 2.0,
+        FlatPlatform.ZOLO to 2.0,
     )
 
     /** Caps relative volume so high-traffic sites are closer to mid-tier; keeps max page size 120. */

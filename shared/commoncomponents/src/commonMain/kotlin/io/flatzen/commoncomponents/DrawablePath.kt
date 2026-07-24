@@ -54,4 +54,7 @@ enum class DrawablePath(val value: String) {
     ONTHEMARKET32("drawable/onthemarket32.png"),
     OPENRENT32("drawable/openrent32.png"),
     BIENICI32("drawable/bienici32.png"),
+    CENTRIS32("drawable/centris32.png"),
+    HOUSESIGMA32("drawable/housesigma32.png"),
+    ZOLO32("drawable/zolo32.png"),
 }

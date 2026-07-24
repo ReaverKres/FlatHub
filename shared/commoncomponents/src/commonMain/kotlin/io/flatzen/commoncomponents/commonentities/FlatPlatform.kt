@@ -74,6 +74,11 @@ enum class FlatPlatform(val value: String) {
 
     // France (MVP) — Bien'ici only; LeBonCoin/SeLoger/Logic-Immo removed (see FR_PLATFORMS_RESTORE.md)
     BIENICI("bienici"),
+
+    // Canada (MVP) — Centris, HouseSigma, Zolo; see tmp/ca/api/*/NOTES.md
+    CENTRIS("centris"),
+    HOUSESIGMA("housesigma"),
+    ZOLO("zolo"),
 }
 
 fun FlatPlatform.marketCountry(): CountryCode = when (this) {
@@ -148,6 +153,11 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
 
     FlatPlatform.BIENICI,
         -> CountryCode.FR
+
+    FlatPlatform.CENTRIS,
+    FlatPlatform.HOUSESIGMA,
+    FlatPlatform.ZOLO,
+        -> CountryCode.CA
 }
 
 fun FlatPlatform.usesSquareFeet(): Boolean = marketCountry().usesSquareFeet()
@@ -205,4 +215,7 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.ONTHEMARKET -> DrawablePath.ONTHEMARKET32
     FlatPlatform.OPENRENT -> DrawablePath.OPENRENT32
     FlatPlatform.BIENICI -> DrawablePath.BIENICI32
+    FlatPlatform.CENTRIS -> DrawablePath.CENTRIS32
+    FlatPlatform.HOUSESIGMA -> DrawablePath.HOUSESIGMA32
+    FlatPlatform.ZOLO -> DrawablePath.ZOLO32
 }

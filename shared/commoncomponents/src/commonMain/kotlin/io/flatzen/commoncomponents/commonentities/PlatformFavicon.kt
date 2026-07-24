@@ -56,4 +56,7 @@ fun FlatPlatform.faviconUrl(): String = when (this) {
 
     FlatPlatform.OPENRENT -> "https://www.openrent.co.uk/favicon.ico"
     FlatPlatform.BIENICI -> "https://www.bienici.com/favicon.ico"
+    FlatPlatform.CENTRIS -> "https://www.centris.ca/favicon.ico"
+    FlatPlatform.HOUSESIGMA -> "https://housesigma.com/favicon.ico"
+    FlatPlatform.ZOLO -> "https://www.zolo.ca/favicon.ico"
 }
