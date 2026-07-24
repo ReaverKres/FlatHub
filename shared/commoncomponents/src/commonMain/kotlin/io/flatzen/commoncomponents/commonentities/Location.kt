@@ -1,7 +1,7 @@
 package io.flatzen.commoncomponents.commonentities
 
 enum class CountryCode {
-    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB, FR, CA;
+    BY, PL, GE, KZ, ES, DE, AT, TR, AE, TH, US, KR, JP, CH, GB, FR, CA, IT;
 
     companion object {
         fun fromNetworkIso(iso: String?): CountryCode = when (iso?.uppercase()) {
@@ -22,6 +22,7 @@ enum class CountryCode {
             "GB" -> GB
             "FR" -> FR
             "CA" -> CA
+            "IT" -> IT
             else -> BY
         }
     }
@@ -79,6 +80,9 @@ enum class CityCode {
 
     // Canada (MVP)
     TORONTO, VANCOUVER, MONTREAL, CALGARY, OTTAWA, EDMONTON, WINNIPEG, QUEBEC_CITY, HAMILTON, VICTORIA,
+
+    // Italy (MVP)
+    ROMA, MILANO, NAPOLI, TORINO, FIRENZE, BOLOGNA,
 }
 
 /** Countries with a commercial subtype taxonomy (office/retail/…). */
@@ -106,6 +110,7 @@ fun CountryCode.defaultCityCode(): CityCode = when (this) {
     CountryCode.GB -> CityCode.LONDON
     CountryCode.FR -> CityCode.PARIS
     CountryCode.CA -> CityCode.TORONTO
+    CountryCode.IT -> CityCode.ROMA
 }
 
 object Location {
@@ -254,5 +259,11 @@ object Location {
         CityCode.QUEBEC_CITY -> "quebec-city"
         CityCode.HAMILTON -> "hamilton"
         CityCode.VICTORIA -> "victoria"
+        CityCode.ROMA -> "roma"
+        CityCode.MILANO -> "milano"
+        CityCode.NAPOLI -> "napoli"
+        CityCode.TORINO -> "torino"
+        CityCode.FIRENZE -> "firenze"
+        CityCode.BOLOGNA -> "bologna"
     }
 }

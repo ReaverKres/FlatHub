@@ -50,6 +50,7 @@ class ConfigManagerImpl : ConfigManager, ConfigFieldsChecker {
                 // Empty = all registered FR platforms (Bien'ici, SeLoger, + soft stubs).
                 ConfigFields.EnabledPlatformsFr.param to "",
                 ConfigFields.EnabledPlatformsCa.param to "",
+                ConfigFields.EnabledPlatformsIt.param to "",
             )
         )
     }

@@ -67,6 +67,8 @@ import listing.ge.livo.LivoApiClient
 import listing.ge.livo.LivoListingSource
 import listing.ge.ss.SsApiClient
 import listing.ge.ss.SsListingSource
+import listing.it.trovacasa.TrovacasaApiClient
+import listing.it.trovacasa.TrovacasaListingSource
 import listing.jp.athome.AthomeApiClient
 import listing.jp.athome.AthomeListingSource
 import listing.jp.suumo.SuumoApiClient
@@ -256,6 +258,9 @@ val dataModule = module {
     }
     single { FotocasaListingSource(api = get(), flatsDao = get()) }
 
+    single { TrovacasaApiClient(httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT)) }
+    single { TrovacasaListingSource(api = get(), flatsDao = get()) }
+
     single {
         Is24ApiClient(
             httpClient = get(qualifier = DataQualifiers.HTML_KTOR_CLIENT),
@@ -381,6 +386,7 @@ val dataModule = module {
                 get<KnListingSource>(),
                 get<PisosListingSource>(),
                 get<FotocasaListingSource>(),
+                get<TrovacasaListingSource>(),
                 get<Is24ListingSource>(),
                 get<ImmoweltListingSource>(),
                 get<KleinanzeigenListingSource>(),

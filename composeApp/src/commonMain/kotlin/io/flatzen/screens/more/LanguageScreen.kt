@@ -34,6 +34,7 @@ import flatzen.composeapp.generated.resources.language_arabic
 import flatzen.composeapp.generated.resources.language_english
 import flatzen.composeapp.generated.resources.language_georgian
 import flatzen.composeapp.generated.resources.language_german
+import flatzen.composeapp.generated.resources.language_italian
 import flatzen.composeapp.generated.resources.language_japanese
 import flatzen.composeapp.generated.resources.language_kazakh
 import flatzen.composeapp.generated.resources.language_korean
@@ -144,4 +145,5 @@ internal fun AppLanguage.labelRes(): StringResource = when (this) {
     AppLanguage.KA -> Res.string.language_georgian
     AppLanguage.KO -> Res.string.language_korean
     AppLanguage.JA -> Res.string.language_japanese
+    AppLanguage.IT -> Res.string.language_italian
 }

@@ -19,6 +19,7 @@ import flatzen.composeapp.generated.resources.city_berlin
 import flatzen.composeapp.generated.resources.city_bern
 import flatzen.composeapp.generated.resources.city_biel
 import flatzen.composeapp.generated.resources.city_birmingham
+import flatzen.composeapp.generated.resources.city_bologna
 import flatzen.composeapp.generated.resources.city_bordeaux
 import flatzen.composeapp.generated.resources.city_boston
 import flatzen.composeapp.generated.resources.city_brest
@@ -40,6 +41,7 @@ import flatzen.composeapp.generated.resources.city_dubai
 import flatzen.composeapp.generated.resources.city_duesseldorf
 import flatzen.composeapp.generated.resources.city_edinburgh
 import flatzen.composeapp.generated.resources.city_edmonton
+import flatzen.composeapp.generated.resources.city_firenze
 import flatzen.composeapp.generated.resources.city_frankfurt
 import flatzen.composeapp.generated.resources.city_fujairah
 import flatzen.composeapp.generated.resources.city_fukuoka
@@ -90,6 +92,7 @@ import flatzen.composeapp.generated.resources.city_malaga
 import flatzen.composeapp.generated.resources.city_manchester
 import flatzen.composeapp.generated.resources.city_marseille
 import flatzen.composeapp.generated.resources.city_miami
+import flatzen.composeapp.generated.resources.city_milano
 import flatzen.composeapp.generated.resources.city_minsk
 import flatzen.composeapp.generated.resources.city_mogilev
 import flatzen.composeapp.generated.resources.city_montpellier
@@ -97,6 +100,7 @@ import flatzen.composeapp.generated.resources.city_montreal
 import flatzen.composeapp.generated.resources.city_muenchen
 import flatzen.composeapp.generated.resources.city_nagoya
 import flatzen.composeapp.generated.resources.city_nantes
+import flatzen.composeapp.generated.resources.city_napoli
 import flatzen.composeapp.generated.resources.city_new_york
 import flatzen.composeapp.generated.resources.city_newcastle
 import flatzen.composeapp.generated.resources.city_nice
@@ -108,6 +112,7 @@ import flatzen.composeapp.generated.resources.city_phuket
 import flatzen.composeapp.generated.resources.city_poznan
 import flatzen.composeapp.generated.resources.city_quebec_city
 import flatzen.composeapp.generated.resources.city_ras_al_khaimah
+import flatzen.composeapp.generated.resources.city_roma
 import flatzen.composeapp.generated.resources.city_rustavi
 import flatzen.composeapp.generated.resources.city_salzburg
 import flatzen.composeapp.generated.resources.city_san_francisco
@@ -128,6 +133,7 @@ import flatzen.composeapp.generated.resources.city_suwon
 import flatzen.composeapp.generated.resources.city_szczecin
 import flatzen.composeapp.generated.resources.city_tbilisi
 import flatzen.composeapp.generated.resources.city_tokyo
+import flatzen.composeapp.generated.resources.city_torino
 import flatzen.composeapp.generated.resources.city_toronto
 import flatzen.composeapp.generated.resources.city_toulouse
 import flatzen.composeapp.generated.resources.city_ulsan
@@ -156,6 +162,7 @@ import flatzen.composeapp.generated.resources.country_es
 import flatzen.composeapp.generated.resources.country_fr
 import flatzen.composeapp.generated.resources.country_gb
 import flatzen.composeapp.generated.resources.country_ge
+import flatzen.composeapp.generated.resources.country_it
 import flatzen.composeapp.generated.resources.country_jp
 import flatzen.composeapp.generated.resources.country_kr
 import flatzen.composeapp.generated.resources.country_kz
@@ -186,6 +193,7 @@ fun CountryCode.localizedNameRes(): StringResource = when (this) {
     CountryCode.GB -> Res.string.country_gb
     CountryCode.FR -> Res.string.country_fr
     CountryCode.CA -> Res.string.country_ca
+    CountryCode.IT -> Res.string.country_it
 }
 
 fun CityCode.localizedNameRes(): StringResource = when (this) {
@@ -333,6 +341,12 @@ fun CityCode.localizedNameRes(): StringResource = when (this) {
     CityCode.QUEBEC_CITY -> Res.string.city_quebec_city
     CityCode.HAMILTON -> Res.string.city_hamilton
     CityCode.VICTORIA -> Res.string.city_victoria
+    CityCode.ROMA -> Res.string.city_roma
+    CityCode.MILANO -> Res.string.city_milano
+    CityCode.NAPOLI -> Res.string.city_napoli
+    CityCode.TORINO -> Res.string.city_torino
+    CityCode.FIRENZE -> Res.string.city_firenze
+    CityCode.BOLOGNA -> Res.string.city_bologna
 }
 
 @Composable

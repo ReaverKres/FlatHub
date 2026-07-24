@@ -44,6 +44,7 @@
     <string name="language_arabic">العربية</string>
     <string name="language_korean">한국어</string>
     <string name="language_japanese">일본어</string>
+    <string name="language_italian">이탈리아어</string>
 
     <string name="filters_title">필터</string>
     <string name="filter_my_filters">내 필터</string>
@@ -157,6 +158,7 @@
     <string name="country_ch">스위스</string>
     <string name="country_gb">영국</string>
     <string name="country_fr">프랑스</string>
+    <string name="country_it">이탈리아</string>
     <string name="country_ca">캐나다</string>
     <string name="city_minsk">민스크</string>
     <string name="city_brest">브레스트</string>
@@ -302,6 +304,12 @@
     <string name="city_quebec_city">퀘벡</string>
     <string name="city_hamilton">해밀턴</string>
     <string name="city_victoria">빅토리아</string>
+    <string name="city_roma">로마</string>
+    <string name="city_milano">밀라노</string>
+    <string name="city_napoli">나폴리</string>
+    <string name="city_torino">토리노</string>
+    <string name="city_firenze">피렌체</string>
+    <string name="city_bologna">볼로냐</string>
     <string name="location_metro">지하철</string>
     <string name="location_metro_any_switch">모든 역</string>
     <string name="location_metro_line_red">빨간선</string>

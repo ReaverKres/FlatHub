@@ -42,6 +42,7 @@
     <string name="language_arabic">არაბული</string>
     <string name="language_korean">კორეული</string>
     <string name="language_japanese">იaponური</string>
+    <string name="language_italian">Italiano</string>
     <string name="filters_title">ფილტრები</string>
     <string name="filter_my_filters">ჩემი ფილტრები</string>
     <string name="filter_property_type">ფართის ტიპი</string>
@@ -149,6 +150,7 @@
     <string name="country_ch">შვეიცარია</string>
     <string name="country_gb">გაერთიანებული სამეფო</string>
     <string name="country_fr">საფრანგეთი</string>
+    <string name="country_it">იტალია</string>
     <string name="country_ca">კანადა</string>
     <string name="city_minsk">მინსკი</string>
     <string name="city_brest">ბრესტი</string>
@@ -294,6 +296,12 @@
     <string name="city_quebec_city">კვებეკი</string>
     <string name="city_hamilton">Hamilton</string>
     <string name="city_victoria">Victoria</string>
+    <string name="city_roma">რომი</string>
+    <string name="city_milano">მილანი</string>
+    <string name="city_napoli">ნაპოლი</string>
+    <string name="city_torino">ტურინი</string>
+    <string name="city_firenze">ფლორენცია</string>
+    <string name="city_bologna">ბოლონია</string>
 
     <string name="location_metro">მეტრო</string>
     <string name="location_metro_any_switch">ნებისმიერი სადგური</string>

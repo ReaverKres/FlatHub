@@ -44,6 +44,7 @@
     <string name="language_arabic">Arabski</string>
     <string name="language_korean">Koreański</string>
     <string name="language_japanese">Japoński</string>
+    <string name="language_italian">Włoski</string>
 
     <string name="filters_title">Filtry</string>
     <string name="filter_my_filters">Moje filtry</string>
@@ -157,6 +158,7 @@
     <string name="country_ch">Szwajcaria</string>
     <string name="country_gb">Wielka Brytania</string>
     <string name="country_fr">Francja</string>
+    <string name="country_it">Włochy</string>
     <string name="country_ca">Kanada</string>
 
     <string name="city_minsk">Mińsk</string>
@@ -303,6 +305,12 @@
     <string name="city_quebec_city">Quebec</string>
     <string name="city_hamilton">Hamilton</string>
     <string name="city_victoria">Victoria</string>
+    <string name="city_roma">Rzym</string>
+    <string name="city_milano">Mediolan</string>
+    <string name="city_napoli">Neapol</string>
+    <string name="city_torino">Turyn</string>
+    <string name="city_firenze">Florencja</string>
+    <string name="city_bologna">Bolonia</string>
     <string name="location_metro">Metro</string>
     <string name="location_metro_any_switch">Dowolna stacja</string>
     <string name="location_metro_line_red">Czerwona</string>

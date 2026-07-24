@@ -30,6 +30,7 @@ enum class DrawablePath(val value: String) {
     KN32("drawable/kn32.webp"),
     FOTOCASA32("drawable/fotocasa32.webp"),
     PISOS32("drawable/pisos32.webp"),
+    TROVACASA32("drawable/trovacasa32.png"),
     IS2432("drawable/is2432.webp"),
     IMMOWELT32("drawable/immowelt32.webp"),
     KLEINANZEIGEN32("drawable/kleinanzeigen32.webp"),

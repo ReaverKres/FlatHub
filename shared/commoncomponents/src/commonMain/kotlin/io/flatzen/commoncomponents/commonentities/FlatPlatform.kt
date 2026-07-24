@@ -29,6 +29,9 @@ enum class FlatPlatform(val value: String) {
     FOTOCASA("fotocasa"),
     PISOS("pisos"),
 
+    // Italy (MVP) — TrovaCasa only; immobiliare/idealista/casa blocked (DataDome)
+    TROVACASA("trovacasa"),
+
     // Germany (MVP)
     IS24("is24"),
     IMMOWELT("immowelt"),
@@ -107,6 +110,9 @@ fun FlatPlatform.marketCountry(): CountryCode = when (this) {
     FlatPlatform.FOTOCASA,
     FlatPlatform.PISOS,
         -> CountryCode.ES
+
+    FlatPlatform.TROVACASA,
+        -> CountryCode.IT
 
     FlatPlatform.IS24,
     FlatPlatform.IMMOWELT,
@@ -191,6 +197,7 @@ fun FlatPlatform.drawablePath(): DrawablePath = when (this) {
     FlatPlatform.KN -> DrawablePath.KN32
     FlatPlatform.FOTOCASA -> DrawablePath.FOTOCASA32
     FlatPlatform.PISOS -> DrawablePath.PISOS32
+    FlatPlatform.TROVACASA -> DrawablePath.TROVACASA32
     FlatPlatform.IS24 -> DrawablePath.IS2432
     FlatPlatform.IMMOWELT -> DrawablePath.IMMOWELT32
     FlatPlatform.KLEINANZEIGEN -> DrawablePath.KLEINANZEIGEN32

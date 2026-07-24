@@ -12,7 +12,8 @@ enum class AppLanguage(val tag: String?) {
     KK("kk"),
     KA("ka"),
     KO("ko"),
-    JA("ja");
+    JA("ja"),
+    IT("it");
 
     companion object {
         fun fromStored(value: String?): AppLanguage =

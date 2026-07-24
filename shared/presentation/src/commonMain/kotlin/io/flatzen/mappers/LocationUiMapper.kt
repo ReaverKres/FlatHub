@@ -57,6 +57,8 @@ object LocationUiMapper {
         UiCityItem(CityCode.PARIS, "Paris", "Paris", Coordinates(48.8566, 2.3522))
     val torontoUiItem =
         UiCityItem(CityCode.TORONTO, "Toronto", "Toronto", Coordinates(43.6532, -79.3832))
+    val romaUiItem =
+        UiCityItem(CityCode.ROMA, "Rome", "Roma", Coordinates(41.9028, 12.4964))
 
     fun countries(): List<UiCountryItem> = listOf(
         UiCountryItem(CountryCode.BY, "Belarus"),
@@ -76,6 +78,7 @@ object LocationUiMapper {
         UiCountryItem(CountryCode.GB, "United Kingdom"),
         UiCountryItem(CountryCode.FR, "France"),
         UiCountryItem(CountryCode.CA, "Canada"),
+        UiCountryItem(CountryCode.IT, "Italy"),
     )
 
     fun defaultCity(country: CountryCode): UiCityItem = when (country) {
@@ -95,6 +98,7 @@ object LocationUiMapper {
         CountryCode.GB -> londonUiItem
         CountryCode.FR -> parisUiItem
         CountryCode.CA -> torontoUiItem
+        CountryCode.IT -> romaUiItem
         CountryCode.BY -> minskUiItem
     }
 
@@ -460,6 +464,15 @@ object LocationUiMapper {
                 Coordinates(48.4284, -123.3656),
             ),
         )
+
+        CountryCode.IT -> listOf(
+            romaUiItem,
+            UiCityItem(CityCode.MILANO, "Milan", "Milano", Coordinates(45.4642, 9.1900)),
+            UiCityItem(CityCode.NAPOLI, "Naples", "Napoli", Coordinates(40.8518, 14.2681)),
+            UiCityItem(CityCode.TORINO, "Turin", "Torino", Coordinates(45.0703, 7.6869)),
+            UiCityItem(CityCode.FIRENZE, "Florence", "Firenze", Coordinates(43.7696, 11.2558)),
+            UiCityItem(CityCode.BOLOGNA, "Bologna", "Bologna", Coordinates(44.4949, 11.3426)),
+        )
     }
 
     fun cities(): List<UiCityItem> = cities(CountryCode.BY)
@@ -488,6 +501,7 @@ object LocationUiMapper {
             in cities(CountryCode.GB).map { it.code } -> CountryCode.GB
             in cities(CountryCode.FR).map { it.code } -> CountryCode.FR
             in cities(CountryCode.CA).map { it.code } -> CountryCode.CA
+            in cities(CountryCode.IT).map { it.code } -> CountryCode.IT
             else -> CountryCode.BY
         }
 
